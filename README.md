@@ -22,7 +22,7 @@ Most important features:
 * rotation fixing (move graphic up, down, left, right)
 
 Todo:
-* better document/comment code, clean up code, remove debug stuff
+* better document/comment code, clean up code, remove debug stuff. Overhaul code, it's not my best work since it was a lot of trial and error and there was no overhaul yet.
 * feature to optimize/compress graphics (use background frame, remove APE junk bytes)
 * finish or remove the GIMP recolor integration
 * figure out the purpose of the last 2 unknown bytes

@@ -1,9 +1,14 @@
 
 **Important note**
 
-This is the code I've written in early 2015, after conceiving some ideas for a new unofficial expansion pack. But the most important thing realized, is this new ZT1 graphic editor. It's written in Visual Basic .NET ( Visual Studio 2013 ).
+This is the code I've written in early 2015, after conceiving some ideas for a new unofficial expansion pack. But the most important thing realized, is this new ZT1 graphic editor.
 
 It's still called Zoot.NET in the source which was the working title. It bears no affiliation with MadScientist's ZOOT tool, although big kudos to him for documenting a lot of the aspects of the file format.
+
+**Using this code?**
+Please credit MadScientist and myself.
+Pull Requests are welcome, although I'm not actively working on this tool anymore.
+When forking or using code or ideas explained in the documentation: please publish the complete code of your project too.
 
 
 **About ZT Studio**
@@ -33,12 +38,12 @@ Other features include previewing how color, changing individual colors in the c
 
 **Definitions**
 
-* ZT1: Zoo Tycoon (the original game, but this includes the expansions and official bonus content)
-* ZT1 Graphic: this file tells the ZT1 game how/where to render pixels. Colors are stored in a separate but required ZT1 Color Palette file, which is usually - but not necessarily - stored in the same directory.
-* ZT1 Color Palette: has a .pal-extension. Contains the colors used in a ZT1 Graphic.
-* ZT1 Frame: 1 image/drawing/picture
-* ZT1 Animation: 1 or more frames
-* View: for example an object usually consists of 4 views: NE (North East), NW (North West), SE (South East), SW (South West)
+* **ZT1:** Zoo Tycoon (the original game, but this includes the expansions and official bonus content)
+* **ZT1 Graphic:** this file tells the ZT1 game how/where to render pixels. Colors are stored in a separate but required ZT1 Color Palette file, which is usually - but not necessarily - stored in the same directory.
+* **ZT1 Color Palette:** has a .pal-extension. Contains the colors used in a ZT1 Graphic.
+* **ZT1 Frame:** 1 image/drawing/picture
+* **ZT1 Animation:** 1 or more frames
+* **View:** for example an object usually consists of 4 views: NE (North East), NW (North West), SE (South East), SW (South West)
 
 
 **ZT1 Graphic Formats**
@@ -52,11 +57,7 @@ There's a couple of variations on the ZT1 Graphic format.
 The graphic files have been documented for about 99%. There are only two single mysterious bytes left to decode.
 
 
-**Using this code?**
 
-Please credit MadScientist and myself.
-Pull Requests are welcome, although I'm not actively working on this tool anymore.
-When forking or using code or ideas explained in the documentation: please publish the complete code of your project too.
 
 **History**
 

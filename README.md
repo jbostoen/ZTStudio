@@ -22,9 +22,10 @@ Most important features:
 * rotation fixing (move graphic up, down, left, right)
 
 Todo:
-* feature to optimize/compress graphics
+* better document/comment code, clean up code, remove debug stuff
+* feature to optimize/compress graphics (use background frame, remove APE junk bytes)
 * finish or remove the GIMP recolor integration
-
+* figure out the purpose of the last 2 unknown bytes
 
 Other features include previewing how color, changing individual colors in the color palette (after a common method of 'recoloring', the shadow might not be black. You can easily make the shadow black again).
 
@@ -52,6 +53,8 @@ The graphic files have been documented for about 99%. There are only two single 
 
 **History**
 
-There was an official editor for objects and animals called APE - dealing with both the graphical aspect as well as creating/copying the configuration of existing animals/objects. Some users improved APE a bit to support the expansion packs. While APE has its merits, it also had severe shortcomings when it comes to the graphical side. Next came MARKHOR, to deal with a notorious issue: lots of things created in APE, didn't show up in the right position in the ZT1 game. You had to do 'rotation fixing' (moving the graphic up/down/left/right). APE did also not support large graphics and crashed on quite a few objects/animals. Also, the copied configuration is a big mess.
+There was an official editor for objects and animals called APE - dealing with both the graphical aspect as well as creating/copying the configuration of existing animals/objects. Some users improved APE a bit to support the expansion packs. While APE has its merits, it also had severe shortcomings when it comes to the graphical side. It also generates ZT1 Graphics with a lot of redundant bytes. 
+
+Next came MARKHOR, to deal with a notorious issue: lots of things created in APE, didn't show up in the right position in the ZT1 game. You had to do 'rotation fixing' (moving the graphic up/down/left/right). APE did also not support large graphics and crashed on quite a few objects/animals. Also, the copied configuration is a big mess.
 
 Afterwards, we had ZOOT. A big shoutout to someone I know only by the nickname MadScientist for explaining a lot of the ZT1 Graphic format (but not all of it). ZOOT allowed us to see most formats, but couldn't handle the graphic format with a background frame nor the shadows.

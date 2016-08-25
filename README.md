@@ -1,4 +1,10 @@
 
+**Important note**
+This is the code I've written in early 2015, after conceiving some ideas for a new unofficial expansion pack. But the most important thing realized, is this new ZT1 graphic editor.
+
+It's still called Zoot.NET in the source which was the working title. It bears no affiliation with MadScientist's ZOOT tool, although big kudos to him for documenting a lot of the aspects of the file format.
+
+
 **About ZT Studio**
 
 ZT Studio is a tool for the original Zoo Tycoon game and its expensions (Dinosaur Digs + Marine Mania + nearly all official bonus content = Complete Collection).
@@ -16,6 +22,7 @@ Most important features:
 
 Todo:
 * feature to optimize/compress graphics
+* finish or remove the GIMP recolor integration
 
 
 Other features include previewing how color, changing individual colors in the color palette (after a common method of 'recoloring', the shadow might not be black. You can easily make the shadow black again).

@@ -1,0 +1,15 @@
+C:\Users\Jeffrey\AppData\Local\Temporary Projects\ZOOT_Net\bin\Debug\ZOOT_Net.exe.config
+x:\projecten\Animal Antics\Tools\Zoot_Net\ZooT_Net\ZooT_Net\obj\Debug\ZooT_Net.vbproj.GenerateResource.Cache
+x:\projecten\Animal Antics\Tools\Zoot_Net\ZooT_Net\ZooT_Net\bin\Debug\ZT Studio.exe.config
+x:\projecten\Animal Antics\Tools\Zoot_Net\ZooT_Net\ZooT_Net\bin\Debug\ZT Studio.exe
+x:\projecten\Animal Antics\Tools\Zoot_Net\ZooT_Net\ZooT_Net\bin\Debug\ZT Studio.pdb
+x:\projecten\Animal Antics\Tools\Zoot_Net\ZooT_Net\ZooT_Net\bin\Debug\ZT Studio.xml
+x:\projecten\Animal Antics\Tools\Zoot_Net\ZooT_Net\ZooT_Net\obj\Debug\ZTStudio.frmMain.resources
+x:\projecten\Animal Antics\Tools\Zoot_Net\ZooT_Net\ZooT_Net\obj\Debug\ZTStudio.frmPal.resources
+x:\projecten\Animal Antics\Tools\Zoot_Net\ZooT_Net\ZooT_Net\obj\Debug\ZTStudio.Resources.resources
+x:\projecten\Animal Antics\Tools\Zoot_Net\ZooT_Net\ZooT_Net\obj\Debug\ZT Studio.exe
+x:\projecten\Animal Antics\Tools\Zoot_Net\ZooT_Net\ZooT_Net\obj\Debug\ZT Studio.xml
+x:\projecten\Animal Antics\Tools\Zoot_Net\ZooT_Net\ZooT_Net\obj\Debug\ZT Studio.pdb
+x:\projecten\Animal Antics\Tools\Zoot_Net\ZooT_Net\ZooT_Net\obj\Debug\ZTStudio.frmBatchConversion.resources
+x:\projecten\Animal Antics\Tools\Zoot_Net\ZooT_Net\ZooT_Net\obj\Debug\ZTStudio.frmSettings.resources
+x:\projecten\Animal Antics\Tools\Zoot_Net\ZooT_Net\ZooT_Net\obj\Debug\ZTStudio.frmGIMPRecolor.resources

@@ -1,0 +1,1168 @@
+﻿Option Explicit On
+
+Imports System.ComponentModel
+
+Public Class clsFrame
+
+    Implements INotifyPropertyChanged
+
+
+    Private fr_Hex As String = vbNullString
+
+    Private fr_width As Integer = -1
+    Private fr_height As Integer = -1
+    Private fr_offsetX As Integer = -9999
+    Private fr_offsetY As Integer = -9999
+
+    Private fr_parent As New clsGraphic2
+    Private fr_type As Integer = 0
+    ' 0 = basic
+    ' 1 = ZTAF, no extra frame
+    ' 2 = ZTAF, extra frame
+    ' 3 = ZTAF, shadows MM
+
+    Private fr_MysteryHEX As New List(Of String)
+
+    Private fr_cachedFrame As Bitmap
+    Private fr_lastUpdated As String = Now.ToString("yyyyMMddHHmmss")                ' for caching purposes.
+
+    Private fr_ex_numBlocks As Integer = 0
+    Private fr_ex_numPixels As Integer = 0
+
+    ' === Exp
+
+    Public Property ex_numBlocks As Integer
+        Get
+            Return fr_ex_numBlocks
+        End Get
+        Set(value As Integer)
+            fr_ex_numBlocks = value
+        End Set
+    End Property
+
+    Public Property ex_numPixels As Integer
+        Get
+            Return fr_ex_numPixels
+        End Get
+        Set(value As Integer)
+            fr_ex_numPixels = value
+        End Set
+    End Property
+
+
+
+
+    ' === Regular
+
+    Public Property hexString() As String
+        Get
+            Return fr_Hex
+        End Get
+        Set(value As String)
+            fr_Hex = Strings.Trim(value)
+            NotifyPropertyChanged("hexString")
+        End Set
+    End Property
+
+
+
+
+    Public Property parent As clsGraphic2
+        Get
+            Return fr_parent
+        End Get
+        Set(value As clsGraphic2)
+            fr_parent = value
+            NotifyPropertyChanged("parent")
+        End Set
+    End Property
+
+
+    Public Property height As Integer
+        Get
+            Return fr_height
+        End Get
+        Set(value As Integer)
+            fr_height = value
+            NotifyPropertyChanged("height")
+        End Set
+
+    End Property
+    Public Property width As Integer
+        Get
+            Return fr_width
+        End Get
+        Set(value As Integer)
+            fr_width = value
+            NotifyPropertyChanged("width")
+        End Set
+    End Property
+    Public Property offsetX As Integer
+        Get
+            Return fr_offsetX
+        End Get
+        Set(value As Integer)
+            fr_offsetX = value
+            NotifyPropertyChanged("offsetX")
+        End Set
+    End Property
+    Public Property offsetY As Integer
+        Get
+            Return fr_offsetY
+        End Get
+        Set(value As Integer)
+            fr_offsetY = value
+            NotifyPropertyChanged("offsetY")
+        End Set
+    End Property
+
+    Public Property cachedFrame As Bitmap
+        Get
+            Return fr_cachedFrame
+        End Get
+        Set(value As Bitmap)
+            fr_cachedFrame = value
+            NotifyPropertyChanged("cachedFrame")
+        End Set
+    End Property
+    Public Property lastUpdated As String
+        Get
+            Return fr_lastUpdated
+        End Get
+        Set(value As String)
+            fr_lastUpdated = value
+            'NotifyPropertyChanged("lastUpdated")
+        End Set
+    End Property
+
+    ' For experiments, stats
+    Public Property mysteryHEX As List(Of String)
+        Get
+            Return fr_MysteryHEX
+        End Get
+        Set(value As List(Of String))
+            fr_MysteryHEX = value
+            NotifyPropertyChanged("mysteryHEX")
+        End Set
+    End Property
+
+
+    Function getImage(Optional blnDrawGrid As Boolean = False)
+
+        ' GetImage will return the file as a bitmap/image.
+        ' It will render the frame; and then add backgrounds.
+
+        On Error GoTo dBug
+
+1:
+        ' Draw frame.
+        Dim bmOutput As Bitmap = Me.renderFrame()
+
+11:
+        ' Draw 'extra' background frame, e.g. restaurants?
+        If Me.parent.extraFrame = 1 And cfg_export_PNG_RenderBGFrame = 1 Then
+            bmOutput = clsTasks.images_Combine(Me.parent.frames(Me.parent.frames.Count - 1).renderFrame(), bmOutput)
+        End If
+
+21:
+        ' Optional background graphic frame, e.g. animal + toy?
+        If editorBgGraphic.frames.Count > 0 And cfg_export_PNG_RenderBGZT1 = 1 Then
+            bmOutput = clsTasks.images_Combine(editorBgGraphic.frames(0).renderFrame(), bmOutput)
+        End If
+
+31:
+        ' Draw grid?
+        If blnDrawGrid = True Then
+            bmOutput = clsTasks.images_Combine(clsTasks.grid_drawFootPrintXY(cfg_grid_footPrintX, cfg_grid_footPrintY, 0), bmOutput)
+        End If
+
+
+
+41:
+        Return bmOutput
+
+
+        Exit Function
+
+dBug:
+
+        MsgBox("Error in displayFrame at line " & Erl() & vbCrLf & _
+            Err.Number & " - " & Err.Description, vbOKOnly + vbCritical, "Error")
+
+
+    End Function
+
+    Function renderFrame(Optional bmOutput As Bitmap = Nothing, Optional ztPal As clsPalette = Nothing, Optional cacheLoad As Boolean = True, Optional cacheStore As Boolean = True) As Bitmap
+
+        Debug.Print("Render frame. " & Me.parent.frames.IndexOf(Me))
+
+        ' Cached?
+        'Debug.Print("... Cached?")
+        If IsNothing(Me.parent) = False Then
+            If Me.lastUpdated = Me.parent.lastUpdated And IsNothing(Me.cachedFrame) = False And cacheLoad = True Then
+                'Debug.Print("... return cached frame. Graphic last updated: " & Me.parent.lastUpdated & " - Frame: " & Me.lastUpdated)
+                Return Me.cachedFrame
+            Else
+
+                'Debug.Print("... Cached version expired. " & Me.lastUpdated & " - " & Me.parent.lastUpdated & " - " & cacheLoad & " - " & IsNothing(Me.cachedFrame))
+            End If
+        Else
+            'Debug.Print("... No cached version available. " & Me.lastUpdated & " - " & Me.parent.lastUpdated)
+
+        End If
+
+
+        ' Color palette
+        'Debug.Print("... Color palette?")
+        If IsNothing(ztPal) = True Then
+            ztPal = Me.parent.colorPalette
+        End If
+
+        ' Bitmap
+        'Debug.Print("... Bitmap.")
+        If IsNothing(bmOutput) = True Then
+            bmOutput = New Bitmap(cfg_grid_numPixels * 2, cfg_grid_numPixels * 2)
+        Else
+            'Debug.Print("... Drawing on top of an existing bitmap")
+        End If
+
+
+
+        ' There's only 1 color (=transparent) or none.
+        If (Me.parent.colorPalette.colors.Count <= 1) Then
+            'Debug.Print("... No colors.")
+            Return bmOutput
+        End If
+
+
+
+        ' There's no cached image, no hex
+        If IsNothing(Me.cachedFrame) And Me.hexString = vbNullString Then
+            Return bmOutput
+        End If
+
+
+        'Debug.Print("... renderFrame - render [again].| w x h = " & bmOutput.Width & " x " & bmOutput.Height & " | " & ztPal.fileName)
+
+
+        Dim intX As Integer = 0
+        Dim intY As Integer = 0
+
+        Dim coord As Point
+
+
+        Dim num_colorsExpected As Integer = 0
+        Dim num_currentColor As Integer = 0
+
+        Dim num_pixelSets As Integer = 0
+        Dim num_currentPixelSet As Integer = 0
+
+        Dim c As System.Drawing.Color
+
+
+        On Error GoTo dBug
+        'Debug.Print("'" & strFrameHex & "'")
+
+1:
+        Dim hex() As String = Split(fr_Hex, " ")
+        Dim curByte As Integer = 0
+
+        'Debug.Print(hex.Length)
+
+2:
+        ' If our view has an extra frame at the end, usually containing the biggest part of the animation:
+        ' And only if this is not in fact the last part of the animation:
+        'If Me.parent.extraFrame = 1 And Me.parent.frames.IndexOf(Me) <> (Me.parent.frames.Count - 1) And blnRenderBGFrame = True Then
+        'Debug.Print("Extra frame, renderBG = true, cfg: " & cfg_export_PNG_RenderBGFrame)
+        'bmOutput = New Bitmap(Me.parent.frames(Me.parent.frames.Count - 1).renderFrame(bmOutput, ztPal))
+        'End If
+
+
+11:
+        'Dim intHeight As Integer = CInt("&H" & hex(1) & hex(0))
+        ' Dim intWidth As Integer = CInt("&H" & hex(3) & hex(2))
+        If Me.height = -1 Then Me.height = CInt("&H" & hex(1) & hex(0))
+        If Me.width = -1 Then Me.width = CInt("&H" & hex(3) & hex(2))
+
+12:
+
+        ' Special "ssurf"-animations
+        If hex(1) = "80" Then
+            Return renderFrame2(bmOutput, ztPal)
+            Exit Function
+        End If
+
+
+
+        ' In case of unknown offsets and HEX = FF (large size image)
+        If Me.offsetY = -9999 And hex(5) = "FF" Then
+            Me.offsetY = ((256 * 256) - CInt("&H" & hex(5) & hex(4))) * -1
+            'debug.Print("Offset: change because offsetY is nothing and hex = FF. Changed to " & Me.offsetY)
+
+        End If
+
+        ' In case of unknown offsets and HEX = FF (large size image)
+        If Me.offsetX = -9999 And hex(7) = "FF" Then
+            Me.offsetX = ((256 * 256) - CInt("&H" & hex(7) & hex(6))) * -1
+            'Debug.Print("Offset: change because offsetX is nothing and hex = FF. Changed to " & Me.offsetX)
+        End If
+
+        ' In case of unknown offsets and normal HEX
+        If Me.offsetY = -9999 Then
+            Me.offsetY = CInt("&H" & hex(5) & hex(4))
+            'Debug.Print("Offset: change because offsetY is nothing. Changed to " & Me.offsetY & " -> " & hex(5) & " " & hex(4))
+
+        End If
+        If Me.offsetX = -9999 Then
+            Me.offsetX = CInt("&H" & hex(7) & hex(6))
+            'Debug.Print("Offset: change because offsetX is nothing. Changed to " & Me.offsetX & " -> " & hex(7) & " " & hex(6))
+        End If
+
+
+        ' MsgBox("offset is now " & Me.offsetX & " , " & Me.offsetY)
+
+
+
+20:
+
+
+21:
+        With fr_MysteryHEX
+            .Clear(False)
+            .Add(hex(8), False)
+            .Add(hex(9), False)
+
+        End With
+
+        ' Remove first 10 bytes. 2 height, 2 width, 2 oY, 2 ox, 2
+        hex = hex.Skip(10).ToArray()
+
+
+        'Debug.Print("Frame length = " & Strings.Join(hex.ToArray(), "").Length / 2)
+        'Debug.Print(Strings.Join(hex.ToArray(), " "))
+1000:
+
+1001:
+
+        While hex.Length > 0 And (intY) < Me.height  'And intY < 255 'temp fix to render the flag
+
+
+
+            ' Show what's left.
+            'Debug.Print(Strings.Join(hex.ToArray(), " "))
+
+
+            ' First byte for each row contains the number of pixel sets.
+            ' That's at least 1 block (a transparent line would give [offset] [0 colors] -
+            ' Otherwise, it's a series of pixel sets: [offset][numColorPixels][pixels]
+
+1100:
+            num_pixelSets = CInt("&H" & hex(0))    ' number of pixel sets in this line.
+            hex = hex.Skip(1).ToArray()
+
+1120:
+
+
+            ' We know how many pixel sets we have in this line.
+            ' Let's process them.
+
+            For num_currentPixelSet = 0 To (num_pixelSets - 1)
+
+                'Debug.Print("Pixel set, num " & (num_currentPixelSet + 1) & " out of " & (num_pixelSets))
+
+1300:
+                ' Starting with color byte.
+                intX += CInt("&H" & hex(0))                  ' Offset
+1301:
+                num_colorsExpected = CInt("&H" & hex(1))     ' Number of instruction blocks
+
+                'Debug.Print("   # colors: " & num_colorsExpected)
+
+1310:
+                ' Remove [offset] and [num of pixels to draw] instructions.
+                hex = hex.Skip(2).ToArray()
+
+1400:
+                ' We know how many colors are expected.
+                For num_currentColor = 0 To (num_colorsExpected - 1)
+
+1409:
+                    ' Get color index etc, draw pixel
+                    'Debug.Print(num_currentColor & "/" & hex.Length & " --- " & ztPal.colors.Count & " --- " & (num_colorsExpected - 1))
+
+1410:
+                    c = ztPal.colors(CInt("&H" & hex(num_currentColor)))
+
+1412:
+                    ' Jump to the right offset.
+                    coord.X = (cfg_grid_numPixels - Me.offsetX) + intX
+                    coord.Y = (cfg_grid_numPixels - Me.offsetY) + intY
+
+1413:
+                    ' Color the pixel.
+                    bmOutput.SetPixel(coord.X, coord.Y, c)
+
+                    Me.ex_numPixels += 1
+                    intX += 1
+
+
+                Next num_currentColor
+                hex = hex.Skip(num_currentColor).ToArray() 'Remove all colors above at once now.
+
+1415:
+
+            Next num_currentPixelSet
+            'Debug.Print("Last pixel in line was X " & intX & ". Y was " & intY)
+
+1450:
+
+            ' Entire line (left to right) has been processed.
+            ' Next, please.
+            intX = 0
+            intY += 1
+
+        End While
+
+        'frmMain.picBox.Image = bm
+
+        If IsNothing(Me.parent) = False Then
+            Me.lastUpdated = Me.parent.lastUpdated ' A bit of cheating. We need it to be identical
+        End If
+
+        'Debug.Print("Processed frame.")
+
+        If cacheStore = True Then
+            Me.cachedFrame = bmOutput
+        End If
+
+
+        Return bmOutput
+
+        Debug.Print("Frame rendered.")
+        Exit Function
+
+dBug:
+
+        frmMain.picBox.Image = bm
+
+        Debug.Print("Debugging info:")
+        ' Debug.Print("What's left of HEX() ? " & Strings.Join(hex.ToArray(), " "))
+        ' Debug.Print("My index: " & Me.parent.frames.IndexOf(Me) & " - frame Length: " & Me.hexString.Length.ToString("X4"))
+
+        MsgBox("An error occured while trying to render a frame. Line " & Erl() & vbCrLf & _
+               "Width, height: " & Me.width & ", " & Me.height & vbCrLf & _
+            "Offset x, y: " & Me.offsetX & ", " & Me.offsetY & vbCrLf & _
+            "Colors: Currently at pixel set " & num_currentPixelSet & "/" & num_pixelSets & ", color " & num_currentColor & "/" & num_colorsExpected & vbCrLf & _
+            "Last referenced x, y: " & coord.X & ", " & coord.Y & vbCrLf & _
+            "Current length of hex(): " & hex.Length & vbCrLf & _
+            "Current length of colors: " & Me.parent.colorPalette.colors.Count & vbCrLf & _
+             vbCrLf & Err.Number & " - " & Err.Description & _
+            vbCrLf & "Line: " & Erl(), vbOKOnly + vbCritical, "Error")
+
+
+        On Error Resume Next
+
+        If hex.Length > 0 Then
+
+            Dim xDebug As Integer = 0
+            Dim strDebug As Integer
+            For xDebug = 0 To 15
+                strDebug &= hex(xDebug) & " "
+            Next
+            Debug.Print("First 8 bytes left: " & strDebug)
+        End If
+
+        frmMain.picBox.Image = bm
+
+
+    End Function
+
+
+
+    Function renderFrame2(bm As Bitmap, ztPal As clsPalette, Optional blnRenderBG As Boolean = True) As Bitmap
+
+        ' Similar, but slightly different
+        ' The big mystery - unless it's to be more similar to other files: why bother for a .PAL-file?
+
+
+
+        Dim intX As Integer = 0
+        Dim intY As Integer = 0
+        'Dim coordX As Integer = 0
+        'Dim coordY As Integer = 0
+        Dim coord As Point
+
+        Dim intInstructionBlocksNum As Integer = 0
+        Dim intInstructionBlocksCurrent As Integer = 0
+        Dim intInstructionBlackPixelsNum As Integer = 0
+        Dim intinstructionBlackPixelsCurrent As Integer = 0
+
+        Dim c As System.Drawing.Color
+
+
+        On Error GoTo dBug
+        'Debug.Print("'" & strFrameHex & "'")
+
+1:
+        Dim hex() As String = Split(fr_Hex, " ")
+        Dim curByte As Integer = 0
+
+        Debug.Print(hex.Length)
+
+2:
+        ' If this is not the last frame, and the animation relies on a last frame:
+        ' (unlikely in the case of shadows, but who knows.)
+        If Me.parent.extraFrame = 1 And Me.parent.frames.IndexOf(Me) <> (Me.parent.frames.Count - 1) And blnRenderBG = True Then
+            bm = Me.parent.frames(Me.parent.frames.Count - 1).renderFrame(bm, ztPal)
+        End If
+
+
+11:
+        Me.height = CInt("&H" & hex(0))
+        Me.width = CInt("&H" & hex(2))
+
+12:
+
+
+
+        ' FF F7   = -9,?
+        ' 255 247 = -9 ?
+        If Me.offsetY = Nothing And hex(5) = "FF" Then Me.offsetY = ((256 * 256) - CInt("&H" & hex(5) & hex(4))) * -1
+        If Me.offsetX = Nothing And hex(7) = "FF" Then Me.offsetX = ((256 * 256) - CInt("&H" & hex(7) & hex(6))) * -1
+
+        If Me.offsetY = Nothing Then Me.offsetY = CInt("&H" & hex(5) & hex(4))
+        If Me.offsetX = Nothing Then Me.offsetX = CInt("&H" & hex(7) & hex(6))
+
+      
+
+20:
+
+        ' Remove first 10 bytes.
+        ' 2 x height, width, offsetY, offsetX + 2 mysterious bytes
+        hex = hex.Skip(10).ToArray()
+
+
+25:
+
+
+1000:
+
+
+        ' Rewrite the stuff below.
+        ' First byte in a row signals how many blocks there are.
+        ' A block consists of: [offset] [numColors] [c1] [c2] [cN] [00]
+
+1001:
+
+        While hex.Length > 0
+
+            ' First byte of each row: how many bytes about this row?
+            ' Second byte: offset for the first pixel
+            ' Third byte: number of colors. This means we have a maximum width, in theory.
+
+            c = Color.Transparent
+
+1100:
+            'Debug.Print("----------- Row " & intY & " ----------------")
+            intInstructionBlocksNum = CInt("&H" & hex(0))    ' number of blocks
+            hex = hex.Skip(1).ToArray()
+
+1120:
+
+            ' Instruction blocks. offset, pixels (black)
+            For intInstructionBlocksCurrent = 0 To (intInstructionBlocksNum - 1)
+
+1300:
+                ' Starting with color byte.
+                intX += CInt("&H" & hex(0))                 ' Offset
+1301:
+                intInstructionBlackPixelsNum = CInt("&H" & hex(1))     ' Number of colors (black)
+
+
+1310:
+                'hex = hex.Skip(2).ToArray()
+
+1400:
+
+
+                If intInstructionBlackPixelsNum <> 0 Then
+
+
+                    For intinstructionBlackPixelsCurrent = 0 To intInstructionBlackPixelsNum
+
+1410:
+                        ' Switch between black and transparent
+                        If c = Color.Transparent Then
+                            ' c = Color.Black
+                        Else
+                            'c = Color.Transparent
+                        End If
+1412:
+                        coord.X = (cfg_grid_numPixels - Me.offsetX) + intX   'intX
+                        coord.Y = (cfg_grid_numPixels - Me.offsetY) + intY
+                        'Debug.Print("       Coords: x=" & coordX & ", y=" & coordY & ", w=" & intWidth & ",h=" & intHeight & ", ox=" & offsetX & ", oy=" & offsetY)
+
+                        bm.SetPixel(coord.X, coord.Y, Color.Black)
+
+1413:
+                        intX += 1
+
+
+                    Next intinstructionBlackPixelsCurrent
+
+                End If
+
+                ' Remove offset, amount of pixels
+                hex = hex.Skip(2).ToArray()
+
+1415:
+
+            Next intInstructionBlocksCurrent
+
+1450:
+
+            intX = 0
+            intY += 1
+
+        End While
+
+
+
+
+        If Not IsNothing(Me.parent) Then
+            Me.lastUpdated = Me.parent.lastUpdated ' A bit of cheating. We need it to be identical
+        End If
+
+        Me.cachedFrame = bm
+        Return bm
+
+
+        Exit Function
+
+
+
+dBug:
+        MsgBox("An error occured while trying to render a surface-shadows frame." & vbCrLf & _
+               "Width, height: " & Me.width & ", " & Me.height & vbCrLf & _
+            "Offset x, y: " & Me.offsetX & ", " & Me.offsetY & vbCrLf & _
+              "Last referenced x, y: " & coord.X & ", " & coord.Y & vbCrLf & _
+            "Current length of hex(): " & hex.Length & vbCrLf & _
+             vbCrLf & Err.Number & " - " & Err.Description & _
+            vbCrLf & "Line: " & Erl(), vbOKOnly + vbCritical, "Error")
+
+
+        On Error Resume Next
+
+        If hex.Length > 0 Then
+
+            Dim xDebug As Integer = 0
+            Dim strDebug As Integer
+            For xDebug = 0 To 15
+                strDebug &= hex(xDebug) & " "
+            Next
+            Debug.Print("First 8 bytes left: " & strDebug)
+        End If
+
+        frmMain.picBox.Image = bm
+
+
+    End Function
+
+
+
+
+
+
+    Function getHex(Optional bm As Bitmap = Nothing, Optional blnRenderBGFrame As Boolean = True, Optional cacheLoad As Boolean = True) As List(Of String)
+
+
+        ' This function will output HEX for a frame.
+        ' Quick way to write out this frame to HEX
+
+        Debug.Print(".... get hex from frame, index: " & Me.parent.frames.IndexOf(Me))
+
+
+        If IsNothing(bm) = True Then
+
+            'Debug.Print("... No bitmap specified.")
+
+            If IsNothing(Me.cachedFrame) Or cacheLoad = False Then
+
+                ' Get frame
+                Debug.Print("..... Render frame")
+                bm = Me.renderFrame(New Bitmap(cfg_grid_numPixels * 2, cfg_grid_numPixels * 2), Me.parent.colorPalette, blnRenderBGFrame).Clone()
+
+                'Debug.Print("...... w x h = " & bm.Width & " x " & bm.Height)
+            Else
+
+                Debug.Print("... Use cached frame")
+                bm = Me.cachedFrame
+                ' Debug.Print("...... w x h = " & bm.Width & " x " & bm.Height)
+
+            End If
+
+        Else
+            Debug.Print("...... Using provided bitmap.")
+            ' Debug.Print(".... w x h = " & bm.Width & " x " & bm.Height)
+        End If
+
+
+
+        On Error GoTo dBug
+
+        Dim opHex As New List(Of String)                            ' Main output
+        Dim opHexRows As New List(Of String)                        ' Store bytes as strings for now.
+
+        ' This means: height, width, offsetX, offsetY FOR EACH FRAME.
+        Dim coord As Point                                          ' Our pixel reference.
+
+        Dim c As System.Drawing.Color                               ' to go over every color
+
+
+        Dim lstColorIndexes As New List(Of String)                  ' Store the HEX values, as strings, for color index in our .pal file 
+        Dim lstInstrBlocks As New List(Of String)                   ' Store the HEX values of instruction blocks [offset][numColors][for each color]
+        Dim intInstrBlocks As Integer = 1                           ' Keep track of the number of blocks
+
+        ' Take the palette from the parent
+        Dim ztPal As clsPalette = Me.parent.colorPalette
+
+100:
+
+        ' === We will read the bitmap. We need 2 rectangle defining coordinates. ===
+        Dim rect As Rectangle = clsTasks.bitmap_getDefiningRectangle(bm)
+        'Dim rect As Rectangle = Me.parent.getDefiningRectangle()
+
+
+        'Debug.Print("Defining rectangle: x,y,oX,oY = " & rect.X & " - " & rect.Y & " - " & rect.Width & " - " & rect.Height)
+
+
+1000:
+        ' With that in mind, we might have an issue with rotation fixing.
+        ' This is something we could just skip for now and implement later.
+        ' For now, it's just something the user would need to take care off, and we'll have to change some bytes.
+        ' Aka: write the file again.
+
+        ' We have the coordinates. We can read a PART ("significant rectangle") again.
+        ' Here it gets a bit more tricky. There's some information we will process, 
+        ' but we will have to switch a few things in our output.
+        ' - we need to remember how many instruction blocks (offset + num colors + [colors] );
+        ' - we need to remember the offset;
+        ' - we need to count the colors;
+        ' - we need to keep track of the color indexes (either find them in a palette, or add them. Max 255 colors, warn!)
+        ' Output per line: #numBlocks, blocks
+
+
+        ' We know our relevant pixels.
+        coord.Y = rect.Y
+
+        Dim lstPixelSets As New List(Of clsDrawingInstr)
+        Dim tmpDrawingInstr As New clsDrawingInstr
+
+
+3000:
+        'bv: coord pixel [0,0] --- w,h [1,1]
+
+        ' APE / Zoot: top left color = transparent
+        Dim colTransparent As System.Drawing.Color = bm.GetPixel(rect.X, rect.Y)
+
+        ' 20150619 : after adjusting getDefiningRectangle: coord.Y <=, coord.x <=  --> <
+        ' From to to bottom, from left to right
+        While coord.Y < (rect.Y + rect.Height)
+
+            ' Restart.
+            coord.X = rect.X
+            tmpDrawingInstr = New clsDrawingInstr
+            lstPixelSets.Clear(False)
+
+            While coord.X < (rect.X + rect.Width)
+
+3001:
+                ' Read the color.
+                c = bm.GetPixel(coord.X, coord.Y)
+
+                If c = colTransparent Then
+
+3100:
+                    ' We have a transparent pixel.
+                    ' We can have this at the very start of the row;
+                    ' We can have this after a series of color indexes.
+                    If tmpDrawingInstr.offset = 0 And tmpDrawingInstr.pixelColors.Count = 0 Then
+3101:
+                        ' We are most likely getting this at the very start of the row. 
+                        ' No action required.
+
+                    ElseIf tmpDrawingInstr.pixelColors.Count > 0 Then
+3102:
+                        ' We have had stuff in this line. So we had colors, and now it's transparent.
+                        ' Push the drawing instruction, then start over.
+                        lstPixelSets.Add(tmpDrawingInstr, False)
+                        tmpDrawingInstr = New clsDrawingInstr
+
+                    Else
+
+3108:
+                        ' In this case, our offset is bigger than 0 and our color count is 0.
+                        ' Don't do anything.
+
+                    End If
+
+                    ' The current pixel is transparent.
+                    ' This means we have to increase our offset by 1.
+3110:
+                    tmpDrawingInstr.offset += 1
+
+3115:
+                    ' Exception: if our offset is now 255, we will need to push this block and create a new one.
+                    If tmpDrawingInstr.offset = 255 Then
+                        lstPixelSets.Add(tmpDrawingInstr, False)
+                        tmpDrawingInstr = New clsDrawingInstr
+                    End If
+
+                Else
+3200:
+                    ' We have detected a colored pixel.
+                    ' Get its index and add it to our collection.
+
+                    Dim tmpColorIndex = Me.parent.colorPalette.getColorIndex(c, True)
+                    If tmpColorIndex = -1 Then Exit Function
+
+                    tmpDrawingInstr.pixelColors.Add(tmpColorIndex, False)
+
+
+
+3399:
+                    ' Exception: if our number of colored pixels is now 255, we will need to push this block.
+                    If tmpDrawingInstr.pixelColors.Count = 255 Then
+                        lstPixelSets.Add(tmpDrawingInstr, False)
+                        tmpDrawingInstr = New clsDrawingInstr
+                    End If
+
+
+                End If
+
+                coord.X += 1
+            End While
+
+
+            ' === END OF LINE ===
+
+3400:
+            ' We processed all blocks. We should finish this too by adding the last block, 
+            ' if it never got closed (most likely case, unless we had 255 pixels)
+            If tmpDrawingInstr.offset <> 0 Or tmpDrawingInstr.pixelColors.Count > 0 Then
+                lstPixelSets.Add(tmpDrawingInstr, False)
+            End If
+
+3405:
+            ' We have all our pixel sets for this line.
+            ' So to opHexRows, we can add:
+            ' Number of instruction blocks [between 0 - 255]
+            opHexRows.Add(lstPixelSets.Count.ToString("X2"), False)
+
+3406:
+            For Each d As clsDrawingInstr In lstPixelSets
+                ' For each block: 
+                ' - get HEX of offset, num colors, color indexes of pixels
+                opHexRows.AddRange(d.getHex(), False)
+            Next
+
+3450:
+
+            coord.Y += 1
+        End While
+
+
+        ' height, width is another easy one. We can calculate it by our top/left and bottom/right pixel
+        ' The offset is difficult.
+        ' Zoot *seemed* to handle it by setting the offset to half the height/width. 
+        ' That approach at least centers your image, but it might not be what's wanted.
+        ' We will follow the same approach though, as the program can't know the right offsets.
+
+        ' In front of all that, we will also have to add 4 bytes determining the length of this frame.
+        ' "et voila!"
+
+        ' 20150619 : after adjusting getDefiningRectangle:  not +1
+5001:
+        ' Our width, height and offsets are currently read and stored.
+        Me.width = rect.Width '+ 1
+
+5002:
+        Me.height = rect.Height '+ 1
+
+
+5003:
+        ' This must be improved.
+        ' For each frame, we need the relevant pixel (top left) and calculate it's offset to the center.
+
+        ' These offsets are supposedly calculated against a canvas sized image.
+        ' added offset = nothing
+        If Me.offsetX = -9999 Then Me.offsetX = cfg_grid_numPixels - rect.X
+        If Me.offsetY = -9999 Then Me.offsetY = cfg_grid_numPixels - rect.Y
+
+5010:
+
+        'Debug.Print("... Graphic " & vbCrLf & _
+        '            "offset X = " & Me.offsetX & " - " & Me.offsetX.ToString("X4").ReverseHEX() & vbCrLf & _
+        '            "offset Y = " & Me.offsetY & " - " & Me.offsetY.ToString("X4").ReverseHEX() & vbCrLf & _
+        '            "width = " & Me.width & " - " & Me.width.ToString("X4").ReverseHEX() & vbCrLf & _
+        '            "height = " & Me.height & " - " & Me.height.ToString("X4").ReverseHEX() & vbCrLf)
+
+        With opHex
+
+5011:
+            ' Easier to build it this way.
+            .AddRange(Strings.Split(Me.height.ToString("X4").ReverseHEX(), " "), False)
+            .AddRange(Strings.Split(Me.width.ToString("X4").ReverseHEX(), " "), False)
+
+            If Me.offsetY >= 0 Then
+                .AddRange(Strings.Split(Me.offsetY.ToString("X4").ReverseHEX(), " "), False)
+            Else
+                .AddRange(Strings.Split((256 * 256 + Me.offsetY).ToString("X4").ReverseHEX(), " "), False)
+
+            End If
+
+            If Me.offsetX >= 0 Then
+                .AddRange(Strings.Split(Me.offsetX.ToString("X4").ReverseHEX(), " "), False)
+            Else
+                .AddRange(Strings.Split((256 * 256 + Me.offsetX).ToString("X4").ReverseHEX(), " "), False)
+
+            End If
+
+5015:
+            ' Issue: two  unknown bytes.
+            ' For bamboo, frame 1 = 1. 
+            ' Always seems to be 1.
+            .Add("01", False)
+            .Add("00", False)
+
+            .AddRange(opHexRows, False)
+
+        End With
+
+        fr_Hex = Strings.Join(opHex.ToArray(), " ")
+
+
+        Debug.Print(".... get Hex from frame: complete.")
+
+        Return opHex
+
+
+        Exit Function
+
+dBug:
+
+        MsgBox("Error while generating HEX-values for a frame." & vbCrLf & _
+            "Line: " & Erl() & vbCrLf & _
+            Err.Number & " - " & Err.Description, vbOKOnly + vbCritical, "Error while generating HEX-values of a frame")
+
+        Return Nothing
+
+
+
+    End Function
+
+
+    ' === additional features ===
+
+    ' = This function will set offsets of this frame, and copy it to other frame(s) or graphic(s)
+ 
+    Public Function updateOffsets(coordOffsetChanges As Point, Optional objFrame As clsFrame = Nothing, Optional objGraphic As clsGraphic2 = Nothing)
+
+
+        If IsNothing(objFrame) Then objFrame = editorFrame
+        If IsNothing(objGraphic) Then objGraphic = editorGraphic
+
+
+        On Error GoTo dBug
+
+10:
+
+        'f cfg_editor_rotFix_individualFrame = False Then
+
+11:
+        For Each ztFrame As clsFrame In Me.parent.frames
+
+            ' If (cfg_editor_rotFix_individualFrame = True And _
+            '     editorGraphic.frames.IndexOf(ztFrame) = objFrame.parent.frames.IndexOf(objFrame) _
+            '     ) Or cfg_editor_rotFix_individualFrame = False Then
+
+            If IsNothing(ztFrame.cachedFrame) = True Then
+                ztFrame.renderFrame() ' Render first to get offsets etc
+            End If
+
+            ztFrame.offsetY += coordOffsetChanges.Y
+            ztFrame.offsetX += coordOffsetChanges.X
+
+
+        Next
+
+21:
+
+
+        Exit Function
+
+
+dBug:
+        MsgBox("Error occurred while updating offsets for frame." & vbCrLf & "Line: " & Erl() & vbCrLf & _
+            Err.Number & " - " & Err.Description, vbOKOnly + vbCritical, "Error while settings offsets")
+
+
+    End Function
+
+    Public Function updateIndex(intNewIndex As Integer, Optional ztFrame As clsFrame = Nothing, Optional ztGraphic As clsGraphic2 = Nothing)
+
+
+        On Error GoTo dBug
+
+1:
+        If IsNothing(ztFrame) Then ztFrame = editorFrame
+
+2:
+        If IsNothing(ztGraphic) Then ztGraphic = editorGraphic
+
+
+5:
+        ' Get current list, remove item, add to new
+        ztGraphic.frames.Remove(ztFrame)
+
+6:
+        ' Add to wanted place
+        ztGraphic.frames.Insert(intNewIndex, ztFrame)
+
+        Exit Function
+
+
+dBug:
+        MsgBox("Error occurred while updating index for frame." & vbCrLf & "Line: " & Erl() & vbCrLf & _
+            Err.Number & " - " & Err.Description, vbOKOnly + vbCritical, "Error while settings offsets")
+
+
+    End Function
+
+
+    Public Event PropertyChanged(sender As Object, e As PropertyChangedEventArgs) Implements INotifyPropertyChanged.PropertyChanged
+    Private Sub NotifyPropertyChanged(ByVal info As String)
+
+        If info <> "cachedFrame" Then Me.lastUpdated = Me.parent.lastUpdated '   Now.ToString("yyyyMMddHHmmss")
+        clsTasks.update_Info("Property clsFrame." & info & " changed.")
+        'RaiseEvent PropertyChanged(Me, New PropertyChangedEventArgs(info))
+    End Sub
+
+
+
+
+    Public Function loadPNG(sFile As String)
+
+
+        Dim bmpCanvas As New Bitmap(2 * cfg_grid_numPixels, 2 * cfg_grid_numPixels)
+        Dim bmpDraw As Bitmap = Bitmap.FromFile(sFile)
+          
+        Dim rect As Rectangle = bitmap_getDefiningRectangle(bmpDraw)
+
+        ' Moving from the center: minus width, minus height
+
+        ' Round up, offsets based on PNG image size
+        Dim dX As Single = (cfg_grid_numPixels - Math.Ceiling(bmpDraw.Width / 2))
+        Dim dY As Single = (cfg_grid_numPixels - Math.Ceiling(bmpDraw.Height / 2))
+
+        dX += rect.X ' defined
+        dY += rect.Y ' defined
+
+        
+        ' We draw this on our canvas, because with getHex(), we will want to get the right offsets.
+        Dim g As Graphics = Graphics.FromImage(bmpCanvas)
+        g.InterpolationMode = Drawing2D.InterpolationMode.NearestNeighbor ' prevent softening
+         
+        ' Draw the PNG on the canvas.
+        g.DrawImage(bmpDraw, New Rectangle(dX, dY, rect.Width, rect.Height), New Rectangle(rect.X, rect.Y, rect.Width, rect.Height), GraphicsUnit.Pixel)
+        g.Dispose()
+
+
+        ' This is probably a dirty way to update the cached frame.
+        Me.getHex(bmpCanvas, False, False) ' store.
+
+
+    End Function
+
+
+    Public Function savePNG(strFileName As String)
+
+        On Error GoTo dBug
+
+1:
+
+        If IsNothing(editorFrame.cachedFrame) Then
+
+
+            'MsgBox("Please try to reproduce the steps you've taken to reach this error message." & vbCrLf & _
+            '    "A frame has not even been rendered yet, so it can't be saved." & vbCrLf & _
+            '    "Feel free to report this as a bug.", vbOKOnly + vbCritical, "Error")
+
+            ' Force render
+            Me.renderFrame()
+        End If
+
+
+10:
+
+        ' 0 = canvas size
+        ' 1 = relevant pixel area of graphic
+        ' 2 = relevant pixel area of frame
+
+        Dim bmRect As New Rectangle(-9999, -9999, 0, 0)
+        Dim bmCropped As Bitmap
+
+        Select Case cfg_export_PNG_CanvasSize
+
+
+            Case 0 ' canvas size
+21:
+
+                Me.cachedFrame.Save(strFileName, System.Drawing.Imaging.ImageFormat.Png)
+
+            Case 1 ' relev pixel area of graphic
+
+                ' Several ways to do this.
+                ' One is to create the canvas and write all frames;
+                ' then just take the defining rectangle
+31:
+
+                Dim imgComb As Image
+                imgComb = New Bitmap(cfg_grid_numPixels * 2, cfg_grid_numPixels * 2)
+
+                For Each ztFrame As clsFrame In Me.parent.frames
+
+                    If IsNothing(ztFrame.cachedFrame) Then ztFrame.renderFrame()
+
+                    imgComb = clsTasks.images_Combine(imgComb, ztFrame.cachedFrame)
+                Next
+
+                bmRect = bitmap_getDefiningRectangle(imgComb)
+                bmCropped = clsTasks.bitmap_getCropped(Me.cachedFrame, bmRect)
+                bmCropped.Save(strFileName, System.Drawing.Imaging.ImageFormat.Png)
+
+            Case 2 ' relev pixel area of frame
+
+41:
+                bmRect = clsTasks.bitmap_getDefiningRectangle(Me.cachedFrame)
+                bmCropped = clsTasks.bitmap_getCropped(Me.cachedFrame, bmRect)
+                bmCropped.Save(strFileName, System.Drawing.Imaging.ImageFormat.Png)
+
+                Debug.Print("Rect: " & bmRect.X & " - " & bmRect.Y & " - " & bmRect.Width & " - " & bmRect.Height)
+
+
+        End Select
+
+         
+
+        Exit Function
+
+dBug:
+
+        MsgBox("Error in clsFrame:savePNG, line " & Erl() & vbCrLf & _
+            Err.Number & " - " & Err.Description, vbOKOnly + vbCritical, "Error while saving frame as .PNG")
+
+
+    End Function
+
+End Class

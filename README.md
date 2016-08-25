@@ -25,12 +25,14 @@ Most important features:
 * the only tool to support all identified ZT1 Graphic formats
 * preview all graphics, including a way to preview variations (eg. when ingame you can choose the color of the roof)
 * rotation fixing (move graphic up, down, left, right)
+* reorder color palettes (necessary to create color customizable items, e.g. roof)
 
 Todo:
 * better document/comment code, clean up code, remove debug stuff. Overhaul code, it's not my best work since it was a lot of trial and error and there was no overhaul yet.
 * feature to optimize/compress graphics (use background frame, remove APE junk bytes)
 * finish or remove the GIMP recolor integration
 * figure out the purpose of the last 2 unknown bytes
+* share .pal-file between different views (automatically)
 
 Other features include previewing how color, changing individual colors in the color palette (after a common method of 'recoloring', the shadow might not be black. You can easily make the shadow black again).
 
@@ -41,6 +43,7 @@ Other features include previewing how color, changing individual colors in the c
 * ZT1 Color Palette: has a .pal-extension. Contains the colors used in a ZT1 Graphic.
 * ZT1 Frame: 1 image/drawing/picture
 * ZT1 Animation: 1 or more frames
+* View: for example an object usually consists of 4 views: NE (North East), NW (North West), SE (South East), SW (South West)
 
 
 **ZT1 Graphic Formats**

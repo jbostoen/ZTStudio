@@ -41,10 +41,10 @@ Other features include previewing how color, changing individual colors in the c
 **ZT1 Graphic Formats**
 
 There's a couple of variations on the ZT1 Graphic format.
-* Non-animated. Basic. Appears as a non-animated object. Example: lamp
-* Animated. Basic. Example: fire
-* Animated. Background frame. Example: the regular restaurant. This file format contains one frame which acts as a background to all the other frames. The building remains mostly the same, but some aspects (smoke, sign) are animated. This format is optimized because it can be rendered faster (only the changes) and since it's also smaller (compressed).
-* Shadows. Introduced in Marine Mania. Simply put, there's no need for a color palette since only black is used. Example: dolphin's underwater shadow in certain animations.
+* **Non-animated. Basic.** Appears as a non-animated object. Example: lamp
+* **Animated. Basic.** Example: fire
+* **Animated. Background frame.** Example: the regular restaurant. This file format contains one frame which acts as a background to all the other frames. The building remains mostly the same, but some aspects (smoke, sign) are animated. This format is optimized because it can be rendered faster (only the changes) and since it's also smaller (compressed).
+* **Shadows.** Introduced in Marine Mania. Simply put, there's no need for a color palette since only black is used. Example: dolphin's underwater shadow in certain animations.
 
 The graphic files have been documented for about 99%. There are only two single mysterious bytes left to decode.
 

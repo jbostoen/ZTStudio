@@ -57,7 +57,7 @@ There's a couple of variations on the ZT1 Graphic format. The main differences:
 
 There's another very minor difference.
 Lots of graphics start with what reads as 'ZTAF' (probably ZT Animation File or something like that).
-Sometimes these bytes are dropped and it doesn't seem to make a big difference (seen in graphics of certain objects).
+Sometimes these bytes are dropped and it doesn't seem to make a big difference (seen in graphics of certain objects, [mostly?] non-animated objects).
 
 The graphic files have been documented for about 99%. There are only two single mysterious bytes left to decode.
 

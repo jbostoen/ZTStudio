@@ -40,10 +40,10 @@ Other features include previewing how color, changing individual colors in the c
 **Definitions**
 
 * **ZT1:** Zoo Tycoon (the original game, but this includes the expansions and official bonus content)
-* **ZT1 Graphic:** this file tells the ZT1 game how/where to render pixels. Colors are stored in a separate but required ZT1 Color Palette file, which is usually - but not necessarily - stored in the same directory.
+* **ZT1 Graphic:** this file tells the ZT1 game how/where to render pixels. Colors are stored in a separate but required ZT1 Color Palette file, which is usually - but not necessarily - stored in the same directory. A ZT1 graphic consists of at least 1 frame.
 * **ZT1 Color Palette:** has a .pal-extension. Contains the colors used in a ZT1 Graphic.
 * **ZT1 Frame:** 1 image/drawing/picture
-* **ZT1 Animation:** 1 or more frames
+* **ZT1 Animation:** this would be all views (individual graphics) making up an animation.
 * **View:** for example an object usually consists of 4 views: NE (North East), NW (North West), SE (South East), SW (South West). An animal has more, an icon has just 1.
 
 

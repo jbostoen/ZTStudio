@@ -264,6 +264,8 @@ Public Class frmMain
 
                 clsTasks.config_write()
 
+                ' What has been opened, might need to be saved.
+                dlgSave.FileName = dlgOpen.FileName
 
             End If ' End Cancel check
 
@@ -359,10 +361,11 @@ Public Class frmMain
             .Title = "Pick a ZT1 Color Palette"
             .DefaultExt = ".pal"
             .Filter = "ZT1 Color Palette files (*.pal)|*.pal|All files|*.*"
+            .InitialDirectory = System.IO.Path.GetDirectoryName(cfg_path_recentZT1)
 
             If .ShowDialog() <> Windows.Forms.DialogResult.Cancel Then
 
-                openPal(dlgOpen.FileName)
+                pal_open(dlgOpen.FileName)
 
             End If ' cancel check
 
@@ -387,12 +390,12 @@ Public Class frmMain
 
     Private Sub tsbOpenPalBldg8_DropDownItemClicked(sender As Object, e As ToolStripItemClickedEventArgs) Handles tsbOpenPalBldg8.DropDownItemClicked
 
-        openPal(cfg_path_ColorPals8 & "\" & e.ClickedItem.Text)
+        pal_open(cfg_path_ColorPals8 & "\" & e.ClickedItem.Text)
 
     End Sub
     Private Sub tsbOpenPalBldg16_DropDownItemClicked(sender As Object, e As ToolStripItemClickedEventArgs) Handles tsbOpenPalBldg16.DropDownItemClicked
 
-        openPal(cfg_path_ColorPals16 & "\" & e.ClickedItem.Text)
+        pal_open(cfg_path_ColorPals16 & "\" & e.ClickedItem.Text)
 
     End Sub
 
@@ -408,12 +411,11 @@ Public Class frmMain
         With dlgOpen
             .Title = "Pick a ZT1 Graphic"
             .DefaultExt = ""
+            .InitialDirectory = System.IO.Path.GetDirectoryName(cfg_path_recentZT1)
             .Filter = "All files|*.*"
 
             If dlgOpen.InitialDirectory = vbNullString Then
-                If System.IO.Directory.Exists("X:\Projecten\Animal Antics\Tools\zoot\tmp") Then
-                    .InitialDirectory = "X:\Projecten\Animal Antics\Tools\zoot\tmp"""
-                ElseIf System.IO.Directory.Exists("C:\Program Files\Microsoft Games\Zoo Tycoon") Then
+                If System.IO.Directory.Exists("C:\Program Files\Microsoft Games\Zoo Tycoon") Then
                     .InitialDirectory = "C:\Program Files\Microsoft Games\Zoo Tycoon"
                 ElseIf System.IO.Directory.Exists("C:\Program Files (x86)\Microsoft Games\Zoo Tycoon") Then
                     .InitialDirectory = "C:\Program Files (x86)\Microsoft Games\Zoo Tycoon"
@@ -526,6 +528,9 @@ Public Class frmMain
 
 
 
+                ' What has been opened, might need to be saved.
+                dlgOpen.FileName = dlgSave.FileName
+
             End If
 
 
@@ -627,32 +632,57 @@ dBug:
     End Sub
      
 
-    Private Sub tsbFrame_OffsetUp_Click(sender As Object, e As EventArgs) Handles tsbFrame_OffsetUp.Click
+    Private Sub tsbFrame_OffsetUp_MouseDown(sender As Object, e As MouseEventArgs) Handles tsbFrame_OffsetUp.MouseDown
 
-        editorFrame.updateOffsets(New Point(0, 1))
-        clsTasks.preview_update()
-    End Sub
+        If (e.Button = Windows.Forms.MouseButtons.Right) Then
+            editorFrame.updateOffsets(New Point(0, 16))
+        Else
+            editorFrame.updateOffsets(New Point(0, 1))
+        End If
 
-    Private Sub tsbFrame_OffsetDown_Click(sender As Object, e As EventArgs) Handles tsbFrame_OffsetDown.Click
-
-        editorFrame.updateOffsets(New Point(0, -1))
-        clsTasks.preview_update()
-
-    End Sub
-
-    Private Sub tsbFrame_OffsetLeft_Click(sender As Object, e As EventArgs) Handles tsbFrame_OffsetLeft.Click
-
-
-
-        editorFrame.updateOffsets(New Point(1, 0))
         clsTasks.preview_update()
 
     End Sub
 
-    Private Sub tsbFrame_OffsetRight_Click(sender As Object, e As EventArgs) Handles tsbFrame_OffsetRight.Click
+    Private Sub tsbFrame_OffsetDown_MouseDown(sender As Object, e As MouseEventArgs) Handles tsbFrame_OffsetDown.MouseDown
 
-        editorFrame.updateOffsets(New Point(-1, 0))
+
+        If (e.Button = Windows.Forms.MouseButtons.Right) Then
+            editorFrame.updateOffsets(New Point(0, -16))
+        Else
+            editorFrame.updateOffsets(New Point(0, -1))
+        End If
+
         clsTasks.preview_update()
+
+    End Sub
+
+    Private Sub tsbFrame_OffsetLeft_MouseDown(sender As Object, e As MouseEventArgs) Handles tsbFrame_OffsetLeft.MouseDown
+
+
+
+        If (e.Button = Windows.Forms.MouseButtons.Right) Then
+            editorFrame.updateOffsets(New Point(16, 0))
+        Else
+            editorFrame.updateOffsets(New Point(1, 0))
+        End If
+
+        clsTasks.preview_update()
+
+    End Sub
+
+    Private Sub tsbFrame_OffsetRight_MouseDown(sender As Object, e As MouseEventArgs) Handles tsbFrame_OffsetRight.MouseDown
+
+
+        If (e.Button = Windows.Forms.MouseButtons.Right) Then
+            editorFrame.updateOffsets(New Point(-16, 0))
+        Else
+            editorFrame.updateOffsets(New Point(-1, 0))
+        End If
+
+        clsTasks.preview_update()
+
+         
 
     End Sub
 
@@ -949,5 +979,9 @@ dBug:
             Debug.Print(col.ToString())
 
         Next
+    End Sub
+
+    Private Sub tsbFrame_OffsetUp_Click(sender As Object, e As EventArgs) Handles tsbFrame_OffsetUp.Click
+
     End Sub
 End Class

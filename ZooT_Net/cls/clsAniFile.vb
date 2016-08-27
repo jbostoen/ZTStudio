@@ -99,7 +99,7 @@ Public Class clsAniFile
 
         On Error GoTo dBug
 
-        Dim strAni As String = "[Animation]" & vbCrLf 
+        Dim strAni As String = "[animation]" & vbCrLf
 
 1:
         ' If there's a .ani-file present, delete it first.
@@ -110,7 +110,7 @@ Public Class clsAniFile
 2:
         ' Write out dirs
         For Each s As String In Me.dirs
-            strAni = strAni & "dir = " & s & vbCrLf
+            strAni = strAni & "dir" & Me.dirs.IndexOf(s) & " = " & s & vbCrLf
         Next
 
 3:
@@ -214,43 +214,41 @@ dBug:
                     .Add("S", False)
                 End With
 
-
-            End If
+                 
 
 12:
-            If File.Exists(strPath & "\NE") = True And _
+            elseIf File.Exists(strPath & "\NE") = True And _
                 File.Exists(strPath & "\SE") = True And _
                 File.Exists(strPath & "\SW") = True And _
                 File.Exists(strPath & "\NW") = True Then
 
-                ' object
-                With Me.animations
-                    .Add("NE", False)
-                    .Add("SE", False)
-                    .Add("SW", False)
-                    .Add("NW", False)
-                End With
+            ' object
+            With Me.animations
+                .Add("NE", False)
+                .Add("SE", False)
+                .Add("SW", False)
+                .Add("NW", False)
+            End With
 
-                Debug.Print("... Detected: object")
+            Debug.Print("... Detected: object")
 
-            End If
 
 13:
 
-            If File.Exists(strPath & "\N") = True Then
+            elseIf File.Exists(strPath & "\N") = True Then
 
-                ' icon
-                With Me.animations
-                    .Add("N", False)
-                End With
+            ' icon
+            With Me.animations
+                .Add("N", False)
+            End With
 
 
-            End If
+
 
 
 14:
 
-            If File.Exists(strPath & "\1") = True And _
+            ElseIf File.Exists(strPath & "\1") = True And _
                 File.Exists(strPath & "\2") = True And _
                 File.Exists(strPath & "\3") = True And _
                 File.Exists(strPath & "\4") = True And _
@@ -271,15 +269,15 @@ dBug:
                 File.Exists(strPath & "\19") = True And _
                 File.Exists(strPath & "\20") = True Then
 
-                ' paths
-                ' we could do this shorter
-                With Me.animations
-                    Dim intX As Integer = 1
-                    While intX <= 20
-                        .Add(intX.ToString("0"), False)
-                        intX += 1
-                    End While
-                End With
+            ' paths
+            ' we could do this shorter
+            With Me.animations
+                Dim intX As Integer = 1
+                While intX <= 20
+                    .Add(intX.ToString("0"), False)
+                    intX += 1
+                End While
+            End With
 
 
             End If

@@ -175,9 +175,9 @@ Public Class clsFrame
             bmOutput = clsTasks.images_Combine(Me.parent.frames(Me.parent.frames.Count - 1).renderFrame(), bmOutput)
         End If
 
-21:
+21: 
         ' Optional background ZT1 Graphic frame, e.g. animal + toy?
-        If editorBgGraphic.frames.Count > 0 And cfg_export_PNG_RenderBGZT1 = 1 Then
+        If editorBgGraphic.frames.Count > 0 And cfg_export_PNG_RenderBGZT1 = 1 Then 
             bmOutput = clsTasks.images_Combine(editorBgGraphic.frames(0).renderFrame(), bmOutput)
         End If
 
@@ -233,6 +233,12 @@ dBug:
         If IsNothing(bmOutput) = True Then
             ' We are creating a new bitmap
             bmOutput = New Bitmap(cfg_grid_numPixels * 2, cfg_grid_numPixels * 2)
+
+            ' This should fill our canvas
+            'Dim g As Graphics = Graphics.FromImage(bmOutput)
+            'g.Clear(cfg_grid_BackGroundColor)
+            ' we miss our grid here.
+
         Else
             ' We are drawing on top of an existing bitmap
         End If
@@ -964,39 +970,70 @@ dBug:
     End Function
 
 
-    ' === additional features ===
-
-    ' = This function will set offsets of this frame, and copy it to other frame(s) or graphic(s)
  
-    Public Function updateOffsets(coordOffsetChanges As Point, Optional objFrame As clsFrame = Nothing, Optional objGraphic As clsGraphic2 = Nothing)
+    Public Function updateOffsets(coordOffsetChanges As Point)
 
+        ' This function is for the so called "rotation fixing", positioning fixing, correcting offsets.
+        ' By default, changes are applied to all frames in the graphic rather than just this frame.
 
-        If IsNothing(objFrame) Then objFrame = editorFrame
-        If IsNothing(objGraphic) Then objGraphic = editorGraphic
+    
 
 
         On Error GoTo dBug
 
 10:
 
-        'f cfg_editor_rotFix_individualFrame = False Then
 
 11:
-        For Each ztFrame As clsFrame In Me.parent.frames
 
             ' If (cfg_editor_rotFix_individualFrame = True And _
             '     editorGraphic.frames.IndexOf(ztFrame) = objFrame.parent.frames.IndexOf(objFrame) _
             '     ) Or cfg_editor_rotFix_individualFrame = False Then
 
-            If IsNothing(ztFrame.cachedFrame) = True Then
-                ztFrame.renderFrame() ' Render first to get offsets etc
+
+
+12:
+200:
+        ' By default, this applies to all frames
+        If cfg_editor_rotFix_individualFrame <> 1 Then
+
+            ' Just go for every frame
+            For Each ztFrame As clsFrame In Me.parent.frames
+
+                ' We need to make sure the offset properties have been set first.
+                ' This is done by rendering the frame.
+                If IsNothing(ztFrame.cachedFrame) = True Then
+                    ztFrame.renderFrame()
+                End If
+
+                ' Now, change.
+                ztFrame.offsetY += coordOffsetChanges.Y
+                ztFrame.offsetX += coordOffsetChanges.X
+
+                ' Overwrite. This forces a redraw.
+                ztFrame.cachedFrame = Nothing
+
+
+
+            Next
+
+
+        Else
+
+            ' In case we didn't obtain the offsets yet:
+            If IsNothing(Me.cachedFrame) = True Then
+                Me.renderFrame() ' Render first to get offsets etc
             End If
 
-            ztFrame.offsetY += coordOffsetChanges.Y
-            ztFrame.offsetX += coordOffsetChanges.X
+            ' Correct our offsets and nothing else.
+            Me.offsetY += coordOffsetChanges.Y
+            Me.offsetX += coordOffsetChanges.X
 
+            ' Overwrite. This forces a redraw.
+            Me.cachedFrame = Nothing
 
-        Next
+        End If
+
 
 21:
 

@@ -123,7 +123,7 @@
     Private Sub chkRenderFrame_RenderExtraFrame_CheckedChanged(sender As Object, e As EventArgs) Handles chkRenderFrame_RenderExtraFrame.CheckedChanged
 
         If chkRenderFrame_RenderExtraFrame.IsHandleCreated = False Then Exit Sub
-        cfg_export_PNG_RenderBGFrame = chkRenderFrame_RenderExtraFrame.Checked
+        cfg_export_PNG_RenderBGFrame = CByte(chkRenderFrame_RenderExtraFrame.Checked * -1)
 
 
     End Sub
@@ -131,7 +131,7 @@
     Private Sub chkExportPNG_BGGraphic_CheckedChanged(sender As Object, e As EventArgs) Handles chkRenderFrame_BGGraphic.CheckedChanged
 
         If chkRenderFrame_BGGraphic.IsHandleCreated = False Then Exit Sub
-        cfg_export_PNG_RenderBGZT1 = chkRenderFrame_BGGraphic.Checked
+        cfg_export_PNG_RenderBGZT1 = CByte(chkRenderFrame_BGGraphic.Checked * -1)
 
     End Sub
 

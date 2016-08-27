@@ -34,7 +34,7 @@ Public Class clsGraphic2
             Return editorGraphic_FileName
         End Get
         Set(value As String)
-            editorGraphic_FileName = value
+            editorGraphic_FileName = value.ToLower()
 
             ' 20150624: If the .pal filename is not set yet:
             If Me.colorPalette.fileName = "" Then

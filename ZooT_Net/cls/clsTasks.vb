@@ -816,12 +816,6 @@ dBug:
 
 
 
-    Public Sub preview_set_background(strZT1GraphicFileName As String)
-
-        ' Read.
-        editorBgGraphic.read(strZT1GraphicFileName)
-
-    End Sub
     Public Sub preview_update(Optional intIndexFrameNumber As Integer = -1)
 
         If editorGraphic.frames.Count = 0 Then Exit Sub
@@ -836,8 +830,8 @@ dBug:
 
 21:
         ' Frame index 
-        '  frmMain.tslFrame_Index.Text = intIndexFrameNumber & "/" & (editorGraphic.frames.Count - 1 - editorGraphic.extraFrame)
-        'frmMain.tslFrame_Index.Text = IIf(editorGraphic.frames.Count = 0, "-", (intIndexFrameNumber + cfg_convert_startIndex) & " / " & (editorGraphic.frames.Count - cfg_convert_startIndex - editorGraphic.extraFrame))
+        ' frmMain.tslFrame_Index.Text = intIndexFrameNumber & "/" & (editorGraphic.frames.Count - 1 - editorGraphic.extraFrame)
+        ' frmMain.tslFrame_Index.Text = IIf(editorGraphic.frames.Count = 0, "-", (intIndexFrameNumber + cfg_convert_startIndex) & " / " & (editorGraphic.frames.Count - cfg_convert_startIndex - editorGraphic.extraFrame))
 
         'Debug.Print("updated preview")
 
@@ -1242,7 +1236,7 @@ dBug:
 
 
 
-    Sub openPal(strFileName As String)
+    Sub pal_open(strFileName As String)
 
         If File.Exists(strFileName) Then
 

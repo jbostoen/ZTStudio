@@ -33,6 +33,7 @@ Todo:
 * finish or remove the GIMP recolor integration
 * figure out the purpose of the last 2 unknown bytes
 * share .pal-file between different views (automatically)
+* create .ani file
 
 Other features include previewing how color, changing individual colors in the color palette (after a common method of 'recoloring', the shadow might not be black. You can easily make the shadow black again).
 
@@ -43,16 +44,20 @@ Other features include previewing how color, changing individual colors in the c
 * **ZT1 Color Palette:** has a .pal-extension. Contains the colors used in a ZT1 Graphic.
 * **ZT1 Frame:** 1 image/drawing/picture
 * **ZT1 Animation:** 1 or more frames
-* **View:** for example an object usually consists of 4 views: NE (North East), NW (North West), SE (South East), SW (South West)
+* **View:** for example an object usually consists of 4 views: NE (North East), NW (North West), SE (South East), SW (South West). An animal has more, an icon has just 1.
 
 
 **ZT1 Graphic Formats**
 
-There's a couple of variations on the ZT1 Graphic format.
+There's a couple of variations on the ZT1 Graphic format. The main differences:
 * **Non-animated. Basic.** Appears as a non-animated object. Example: lamp
 * **Animated. Basic.** Example: fire
 * **Animated. Background frame.** Example: the regular restaurant. This file format contains one frame which acts as a background to all the other frames. The building remains mostly the same, but some aspects (smoke, sign) are animated. This format is optimized because it can be rendered faster (only the changes) and since it's also smaller (compressed).
 * **Shadows.** Introduced in Marine Mania. Simply put, there's no need for a color palette since only black is used. Example: dolphin's underwater shadow in certain animations.
+
+There's another very minor difference.
+Lots of graphics start with what reads as 'ZTAF' (probably ZT Animation File or something like that).
+Sometimes these bytes are dropped and it doesn't seem to make a big difference (seen in graphics of certain objects).
 
 The graphic files have been documented for about 99%. There are only two single mysterious bytes left to decode.
 

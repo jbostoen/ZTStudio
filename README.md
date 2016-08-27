@@ -71,3 +71,16 @@ There was an official editor for objects and animals called APE - dealing with b
 Next came MARKHOR, to deal with a notorious issue: lots of things created in APE, didn't show up in the right position in the ZT1 game. You had to do 'rotation fixing' (moving the graphic up/down/left/right). APE did also not support large graphics and crashed on quite a few objects/animals. Also, the copied configuration is a big mess.
 
 Afterwards, we had ZOOT. A big shoutout to someone I know only by the nickname MadScientist for explaining a lot of the ZT1 Graphic format (but not all of it). ZOOT allowed us to see most formats, but couldn't handle the graphic format with a background frame nor the shadows.
+
+
+**ZT1 Graphic Limitations (work in progress)**
+( some details are still unknown or should be improved upon).
+
+* Color Palette takes at most 255 colors + 1 color which will be invisible/transparent in ZT1.
+* A single ZT1 Graphic is limited to 255 colors. This means **each** view is limited to 255 colors. However, if they don't share their color palette, you can use more than 255 colors among all views.
+
+To check:
+* is there a file size limit?
+* there's probably a limit (255?) of the number of drawing instructions in a pixel row.
+* there's definitely an image dimension (height/width) limit - the Marine Mania showarea has one of the largest in game widths and might be a starting point.
+* other limits

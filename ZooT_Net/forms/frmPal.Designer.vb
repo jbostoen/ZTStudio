@@ -75,7 +75,8 @@ Partial Class frmPal
         Me.btnUseInMainPal.Name = "btnUseInMainPal"
         Me.btnUseInMainPal.Size = New System.Drawing.Size(264, 45)
         Me.btnUseInMainPal.TabIndex = 22
-        Me.btnUseInMainPal.Text = "Replace colors in main color palette" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "with the colors above"
+        Me.btnUseInMainPal.Text = "Replace colors in main color palette" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "with the colors above (transparent is ignor" & _
+    "ed)"
         Me.btnUseInMainPal.UseVisualStyleBackColor = True
         '
         'frmPal

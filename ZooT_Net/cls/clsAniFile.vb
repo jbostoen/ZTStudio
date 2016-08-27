@@ -7,7 +7,7 @@ Public Class clsAniFile
     ' It contains a header, [Animation]
     ' It contains a dir line for each directory in the path (eg objects/bamboo/idle => objects, bamboo, idle )
     ' It contains an animation line for each view for this graphic ( N, NE, NW, SE, SW, S, E ...)
-    ' How the order is defined, is unclear for most part.
+    ' How the order is defined, is unclear for most part - for now.
     ' It contains x0, y0 coordinates and x1, y1 coordinates.
     ' Those seem to define the upper left and bottom right pixels, defining the maximum canvas size, 
     ' for all graphics belonging to this 'object' (consider anything: guests, staff, animals, objects, paths ... )
@@ -94,16 +94,15 @@ Public Class clsAniFile
 
         If IsNothing(sFile) = False Then Me.fileName = sFile
 
-        ' This function will write out everything.
+        ' This function will write out the .ani-file.
 
 
         On Error GoTo dBug
 
-        Dim strAni As String = "[Animation]" & vbCrLf
-
+        Dim strAni As String = "[Animation]" & vbCrLf 
 
 1:
-        ' If file exists: delete.
+        ' If there's a .ani-file present, delete it first.
         If File.Exists(sFile) = True Then
             File.Delete(sFile)
         End If
@@ -138,6 +137,8 @@ Public Class clsAniFile
                 outfile.Write(strAni.ToString())
             End Using
         End If
+
+        Return 0
 
 
         Exit Function
@@ -319,6 +320,7 @@ dBug:
         Me.write()
 
 
+        Return 0
 
         Exit Function
 

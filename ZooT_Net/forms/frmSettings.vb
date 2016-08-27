@@ -41,7 +41,7 @@
 
         ' Conversion
         chkConvert_DeleteOriginal.Checked = (cfg_convert_deleteOriginal = 1)
-        numConvert_PNGStartIndex.Value = (cfg_convert_startIndex = 1)
+        numConvert_PNGStartIndex.Value = cfg_convert_startIndex
 
 
         ' Frame

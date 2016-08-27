@@ -55,6 +55,7 @@ Public Class clsFrame
     ' === Regular
 
     Public Property hexString() As String
+        ' What is the hex code for this frame? (if generated)
         Get
             Return fr_Hex
         End Get
@@ -68,6 +69,7 @@ Public Class clsFrame
 
 
     Public Property parent As clsGraphic2
+        ' What is the parent of our frame? (which ZT1 Graphic does this frame belong to?)
         Get
             Return fr_parent
         End Get
@@ -79,6 +81,7 @@ Public Class clsFrame
 
 
     Public Property height As Integer
+        ' What is the height of our frame?
         Get
             Return fr_height
         End Get
@@ -89,6 +92,7 @@ Public Class clsFrame
 
     End Property
     Public Property width As Integer
+        ' What is the width of our frame?
         Get
             Return fr_width
         End Get
@@ -98,6 +102,7 @@ Public Class clsFrame
         End Set
     End Property
     Public Property offsetX As Integer
+        ' The horizontal offset. How much should the image be moved to the left compared to the center of the square (based on the ZT1 cFootPrintX) ?
         Get
             Return fr_offsetX
         End Get
@@ -107,6 +112,7 @@ Public Class clsFrame
         End Set
     End Property
     Public Property offsetY As Integer
+        ' The vertical offset. How much should the image be moved to the top compared to the center of the square (based on the ZT1 cFootPrintX) ?
         Get
             Return fr_offsetY
         End Get
@@ -117,6 +123,8 @@ Public Class clsFrame
     End Property
 
     Public Property cachedFrame As Bitmap
+        ' This property is used to store a cached version of a frame of a ZT1 Graphic.
+        ' If nothing changed, this is a major performance boost.
         Get
             Return fr_cachedFrame
         End Get
@@ -126,6 +134,7 @@ Public Class clsFrame
         End Set
     End Property
     Public Property lastUpdated As String
+        ' Used to see if re-rendering is needed.
         Get
             Return fr_lastUpdated
         End Get
@@ -137,6 +146,7 @@ Public Class clsFrame
 
     ' For experiments, stats
     Public Property mysteryHEX As List(Of String)
+        ' This is used to store our currently 2 unknown bytes. We call them our mystery bytes.
         Get
             Return fr_MysteryHEX
         End Get
@@ -151,6 +161,7 @@ Public Class clsFrame
 
         ' GetImage will return the file as a bitmap/image.
         ' It will render the frame; and then add backgrounds.
+        ' There's an option to render the image on top of a visible grid (as you have in ZT1).
 
         On Error GoTo dBug
 
@@ -165,7 +176,7 @@ Public Class clsFrame
         End If
 
 21:
-        ' Optional background graphic frame, e.g. animal + toy?
+        ' Optional background ZT1 Graphic frame, e.g. animal + toy?
         If editorBgGraphic.frames.Count > 0 And cfg_export_PNG_RenderBGZT1 = 1 Then
             bmOutput = clsTasks.images_Combine(editorBgGraphic.frames(0).renderFrame(), bmOutput)
         End If
@@ -196,41 +207,41 @@ dBug:
 
         Debug.Print("Render frame. " & Me.parent.frames.IndexOf(Me))
 
-        ' Cached?
-        'Debug.Print("... Cached?")
+        ' Cached? 
         If IsNothing(Me.parent) = False Then
             If Me.lastUpdated = Me.parent.lastUpdated And IsNothing(Me.cachedFrame) = False And cacheLoad = True Then
-                'Debug.Print("... return cached frame. Graphic last updated: " & Me.parent.lastUpdated & " - Frame: " & Me.lastUpdated)
+                ' We already rendered this frame. It hasn't been changed, and no re-render is forced.
+                ' Return a cached version.
                 Return Me.cachedFrame
             Else
-
-                'Debug.Print("... Cached version expired. " & Me.lastUpdated & " - " & Me.parent.lastUpdated & " - " & cacheLoad & " - " & IsNothing(Me.cachedFrame))
+                ' Either the frame has been updated or a re-render is forced.
+                ' Do not return a cached version, render from scratch.
             End If
         Else
-            'Debug.Print("... No cached version available. " & Me.lastUpdated & " - " & Me.parent.lastUpdated)
-
+            ' Cached version of the image is not available. 
+            ' We will need to render the image from scratch.
         End If
 
 
         ' Color palette
-        'Debug.Print("... Color palette?")
+        ' No (optional) color palette has been specified. Use the one from our parent (ZT1 Graphic).
         If IsNothing(ztPal) = True Then
             ztPal = Me.parent.colorPalette
         End If
 
-        ' Bitmap
-        'Debug.Print("... Bitmap.")
+        ' Bitmap 
         If IsNothing(bmOutput) = True Then
+            ' We are creating a new bitmap
             bmOutput = New Bitmap(cfg_grid_numPixels * 2, cfg_grid_numPixels * 2)
         Else
-            'Debug.Print("... Drawing on top of an existing bitmap")
+            ' We are drawing on top of an existing bitmap
         End If
 
 
 
-        ' There's only 1 color (=transparent) or none.
-        If (Me.parent.colorPalette.colors.Count <= 1) Then
-            'Debug.Print("... No colors.")
+        ' There's only 1 color (=transparent) or none at all.
+        ' Don't bother rendering. Return the input background image or an empty canvas.
+        If (Me.parent.colorPalette.colors.Count <= 1) Then 
             Return bmOutput
         End If
 
@@ -331,7 +342,6 @@ dBug:
             .Clear(False)
             .Add(hex(8), False)
             .Add(hex(9), False)
-
         End With
 
         ' Remove first 10 bytes. 2 height, 2 width, 2 oY, 2 ox, 2
@@ -482,14 +492,12 @@ dBug:
     Function renderFrame2(bm As Bitmap, ztPal As clsPalette, Optional blnRenderBG As Boolean = True) As Bitmap
 
         ' Similar, but slightly different
-        ' The big mystery - unless it's to be more similar to other files: why bother for a .PAL-file?
-
+        ' The big mystery - unless the only reason is to be more similar to other files: why bother to even have a .PAL-file?
+        ' We're only either drawing black pixels or nothing at all...
 
 
         Dim intX As Integer = 0
-        Dim intY As Integer = 0
-        'Dim coordX As Integer = 0
-        'Dim coordY As Integer = 0
+        Dim intY As Integer = 0 
         Dim coord As Point
 
         Dim intInstructionBlocksNum As Integer = 0
@@ -500,8 +508,7 @@ dBug:
         Dim c As System.Drawing.Color
 
 
-        On Error GoTo dBug
-        'Debug.Print("'" & strFrameHex & "'")
+        On Error GoTo dBug 
 
 1:
         Dim hex() As String = Split(fr_Hex, " ")
@@ -676,34 +683,27 @@ dBug:
     Function getHex(Optional bm As Bitmap = Nothing, Optional blnRenderBGFrame As Boolean = True, Optional cacheLoad As Boolean = True) As List(Of String)
 
 
-        ' This function will output HEX for a frame.
-        ' Quick way to write out this frame to HEX
-
-        Debug.Print(".... get hex from frame, index: " & Me.parent.frames.IndexOf(Me))
+        ' This function will output the HEX values for a frame. 
+        ' Debug.Print(".... get hex from frame, index: " & Me.parent.frames.IndexOf(Me))
 
 
         If IsNothing(bm) = True Then
 
-            'Debug.Print("... No bitmap specified.")
-
+            ' No bitmap has been specified. There's no cached frame either, or we explicitly do not want to use the cached frame.
             If IsNothing(Me.cachedFrame) Or cacheLoad = False Then
 
-                ' Get frame
-                Debug.Print("..... Render frame")
+                ' Render the frame from scratch.
                 bm = Me.renderFrame(New Bitmap(cfg_grid_numPixels * 2, cfg_grid_numPixels * 2), Me.parent.colorPalette, blnRenderBGFrame).Clone()
-
-                'Debug.Print("...... w x h = " & bm.Width & " x " & bm.Height)
+                 
             Else
 
-                Debug.Print("... Use cached frame")
-                bm = Me.cachedFrame
-                ' Debug.Print("...... w x h = " & bm.Width & " x " & bm.Height)
+                ' Use a cached version (performance) of this frame.
+                bm = Me.cachedFrame 
 
             End If
 
         Else
-            Debug.Print("...... Using provided bitmap.")
-            ' Debug.Print(".... w x h = " & bm.Width & " x " & bm.Height)
+            ' Use the provided bitmap instead. 
         End If
 
 
@@ -910,10 +910,10 @@ dBug:
         With opHex
 
 5011:
-            ' Easier to build it this way.
+            ' Easier to build it this way. Start by writing the dimensions: height, width.
             .AddRange(Strings.Split(Me.height.ToString("X4").ReverseHEX(), " "), False)
             .AddRange(Strings.Split(Me.width.ToString("X4").ReverseHEX(), " "), False)
-
+             
             If Me.offsetY >= 0 Then
                 .AddRange(Strings.Split(Me.offsetY.ToString("X4").ReverseHEX(), " "), False)
             Else
@@ -931,10 +931,12 @@ dBug:
 5015:
             ' Issue: two  unknown bytes.
             ' For bamboo, frame 1 = 1. 
-            ' Always seems to be 1.
+            ' Always seems to be 1 in APE.
             .Add("01", False)
             .Add("00", False)
 
+5020:
+            ' Now add our drawing instructions for the frame.
             .AddRange(opHexRows, False)
 
         End With
@@ -942,7 +944,7 @@ dBug:
         fr_Hex = Strings.Join(opHex.ToArray(), " ")
 
 
-        Debug.Print(".... get Hex from frame: complete.")
+        ' Return our hex code. 
 
         Return opHex
 
@@ -1044,7 +1046,8 @@ dBug:
     Private Sub NotifyPropertyChanged(ByVal info As String)
 
         If info <> "cachedFrame" Then Me.lastUpdated = Me.parent.lastUpdated '   Now.ToString("yyyyMMddHHmmss")
-        clsTasks.update_Info("Property clsFrame." & info & " changed.")
+        'clsTasks.update_Info("Property clsFrame." & info & " changed.") -> for debugging
+
         'RaiseEvent PropertyChanged(Me, New PropertyChangedEventArgs(info))
     End Sub
 
@@ -1055,8 +1058,16 @@ dBug:
 
 
         Dim bmpCanvas As New Bitmap(2 * cfg_grid_numPixels, 2 * cfg_grid_numPixels)
-        Dim bmpDraw As Bitmap = Bitmap.FromFile(sFile)
-          
+        Dim bmpDrawTemp As Bitmap = Bitmap.FromFile(sFile)
+        Dim bmpDraw As Bitmap
+
+        ' Prevent a file lock on .PNG files.
+        ' If we don't use this, they can't be automatically deleted after batch conversion.
+        Using bmpDrawTemp
+            bmpDraw = New Bitmap(bmpDrawTemp)
+            bmpDrawTemp = Nothing
+        End Using
+
         Dim rect As Rectangle = bitmap_getDefiningRectangle(bmpDraw)
 
         ' Moving from the center: minus width, minus height
@@ -1068,11 +1079,11 @@ dBug:
         dX += rect.X ' defined
         dY += rect.Y ' defined
 
-        
+
         ' We draw this on our canvas, because with getHex(), we will want to get the right offsets.
         Dim g As Graphics = Graphics.FromImage(bmpCanvas)
         g.InterpolationMode = Drawing2D.InterpolationMode.NearestNeighbor ' prevent softening
-         
+
         ' Draw the PNG on the canvas.
         g.DrawImage(bmpDraw, New Rectangle(dX, dY, rect.Width, rect.Height), New Rectangle(rect.X, rect.Y, rect.Width, rect.Height), GraphicsUnit.Pixel)
         g.Dispose()

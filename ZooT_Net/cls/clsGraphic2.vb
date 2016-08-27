@@ -185,7 +185,7 @@ Public Class clsGraphic2
 40:
         ' === READ COLOR PALETTE ===
         Debug.Print("Graphics: read palette: '" & cfg_path_Root & "/" & editorGraphic_Palette.fileName & "'...")
-        If (editorGraphic_Palette.readPalette(cfg_path_Root & "/" & editorGraphic_Palette.fileName) = 0) Then Exit Function
+        If (editorGraphic_Palette.readPal(cfg_path_Root & "/" & editorGraphic_Palette.fileName) = 0) Then Exit Function
 
 
         'Debug.Print(Strings.Join(hex, " "))

@@ -1,6 +1,7 @@
 ﻿Option Explicit On
 Imports System.IO
 
+' This module just combines a few of the functions we've created.
 
 
 
@@ -16,14 +17,13 @@ Module clsTasks
 
     Sub config_load()
 
+        ' This tasks reads all settings from the .ini-file.
+        ' For an explanation of these parameters: check mdlSettings.vb
 
 
         Dim sFile As String = System.IO.Path.GetFullPath(Application.StartupPath) & "\settings.cfg"
 
-        On Error Resume Next
-
-        'iniWrite(sFile, "preview", "fgColor", Color.Red.ToArgb())
-
+        On Error Resume Next 
 
         ' Preview
         cfg_grid_BackGroundColor = System.Drawing.Color.FromArgb(iniRead(sFile, "preview", "bgColor", ""))
@@ -36,15 +36,13 @@ Module clsTasks
         ' Reads from ini and configures all.
         cfg_path_Root = iniRead(sFile, "paths", "root", "")
         cfg_path_recentPNG = iniRead(sFile, "paths", "recentPNG", "")
-        cfg_path_recentZT1 = iniRead(sFile, "paths", "recentZT1", "")
-        'cfg_path_ColorPals8 = iniRead(sFile, "paths", "pal8", "")
-        'cfg_path_ColorPals16 = iniRead(sFile, "paths", "pal16", "")
+        cfg_path_recentZT1 = iniRead(sFile, "paths", "recentZT1", "") 
         cfg_path_ColorPals8 = System.IO.Path.GetFullPath(Application.StartupPath) & "\pal8"
         cfg_path_ColorPals16 = System.IO.Path.GetFullPath(Application.StartupPath) & "\pal16"
 
 
         ' Export (PNG)
-        cfg_export_PNG_CanvasSize = iniRead(sFile, "exportOptions", "pngSize", "")
+        cfg_export_PNG_CanvasSize = iniRead(sFile, "exportOptions", "pngCrop", "")
         cfg_export_PNG_RenderBGFrame = iniRead(sFile, "exportOptions", "pngRenderExtraFrame", "")
         cfg_export_PNG_RenderBGZT1 = iniRead(sFile, "exportOptions", "pngRenderExtraGraphic", "")
 
@@ -56,6 +54,7 @@ Module clsTasks
         ' Convert ( ZT1 <=> PNG, other way around )
         cfg_convert_startIndex = iniRead(sFile, "conversionOptions", "pngFilesIndex", "")
         cfg_convert_deleteOriginal = iniRead(sFile, "conversionOptions", "deleteOriginal", "")
+        cfg_convert_overwrite = iniRead(sFile, "conversionOptions", "overwrite", "")
 
 
         ' Frame editing
@@ -66,11 +65,20 @@ Module clsTasks
         frmMain.tsbFrame_fpY.Text = cfg_grid_footPrintY
 
 
+        ' Now, if our path is no longer valid, pop up 'Settings'-window automatically
+        If System.IO.Directory.Exists(cfg_path_Root) = False Then
+            frmSettings.ShowDialog()
+        End If
+
+
 
     End Sub
 
 
     Sub config_write()
+
+        ' This tasks writes all settings to the .ini-file.
+        ' For an explanation of these parameters: check mdlSettings.vb
 
 
         Dim sFile As String = System.IO.Path.GetFullPath(Application.StartupPath) & "\settings.cfg"
@@ -89,12 +97,10 @@ Module clsTasks
         iniWrite(sFile, "paths", "root", cfg_path_Root)
         iniWrite(sFile, "paths", "recentPNG", cfg_path_recentPNG)
         iniWrite(sFile, "paths", "recentZT1", cfg_path_recentZT1)
-        'iniWrite(sFile, "paths", "pal8", cfg_path_ColorPals8)
-        'iniWrite(sFile, "paths", "pal16", cfg_path_ColorPals16)
 
 
         ' Export PNG (frames)
-        iniWrite(sFile, "exportOptions", "pngSize", cfg_export_PNG_CanvasSize.ToString())
+        iniWrite(sFile, "exportOptions", "pngCrop", cfg_export_PNG_CanvasSize.ToString())
         iniWrite(sFile, "exportOptions", "pngRenderExtraFrame", cfg_export_PNG_RenderBGFrame.ToString())
         iniWrite(sFile, "exportOptions", "pngRenderExtraGraphic", cfg_export_PNG_RenderBGZT1.ToString())
 
@@ -105,7 +111,7 @@ Module clsTasks
         ' Convert options ( ZT1 <=> PNG )
         iniWrite(sFile, "conversionOptions", "pngFilesIndex", cfg_convert_startIndex.ToString())
         iniWrite(sFile, "conversionOptions", "deleteOriginal", cfg_convert_deleteOriginal.ToString())
-        iniWrite(sFile, "conversionOptions", "overwrite", cfg_convert_deleteOriginal.ToString())
+        iniWrite(sFile, "conversionOptions", "overwrite", cfg_convert_overwrite.ToString())
 
         ' Frame editing
         iniWrite(sFile, "editing", "individualRotationFix", cfg_editor_rotFix_individualFrame.ToString())
@@ -114,7 +120,11 @@ Module clsTasks
 
     End Sub
 
-    Public Sub cleanUp_ZT1(strPath As String)
+    Public Sub cleanUp_ZT1Graphics(strPath As String)
+
+        ' This task will clean up any original ZT1 Graphic files.
+        ' ZT1 Color Palettes are handled separately.
+
         On Error GoTo dBug
 
 0:
@@ -126,7 +136,8 @@ Module clsTasks
         ' This list stores the results.
         Dim result As New List(Of String)
 
-        ' This stack stores the directories to process.
+        ' This stack stores the directories within our <root> folder to process.
+        ' We'll go through each subdirectory.
         Dim stack As New Stack(Of String)
 
         ' Add the initial directory
@@ -141,12 +152,11 @@ Module clsTasks
 15:
 
 
-            Dim dir As String = stack.Pop
-
-            ' Add all immediate file paths
-            'result.AddRange(Directory.GetFiles(dir, "*.*"))
+            Dim dir As String = stack.Pop 
 
 20:
+            ' ZT1 Graphics do not have an extension. That's the files we're after. 
+
             For Each f As String In Directory.GetFiles(dir, "*")
                 ' Only ZT1 files
                 If Path.GetExtension(f) = "" Then
@@ -155,7 +165,7 @@ Module clsTasks
             Next
 
 25:
-            ' Loop through all subdirectories and add them to the stack.
+            ' Loop through all subdirectories and add them to the stack, so they're processed as well.
             Dim directoryName As String
             For Each directoryName In Directory.GetDirectories(dir)
                 stack.Push(directoryName)
@@ -168,9 +178,8 @@ Module clsTasks
 1000:
         ' For each file that is a ZT1 Graphic:
         For Each f As String In result
-            'Debug.Print(f)
+            Debug.Print("Delete: " & f)
             System.IO.File.Delete(f)
-
         Next
 
         Exit Sub
@@ -185,6 +194,9 @@ dBug:
     End Sub
 
     Public Sub cleanUp_ZT1Pals(strPath As String)
+
+        ' This task will clean up any original ZT1 Color Palette files. (.pal) 
+
         On Error GoTo dBug
 
 0:
@@ -211,15 +223,12 @@ dBug:
 15:
 
 
-            Dim dir As String = stack.Pop
-
-            ' Add all immediate file paths
-            'result.AddRange(Directory.GetFiles(dir, "*.*"))
+            Dim dir As String = stack.Pop 
 
 20:
             For Each f As String In Directory.GetFiles(dir, "*.pal")
                 ' Only ZT1 files
-                If Path.GetExtension(f) = ".pal" Then
+                If Path.GetExtension(f).ToLower() = ".pal" Then
                     result.Add(f)
                 End If
             Next
@@ -236,7 +245,7 @@ dBug:
 
 
 1000:
-        ' For each file that is a ZT1 Graphic:
+        ' For each file that is a ZT1 Color Palette (.pal):
         For Each f As String In result
             'Debug.Print(f)
             System.IO.File.Delete(f)
@@ -254,6 +263,10 @@ dBug:
 
     End Sub
     Public Sub cleanUp_PNG(strPath As String)
+
+
+        ' This task will clean up any .PNG files in our <root> directory
+
         On Error GoTo dBug
 
 0:
@@ -281,10 +294,7 @@ dBug:
 
 
             Dim dir As String = stack.Pop
-
-            ' Add all immediate file paths
-            'result.AddRange(Directory.GetFiles(dir, "*.*"))
-
+             
 20:
             For Each f As String In Directory.GetFiles(dir, "*")
                 ' Only ZT1 files
@@ -306,8 +316,7 @@ dBug:
 
 1000:
         ' For each file that is a ZT1 Graphic:
-        For Each f As String In result
-            'Debug.Print(f)
+        For Each f As String In result 
             System.IO.File.Delete(f)
 
         Next
@@ -324,49 +333,45 @@ dBug:
 
     Public Sub convert_file_ZT1_to_PNG(strFile As String)
 
-        ' This function will convert a ZT1 file to a PNG file.
-        ' It will take the rendering and exporting options into account.
+        ' This function will convert a ZT1 Graphic to a PNG file.
+        ' It will first render the ZT1 Graphic and then it will export it to one or multiple .PNG-files.
+        ' DO NOT implement a clean up of ZT1 Graphic/ZT1 Color Palette here.
+        ' The color palette could be shared with other images, which would cause issues in a batch conversion!
 
 
         On Error GoTo dBg
 
 5:
-
+        ' Create a new instance of a ZT1 Graphic object.
         Dim g As New clsGraphic2
 
-
+        ' Read the ZT1 Graphic
         g.read(strFile)
-
-
-        ' We have the graphic. We will need to render each frame.
-        'Debug.Print("Frames in " & Path.GetFileName(strFile) & " : " & g.frames.Count)
-
-
-        ' We will render this set of images.
+         
+        ' We will render this set of frames within this ZT1 Graphic.
         ' However, there are two main options:
         ' - keep canvas size / to relevant frame area / to relevant graphic area
         ' - render extra frame or not
 
 10:
-
+        ' Loop over each frame of the ZT1 Graphic
         For Each ztFrame As clsFrame In g.frames
 
 11:
-
-            'Debug.Print("Current name: " & (g.frames.IndexOf(ztFrame) + cfg_convert_startIndex))
-
-
+             
             ' the bitmap's save function does not overwrite, nor warn 
             System.IO.File.Delete(strFile & "_" & (g.frames.IndexOf(ztFrame) + cfg_convert_startIndex).ToString("0000") & ".png")
 
-            ' Save frames as PNG.
-            ' Just autonumber the frames.
-            ' Eexcept: if we have an extra frame which should be rendered separately rather than as background
+            ' Save frames as PNG, just autonumber the frames.
+            ' Exception: if we have an extra frame which should be rendered separately rather than as background. 
+            ' In that case, we will create a .PNG-file named <graphicname>_extra.png
+            ' Since we are processing in batch, we (currently) do not offer the option to render a background ZT1 Graphic.
+            ' This might however make a nice addition :)
+
             If cfg_export_PNG_RenderBGFrame = True And g.extraFrame = 1 Then
                 If g.frames.IndexOf(ztFrame) <> (g.frames.Count - 1) Then
                     ztFrame.savePNG(strFile & "_" & (g.frames.IndexOf(ztFrame) + cfg_convert_startIndex).ToString("0000") & ".png")
                 Else
-
                     ztFrame.savePNG(strFile & "_extra.png")
                 End If
             Else
@@ -425,8 +430,12 @@ dBug:
 
             'Debug.Print("Frame OK.")
 
+
+
+
         Next
 
+13: 
 
 
         Debug.Print("Converted file from ZT1 to PNG.")
@@ -444,12 +453,12 @@ dBg:
         On Error GoTo dBg
 
 
-        ' In this sub, we get the file name of a PNG image we'll convert..
-
+        ' In this sub, we get the file name of a PNG image we'll convert.
+        ' In reality, the strPath should (currently) be a reference to any PNG image.
+        ' We'll find others in the same series.
+        ' Cleanup of .PNG files only happens automatically in batch conversions.
 
 0:
-
-
 
         Dim paths() As String
         Dim g As New clsGraphic2
@@ -471,6 +480,8 @@ dBg:
         ' 20150624 : this should be done automatically when writing (?)
         ' We're creating the image from scratch.
         ' This means we need to start defining a color palette.
+        ' The lazy approach is to just take the graphic's name and add a .pal-extension.
+        ' The benefit of this is that you can use more than 255 colors *in total* - although you're still limited to those for views.
         '  g.colorPalette.fileName = strPath & ".pal"
 
 
@@ -479,10 +490,12 @@ dBg:
         For Each s As String In paths
 
             ' The order is alphabetical.
-            ' We could implement a way to check if the filename matches the expected frame
+            ' We could implement a way to check if the filename matches the expected frame.
+            ' We should also check if there's at least 2 frames when someone starts to use <name>_extra.PNG
+            ' We should also keep track of the numbering, although this shouldn't cause too many issues.
 
 105:
-            ' only last part!
+            ' Extract the number of the frame (or _extra) from the filename
             pngName = Split(System.IO.Path.GetFileNameWithoutExtension(s), "_")(1)
 
 110:
@@ -530,7 +543,6 @@ dBg:
 
 150:
                 With ztFrame
-
 151:
                     .loadPNG(s)
 185:
@@ -557,25 +569,20 @@ dBg:
 
 
 510:
-
-        'Debug.Print("Configure speed")
+        ' Configure speed. We can't derive this from a set of PNG images, so it should be set first or changed manually afterwards.
         'g.animationSpeed = 1000 ' no idea. Would it be possible to batch-apply this?
 
 
 530:
-
-        Debug.Print("Write to " & strPath)
+        ' Create our ZT1 Graphic. 
         g.write(strPath)
-
-
-        ' For each ZT1 File
-        ' For Each s As String In filesZT1
-        'Debug.Print("ZT1 File: " & s)
-        ' Next
+         
 
 
 55:
         If cfg_export_ZT1_Ani = 1 And blnSingleConversion = True Then
+            ' Only 1 graphic file is in this path. This is the case for icons, for example.
+            ' A .ani-file can be generated automatically.
             Dim cAni As New clsAniFile
             cAni.fileName = strPath.Replace(IO.Path.GetFileName(strPath), "")
             cAni.fileName = cAni.fileName & IO.Path.GetFileName(cAni.fileName.Substring(0, cAni.fileName.Length - 1)) & ".ani"
@@ -585,6 +592,13 @@ dBg:
 
 
         Debug.Print("Converted file from ZT1 to PNG.")
+
+999:
+        ' Clear everything.
+        g = Nothing
+
+
+
 
         Exit Sub
 
@@ -596,12 +610,13 @@ dBg:
     End Sub
     Public Sub convert_folder_ZT1_to_PNG(strPath As String, Optional PB As ProgressBar = Nothing)
 
+        ' This will find all ZT1 Graphics in a folder and generate PNGs from it. It works recursively.
+        ' The progress can be shown in a progress bar.
+        ' Batch conversion offers the feature to automatically clean up everything afterwards.
 
         On Error GoTo dBug
 
-0:
-5:
-
+0: 
 
         ' First we will create a recursive list.
 
@@ -612,9 +627,7 @@ dBg:
         Dim stack As New Stack(Of String)
 
         ' Add the initial directory
-        stack.Push(strPath)
-
-
+        stack.Push(strPath) 
 
 10:
 
@@ -627,13 +640,7 @@ dBg:
 
             Dim dir As String = stack.Pop
 
-            ' Add all immediate file paths
-            'result.AddRange(Directory.GetFiles(dir, "*.*"))
-
 20:
-
-
-
             For Each f As String In Directory.GetFiles(dir, "*")
                 ' Only ZT1 files
                 If Path.GetExtension(f) = vbNullString Then
@@ -650,10 +657,8 @@ dBg:
 
         Loop
 
-
-
-
-
+        ' Set the initial configuration for a (optional) progress bar.
+        ' We want the max value to be the number of ZT1 Graphics we're trying to convert.
         If IsNothing(PB) = False Then
             PB.Minimum = 0
             PB.Value = 0
@@ -668,6 +673,16 @@ dBg:
             pb.value += 1
         Next
 
+
+1050:
+        ' Should we do a clean up?
+        If cfg_convert_deleteOriginal = 1 Then
+            ' Currently ZT1 Graphics and ZT1 Color palettes have their own sub in which the files get deleted.
+            ' It might be possible to merge them at some point and you could even gain a small performance boost.
+            clsTasks.cleanUp_ZT1Graphics(strPath)
+            clsTasks.cleanUp_ZT1Pals(strPath)
+        End If
+
         Exit Sub
 
 dBug:
@@ -679,8 +694,8 @@ dBug:
     End Sub
     Public Sub convert_folder_PNG_to_ZT1(strPath As String, Optional PB As ProgressBar = Nothing)
 
-        ' We have the paths.
-        ' We should get the unique prefixes.
+        ' We have the path containing .PNG-files which need to be converted into a ZT1 Graphic.
+        ' We should get the unique prefixes. (eg. e_0001.png => e is the prefix. So 'e' should be the name of the view.
 
 
         On Error GoTo dBug
@@ -744,8 +759,7 @@ dBug:
 
 1000:
         ' For each file that is a ZT1 Graphic:
-        For Each f As String In result
-            'Debug.Print(f)
+        For Each f As String In result 
             clsTasks.convert_file_PNG_to_ZT1(f, False)
             PB.Value += 1
 
@@ -755,20 +769,14 @@ dBug:
 
 
 1100:
-        ' For each folder:
-        Debug.Print("For stack")
-        Debug.Print(stack.Count)
-
-
-
+        ' Experimantal. Generate a .ani-file in each directory. 
         ' Add the initial directory
         stack.Push(strPath)
         ' Continue processing for each stacked directory
         Do While (stack.Count > 0)
             ' Get top directory string
 
-            Dim dir As String = stack.Pop
-
+            Dim dir As String = stack.Pop 
 
             If cfg_export_ZT1_Ani = 1 Then
                 Dim cAni As New clsAniFile
@@ -784,7 +792,14 @@ dBug:
 
         Loop
 
+        ' Make sure everything is finished.
+        Application.DoEvents()
 
+1150:
+        ' Do a clean up of our .PNG files if we had a successful conversion.
+        If cfg_convert_deleteOriginal = 1 Then
+            clsTasks.cleanUp_PNG(strPath)
+        End If
 
 
 
@@ -909,7 +924,7 @@ dBug:
         coordB.Y += 1
 
 
-        Debug.Print("w,h=" & coordA.X & "," & coordA.Y & " --- " & coordB.X & "," & coordB.Y)
+        'Debug.Print("w,h=" & coordA.X & "," & coordA.Y & " --- " & coordB.X & "," & coordB.Y)
         Return New Rectangle(coordA.X, coordA.Y, coordB.X - coordA.X, coordB.Y - coordA.Y)
 
         'Debug.Print("Rectangle definition: x,y,width,height: " & r.X & " - " & r.Y & " - " & r.Width & " - " & r.Height)
@@ -1013,6 +1028,9 @@ dBug:
 
     Function grid_drawFootPrintXY(intFootPrintX As Integer, intFootPrintY As Integer, view As Byte, Optional bmInput As Bitmap = Nothing) As Bitmap
 
+        ' Draws a certain amount of squares.
+        ' ZT1 uses either 1/4th of a square, or complete squares from there on. 
+        ' Anything else doesn't seem to be too reliable!
 
 
         If IsNothing(bmInput) = True Then
@@ -1037,12 +1055,8 @@ dBug:
         ' eerste punt tov onze gegenereerde grid: +16px Y (center)
         ' eerste punt tov onze gegenereerde grid: intFootprintX * 32
 
-
-
         ' we need to find the center of our generated grid.
         ' next, we need to align it with the center of our image.
-
-
 
         ' We know the starting coordinate. We know the number of squares. We know if it's even or not (= extra row) 
         ' We will keep track of how many squares we draw.
@@ -1240,7 +1254,8 @@ dBug:
                 Dim c As New clsPalette
                 Dim frmColPal As New frmPal
 
-                If c.readPalette(strFileName) <> 0 Then
+                ' Read the .pal file
+                If c.readPal(strFileName) <> 0 Then
 
 
                     c.fillPaletteGrid(frmColPal.dgvPal)
@@ -1248,6 +1263,9 @@ dBug:
                     frmColPal.ssFileName.Text = Path.GetFileName(strFileName)
 
                     If c.colors.Count <> 9 And c.colors.Count <> 17 Then
+                        ' This feature was originally meant to show a preview using the pal8 or pal16-files.
+                        ' However, it might be extended for use with recolors - there, we don't know the number of colors in the palette.
+
                         'frmColPal.Controls.Remove(frmColPal.btnUseInMainPal)
                     End If
 

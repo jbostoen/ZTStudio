@@ -183,18 +183,20 @@ Public Class frmMain
 
     Private Sub tsbZT1Open_Click(sender As Object, e As EventArgs) Handles tsbZT1Open.Click
 
-
-
+         
 
         With dlgOpen
             .Title = "Pick a ZT1 Graphic"
             .DefaultExt = ""
             .Filter = "All files|*.*"
-            .InitialDirectory = cfg_path_recentZT1
+            .InitialDirectory = System.IO.Path.GetDirectoryName(cfg_path_recentZT1)
+             
 
-            If dlgOpen.InitialDirectory = vbNullString Then
-                If System.IO.Directory.Exists("X:\Projecten\Animal Antics\Tools\zoot\tmp") Then
-                    .InitialDirectory = "X:\Projecten\Animal Antics\Tools\zoot\tmp"""
+
+
+            If dlgOpen.InitialDirectory = vbNullString Or System.IO.Directory.Exists(dlgOpen.InitialDirectory) = False Then
+                If System.IO.Directory.Exists(cfg_path_Root) Then
+                    .InitialDirectory = cfg_path_Root
                 ElseIf System.IO.Directory.Exists("C:\Program Files\Microsoft Games\Zoo Tycoon") Then
                     .InitialDirectory = "C:\Program Files\Microsoft Games\Zoo Tycoon"
                 ElseIf System.IO.Directory.Exists("C:\Program Files (x86)\Microsoft Games\Zoo Tycoon") Then
@@ -203,16 +205,13 @@ Public Class frmMain
                 End If
             End If
 
-            If .ShowDialog() <> Windows.Forms.DialogResult.Cancel Then
-
-
-
+            If .ShowDialog() <> Windows.Forms.DialogResult.Cancel Then 
 
                 If System.IO.File.Exists(dlgOpen.FileName) = True Then
 
                     If Path.GetExtension(dlgOpen.FileName) <> vbNullString Then
                         MsgBox("You selected a file with the extension '" & Path.GetExtension(dlgOpen.FileName) & "'." & vbCrLf & _
-                               "With ZT1 graphic, we mean a ZT1 graphics file without extension.", _
+                               "With ZT1 graphic, we mean a ZT1 Graphic file without extension.", _
                                vbOKOnly + vbCritical, "Invalid file")
 
                         Exit Sub
@@ -262,6 +261,7 @@ Public Class frmMain
 
                 ' Remember
                 cfg_path_recentZT1 = System.IO.Path.GetFullPath(dlgOpen.FileName)
+
                 clsTasks.config_write()
 
 
@@ -322,7 +322,7 @@ Public Class frmMain
             .Title = "Save single frame as .PNG"
             .DefaultExt = ".png"
             .AddExtension = True
-            .InitialDirectory = cfg_path_recentPNG
+            .InitialDirectory = System.IO.Path.GetDirectoryName(cfg_path_recentPNG)
             .Filter = "PNG files (*.png)|*.png|All files|*.*"
 
 
@@ -478,7 +478,7 @@ Public Class frmMain
             .Title = "Save ZT1 Graphic"
             .DefaultExt = ""
             .AddExtension = True
-            .InitialDirectory = cfg_path_recentZT1
+            .InitialDirectory = System.IO.Path.GetDirectoryName(cfg_path_recentZT1)
             .Filter = "ZT1 Graphics (*)|*"
 
 
@@ -620,11 +620,9 @@ dBug:
 
     Private Sub tsbFrame_IndexIncrease_Click(sender As Object, e As EventArgs) Handles tsbFrame_IndexIncrease.Click
 
-        'editorFrame.
-        editorFrame.updateIndex(editorGraphic.frames.IndexOf(editorFrame) + 1)
-        'Debug.Print(editorGraphic.frames.IndexOf(editorFrame))
-
-        clsTasks.preview_update(editorGraphic.frames.IndexOf(editorFrame))
+        ' Change handled in slider control
+        tbFrames.Value += 1 
+         
 
     End Sub
      
@@ -679,9 +677,10 @@ dBug:
 
     Private Sub tsbFrame_IndexDecrease_Click(sender As Object, e As EventArgs) Handles tsbFrame_IndexDecrease.Click
 
-        'editorFrame.
-        editorFrame.updateIndex(editorGraphic.frames.IndexOf(editorFrame) - 1)
-        clsTasks.preview_update(editorGraphic.frames.IndexOf(editorFrame))
+        ' Change handled in slider control
+        tbFrames.Value -= 1
+
+
 
 
     End Sub
@@ -700,7 +699,7 @@ dBug:
 
     Private Sub tsbDelete_ZT1Files_Click(sender As Object, e As EventArgs) Handles tsbDelete_ZT1Files.Click
 
-        clsTasks.cleanUp_ZT1(cfg_path_Root)
+        clsTasks.cleanUp_ZT1Graphics(cfg_path_Root)
         clsTasks.cleanUp_ZT1Pals(cfg_path_Root)
         MsgBox("Finished clean up.", vbOKOnly + vbInformation, "Finished clean up.")
 
@@ -732,6 +731,10 @@ dBug:
         cfg_grid_footPrintX = tsbFrame_fpX.Text
         clsTasks.config_write()
         clsTasks.preview_update()
+
+    End Sub
+
+    Private Sub tsbFrame_fpY_ForeColorChanged(sender As Object, e As EventArgs) Handles tsbFrame_fpY.ForeColorChanged
 
     End Sub
     Private Sub tsbFrame_fpY_SelectedIndexChanged(sender As Object, e As EventArgs) Handles tsbFrame_fpY.SelectedIndexChanged
@@ -817,18 +820,11 @@ dBug:
         pal_addColor(dgvPaletteMain.SelectedRows(0).Index)
 
     End Sub
-
-    Private Sub Panel1_Paint(sender As Object, e As PaintEventArgs) Handles Panel1.Paint
-
-    End Sub
-
-    Private Sub tsbFrame_ImportPNG_Click(sender As Object, e As EventArgs) Handles tsbFrame_ImportPNG.Click
-
-
-    End Sub
+     
 
     Private Sub tsbFrame_ImportPNG_MouseDown(sender As Object, e As MouseEventArgs) Handles tsbFrame_ImportPNG.MouseDown
 
+        ' Shortcut to create a new frame first, then import the PNG to it.
 
         If (e.Button = Windows.Forms.MouseButtons.Right) Then
             ' Add frame
@@ -838,13 +834,11 @@ dBug:
             Dim ztFrame As New clsFrame
 1:
             ztFrame.parent = editorGraphic
-2:
-            'editorFrame = ztFrame
-            'Debug.Print(tbFrames.Value)
+2: 
 
 10:
-            'editorGraphic.frames.Insert(tbFrames.Value - 1, ztFrame)
-            editorGraphic.frames.Insert(tbFrames.Value, ztFrame) ' add after
+            ' Add the frame after the existing one(s)
+            editorGraphic.frames.Insert(tbFrames.Value, ztFrame)
 
 15:
             ' not sure if this is right if an extra frame is applied?
@@ -865,9 +859,10 @@ dBug:
             .Title = "Pick a .PNG file"
             .DefaultExt = ""
             .Filter = "PNG files|*.png"
-            .InitialDirectory = cfg_path_recentPNG
+            .InitialDirectory = System.IO.Path.GetDirectoryName(cfg_path_recentPNG)
 
-            If dlgOpen.InitialDirectory = vbNullString Then
+            ' If most recent directory does not exist anymore:
+            If dlgOpen.InitialDirectory = vbNullString Or System.IO.Directory.Exists(dlgOpen.InitialDirectory) Then
                 .InitialDirectory = cfg_path_Root
 
             End If
@@ -894,7 +889,10 @@ dBug:
                         ' Draw first frame 
                         clsTasks.preview_update()
 
-                        ' Show default palette
+                        ' Show main color palette
+                        editorFrame.parent.colorPalette.fillPaletteGrid(dgvPaletteMain)
+
+                        ' Not sure why we had this. It's the color palette of the background graphic.
                         'editorBgGraphic.colorPalette.fillPaletteGrid(dgvPaletteMain)
 
                         ' Remember
@@ -927,10 +925,29 @@ dBug:
 
     End Sub
 
-    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
+    Private Sub btnRecolor_Click(sender As Object, e As EventArgs) Handles btnRecolor.Click
 
+        ' This will be used to use GIMP to recolor our color palette (which we completely export as a .PNG-file).
+        ' It's not our intention to create a full blown graphic editor ourselves.
+        ' That's why we rely on open source. 
         frmGIMPRecolor.ShowDialog()
 
 
+    End Sub
+     
+    Private Sub tsbFrame_fpY_Click(sender As Object, e As EventArgs) Handles tsbFrame_fpY.Click
+
+    End Sub
+
+    Private Sub tsbFrame_ImportPNG_Click(sender As Object, e As EventArgs) Handles tsbFrame_ImportPNG.Click
+
+    End Sub
+
+    Private Sub Button1_Click(sender As Object, e As EventArgs)
+
+        For Each col In editorFrame.parent.colorPalette.colors
+            Debug.Print(col.ToString())
+
+        Next
     End Sub
 End Class

@@ -69,7 +69,7 @@ Partial Class frmBatchConversion
         'btnConvert
         '
         Me.btnConvert.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.btnConvert.Location = New System.Drawing.Point(47, 183)
+        Me.btnConvert.Location = New System.Drawing.Point(47, 294)
         Me.btnConvert.Name = "btnConvert"
         Me.btnConvert.Size = New System.Drawing.Size(498, 32)
         Me.btnConvert.TabIndex = 15
@@ -79,7 +79,7 @@ Partial Class frmBatchConversion
         'lblInfo
         '
         Me.lblInfo.AutoSize = True
-        Me.lblInfo.Location = New System.Drawing.Point(50, 244)
+        Me.lblInfo.Location = New System.Drawing.Point(50, 156)
         Me.lblInfo.Name = "lblInfo"
         Me.lblInfo.Size = New System.Drawing.Size(506, 65)
         Me.lblInfo.TabIndex = 19
@@ -87,7 +87,7 @@ Partial Class frmBatchConversion
         '
         'cmdSettings
         '
-        Me.cmdSettings.Location = New System.Drawing.Point(47, 147)
+        Me.cmdSettings.Location = New System.Drawing.Point(47, 258)
         Me.cmdSettings.Name = "cmdSettings"
         Me.cmdSettings.Size = New System.Drawing.Size(498, 30)
         Me.cmdSettings.TabIndex = 22
@@ -96,9 +96,9 @@ Partial Class frmBatchConversion
         '
         'PB
         '
-        Me.PB.Location = New System.Drawing.Point(54, 332)
+        Me.PB.Location = New System.Drawing.Point(47, 332)
         Me.PB.Name = "PB"
-        Me.PB.Size = New System.Drawing.Size(490, 22)
+        Me.PB.Size = New System.Drawing.Size(498, 22)
         Me.PB.TabIndex = 23
         '
         'frmBatchConversion

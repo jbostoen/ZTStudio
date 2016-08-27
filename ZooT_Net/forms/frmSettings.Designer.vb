@@ -66,21 +66,21 @@ Partial Class frmSettings
         Me.tpEditGraphics.Location = New System.Drawing.Point(4, 22)
         Me.tpEditGraphics.Name = "tpEditGraphics"
         Me.tpEditGraphics.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpEditGraphics.Size = New System.Drawing.Size(632, 198)
+        Me.tpEditGraphics.Size = New System.Drawing.Size(710, 198)
         Me.tpEditGraphics.TabIndex = 5
         Me.tpEditGraphics.Text = "Editing graphics"
-        Me.tpEditGraphics.UseVisualStyleBackColor = true
+        Me.tpEditGraphics.UseVisualStyleBackColor = True
         '
         'chkEditor_Frame_Offsets_SingleFrame
         '
-        Me.chkEditor_Frame_Offsets_SingleFrame.AutoSize = true
+        Me.chkEditor_Frame_Offsets_SingleFrame.AutoSize = True
         Me.chkEditor_Frame_Offsets_SingleFrame.Location = New System.Drawing.Point(26, 6)
         Me.chkEditor_Frame_Offsets_SingleFrame.Name = "chkEditor_Frame_Offsets_SingleFrame"
         Me.chkEditor_Frame_Offsets_SingleFrame.Size = New System.Drawing.Size(442, 17)
         Me.chkEditor_Frame_Offsets_SingleFrame.TabIndex = 22
-        Me.chkEditor_Frame_Offsets_SingleFrame.Text = "Adjust offsets of a single frame (instead of all frames in the graphic) when ""rot"& _ 
+        Me.chkEditor_Frame_Offsets_SingleFrame.Text = "Adjust offsets of a single frame (instead of all frames in the graphic) when ""rot" & _
     "ation fixing"""
-        Me.chkEditor_Frame_Offsets_SingleFrame.UseVisualStyleBackColor = true
+        Me.chkEditor_Frame_Offsets_SingleFrame.UseVisualStyleBackColor = True
         '
         'tpWritePNG
         '
@@ -89,14 +89,14 @@ Partial Class frmSettings
         Me.tpWritePNG.Location = New System.Drawing.Point(4, 22)
         Me.tpWritePNG.Name = "tpWritePNG"
         Me.tpWritePNG.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpWritePNG.Size = New System.Drawing.Size(632, 198)
+        Me.tpWritePNG.Size = New System.Drawing.Size(710, 198)
         Me.tpWritePNG.TabIndex = 4
         Me.tpWritePNG.Text = "Writing PNG Graphics"
-        Me.tpWritePNG.UseVisualStyleBackColor = true
+        Me.tpWritePNG.UseVisualStyleBackColor = True
         '
         'Label1
         '
-        Me.Label1.AutoSize = true
+        Me.Label1.AutoSize = True
         Me.Label1.Location = New System.Drawing.Point(23, 30)
         Me.Label1.Name = "Label1"
         Me.Label1.Size = New System.Drawing.Size(200, 13)
@@ -106,7 +106,7 @@ Partial Class frmSettings
         'cboPNGExport_Crop
         '
         Me.cboPNGExport_Crop.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-        Me.cboPNGExport_Crop.FormattingEnabled = true
+        Me.cboPNGExport_Crop.FormattingEnabled = True
         Me.cboPNGExport_Crop.Location = New System.Drawing.Point(26, 6)
         Me.cboPNGExport_Crop.Name = "cboPNGExport_Crop"
         Me.cboPNGExport_Crop.Size = New System.Drawing.Size(520, 21)
@@ -119,32 +119,32 @@ Partial Class frmSettings
         Me.tpWriteZT1.Location = New System.Drawing.Point(4, 22)
         Me.tpWriteZT1.Name = "tpWriteZT1"
         Me.tpWriteZT1.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpWriteZT1.Size = New System.Drawing.Size(632, 198)
+        Me.tpWriteZT1.Size = New System.Drawing.Size(710, 198)
         Me.tpWriteZT1.TabIndex = 3
         Me.tpWriteZT1.Text = "Writing ZT1 Graphics"
-        Me.tpWriteZT1.UseVisualStyleBackColor = true
+        Me.tpWriteZT1.UseVisualStyleBackColor = True
         '
         'chkExportZT1_Ani
         '
-        Me.chkExportZT1_Ani.AutoSize = true
-        Me.chkExportZT1_Ani.Checked = true
+        Me.chkExportZT1_Ani.AutoSize = True
+        Me.chkExportZT1_Ani.Checked = True
         Me.chkExportZT1_Ani.CheckState = System.Windows.Forms.CheckState.Checked
         Me.chkExportZT1_Ani.Location = New System.Drawing.Point(26, 29)
         Me.chkExportZT1_Ani.Name = "chkExportZT1_Ani"
         Me.chkExportZT1_Ani.Size = New System.Drawing.Size(131, 17)
         Me.chkExportZT1_Ani.TabIndex = 29
         Me.chkExportZT1_Ani.Text = "Create/update .ani-file"
-        Me.chkExportZT1_Ani.UseVisualStyleBackColor = true
+        Me.chkExportZT1_Ani.UseVisualStyleBackColor = True
         '
         'chkExportZT1_AddZTAFBytes
         '
-        Me.chkExportZT1_AddZTAFBytes.AutoSize = true
+        Me.chkExportZT1_AddZTAFBytes.AutoSize = True
         Me.chkExportZT1_AddZTAFBytes.Location = New System.Drawing.Point(26, 6)
         Me.chkExportZT1_AddZTAFBytes.Name = "chkExportZT1_AddZTAFBytes"
         Me.chkExportZT1_AddZTAFBytes.Size = New System.Drawing.Size(317, 17)
         Me.chkExportZT1_AddZTAFBytes.TabIndex = 28
         Me.chkExportZT1_AddZTAFBytes.Text = "Add ""ZT Animation File""-bytes even if there's no ""extra frame"""
-        Me.chkExportZT1_AddZTAFBytes.UseVisualStyleBackColor = true
+        Me.chkExportZT1_AddZTAFBytes.UseVisualStyleBackColor = True
         '
         'tpRenderingFrames
         '
@@ -153,36 +153,36 @@ Partial Class frmSettings
         Me.tpRenderingFrames.Location = New System.Drawing.Point(4, 22)
         Me.tpRenderingFrames.Name = "tpRenderingFrames"
         Me.tpRenderingFrames.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpRenderingFrames.Size = New System.Drawing.Size(632, 198)
+        Me.tpRenderingFrames.Size = New System.Drawing.Size(710, 198)
         Me.tpRenderingFrames.TabIndex = 2
         Me.tpRenderingFrames.Text = "Rendering frames"
-        Me.tpRenderingFrames.UseVisualStyleBackColor = true
+        Me.tpRenderingFrames.UseVisualStyleBackColor = True
         '
         'chkRenderFrame_BGGraphic
         '
-        Me.chkRenderFrame_BGGraphic.AutoSize = true
-        Me.chkRenderFrame_BGGraphic.Checked = true
+        Me.chkRenderFrame_BGGraphic.AutoSize = True
+        Me.chkRenderFrame_BGGraphic.Checked = True
         Me.chkRenderFrame_BGGraphic.CheckState = System.Windows.Forms.CheckState.Checked
         Me.chkRenderFrame_BGGraphic.Location = New System.Drawing.Point(26, 29)
         Me.chkRenderFrame_BGGraphic.Name = "chkRenderFrame_BGGraphic"
         Me.chkRenderFrame_BGGraphic.Size = New System.Drawing.Size(558, 17)
         Me.chkRenderFrame_BGGraphic.TabIndex = 17
-        Me.chkRenderFrame_BGGraphic.Text = "Render chosen background ZT1 Graphic (e.g. main graphic = Orang utan swinging, ba"& _ 
+        Me.chkRenderFrame_BGGraphic.Text = "Render chosen background ZT1 Graphic (e.g. main graphic = Orang utan swinging, ba" & _
     "ckground: rope swing toy)"
-        Me.chkRenderFrame_BGGraphic.UseVisualStyleBackColor = true
+        Me.chkRenderFrame_BGGraphic.UseVisualStyleBackColor = True
         '
         'chkRenderFrame_RenderExtraFrame
         '
-        Me.chkRenderFrame_RenderExtraFrame.AutoSize = true
-        Me.chkRenderFrame_RenderExtraFrame.Checked = true
+        Me.chkRenderFrame_RenderExtraFrame.AutoSize = True
+        Me.chkRenderFrame_RenderExtraFrame.Checked = True
         Me.chkRenderFrame_RenderExtraFrame.CheckState = System.Windows.Forms.CheckState.Checked
         Me.chkRenderFrame_RenderExtraFrame.Location = New System.Drawing.Point(26, 6)
         Me.chkRenderFrame_RenderExtraFrame.Name = "chkRenderFrame_RenderExtraFrame"
         Me.chkRenderFrame_RenderExtraFrame.Size = New System.Drawing.Size(581, 17)
         Me.chkRenderFrame_RenderExtraFrame.TabIndex = 16
-        Me.chkRenderFrame_RenderExtraFrame.Text = "Render the extra frame in a graphic in all other frames (in case of a ZTAF-file w"& _ 
+        Me.chkRenderFrame_RenderExtraFrame.Text = "Render the extra frame in a graphic in all other frames (in case of a ZTAF-file w" & _
     "ith a background frame, e.g. restaurant)"
-        Me.chkRenderFrame_RenderExtraFrame.UseVisualStyleBackColor = true
+        Me.chkRenderFrame_RenderExtraFrame.UseVisualStyleBackColor = True
         '
         'tpFolders
         '
@@ -198,10 +198,10 @@ Partial Class frmSettings
         Me.tpFolders.Location = New System.Drawing.Point(4, 22)
         Me.tpFolders.Name = "tpFolders"
         Me.tpFolders.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpFolders.Size = New System.Drawing.Size(632, 198)
+        Me.tpFolders.Size = New System.Drawing.Size(710, 198)
         Me.tpFolders.TabIndex = 1
         Me.tpFolders.Text = "Folders"
-        Me.tpFolders.UseVisualStyleBackColor = true
+        Me.tpFolders.UseVisualStyleBackColor = True
         '
         'btnBrowsePal16
         '
@@ -210,8 +210,8 @@ Partial Class frmSettings
         Me.btnBrowsePal16.Size = New System.Drawing.Size(78, 20)
         Me.btnBrowsePal16.TabIndex = 31
         Me.btnBrowsePal16.Text = "Browse..."
-        Me.btnBrowsePal16.UseVisualStyleBackColor = true
-        Me.btnBrowsePal16.Visible = false
+        Me.btnBrowsePal16.UseVisualStyleBackColor = True
+        Me.btnBrowsePal16.Visible = False
         '
         'btnBrowsePal8
         '
@@ -220,8 +220,8 @@ Partial Class frmSettings
         Me.btnBrowsePal8.Size = New System.Drawing.Size(78, 20)
         Me.btnBrowsePal8.TabIndex = 30
         Me.btnBrowsePal8.Text = "Browse..."
-        Me.btnBrowsePal8.UseVisualStyleBackColor = true
-        Me.btnBrowsePal8.Visible = false
+        Me.btnBrowsePal8.UseVisualStyleBackColor = True
+        Me.btnBrowsePal8.Visible = False
         '
         'btnBrowse
         '
@@ -230,12 +230,12 @@ Partial Class frmSettings
         Me.btnBrowse.Size = New System.Drawing.Size(78, 20)
         Me.btnBrowse.TabIndex = 29
         Me.btnBrowse.Text = "Browse..."
-        Me.btnBrowse.UseVisualStyleBackColor = true
+        Me.btnBrowse.UseVisualStyleBackColor = True
         '
         'txtFolderPal16
         '
-        Me.txtFolderPal16.Enabled = false
-        Me.txtFolderPal16.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0,Byte))
+        Me.txtFolderPal16.Enabled = False
+        Me.txtFolderPal16.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.txtFolderPal16.Location = New System.Drawing.Point(29, 168)
         Me.txtFolderPal16.Name = "txtFolderPal16"
         Me.txtFolderPal16.Size = New System.Drawing.Size(506, 20)
@@ -281,12 +281,12 @@ Partial Class frmSettings
         Me.lblPalette8.Size = New System.Drawing.Size(136, 13)
         Me.lblPalette8.TabIndex = 25
         Me.lblPalette8.Text = "Folder with 8-color palettes:"
-        Me.lblPalette8.Visible = false
+        Me.lblPalette8.Visible = False
         '
         'lblWarnings
         '
-        Me.lblWarnings.AutoSize = true
-        Me.lblWarnings.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0,Byte))
+        Me.lblWarnings.AutoSize = True
+        Me.lblWarnings.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.lblWarnings.Location = New System.Drawing.Point(26, 24)
         Me.lblWarnings.Name = "lblWarnings"
         Me.lblWarnings.Size = New System.Drawing.Size(65, 13)
@@ -302,42 +302,42 @@ Partial Class frmSettings
         Me.tpConversions.Location = New System.Drawing.Point(4, 22)
         Me.tpConversions.Name = "tpConversions"
         Me.tpConversions.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpConversions.Size = New System.Drawing.Size(632, 198)
+        Me.tpConversions.Size = New System.Drawing.Size(710, 198)
         Me.tpConversions.TabIndex = 0
         Me.tpConversions.Text = "Conversions"
-        Me.tpConversions.UseVisualStyleBackColor = true
+        Me.tpConversions.UseVisualStyleBackColor = True
         '
         'chkConvert_Overwrite
         '
-        Me.chkConvert_Overwrite.AutoSize = true
-        Me.chkConvert_Overwrite.Checked = true
+        Me.chkConvert_Overwrite.AutoSize = True
+        Me.chkConvert_Overwrite.Checked = True
         Me.chkConvert_Overwrite.CheckState = System.Windows.Forms.CheckState.Checked
-        Me.chkConvert_Overwrite.Enabled = false
-        Me.chkConvert_Overwrite.Location = New System.Drawing.Point(26, 58)
+        Me.chkConvert_Overwrite.Enabled = False
+        Me.chkConvert_Overwrite.Location = New System.Drawing.Point(26, 29)
         Me.chkConvert_Overwrite.Name = "chkConvert_Overwrite"
         Me.chkConvert_Overwrite.Size = New System.Drawing.Size(92, 17)
         Me.chkConvert_Overwrite.TabIndex = 29
         Me.chkConvert_Overwrite.Text = "Overwrite files"
-        Me.chkConvert_Overwrite.UseVisualStyleBackColor = true
-        Me.chkConvert_Overwrite.Visible = false
+        Me.chkConvert_Overwrite.UseVisualStyleBackColor = True
+        Me.chkConvert_Overwrite.Visible = False
         '
         'chkConvert_DeleteOriginal
         '
-        Me.chkConvert_DeleteOriginal.AutoSize = true
-        Me.chkConvert_DeleteOriginal.Checked = true
+        Me.chkConvert_DeleteOriginal.AutoSize = True
+        Me.chkConvert_DeleteOriginal.Checked = True
         Me.chkConvert_DeleteOriginal.CheckState = System.Windows.Forms.CheckState.Checked
-        Me.chkConvert_DeleteOriginal.Location = New System.Drawing.Point(26, 35)
+        Me.chkConvert_DeleteOriginal.Location = New System.Drawing.Point(26, 6)
         Me.chkConvert_DeleteOriginal.Name = "chkConvert_DeleteOriginal"
-        Me.chkConvert_DeleteOriginal.Size = New System.Drawing.Size(519, 17)
+        Me.chkConvert_DeleteOriginal.Size = New System.Drawing.Size(634, 17)
         Me.chkConvert_DeleteOriginal.TabIndex = 28
-        Me.chkConvert_DeleteOriginal.Text = "Delete the source file after conversion. (e.g. converting from .PNG-files to ZT1:"& _ 
-    " .PNG files will be deleted)"
-        Me.chkConvert_DeleteOriginal.UseVisualStyleBackColor = true
+        Me.chkConvert_DeleteOriginal.Text = "Only batch conversions: delete the source file after conversion. (e.g. converting" & _
+    " from .PNG-files to ZT1: .PNG files will be deleted)"
+        Me.chkConvert_DeleteOriginal.UseVisualStyleBackColor = True
         '
         'lblExportPNG_Index
         '
-        Me.lblExportPNG_Index.AutoSize = true
-        Me.lblExportPNG_Index.Location = New System.Drawing.Point(80, 13)
+        Me.lblExportPNG_Index.AutoSize = True
+        Me.lblExportPNG_Index.Location = New System.Drawing.Point(80, 96)
         Me.lblExportPNG_Index.Name = "lblExportPNG_Index"
         Me.lblExportPNG_Index.Size = New System.Drawing.Size(334, 13)
         Me.lblExportPNG_Index.TabIndex = 27
@@ -345,7 +345,7 @@ Partial Class frmSettings
         '
         'numConvert_PNGStartIndex
         '
-        Me.numConvert_PNGStartIndex.Location = New System.Drawing.Point(26, 11)
+        Me.numConvert_PNGStartIndex.Location = New System.Drawing.Point(26, 94)
         Me.numConvert_PNGStartIndex.Maximum = New Decimal(New Integer() {1, 0, 0, 0})
         Me.numConvert_PNGStartIndex.Name = "numConvert_PNGStartIndex"
         Me.numConvert_PNGStartIndex.Size = New System.Drawing.Size(48, 20)
@@ -363,14 +363,14 @@ Partial Class frmSettings
         Me.TabControl1.Location = New System.Drawing.Point(0, 0)
         Me.TabControl1.Name = "TabControl1"
         Me.TabControl1.SelectedIndex = 0
-        Me.TabControl1.Size = New System.Drawing.Size(640, 224)
+        Me.TabControl1.Size = New System.Drawing.Size(718, 224)
         Me.TabControl1.TabIndex = 29
         '
         'frmSettings
         '
-        Me.AutoScaleDimensions = New System.Drawing.SizeF(6!, 13!)
+        Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(640, 224)
+        Me.ClientSize = New System.Drawing.Size(718, 247)
         Me.Controls.Add(Me.TabControl1)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow
         Me.Name = "frmSettings"

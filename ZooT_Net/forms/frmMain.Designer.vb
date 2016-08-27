@@ -39,6 +39,7 @@ Partial Class frmMain
         Me.dlgOpen = New System.Windows.Forms.OpenFileDialog()
         Me.Panel1 = New System.Windows.Forms.Panel()
         Me.lblColorDetails = New System.Windows.Forms.Label()
+        Me.btnRecolor = New System.Windows.Forms.Button()
         Me.lblFrames = New System.Windows.Forms.Label()
         Me.lblAnimTime = New System.Windows.Forms.Label()
         Me.lblColor = New System.Windows.Forms.Label()
@@ -92,7 +93,6 @@ Partial Class frmMain
         Me.mnuPal_MoveDown = New System.Windows.Forms.ToolStripMenuItem()
         Me.mnuPal_Replace = New System.Windows.Forms.ToolStripMenuItem()
         Me.mnuPal_Add = New System.Windows.Forms.ToolStripMenuItem()
-        Me.Button1 = New System.Windows.Forms.Button()
         CType(Me.picBox, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.tsZT1Graphic.SuspendLayout()
         Me.Panel1.SuspendLayout()
@@ -202,6 +202,7 @@ Partial Class frmMain
         'Panel1
         '
         Me.Panel1.Controls.Add(Me.lblColorDetails)
+        Me.Panel1.Controls.Add(Me.btnRecolor)
         Me.Panel1.Controls.Add(Me.lblFrames)
         Me.Panel1.Controls.Add(Me.lblAnimTime)
         Me.Panel1.Controls.Add(Me.lblColor)
@@ -223,6 +224,16 @@ Partial Class frmMain
         Me.lblColorDetails.TabIndex = 34
         Me.lblColorDetails.Text = "Color details"
         Me.lblColorDetails.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        '
+        'btnRecolor
+        '
+        Me.btnRecolor.Location = New System.Drawing.Point(666, 100)
+        Me.btnRecolor.Name = "btnRecolor"
+        Me.btnRecolor.Size = New System.Drawing.Size(136, 26)
+        Me.btnRecolor.TabIndex = 23
+        Me.btnRecolor.Text = "GIMP Experiment"
+        Me.btnRecolor.UseVisualStyleBackColor = True
+        Me.btnRecolor.Visible = False
         '
         'lblFrames
         '
@@ -654,21 +665,11 @@ Partial Class frmMain
         Me.mnuPal_Add.Size = New System.Drawing.Size(156, 22)
         Me.mnuPal_Add.Text = "Add color entry"
         '
-        'Button1
-        '
-        Me.Button1.Location = New System.Drawing.Point(855, 705)
-        Me.Button1.Name = "Button1"
-        Me.Button1.Size = New System.Drawing.Size(73, 26)
-        Me.Button1.TabIndex = 23
-        Me.Button1.Text = "Button1"
-        Me.Button1.UseVisualStyleBackColor = True
-        '
         'frmMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(1008, 780)
-        Me.Controls.Add(Me.Button1)
         Me.Controls.Add(Me.Panel1)
         Me.Controls.Add(Me.picBox)
         Me.Controls.Add(Me.dgvPaletteMain)
@@ -765,6 +766,6 @@ Partial Class frmMain
     Friend WithEvents mnuPal_Replace As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents mnuPal_Add As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents lblColorDetails As System.Windows.Forms.Label
-    Friend WithEvents Button1 As System.Windows.Forms.Button
+    Friend WithEvents btnRecolor As System.Windows.Forms.Button
 
 End Class

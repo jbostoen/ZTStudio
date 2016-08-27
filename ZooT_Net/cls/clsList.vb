@@ -8,7 +8,7 @@ Public Class List(Of T)
         MyBase.Add(item)
 
         If forceUpdate = True Then
-            clsTasks.update_Info("List - item added. Overload.")
+            'clsTasks.update_Info("List - item added. Overload.")
         End If
 
 
@@ -21,7 +21,7 @@ Public Class List(Of T)
         MyBase.AddRange(range)
 
         If forceUpdate = True Then
-            clsTasks.update_Info("List - item range added. Overload.")
+            'clsTasks.update_Info("List - item range added. Overload.")
         End If
 
     End Sub

@@ -8,6 +8,7 @@ Public Class clsPalette
 
 
     Public Property fileName As String
+        ' The filename of the palette.
         Get
             Return pal_FileName
         End Get
@@ -18,6 +19,7 @@ Public Class clsPalette
 
 
     Public Property colors As List(Of System.Drawing.Color)
+        ' This will contain all colors.
         Get
             Return pal_colors
         End Get
@@ -26,13 +28,12 @@ Public Class clsPalette
         End Set
     End Property
 
-    Function readPalette(Optional strFileName As String = vbNullString) As Integer
+    Function readPal(Optional strFileName As String = vbNullString) As Integer
+
 
         If strFileName <> vbNullString Then pal_FileName = strFileName
 
-
-        Debug.Print("Reading palette.")
-
+        ' File does not exist.
         If File.Exists(pal_FileName) = False Then
             MsgBox("Warning: could not find '" & pal_FileName & "')." & vbCrLf &
                    Application.ProductName & " will quit since this would cause errors.", vbOKOnly + vbCritical, "No palette")
@@ -46,31 +47,22 @@ Public Class clsPalette
 
         Dim pal_numColors As Integer = 0
 
-
-        'frmMain.txtHex.Text = String.Join(" ", hex)
-
         ' Now, the first bytes tell us how many colors there are.
-        ' We will cheat a little bit: ZT1 seems to only support a limited amount of colors (255?)
+        ' We will cheat a little bit: ZT1 Graphics only support a limited amount of colors (255?)
+        ' So only the first 2 bytes (rather than the first 4) signal how many blocks of 4 bytes we have.
+        pal_numColors = CInt("&H" & hex(1) & hex(0)) '- 1 
 
-        ' The first 2 bytes signal how many blocks of 4 bytes we have.
-        pal_numColors = CInt("&H" & hex(1) & hex(0)) '- 1
-
-
-        Debug.Print("Colors in this palette: " & pal_numColors)
-
+        ' Jump to what matters.
         hex = hex.Skip(4).ToArray()
-
-
-
         Dim pal As New List(Of System.Drawing.Color)
 
-        ' Read number of colors x 3 bytes, starting from byte 8, 12, 16, 20...
-        ' We can ignore the FF since it might just refer to opacity or nothing at all.
+        ' Read number of colors. Only 3 bytes per color are relevant. So starting from byte 8, 12, 16, 20...
+        ' We can ignore the other byte (FF) since it might just refer to opacity (not implemented) or nothing at all.
 
 
         While hex.Length > 0
 
-           
+
             ' Debug.Print("Color: " & strHexColorVals(0) & " " & strHexColorVals(1) & " " & strHexColorVals(2))
             ' Debug.Print("Color: " & CInt("&H" & strHexColorVals(0)) & " " & CInt("&H" & strHexColorVals(1)) & " " & CInt("&H" & strHexColorVals(2)))
 
@@ -95,103 +87,65 @@ Public Class clsPalette
 
 
     End Function
-
-    Function readPaletteBytes(intStart As Integer, intStop As Integer, Optional strFileName As String = vbNullString) As String
-
-        If strFileName <> vbNullString Then pal_FileName = strFileName
-
-        ' Read full. We could implement a faster reading later.
-        Dim bytes As Byte() = IO.File.ReadAllBytes(pal_FileName)
-        Dim hex As String() = Array.ConvertAll(bytes, Function(b) b.ToString("X2"))
-
-
-        Dim ret As String = ""
-        Dim x As Integer
-
-        For x = intStart To intStop
-            ret = ret & " " & hex(x)
-        Next
-
-        Return Strings.Trim(ret)
-
-
-    End Function
-
-
-
+     
+     
 
 
     Sub fillPaletteGrid(dgv As DataGridView)
 
 
 
-        dgv.GetType.InvokeMember("DoubleBuffered", Reflection.BindingFlags.NonPublic Or Reflection.BindingFlags.Instance Or System.Reflection.BindingFlags.SetProperty, Nothing, dgv, New Object() {True})
-
-
-        ' This function fills a datagridview.
+        ' This function fills a DataGridView.
         ' It changes the row heading to the index number of the color, 
         ' and the background color of the first column is the palette color.
 
-
-        'Dim dgv As DataGridView = frmMain.dgvPalette
-
-
+        ' This is done to greatly improve the speed of drawing.
+        ' Something weird is going on though. Later in this code, we go over the colors.
+        dgv.GetType.InvokeMember("DoubleBuffered", Reflection.BindingFlags.NonPublic Or Reflection.BindingFlags.Instance Or System.Reflection.BindingFlags.SetProperty, Nothing, dgv, New Object() {True})
 
         ' Clear previous colors
-
+        ' ( this might be necessary if a palette was rendered previously in the same DataGridView)
         dgv.Rows.Clear()
 
-
-        ' Currently just one palette grid.
         ' In our code, we used to create the rows and put them into an array.
         ' The benefit of that is that we could add it all at once.
         ' However, it turned out addRange took 5-6 seconds; while adding it to the DGV right away takes 2/3 secs
+        Dim x As Integer = 0 ' we use this for autonumbering. We could've relied on .indexOf or something too, but this is quicker.
+        
 
-
-        Dim x As Integer = 0
-
-        Dim addRows As New List(Of DataGridViewRow)
-
-        Debug.Print(Now.ToString() & " Color palette - create array")
-
+        ' Prevent visible updates in between.
         dgv.Visible = False
 
         For Each col As System.Drawing.Color In pal_colors
 
-            Dim drRow As New DataGridViewRow
-            'drRow.DefaultCellStyle.BackColor = col
-            'drRow.DefaultCellStyle.SelectionBackColor = col ' prevent selection highlighting (blue)
+            Dim drRow As New DataGridViewRow 
+
 
             With drRow
+
+                ' The first color is actually transparent, but we want to show it in the DataGridView 
+                .DefaultCellStyle.BackColor = System.Drawing.Color.FromArgb(255, col)
+                .DefaultCellStyle.SelectionBackColor = System.Drawing.Color.FromArgb(255, col)
+
                 .CreateCells(dgv)
                 .HeaderCell.Value = x.ToString("0")
                 .Cells(0).Value = x.ToString("X2")
-                '.Cells(0).Style.BackColor = col
-                '.Cells(0).Style.SelectionBackColor = col
-                .DefaultCellStyle.BackColor = col
-                .DefaultCellStyle.SelectionBackColor = col
+
             End With
-
-
-
-            'dgv.Rows.Add(drRow)
-            'dgv.Rows(x).Cells(0).Value = x.ToString("X2")
              
 
-            'addRows.Add(drRow)
+            dgv.Rows.Add(drRow) 
+            x += 1 ' Autonumbering (row header)
 
-            x += 1
+        Next 
 
-            dgv.Rows.Add(drRow)
-
-        Next
-
+        ' Make our DataGridView visible again, everything has bene added.
         dgv.Visible = True
         Debug.Print(Now.ToString & " finished")
+
         ' Unfortunately, this is slow. It takes 5-6 seconds.
         ' dgv.Rows.AddRange(addRows.ToArray())
-
-        'dgv.AutoResizeRowHeadersWidth(DataGridViewRowHeadersWidthSizeMode.AutoSizeToAllHeaders)
+        ' dgv.AutoResizeRowHeadersWidth(DataGridViewRowHeadersWidthSizeMode.AutoSizeToAllHeaders)
 
 
 
@@ -201,34 +155,47 @@ Public Class clsPalette
 
     Public Function getColorIndex(c As System.Drawing.Color, Optional addToPalette As Boolean = True) As Integer
 
-
-        'Debug.Print("COLOR = " & c.ToString())
+        ' This function is used to find the index of a color in our color palette.
+        ' If not found, it is added - until the maximum number of 255 (+1 transparent) colors has been reached.
 
 
         If Me.colors.Count = 0 Then
-            ' add transparent color!
-            Me.colors.Add(System.Drawing.Color.FromArgb(0, 255, 0, 255), False)
+            ' We are working with a brand new color palette.
+            ' There's no transparent color just yet. Define.
+            ' was 0, 255, 0, 255 (pink)
+            Me.colors.Add(System.Drawing.Color.FromArgb(0, cfg_grid_BackGroundColor), False)
         End If
 
         If Me.colors.Contains(c) = True Then
 
-            'Debug.Print("Color found: " & Me.colors.IndexOf(c))
-
-
+            ' Color has been found, return the index
             Return Me.colors.IndexOf(c)
 
+
+        ElseIf c.A = 0 Then
+
+            ' We have a different transparent color
+            Return 0
+
         Else
-            ' It doesn't contain our color. Can we add it?
-            If Me.colors.Count < 255 And addToPalette = True Then ' number of colors = [0-255]
+            ' It doesn't contain our color. Can we still add it?
+            If Me.colors.Count < 256 And addToPalette = True Then ' number of colors = [0-255]
+                ' Yeah sure, just add it to the color palette.
                 Me.colors.Add(c, False)
-                'Debug.Print("Color added: " & (Me.colors.Count - 1))
                 Return Me.colors.Count - 1  ' return last item index
             Else
-                ' Debug.Print("Color overflow: " & Me.colors.Count & " - " & addToPalette & " - " & Me.colors.IndexOf(c))
-
                 MsgBox("The current palette already contains " & Me.colors.Count & " colors." & vbCrLf & _
-                       "This is the maximum we can allow." & vbCrLf & "Further errors could arise!", _
+                       "This is the maximum we can allow." & vbCrLf & "Further errors could arise!" & vbCrLf & _
+                       Me.fileName, _
                        vbOKOnly + vbCritical, "Too many colors!")
+
+                For Each col As System.Drawing.Color In Me.colors
+                    Debug.Print(Me.colors.IndexOf(col).ToString("000") & " | " & col.ToString())
+                Next
+
+
+
+
                 Return -1
             End If
 
@@ -287,6 +254,7 @@ Public Class clsPalette
                 .Add(pal_colors(x).G.ToString("X2"), False)
                 .Add(pal_colors(x).B.ToString("X2"), False)
 
+                ' Only the first color is transparent
                 If x = 0 Then
                     .Add("00", False)
                 Else
@@ -327,6 +295,13 @@ dBug:
 
     Function combineColorPalettes(lstPals As List(Of clsPalette)) As clsPalette
 
+
+        ' This function should allow to create/combine color palettes.
+        ' We'll need to check somewhere if we don't have too many colours! (more than 255 + 1 transparent!)
+
+        Debug.Print("Combine color palettes.")
+
+
         Dim comPal As New clsPalette
 
         ' for each color palette: check if color exists in our new palette.
@@ -356,6 +331,11 @@ dBug:
 
 
     Function export_to_PNG(strExportFileName As String)
+
+        ' This is for a feature where we first exported a color palette, by writing all known colors in a single image.
+        ' The idea is that the .PNG can easily be recolored with a 3rd party program (eg GIMP)
+        ' This way, the entire palette of an existing animal can be recolored at once. (recoloring was a well known method to create 'new' animals)
+        ' Next, we reimport this. We'd only need to fix the shadow.
 
 
 
@@ -402,6 +382,11 @@ dBug:
 
     Function import_from_PNG(sFileName As String, Optional blnForceAddColor As Boolean = False)
 
+        ' This is for a feature where we first exported a color palette, by writing all known colors in a single image.
+        ' The idea is that the .PNG can easily be recolored with a 3rd party program (eg GIMP)
+        ' This way, the entire palette of an existing animal can be recolored at once. (recoloring was a well known method to create 'new' animals)
+        ' Next, we reimport this. We'd only need to fix the shadow.
+
 
         Dim bmp As Bitmap = Image.FromFile(sFileName)
 
@@ -438,5 +423,8 @@ dBug:
 
     End Function
 
+    Public Sub New()
+
+    End Sub
 End Class
 

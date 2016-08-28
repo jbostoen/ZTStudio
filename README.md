@@ -1,3 +1,9 @@
+**I just want to use this! Help!**
+* Click the Download button and choose .ZIP-file.
+* Download and unzip to your PC
+* Look for the folder ZTStudio/ZooT_Net/bin/Debug .
+* There you find ZTStudio.exe, which you can simply run.
+
 
 **Important note**
 

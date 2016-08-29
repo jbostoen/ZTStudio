@@ -302,6 +302,7 @@ Public Class frmMain
         MsgBox("About " & Application.ProductName & " " & Application.ProductVersion & vbCrLf & _
             "___________________________" & vbCrLf & _
             "© since 2015 by Jeffrey Bostoen" & vbCrLf & _
+            "https://github.com/jbostoen/ZTStudio" & vbCrLf & _
             "jeffrey_bostoen@hotmail.com" & vbCrLf & _
             vbCrLf & vbCrLf & _
             "Bugs? " & vbCrLf & _

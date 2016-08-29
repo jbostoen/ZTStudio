@@ -1,7 +1,7 @@
 **I just want to use this! Help!**
 * Click the Download button and choose .ZIP-file.
 * Download and unzip to your PC
-* Look for the folder ZTStudio/ZooT_Net/bin/Debug .
+* Look for the folder ZTStudio-master/source/bin/Debug .
 * There you find ZTStudio.exe, which you can simply run.
 
 
@@ -18,5 +18,6 @@ Pull Requests are welcome, although I'm not actively working on this tool anymor
 When forking or using code or ideas explained in the documentation: please publish the complete code of your project too.
 
 **More information**
+
 See our Wiki pages on GitHub.
 

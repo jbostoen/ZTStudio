@@ -12,3 +12,17 @@ C:\Users\Jeffrey\Documents\GitHub\ZTStudio\ZooT_Net\obj\Debug\ZTStudio.vbproj.Ge
 C:\Users\Jeffrey\Documents\GitHub\ZTStudio\ZooT_Net\obj\Debug\ZT Studio.exe
 C:\Users\Jeffrey\Documents\GitHub\ZTStudio\ZooT_Net\obj\Debug\ZT Studio.xml
 C:\Users\Jeffrey\Documents\GitHub\ZTStudio\ZooT_Net\obj\Debug\ZT Studio.pdb
+C:\Users\Jeffrey\Documents\GitHub\ZTStudio\source\bin\Debug\ZT Studio.exe.config
+C:\Users\Jeffrey\Documents\GitHub\ZTStudio\source\obj\Debug\ZT Studio.exe
+C:\Users\Jeffrey\Documents\GitHub\ZTStudio\source\obj\Debug\ZT Studio.xml
+C:\Users\Jeffrey\Documents\GitHub\ZTStudio\source\obj\Debug\ZT Studio.pdb
+C:\Users\Jeffrey\Documents\GitHub\ZTStudio\source\bin\Debug\ZT Studio.exe
+C:\Users\Jeffrey\Documents\GitHub\ZTStudio\source\bin\Debug\ZT Studio.pdb
+C:\Users\Jeffrey\Documents\GitHub\ZTStudio\source\bin\Debug\ZT Studio.xml
+C:\Users\Jeffrey\Documents\GitHub\ZTStudio\source\obj\Debug\ZTStudio.frmBatchConversion.resources
+C:\Users\Jeffrey\Documents\GitHub\ZTStudio\source\obj\Debug\ZTStudio.frmMain.resources
+C:\Users\Jeffrey\Documents\GitHub\ZTStudio\source\obj\Debug\ZTStudio.frmPal.resources
+C:\Users\Jeffrey\Documents\GitHub\ZTStudio\source\obj\Debug\ZTStudio.frmSettings.resources
+C:\Users\Jeffrey\Documents\GitHub\ZTStudio\source\obj\Debug\ZTStudio.Resources.resources
+C:\Users\Jeffrey\Documents\GitHub\ZTStudio\source\obj\Debug\ZTStudio.vbproj.GenerateResource.Cache
+C:\Users\Jeffrey\Documents\GitHub\ZTStudio\source\obj\Debug\ZTStudio.vbprojResolveAssemblyReference.cache

@@ -232,19 +232,14 @@ Public Class frmMain
 
                         ' Keep filename
                         ssFileName.Text = dlgOpen.FileName
-
-
-
+                         
                         ' Draw first frame 
                         clsTasks.preview_update(0)
 
                         ' Add time indication
                         lblAnimTime.Text = ((editorGraphic.frames.Count - editorGraphic.extraFrame) * editorGraphic.animationSpeed) & " ms "
                         lblFrames.Text = (editorGraphic.frames.Count - editorGraphic.extraFrame) & " frames. "
-
-
-
-
+                         
                         ' Show default palette
                         editorGraphic.colorPalette.fillPaletteGrid(dgvPaletteMain)
 
@@ -363,6 +358,7 @@ Public Class frmMain
             .DefaultExt = ".pal"
             .Filter = "ZT1 Color Palette files (*.pal)|*.pal|All files|*.*"
             .InitialDirectory = System.IO.Path.GetDirectoryName(cfg_path_recentZT1)
+ 
 
             If .ShowDialog() <> Windows.Forms.DialogResult.Cancel Then
 
@@ -493,11 +489,11 @@ Public Class frmMain
 
                 End If
 
+                ' 20150624. We have <filename>.pal here. 
+                ' We do this to avoid issues with shared color palettes, if users are NOT familiar with them.
+                ' We are assuming pro users will only tweak and use the batch conversion.
                 With editorGraphic
                     .fileName = dlgSave.FileName
-                    ' 20150624. We have <filename>.pal here. 
-                    ' This could be a bit of a problem if e.g. the bamboo was opened. 
-                    ' We will create separate .pal-files, while we could have a combined one.
                     .colorPalette.fileName = editorGraphic.fileName & ".pal"
                     .write(dlgSave.FileName, True)
                 End With
@@ -736,25 +732,6 @@ dBug:
 
     End Sub
 
-    Private Sub Button2_Click(sender As Object, e As EventArgs)
-
-
-        Dim c As New clsAniFile
-        c.fileName = "X:\Projecten\Animal Antics\Tools\currentproject\objects\bamboo\idle\test.ani"
-        c.guessConfig()
-
-        Exit Sub
-
-
-        Dim rect As Rectangle = editorGraphic.getDefiningRectangle()
-
-        Debug.Print(rect.X & " - " & rect.Y & " - " & rect.Width & " - " & rect.Height)
-
-
-        Exit Sub
-
-
-    End Sub
      
 
     Private Sub tsbFrame_fpX_SelectedIndexChanged(sender As Object, e As EventArgs) Handles tsbFrame_fpX.SelectedIndexChanged
@@ -803,7 +780,11 @@ dBug:
 
     Private Sub dgvPaletteMain_CellMouseClick(sender As Object, e As DataGridViewCellMouseEventArgs) Handles dgvPaletteMain.CellMouseClick
 
-        dgvPaletteMain.Rows(e.RowIndex).Selected = True
+        If e.RowIndex <> -1 Then
+            dgvPaletteMain.Rows(e.RowIndex).Selected = True
+
+        End If
+
 
         If e.Button = Windows.Forms.MouseButtons.Right Then
 
@@ -812,7 +793,7 @@ dBug:
             mnuPal_MoveEnd.Visible = (e.RowIndex <> dgvPaletteMain.Rows.Count - 1)
             mnuPal_MoveUp.Visible = (e.RowIndex <> 0)
 
-            mnuPal.Show(Me.dgvPaletteMain, e.Location)
+            'mnuPal.Show(Me.dgvPaletteMain, e.Location)
             mnuPal.Show(Cursor.Position)
 
         End If
@@ -955,16 +936,7 @@ dBug:
     Private Sub tsbOpenPalBldg16_Click(sender As Object, e As EventArgs) Handles tsbOpenPalBldg16.Click
 
     End Sub
-
-    Private Sub btnRecolor_Click(sender As Object, e As EventArgs) Handles btnRecolor.Click
-
-        ' This will be used to use GIMP to recolor our color palette (which we completely export as a .PNG-file).
-        ' It's not our intention to create a full blown graphic editor ourselves.
-        ' That's why we rely on open source. 
-        frmGIMPRecolor.ShowDialog()
-
-
-    End Sub
+     
      
     Private Sub tsbFrame_fpY_Click(sender As Object, e As EventArgs) Handles tsbFrame_fpY.Click
 
@@ -983,6 +955,128 @@ dBug:
     End Sub
 
     Private Sub tsbFrame_OffsetUp_Click(sender As Object, e As EventArgs) Handles tsbFrame_OffsetUp.Click
+
+    End Sub
+
+    Private Sub mnuPal_Opening(sender As Object, e As System.ComponentModel.CancelEventArgs) Handles mnuPal.Opening
+
+    End Sub
+
+    Private Sub ssBar_ItemClicked(sender As Object, e As ToolStripItemClickedEventArgs) Handles ssBar.ItemClicked
+
+    End Sub
+
+    Private Sub mnuPal_ExportPNG_Click(sender As Object, e As EventArgs) Handles mnuPal_ExportPNG.Click
+
+        With dlgSave
+
+            .Title = "Save as a PNG Color Palette"
+            .DefaultExt = ".png"
+            .Filter = "PNG Color Palette files (*.png)|*.png|All files|*.*"
+            .InitialDirectory = System.IO.Path.GetDirectoryName(cfg_path_recentZT1)
+
+
+            If .ShowDialog() <> Windows.Forms.DialogResult.Cancel Then
+
+                editorGraphic.colorPalette.export_to_PNG(dlgSave.FileName)
+
+            End If ' cancel check
+
+
+        End With
+
+
+
+    End Sub
+
+    Private Sub mnuPal_ImportPNG_Click(sender As Object, e As EventArgs) Handles mnuPal_ImportPNG.Click
+
+
+
+        With dlgOpen
+
+            .Title = "Pick a PNG Color Palette"
+            .DefaultExt = ".png"
+            .Filter = "PNG Color Palette files (*.png)|*.png|All files|*.*"
+            .InitialDirectory = System.IO.Path.GetDirectoryName(cfg_path_recentZT1)
+
+
+            If .ShowDialog() <> Windows.Forms.DialogResult.Cancel Then 
+
+                ' Replace palette file. 
+                editorGraphic.colorPalette.import_from_PNG(dlgOpen.FileName)
+
+                ' Redraw
+                editorGraphic.colorPalette.fillPaletteGrid(dgvPaletteMain)
+
+                ' We need to force a refresh of rendered images.
+                For Each f As clsFrame In editorGraphic.frames
+                    f.cachedFrame = Nothing
+                Next
+                clsTasks.preview_update()
+
+            End If ' cancel check
+
+
+        End With
+
+
+    End Sub
+
+    Private Sub Panel1_Paint(sender As Object, e As PaintEventArgs) Handles Panel1.Paint
+
+    End Sub
+
+    Private Sub mnuPal_SavePAL_Click(sender As Object, e As EventArgs) Handles mnuPal_SavePAL.Click
+
+        With dlgSave
+
+            .Title = "Save as a ZT1 Color Palette"
+            .DefaultExt = ".pal"
+            .Filter = "ZT1 Color Palette files (*.pal)|*.pal|All files|*.*"
+            .InitialDirectory = System.IO.Path.GetDirectoryName(cfg_path_recentZT1)
+
+
+            If .ShowDialog() <> Windows.Forms.DialogResult.Cancel Then
+
+                editorGraphic.colorPalette.writePal(dlgSave.FileName, True)
+
+            End If ' cancel check
+
+
+        End With
+
+    End Sub
+
+    Private Sub mnuPal_ImportGimpPalette_Click(sender As Object, e As EventArgs) Handles mnuPal_ImportGimpPalette.Click
+
+
+        With dlgOpen
+
+            .Title = "Pick a GIMP Color Palette"
+            .DefaultExt = ".gpl"
+            .Filter = "GIMP Color Palette (*.gpl)|*.gpl|All files|*.*"
+            .InitialDirectory = System.IO.Path.GetDirectoryName(cfg_path_recentZT1)
+
+
+            If .ShowDialog() <> Windows.Forms.DialogResult.Cancel Then
+
+                ' Replace palette file. 
+                editorGraphic.colorPalette.import_from_GimpPalette(dlgOpen.FileName)
+
+                ' Redraw
+                editorGraphic.colorPalette.fillPaletteGrid(dgvPaletteMain)
+
+                ' We need to force a refresh of rendered images.
+                For Each f As clsFrame In editorGraphic.frames
+                    f.cachedFrame = Nothing
+                Next
+                clsTasks.preview_update()
+
+            End If ' cancel check
+
+
+        End With
 
     End Sub
 End Class

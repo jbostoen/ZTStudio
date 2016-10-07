@@ -205,7 +205,7 @@ dBug:
 
     Function renderFrame(Optional bmOutput As Bitmap = Nothing, Optional ztPal As clsPalette = Nothing, Optional cacheLoad As Boolean = True, Optional cacheStore As Boolean = True) As Bitmap
 
-        Debug.Print("Render frame. " & Me.parent.frames.IndexOf(Me))
+        Debug.Print("clsFrame: Render frame. " & Me.parent.frames.IndexOf(Me))
 
         ' Cached? 
         If IsNothing(Me.parent) = False Then
@@ -221,6 +221,8 @@ dBug:
             ' Cached version of the image is not available. 
             ' We will need to render the image from scratch.
         End If
+
+        Debug.Print("clsFrame: Not relying on a cached frame.")
 
 
         ' Color palette
@@ -738,8 +740,9 @@ dBug:
         Dim rect As Rectangle = clsTasks.bitmap_getDefiningRectangle(bm)
         'Dim rect As Rectangle = Me.parent.getDefiningRectangle()
 
-
-        'Debug.Print("Defining rectangle: x,y,oX,oY = " & rect.X & " - " & rect.Y & " - " & rect.Width & " - " & rect.Height)
+        ' might be able to do this more efficiently?
+        Debug.Print("Known: x,y,oX,oY = " & Me.offsetX & " - " & Me.offsetY & " - " & Me.width & " - " & Me.height)
+        Debug.Print("Defining rectangle: x,y,oX,oY = " & rect.X & " - " & rect.Y & " - " & rect.Width & " - " & rect.Height)
 
 
 1000:

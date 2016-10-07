@@ -247,7 +247,7 @@ Public Class clsGraphic2
             hex = hex.Skip(intFrameBytes).ToArray()
 
 105:
-            Debug.Print("Graphics: total bytes of frame " & (ztFrames.Count).ToString("00") & "/" & (editorGraphic_numFrames) & " = " & (Strings.Replace(ztFrame.hexString, " ", "").Length / 2) & vbTab & "Bytes left: " & hex.Length)
+            'Debug.Print("Graphics: total bytes of frame " & (ztFrames.Count).ToString("00") & "/" & (editorGraphic_numFrames) & " = " & (Strings.Replace(ztFrame.hexString, " ", "").Length / 2) & vbTab & "Bytes left: " & hex.Length)
 
 
             intCurrentFrame += 1

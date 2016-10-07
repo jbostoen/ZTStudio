@@ -36,11 +36,12 @@
         ' Export to ZT1
         chkExportZT1_Ani.Checked = (cfg_export_ZT1_Ani = 1)
         chkExportZT1_AddZTAFBytes.Checked = (cfg_export_ZT1_AlwaysAddZTAFBytes = 1)
-
-
+         
 
         ' Conversion
         chkConvert_DeleteOriginal.Checked = (cfg_convert_deleteOriginal = 1)
+        chkConvert_SharedColorPalette.Checked = (cfg_convert_sharedPalette = 1)
+        chkConvert_Overwrite.Checked = (cfg_convert_overwrite = 1)
         numConvert_PNGStartIndex.Value = cfg_convert_startIndex
 
 
@@ -183,4 +184,18 @@
     End Sub
 
 
+    Private Sub tpConversions_Click(sender As Object, e As EventArgs) Handles tpConversions.Click
+
+    End Sub
+
+    Private Sub chkConvert_SharedColorPalette_CheckedChanged(sender As Object, e As EventArgs) Handles chkConvert_SharedColorPalette.CheckedChanged
+
+        If chkConvert_SharedColorPalette.IsHandleCreated = False Then Exit Sub
+        cfg_convert_sharedPalette = CByte(chkConvert_SharedColorPalette.Checked * -1)
+
+    End Sub
+
+    Private Sub txtConvert_FileNamedelimiter_TextChanged(sender As Object, e As EventArgs) Handles txtConvert_FileNamedelimiter.TextChanged
+        cfg_convert_fileNamedelimiter = txtConvert_FileNamedelimiter.Text
+    End Sub
 End Class

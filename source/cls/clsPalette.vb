@@ -177,6 +177,11 @@ Public Class clsPalette
             ' We have a different transparent color
             Return 0
 
+        ElseIf c.A = 255 And c.R = Me.colors(0).R And c.G = Me.colors(0).G And c.B = Me.colors(0).B Then
+
+            ' Hotfix for opacity issue
+            Return 0
+
         Else
             ' It doesn't contain our color. Can we still add it?
             If Me.colors.Count < 256 And addToPalette = True Then ' number of colors = [0-255]
@@ -184,7 +189,10 @@ Public Class clsPalette
                 Me.colors.Add(c, False)
                 Return Me.colors.Count - 1  ' return last item index
             Else
-                MsgBox("The current palette already contains " & Me.colors.Count & " colors." & vbCrLf & _
+                '    "Failed to add (" & c.R.ToString() & ", " & c.G.ToString() & ", " & c.B.ToString() & ", " & c.A.ToString() & ")." & vbCrLf & _
+                MsgBox("The current palette already contains " & Me.colors.Count & " colors." & vbCrLf & vbCrLf & _
+                       "Color: " & c.ToString() & vbCrLf & _
+                       "Transparent color: " & Me.colors(0).ToString & vbCrLf & _
                        "This is the maximum we can allow." & vbCrLf & "Further errors could arise!" & vbCrLf & _
                        Me.fileName, _
                        vbOKOnly + vbCritical, "Too many colors!")
@@ -386,7 +394,8 @@ dBug:
         ' The idea is that the .PNG can easily be recolored with a 3rd party program (eg GIMP)
         ' This way, the entire palette of an existing animal can be recolored at once. (recoloring was a well known method to create 'new' animals)
         ' Next, we reimport this. We'd only need to fix the shadow.
-
+        ' We do not rely on native GIMP Palettes (.gpl) because some people might prefer Paint.NET or other programs.
+        ' By importing from .PNG, we have a general approach.
 
         Dim bmp As Bitmap = Image.FromFile(sFileName)
 
@@ -422,6 +431,72 @@ dBug:
         Debug.Print("Loaded")
 
     End Function
+
+
+
+
+
+    Function import_from_GimpPalette(sFileName As String, Optional blnForceAddColor As Boolean = False)
+
+        ' Contrary to import_from_PNG, this one is specifically designed for the free and open source GIMP
+
+        ' Typical file: 
+
+
+        ' GIMP Palette
+        ' Name:   RedPanda copy
+        ' Columns: 16
+        ' #
+        ' 0   1   0	#0
+        ' <line for each color>
+        ' 254 255 252	#254
+
+         
+        Dim objReader As New System.IO.StreamReader(sFileName) 
+
+        Dim textLine As String
+        Dim intLine As Integer = 1
+
+        ' Clear current palette (please prevent redraws at this point)
+        Me.colors.Clear(False)
+
+        ' Read file.
+        Do While objReader.Peek() <> -1
+
+
+            textLine = objReader.ReadLine()
+
+            ' Ignore the first few lines of the GPL file AND the transparent color
+            If intLine = 4 And textLine <> "" Then
+
+                Me.colors(0) = System.Drawing.Color.FromArgb(Split(textLine, " ")(0), Split(textLine, " ")(1), Split(textLine, " ")(2))
+
+            ElseIf intLine > 4 And textLine <> "" Then
+
+
+                ' Remove double white spaces etc 
+                textLine = Strings.Trim(System.Text.RegularExpressions.Regex.Replace(textLine, "\s+", " "))
+
+                ' Add to this color palette
+                Me.colors.Add(System.Drawing.Color.FromArgb(Split(textLine, " ")(0), Split(textLine, " ")(1), Split(textLine, " ")(2)))
+
+
+            End If
+
+            ' Next
+            intLine += 1
+
+        Loop
+
+
+        Debug.Print("Loaded")
+
+    End Function
+
+
+     
+
+
 
     Public Sub New()
 

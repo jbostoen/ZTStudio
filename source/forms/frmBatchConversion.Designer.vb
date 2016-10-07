@@ -50,7 +50,7 @@ Partial Class frmBatchConversion
         Me.rbPNG_to_ZT1.Checked = True
         Me.rbPNG_to_ZT1.Location = New System.Drawing.Point(6, 28)
         Me.rbPNG_to_ZT1.Name = "rbPNG_to_ZT1"
-        Me.rbPNG_to_ZT1.Size = New System.Drawing.Size(207, 17)
+        Me.rbPNG_to_ZT1.Size = New System.Drawing.Size(219, 17)
         Me.rbPNG_to_ZT1.TabIndex = 9
         Me.rbPNG_to_ZT1.TabStop = True
         Me.rbPNG_to_ZT1.Text = "Convert all .PNG-files to a ZT1-graphic"
@@ -61,7 +61,7 @@ Partial Class frmBatchConversion
         Me.rbZT1_to_PNG.AutoSize = True
         Me.rbZT1_to_PNG.Location = New System.Drawing.Point(6, 51)
         Me.rbZT1_to_PNG.Name = "rbZT1_to_PNG"
-        Me.rbZT1_to_PNG.Size = New System.Drawing.Size(219, 17)
+        Me.rbZT1_to_PNG.Size = New System.Drawing.Size(232, 17)
         Me.rbZT1_to_PNG.TabIndex = 8
         Me.rbZT1_to_PNG.Text = "Convert all ZT1 graphic files to .PNG files"
         Me.rbZT1_to_PNG.UseVisualStyleBackColor = True
@@ -81,7 +81,7 @@ Partial Class frmBatchConversion
         Me.lblInfo.AutoSize = True
         Me.lblInfo.Location = New System.Drawing.Point(50, 156)
         Me.lblInfo.Name = "lblInfo"
-        Me.lblInfo.Size = New System.Drawing.Size(506, 65)
+        Me.lblInfo.Size = New System.Drawing.Size(529, 78)
         Me.lblInfo.TabIndex = 19
         Me.lblInfo.Text = resources.GetString("lblInfo.Text")
         '
@@ -111,7 +111,7 @@ Partial Class frmBatchConversion
         Me.Controls.Add(Me.lblInfo)
         Me.Controls.Add(Me.btnConvert)
         Me.Controls.Add(Me.gbType)
-        Me.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Font = New System.Drawing.Font("Segoe UI", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow
         Me.Name = "frmBatchConversion"
         Me.Text = "Batch conversion"

@@ -121,6 +121,7 @@
     <value>Every file in the root folder will be converted.
 
 How will the files be converted?
+This is an example if you have configured a file name delimiter (in this case: _ )
 * ZT1 to PNG: "N" will result in "N_0000.PNG", "N_0001.PNG" (so: name of file + 4 digits for frame index)
 * PNG to ZT1: "N_0000.png", "N_0001.PNG" will result in 1 ZT1 Graphic with 2 frames.</value>
   </data>

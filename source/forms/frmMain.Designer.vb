@@ -39,7 +39,6 @@ Partial Class frmMain
         Me.dlgOpen = New System.Windows.Forms.OpenFileDialog()
         Me.Panel1 = New System.Windows.Forms.Panel()
         Me.lblColorDetails = New System.Windows.Forms.Label()
-        Me.btnRecolor = New System.Windows.Forms.Button()
         Me.lblFrames = New System.Windows.Forms.Label()
         Me.lblAnimTime = New System.Windows.Forms.Label()
         Me.lblColor = New System.Windows.Forms.Label()
@@ -93,6 +92,10 @@ Partial Class frmMain
         Me.mnuPal_MoveDown = New System.Windows.Forms.ToolStripMenuItem()
         Me.mnuPal_Replace = New System.Windows.Forms.ToolStripMenuItem()
         Me.mnuPal_Add = New System.Windows.Forms.ToolStripMenuItem()
+        Me.mnuPal_SavePAL = New System.Windows.Forms.ToolStripMenuItem()
+        Me.mnuPal_ExportPNG = New System.Windows.Forms.ToolStripMenuItem()
+        Me.mnuPal_ImportPNG = New System.Windows.Forms.ToolStripMenuItem()
+        Me.mnuPal_ImportGimpPalette = New System.Windows.Forms.ToolStripMenuItem()
         CType(Me.picBox, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.tsZT1Graphic.SuspendLayout()
         Me.Panel1.SuspendLayout()
@@ -202,7 +205,6 @@ Partial Class frmMain
         'Panel1
         '
         Me.Panel1.Controls.Add(Me.lblColorDetails)
-        Me.Panel1.Controls.Add(Me.btnRecolor)
         Me.Panel1.Controls.Add(Me.lblFrames)
         Me.Panel1.Controls.Add(Me.lblAnimTime)
         Me.Panel1.Controls.Add(Me.lblColor)
@@ -224,16 +226,6 @@ Partial Class frmMain
         Me.lblColorDetails.TabIndex = 34
         Me.lblColorDetails.Text = "Color details"
         Me.lblColorDetails.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
-        '
-        'btnRecolor
-        '
-        Me.btnRecolor.Location = New System.Drawing.Point(666, 100)
-        Me.btnRecolor.Name = "btnRecolor"
-        Me.btnRecolor.Size = New System.Drawing.Size(136, 26)
-        Me.btnRecolor.TabIndex = 23
-        Me.btnRecolor.Text = "GIMP Experiment"
-        Me.btnRecolor.UseVisualStyleBackColor = True
-        Me.btnRecolor.Visible = False
         '
         'lblFrames
         '
@@ -631,39 +623,63 @@ Partial Class frmMain
         '
         'mnuPal
         '
-        Me.mnuPal.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.mnuPal_MoveEnd, Me.mnuPal_MoveUp, Me.mnuPal_MoveDown, Me.mnuPal_Replace, Me.mnuPal_Add})
+        Me.mnuPal.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.mnuPal_MoveEnd, Me.mnuPal_MoveUp, Me.mnuPal_MoveDown, Me.mnuPal_Replace, Me.mnuPal_Add, Me.mnuPal_SavePAL, Me.mnuPal_ExportPNG, Me.mnuPal_ImportPNG, Me.mnuPal_ImportGimpPalette})
         Me.mnuPal.Name = "mnuPal"
-        Me.mnuPal.Size = New System.Drawing.Size(157, 114)
+        Me.mnuPal.Size = New System.Drawing.Size(245, 224)
         '
         'mnuPal_MoveEnd
         '
         Me.mnuPal_MoveEnd.Name = "mnuPal_MoveEnd"
-        Me.mnuPal_MoveEnd.Size = New System.Drawing.Size(156, 22)
+        Me.mnuPal_MoveEnd.Size = New System.Drawing.Size(244, 22)
         Me.mnuPal_MoveEnd.Text = "Move to end"
         '
         'mnuPal_MoveUp
         '
         Me.mnuPal_MoveUp.Name = "mnuPal_MoveUp"
-        Me.mnuPal_MoveUp.Size = New System.Drawing.Size(156, 22)
+        Me.mnuPal_MoveUp.Size = New System.Drawing.Size(244, 22)
         Me.mnuPal_MoveUp.Text = "Move up"
         '
         'mnuPal_MoveDown
         '
         Me.mnuPal_MoveDown.Name = "mnuPal_MoveDown"
-        Me.mnuPal_MoveDown.Size = New System.Drawing.Size(156, 22)
+        Me.mnuPal_MoveDown.Size = New System.Drawing.Size(244, 22)
         Me.mnuPal_MoveDown.Text = "Move down"
         '
         'mnuPal_Replace
         '
         Me.mnuPal_Replace.Name = "mnuPal_Replace"
-        Me.mnuPal_Replace.Size = New System.Drawing.Size(156, 22)
+        Me.mnuPal_Replace.Size = New System.Drawing.Size(244, 22)
         Me.mnuPal_Replace.Text = "Replace color"
         '
         'mnuPal_Add
         '
         Me.mnuPal_Add.Name = "mnuPal_Add"
-        Me.mnuPal_Add.Size = New System.Drawing.Size(156, 22)
+        Me.mnuPal_Add.Size = New System.Drawing.Size(244, 22)
         Me.mnuPal_Add.Text = "Add color entry"
+        '
+        'mnuPal_SavePAL
+        '
+        Me.mnuPal_SavePAL.Name = "mnuPal_SavePAL"
+        Me.mnuPal_SavePAL.Size = New System.Drawing.Size(244, 22)
+        Me.mnuPal_SavePAL.Text = "Save as .PAL"
+        '
+        'mnuPal_ExportPNG
+        '
+        Me.mnuPal_ExportPNG.Name = "mnuPal_ExportPNG"
+        Me.mnuPal_ExportPNG.Size = New System.Drawing.Size(244, 22)
+        Me.mnuPal_ExportPNG.Text = "Export to PNG palette"
+        '
+        'mnuPal_ImportPNG
+        '
+        Me.mnuPal_ImportPNG.Name = "mnuPal_ImportPNG"
+        Me.mnuPal_ImportPNG.Size = New System.Drawing.Size(244, 22)
+        Me.mnuPal_ImportPNG.Text = "Replace with PNG palette"
+        '
+        'mnuPal_ImportGimpPalette
+        '
+        Me.mnuPal_ImportGimpPalette.Name = "mnuPal_ImportGimpPalette"
+        Me.mnuPal_ImportGimpPalette.Size = New System.Drawing.Size(244, 22)
+        Me.mnuPal_ImportGimpPalette.Text = "Replace with GIMP Color palette"
         '
         'frmMain
         '
@@ -766,6 +782,9 @@ Partial Class frmMain
     Friend WithEvents mnuPal_Replace As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents mnuPal_Add As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents lblColorDetails As System.Windows.Forms.Label
-    Friend WithEvents btnRecolor As System.Windows.Forms.Button
+    Friend WithEvents mnuPal_ImportPNG As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents mnuPal_ExportPNG As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents mnuPal_SavePAL As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents mnuPal_ImportGimpPalette As System.Windows.Forms.ToolStripMenuItem
 
 End Class

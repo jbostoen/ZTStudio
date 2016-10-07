@@ -87,6 +87,7 @@ Partial Class frmPal
         Me.Controls.Add(Me.dgvPal)
         Me.Controls.Add(Me.btnUseInMainPal)
         Me.Controls.Add(Me.sBar)
+        Me.Font = New System.Drawing.Font("Segoe UI", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow
         Me.MinimumSize = New System.Drawing.Size(280, 280)
         Me.Name = "frmPal"

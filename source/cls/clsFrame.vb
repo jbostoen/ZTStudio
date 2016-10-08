@@ -222,7 +222,7 @@ dBug:
             ' We will need to render the image from scratch.
         End If
 
-        Debug.Print("clsFrame: Not relying on a cached frame.")
+        'Debug.Print("clsFrame: Not relying on a cached frame.")
 
 
         ' Color palette
@@ -737,12 +737,24 @@ dBug:
 100:
 
         ' === We will read the bitmap. We need 2 rectangle defining coordinates. ===
-        Dim rect As Rectangle = clsTasks.bitmap_getDefiningRectangle(bm)
+        Dim rect As Rectangle
         'Dim rect As Rectangle = Me.parent.getDefiningRectangle()
 
         ' might be able to do this more efficiently?
-        Debug.Print("Known: x,y,oX,oY = " & Me.offsetX & " - " & Me.offsetY & " - " & Me.width & " - " & Me.height)
-        Debug.Print("Defining rectangle: x,y,oX,oY = " & rect.X & " - " & rect.Y & " - " & rect.Width & " - " & rect.Height)
+        '  Return New Rectangle(coordA.X, coordA.Y, coordB.X - coordA.X, coordB.Y - coordA.Y)
+        If Me.height <> -1 And Me.width <> -1 And Me.offsetX <> 9999 And Me.offsetY <> 9999 Then
+            ' shortcut?
+            Debug.Print("Shortcut")
+            rect = New Rectangle( _
+                cfg_grid_numPixels - Me.offsetX, _
+                cfg_grid_numPixels - Me.offsetY, _
+                Me.width, Me.height)
+
+        Else
+            rect = clsTasks.bitmap_getDefiningRectangle(bm)
+        End If
+        'Debug.Print("Known: x,y,oX,oY = " & Me.offsetX & " - " & Me.offsetY & " - " & Me.width & " - " & Me.height)
+        'Debug.Print("Defining rectangle: x,y,oX,oY = " & rect.X & " - " & rect.Y & " - " & rect.Width & " - " & rect.Height)
 
 
 1000:
@@ -974,12 +986,12 @@ dBug:
 
 
  
-    Public Function updateOffsets(coordOffsetChanges As Point)
+    Public Function updateOffsets(coordOffsetChanges As Point, Optional blnBatchRotFix As Boolean = False)
 
         ' This function is for the so called "rotation fixing", positioning fixing, correcting offsets.
         ' By default, changes are applied to all frames in the graphic rather than just this frame.
 
-    
+
 
 
         On Error GoTo dBug
@@ -989,16 +1001,16 @@ dBug:
 
 11:
 
-            ' If (cfg_editor_rotFix_individualFrame = True And _
-            '     editorGraphic.frames.IndexOf(ztFrame) = objFrame.parent.frames.IndexOf(objFrame) _
-            '     ) Or cfg_editor_rotFix_individualFrame = False Then
+        ' If (cfg_editor_rotFix_individualFrame = True And _
+        '     editorGraphic.frames.IndexOf(ztFrame) = objFrame.parent.frames.IndexOf(objFrame) _
+        '     ) Or cfg_editor_rotFix_individualFrame = False Then
 
 
 
 12:
 200:
         ' By default, this applies to all frames
-        If cfg_editor_rotFix_individualFrame <> 1 Then
+        If cfg_editor_rotFix_individualFrame <> 1 Or blnBatchRotFix = True Then
 
             ' Just go for every frame
             For Each ztFrame As clsFrame In Me.parent.frames

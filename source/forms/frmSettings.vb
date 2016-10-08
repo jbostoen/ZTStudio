@@ -195,7 +195,7 @@
 
     End Sub
 
-    Private Sub txtConvert_FileNamedelimiter_TextChanged(sender As Object, e As EventArgs) Handles txtConvert_FileNamedelimiter.TextChanged
-        cfg_convert_fileNamedelimiter = txtConvert_FileNamedelimiter.Text
+    Private Sub txtConvert_fileNameDelimiter_TextChanged(sender As Object, e As EventArgs) Handles txtConvert_fileNameDelimiter.TextChanged
+        cfg_convert_fileNameDelimiter = txtConvert_fileNameDelimiter.Text
     End Sub
 End Class

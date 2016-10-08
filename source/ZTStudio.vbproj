@@ -104,6 +104,12 @@
     <Compile Include="forms\frmBatchConversion.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="forms\frmBatchRotationFix.Designer.vb">
+      <DependentUpon>frmBatchRotationFix.vb</DependentUpon>
+    </Compile>
+    <Compile Include="forms\frmBatchRotationFix.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="forms\frmMain.vb">
       <SubType>Form</SubType>
     </Compile>
@@ -142,6 +148,9 @@
   <ItemGroup>
     <EmbeddedResource Include="forms\frmBatchConversion.resx">
       <DependentUpon>frmBatchConversion.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="forms\frmBatchRotationFix.resx">
+      <DependentUpon>frmBatchRotationFix.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="forms\frmMain.resx">
       <DependentUpon>frmMain.vb</DependentUpon>

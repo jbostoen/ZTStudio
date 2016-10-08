@@ -81,6 +81,7 @@ Partial Class frmMain
         Me.tsbPreview_BGGraphic = New System.Windows.Forms.ToolStripButton()
         Me.ToolStripSeparator3 = New System.Windows.Forms.ToolStripSeparator()
         Me.tsbBatchConversion = New System.Windows.Forms.ToolStripButton()
+        Me.tsbBatchRotFix = New System.Windows.Forms.ToolStripButton()
         Me.tsbDelete_ZT1Files = New System.Windows.Forms.ToolStripButton()
         Me.tsbDelete_PNG = New System.Windows.Forms.ToolStripButton()
         Me.ToolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator()
@@ -499,7 +500,7 @@ Partial Class frmMain
         '
         'tsTools
         '
-        Me.tsTools.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.tsMisc, Me.tsbOpenPalBldg8, Me.tsbOpenPalBldg16, Me.ToolStripSeparator2, Me.tsbGridBG, Me.tsbPreview_BGGraphic, Me.ToolStripSeparator3, Me.tsbBatchConversion, Me.tsbDelete_ZT1Files, Me.tsbDelete_PNG, Me.ToolStripSeparator1, Me.tsbSettings, Me.tsbAbout})
+        Me.tsTools.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.tsMisc, Me.tsbOpenPalBldg8, Me.tsbOpenPalBldg16, Me.ToolStripSeparator2, Me.tsbGridBG, Me.tsbPreview_BGGraphic, Me.ToolStripSeparator3, Me.tsbBatchConversion, Me.tsbBatchRotFix, Me.tsbDelete_ZT1Files, Me.tsbDelete_PNG, Me.ToolStripSeparator1, Me.tsbSettings, Me.tsbAbout})
         Me.tsTools.Location = New System.Drawing.Point(0, 78)
         Me.tsTools.Name = "tsTools"
         Me.tsTools.Size = New System.Drawing.Size(1008, 39)
@@ -576,6 +577,16 @@ Partial Class frmMain
         Me.tsbBatchConversion.Size = New System.Drawing.Size(36, 36)
         Me.tsbBatchConversion.Text = "Batch conversion: ZT1 Graphic <=> .PNG"
         '
+        'tsbBatchRotFix
+        '
+        Me.tsbBatchRotFix.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.tsbBatchRotFix.Image = CType(resources.GetObject("tsbBatchRotFix.Image"), System.Drawing.Image)
+        Me.tsbBatchRotFix.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None
+        Me.tsbBatchRotFix.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.tsbBatchRotFix.Name = "tsbBatchRotFix"
+        Me.tsbBatchRotFix.Size = New System.Drawing.Size(36, 36)
+        Me.tsbBatchRotFix.Text = "Batch rotation fixing"
+        '
         'tsbDelete_ZT1Files
         '
         Me.tsbDelete_ZT1Files.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
@@ -625,7 +636,7 @@ Partial Class frmMain
         '
         Me.mnuPal.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.mnuPal_MoveEnd, Me.mnuPal_MoveUp, Me.mnuPal_MoveDown, Me.mnuPal_Replace, Me.mnuPal_Add, Me.mnuPal_SavePAL, Me.mnuPal_ExportPNG, Me.mnuPal_ImportPNG, Me.mnuPal_ImportGimpPalette})
         Me.mnuPal.Name = "mnuPal"
-        Me.mnuPal.Size = New System.Drawing.Size(245, 224)
+        Me.mnuPal.Size = New System.Drawing.Size(245, 202)
         '
         'mnuPal_MoveEnd
         '
@@ -786,5 +797,6 @@ Partial Class frmMain
     Friend WithEvents mnuPal_ExportPNG As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents mnuPal_SavePAL As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents mnuPal_ImportGimpPalette As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents tsbBatchRotFix As System.Windows.Forms.ToolStripButton
 
 End Class

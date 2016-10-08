@@ -49,7 +49,7 @@ Module mdlSettings
     Public cfg_convert_overwrite As Byte = 1 ' Should we overwrite existing files?
     Public cfg_convert_startIndex As Integer = 0 ' Does the index start at for example N_0000.png or N_0001.png ?
     Public cfg_convert_sharedPalette As Byte = 1 ' Do we (try to) share a color palette?
-    Public cfg_convert_fileNamedelimiter As String = "_" ' The file name delimiter. eg _ in NE_0000.png
+    Public cfg_convert_fileNameDelimiter As String = "_" ' The file name delimiter. eg _ in NE_0000.png
 
 
     ' Frame

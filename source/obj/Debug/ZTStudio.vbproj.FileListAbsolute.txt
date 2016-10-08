@@ -26,3 +26,4 @@ C:\Users\Jeffrey\Documents\GitHub\ZTStudio\source\obj\Debug\ZTStudio.frmSettings
 C:\Users\Jeffrey\Documents\GitHub\ZTStudio\source\obj\Debug\ZTStudio.Resources.resources
 C:\Users\Jeffrey\Documents\GitHub\ZTStudio\source\obj\Debug\ZTStudio.vbproj.GenerateResource.Cache
 C:\Users\Jeffrey\Documents\GitHub\ZTStudio\source\obj\Debug\ZTStudio.vbprojResolveAssemblyReference.cache
+C:\Users\Jeffrey\Documents\GitHub\ZTStudio\source\obj\Debug\ZTStudio.frmBatchRotationFix.resources

@@ -52,8 +52,8 @@ Partial Class frmSettings
         Me.lblExportPNG_Index = New System.Windows.Forms.Label()
         Me.numConvert_PNGStartIndex = New System.Windows.Forms.NumericUpDown()
         Me.TabControl1 = New System.Windows.Forms.TabControl()
-        Me.lblConvert_FileNamedelimiter = New System.Windows.Forms.Label()
-        Me.txtConvert_FileNamedelimiter = New System.Windows.Forms.TextBox()
+        Me.lblConvert_fileNameDelimiter = New System.Windows.Forms.Label()
+        Me.txtConvert_fileNameDelimiter = New System.Windows.Forms.TextBox()
         Me.tpEditGraphics.SuspendLayout()
         Me.tpWritePNG.SuspendLayout()
         Me.tpWriteZT1.SuspendLayout()
@@ -299,8 +299,8 @@ Partial Class frmSettings
         '
         'tpConversions
         '
-        Me.tpConversions.Controls.Add(Me.txtConvert_FileNamedelimiter)
-        Me.tpConversions.Controls.Add(Me.lblConvert_FileNamedelimiter)
+        Me.tpConversions.Controls.Add(Me.txtConvert_fileNameDelimiter)
+        Me.tpConversions.Controls.Add(Me.lblConvert_fileNameDelimiter)
         Me.tpConversions.Controls.Add(Me.Label2)
         Me.tpConversions.Controls.Add(Me.chkConvert_SharedColorPalette)
         Me.tpConversions.Controls.Add(Me.chkConvert_Overwrite)
@@ -397,21 +397,21 @@ Partial Class frmSettings
         Me.TabControl1.Size = New System.Drawing.Size(718, 293)
         Me.TabControl1.TabIndex = 29
         '
-        'lblConvert_FileNamedelimiter
+        'lblConvert_fileNameDelimiter
         '
-        Me.lblConvert_FileNamedelimiter.AutoSize = True
-        Me.lblConvert_FileNamedelimiter.Location = New System.Drawing.Point(27, 213)
-        Me.lblConvert_FileNamedelimiter.Name = "lblConvert_FileNamedelimiter"
-        Me.lblConvert_FileNamedelimiter.Size = New System.Drawing.Size(110, 13)
-        Me.lblConvert_FileNamedelimiter.TabIndex = 32
-        Me.lblConvert_FileNamedelimiter.Text = "File name delimiter:"
+        Me.lblConvert_fileNameDelimiter.AutoSize = True
+        Me.lblConvert_fileNameDelimiter.Location = New System.Drawing.Point(27, 213)
+        Me.lblConvert_fileNameDelimiter.Name = "lblConvert_fileNameDelimiter"
+        Me.lblConvert_fileNameDelimiter.Size = New System.Drawing.Size(110, 13)
+        Me.lblConvert_fileNameDelimiter.TabIndex = 32
+        Me.lblConvert_fileNameDelimiter.Text = "File name delimiter:"
         '
-        'txtConvert_FileNamedelimiter
+        'txtConvert_fileNameDelimiter
         '
-        Me.txtConvert_FileNamedelimiter.Location = New System.Drawing.Point(29, 231)
-        Me.txtConvert_FileNamedelimiter.Name = "txtConvert_FileNamedelimiter"
-        Me.txtConvert_FileNamedelimiter.Size = New System.Drawing.Size(205, 22)
-        Me.txtConvert_FileNamedelimiter.TabIndex = 33
+        Me.txtConvert_fileNameDelimiter.Location = New System.Drawing.Point(29, 231)
+        Me.txtConvert_fileNameDelimiter.Name = "txtConvert_fileNameDelimiter"
+        Me.txtConvert_fileNameDelimiter.Size = New System.Drawing.Size(205, 22)
+        Me.txtConvert_fileNameDelimiter.TabIndex = 33
         '
         'frmSettings
         '
@@ -470,6 +470,6 @@ Partial Class frmSettings
     Friend WithEvents Label1 As System.Windows.Forms.Label
     Friend WithEvents Label2 As System.Windows.Forms.Label
     Friend WithEvents chkConvert_SharedColorPalette As System.Windows.Forms.CheckBox
-    Friend WithEvents txtConvert_FileNamedelimiter As System.Windows.Forms.TextBox
-    Friend WithEvents lblConvert_FileNamedelimiter As System.Windows.Forms.Label
+    Friend WithEvents txtConvert_fileNameDelimiter As System.Windows.Forms.TextBox
+    Friend WithEvents lblConvert_fileNameDelimiter As System.Windows.Forms.Label
 End Class

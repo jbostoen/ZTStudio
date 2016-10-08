@@ -953,18 +953,7 @@ dBug:
 
         Next
     End Sub
-
-    Private Sub tsbFrame_OffsetUp_Click(sender As Object, e As EventArgs) Handles tsbFrame_OffsetUp.Click
-
-    End Sub
-
-    Private Sub mnuPal_Opening(sender As Object, e As System.ComponentModel.CancelEventArgs) Handles mnuPal.Opening
-
-    End Sub
-
-    Private Sub ssBar_ItemClicked(sender As Object, e As ToolStripItemClickedEventArgs) Handles ssBar.ItemClicked
-
-    End Sub
+     
 
     Private Sub mnuPal_ExportPNG_Click(sender As Object, e As EventArgs) Handles mnuPal_ExportPNG.Click
 
@@ -1077,6 +1066,19 @@ dBug:
 
 
         End With
+
+    End Sub
+
+    Private Sub tsbFrame_OffsetLeft_Click(sender As Object, e As EventArgs) Handles tsbFrame_OffsetLeft.Click
+
+    End Sub
+
+    Private Sub tsbBatchRotFix_Click(sender As Object, e As EventArgs) Handles tsbBatchRotFix.Click
+        frmBatchRotationFix.ShowDialog(Me)
+
+    End Sub
+
+    Private Sub tsbFrame_OffsetRight_Click(sender As Object, e As EventArgs) Handles tsbFrame_OffsetRight.Click
 
     End Sub
 End Class

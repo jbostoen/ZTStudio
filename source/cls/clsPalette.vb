@@ -438,6 +438,10 @@ dBug:
 
     Function import_from_GimpPalette(sFileName As String, Optional blnForceAddColor As Boolean = False)
 
+        On Error GoTo dBg
+
+0:
+
         ' Contrary to import_from_PNG, this one is specifically designed for the free and open source GIMP
 
         ' Typical file: 
@@ -451,10 +455,12 @@ dBug:
         ' <line for each color>
         ' 254 255 252	#254
 
-         
+
+10:
+
         Dim objReader As New System.IO.StreamReader(sFileName) 
 
-        Dim textLine As String
+        Dim textLine As String = ""
         Dim intLine As Integer = 1
 
         ' Clear current palette (please prevent redraws at this point)
@@ -463,22 +469,25 @@ dBug:
         ' Read file.
         Do While objReader.Peek() <> -1
 
-
+11:
             textLine = objReader.ReadLine()
 
+            ' Remove double white spaces etc 
+            textLine = Strings.Trim(System.Text.RegularExpressions.Regex.Replace(textLine, "\s+", " "))
+
+
+
             ' Ignore the first few lines of the GPL file AND the transparent color
-            If intLine = 4 And textLine <> "" Then
-
-                Me.colors(0) = System.Drawing.Color.FromArgb(Split(textLine, " ")(0), Split(textLine, " ")(1), Split(textLine, " ")(2))
-
-            ElseIf intLine > 4 And textLine <> "" Then
-
-
-                ' Remove double white spaces etc 
-                textLine = Strings.Trim(System.Text.RegularExpressions.Regex.Replace(textLine, "\s+", " "))
-
-                ' Add to this color palette
+            If intLine = 5 And textLine <> "" Then
+21:
                 Me.colors.Add(System.Drawing.Color.FromArgb(Split(textLine, " ")(0), Split(textLine, " ")(1), Split(textLine, " ")(2)))
+
+
+            ElseIf intLine > 5 And textLine <> "" Then
+
+22:
+                ' Add to this color palette
+                Me.getColorIndex(System.Drawing.Color.FromArgb(Split(textLine, " ")(0), Split(textLine, " ")(1), Split(textLine, " ")(2)), True)
 
 
             End If
@@ -490,6 +499,12 @@ dBug:
 
 
         Debug.Print("Loaded")
+
+        Exit Function
+
+dBg:
+        MsgBox("Unable to use the GIMP Color Palette:" & vbCrLf & sFileName & vbCrLf & Err.Number & " - " & Err.Description & vbCrLf & "Line in .gpl: " & textLine & vbCrLf & "Line in import_from_GimpPalette: " & Erl(), vbOKOnly + vbInformation, "Error using GIMP Palette")
+
 
     End Function
 

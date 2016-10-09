@@ -1,5 +1,6 @@
 **I just want to use this! Help!**
-* Click the Download button and choose .ZIP-file.
+* https://github.com/jbostoen/ZTStudio/releases
+* Each release (latest on top) offers the program + source code. Choose to download the .ZIP-file.
 * Download and unzip to your PC
 * Look for the folder ZTStudio-master/source/bin/Debug .
 * There you find ZTStudio.exe, which you can simply run.

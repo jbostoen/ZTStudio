@@ -91,7 +91,7 @@
     <Compile Include="ApplicationEvents.vb" />
     <Compile Include="cls\clsAniFile.vb" />
     <Compile Include="cls\clsDrawingInstr.vb" />
-    <Compile Include="cls\clsFrame.vb" />
+    <Compile Include="cls\clsFrame2.vb" />
     <Compile Include="cls\clsGraphic2.vb" />
     <Compile Include="cls\clsList.vb" />
     <Compile Include="cls\clsString.vb" />

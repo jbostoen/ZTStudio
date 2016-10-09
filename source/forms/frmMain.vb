@@ -26,8 +26,7 @@ Public Class frmMain
 
 
         ' Always start with one frame
-        editorFrame = New clsFrame
-        editorFrame.parent = editorGraphic
+        editorFrame = New clsFrame2(editorGraphic) 
         editorGraphic.frames.Add(editorFrame) 
 
 
@@ -73,14 +72,20 @@ Public Class frmMain
 
     Private Sub picBox_MouseMove(sender As Object, e As MouseEventArgs) Handles picBox.MouseMove
 
+
         ' If we have something in our canvas / if we have a cached frame rendered, 
         ' we will show color info on mouseover.
 
         If IsNothing(picBox.Image) Then Exit Sub
-        If IsNothing(editorFrame.cachedFrame) Then Exit Sub
+
+        ' frame might have been just initiated
+        If IsNothing(editorFrame.coreImageBitmap) And IsNothing(editorFrame.coreImageHex) Then Exit Sub
+         
+
+
 
         Dim bmTmp As Bitmap
-        bmTmp = editorFrame.cachedFrame
+        bmTmp = editorFrame.getImage()
 
         Dim eX As Integer = (picBox.Width - bmtmp.Width) / 2
         Dim eY As Integer = (picBox.Height - bmtmp.Height) / 2
@@ -580,9 +585,7 @@ Public Class frmMain
 
 
 0:
-        Dim ztFrame As New clsFrame
-1:
-        ztFrame.parent = editorGraphic
+        Dim ztFrame As New clsFrame2(editorGraphic)
 2:
         'editorFrame = ztFrame
         'Debug.Print(tbFrames.Value)
@@ -843,9 +846,7 @@ dBug:
 
 
 0:
-            Dim ztFrame As New clsFrame
-1:
-            ztFrame.parent = editorGraphic
+            Dim ztFrame As New clsFrame2(editorGraphic) 
 2: 
 
 10:
@@ -893,8 +894,7 @@ dBug:
                         ' OK
                         With editorFrame
 
-                            .loadPNG(dlgOpen.FileName)
-                            .renderFrame(Nothing, Nothing, False)
+                            .loadPNG(dlgOpen.FileName) 
 
                         End With
 
@@ -999,8 +999,8 @@ dBug:
                 editorGraphic.colorPalette.fillPaletteGrid(dgvPaletteMain)
 
                 ' We need to force a refresh of rendered images.
-                For Each f As clsFrame In editorGraphic.frames
-                    f.cachedFrame = Nothing
+                For Each f As clsFrame2 In editorGraphic.frames
+                    f.coreImageBitmap = Nothing
                 Next
                 clsTasks.preview_update()
 
@@ -1057,8 +1057,8 @@ dBug:
                 editorGraphic.colorPalette.fillPaletteGrid(dgvPaletteMain)
 
                 ' We need to force a refresh of rendered images.
-                For Each f As clsFrame In editorGraphic.frames
-                    f.cachedFrame = Nothing
+                For Each f As clsFrame2 In editorGraphic.frames
+                    f.coreImageBitmap = Nothing
                 Next
                 clsTasks.preview_update()
 
@@ -1079,6 +1079,24 @@ dBug:
     End Sub
 
     Private Sub tsbFrame_OffsetRight_Click(sender As Object, e As EventArgs) Handles tsbFrame_OffsetRight.Click
+
+    End Sub
+
+    Private Sub tsbFrame_OffsetUp_Click(sender As Object, e As EventArgs) Handles tsbFrame_OffsetUp.Click
+
+    End Sub
+
+    Private Sub Button1_Click_1(sender As Object, e As EventArgs)
+
+        'picBox.Image = editorFrame.renderCoreImageFromHex()
+        Dim g As New clsGraphic2
+        g.read("c:\temp\output\objects\restrant\idle\ne")
+
+        Debug.Print("Frame #1 " & g.frames(0).coreImageHex.Count)
+        Debug.Print("Frame #2 " & g.frames(1).coreImageHex.Count)
+
+        picBox.Image = g.frames(1).renderCoreImageFromHex()
+
 
     End Sub
 End Class

@@ -22,8 +22,7 @@
 
         Dim input As String = InputBox("" & _
                 "Index of first color to replace (can not be 0 since we ignore transparent colors)." & vbCrLf & _
-                "For example, the index for the Restaurant would be 248 (roof 8 colors)" & vbCrLf & _
-                "or 232 (roof 16 colors)", "Index of the first color to replace", "1")
+                "For example, the index for the Restaurant would be 248 (roof 8 colors) or 232 (roof 16 colors)", "Index of the first color to replace", "1")
         If input = vbNullString Then Exit Sub 'user chickened out
 
         Dim intStart As Integer = CInt(input)
@@ -61,7 +60,12 @@
             End If
         Next
 
-        ' Force redraw
+        ' Force redraw. In this case, we should ignore the rendered images and make them regenerate from HEX.
+        For Each ztFrame As clsFrame2 In editorGraphic.frames
+            ztFrame.coreImageBitmap = Nothing
+        Next
+
+
         editorGraphic.lastUpdated = Now.ToString("yyyyMMddHHmmss")
         clsTasks.preview_update(frmMain.tbFrames.Value - 1)
 

@@ -19,7 +19,7 @@ Module mdlSettings
 
     Public editorGraphic As New clsGraphic2         ' The clsGraphic2 object we use.
     Public editorBgGraphic As New clsGraphic2       ' The background graphic, e.g. toy
-    Public editorFrame As clsFrame                  ' The clsFrame we are currently viewing/editing
+    Public editorFrame As clsFrame2                 ' The clsFrame we are currently viewing/editing
 
     Public bm As Bitmap
 

@@ -9,9 +9,7 @@ Public Class List(Of T)
 
         If forceUpdate = True Then
             'clsTasks.update_Info("List - item added. Overload.")
-        End If
-
-
+        End If 
 
 
     End Sub
@@ -61,6 +59,12 @@ Public Class List(Of T)
         If forceUpdate = True Then
             clsTasks.update_Info("List - item added. Cleared.")
         End If
+
+    End Sub
+
+    Public Overloads Sub Skip(ByVal intItems As Integer, Optional forceUpdate As Boolean = False)
+
+        MyBase.RemoveRange(0, intItems)
 
     End Sub
 

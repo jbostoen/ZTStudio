@@ -8,6 +8,7 @@
     Dim di_lstColors As New List(Of Integer)  ' refers to the index of the color in a palette. Num colors = 0-255.
 
     Public Property offset As Integer
+        ' How many transparent pixels do we have before we start drawing this block?
         Get
             Return di_offset
         End Get
@@ -17,6 +18,7 @@
     End Property
 
     Public Property pixelColors As List(Of Integer)
+        ' Contains the pixels which will be drawn horizontally (row) and their color.
         Get
             Return di_lstColors
         End Get
@@ -27,8 +29,7 @@
 
     Public Function getHex() As List(Of String)
 
-
-        'Debug.Print("..... clsDrawingInstr: getHex() - build...")
+        ' Returns the hex code for this drawing block.
         On Error GoTo dBg
 
 0:
@@ -49,10 +50,7 @@
         Next
 
 5:
-        'Debug.Print("..... clsDrawingInstr: getHex() - completed.")
         Return opHex
-
-
 
         Exit Function
 

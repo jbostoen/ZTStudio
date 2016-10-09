@@ -214,6 +214,7 @@ Partial Class frmMain
         Me.Panel1.Controls.Add(Me.chkPlayAnimation)
         Me.Panel1.Controls.Add(Me.tbFrames)
         Me.Panel1.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.Panel1.Font = New System.Drawing.Font("Segoe UI", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Panel1.Location = New System.Drawing.Point(0, 629)
         Me.Panel1.Name = "Panel1"
         Me.Panel1.Size = New System.Drawing.Size(808, 151)
@@ -233,7 +234,7 @@ Partial Class frmMain
         Me.lblFrames.AutoSize = True
         Me.lblFrames.Location = New System.Drawing.Point(540, 39)
         Me.lblFrames.Name = "lblFrames"
-        Me.lblFrames.Size = New System.Drawing.Size(47, 13)
+        Me.lblFrames.Size = New System.Drawing.Size(50, 13)
         Me.lblFrames.TabIndex = 31
         Me.lblFrames.Text = "0 frames"
         '
@@ -242,7 +243,7 @@ Partial Class frmMain
         Me.lblAnimTime.AutoSize = True
         Me.lblAnimTime.Location = New System.Drawing.Point(540, 52)
         Me.lblAnimTime.Name = "lblAnimTime"
-        Me.lblAnimTime.Size = New System.Drawing.Size(29, 13)
+        Me.lblAnimTime.Size = New System.Drawing.Size(30, 13)
         Me.lblAnimTime.TabIndex = 29
         Me.lblAnimTime.Text = "0 ms"
         '
@@ -280,7 +281,7 @@ Partial Class frmMain
         Me.lblAnimSpeed.AutoSize = True
         Me.lblAnimSpeed.Location = New System.Drawing.Point(540, 26)
         Me.lblAnimSpeed.Name = "lblAnimSpeed"
-        Me.lblAnimSpeed.Size = New System.Drawing.Size(85, 13)
+        Me.lblAnimSpeed.Size = New System.Drawing.Size(94, 13)
         Me.lblAnimSpeed.TabIndex = 24
         Me.lblAnimSpeed.Text = "Animation speed"
         '
@@ -289,7 +290,7 @@ Partial Class frmMain
         Me.chkPlayAnimation.AutoSize = True
         Me.chkPlayAnimation.Location = New System.Drawing.Point(543, 6)
         Me.chkPlayAnimation.Name = "chkPlayAnimation"
-        Me.chkPlayAnimation.Size = New System.Drawing.Size(94, 17)
+        Me.chkPlayAnimation.Size = New System.Drawing.Size(101, 17)
         Me.chkPlayAnimation.TabIndex = 20
         Me.chkPlayAnimation.Text = "Play animation"
         Me.chkPlayAnimation.UseVisualStyleBackColor = True

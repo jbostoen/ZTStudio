@@ -359,7 +359,7 @@ dBug:
 
 10:
         ' Loop over each frame of the ZT1 Graphic
-        For Each ztFrame As clsFrame In g.frames
+        For Each ztFrame As clsFrame2 In g.frames
 
 11:
 
@@ -468,7 +468,7 @@ dBg:
 
         Dim paths() As String
         Dim g As New clsGraphic2
-        Dim ztFrame As clsFrame
+        Dim ztFrame As clsFrame2
         Dim frameName As String = System.IO.Path.GetFileName(strPath)
         Dim frameGraphicPath As String = Strings.Left(strPath, strPath.Length - frameName.Length)
 
@@ -545,9 +545,8 @@ dBg:
                 End If
 
 200:
-                ztFrame = New clsFrame
-                'ztFrame.cachedFrame = Bitmap.FromFile(s)
-                ztFrame.parent = g ' Reference needed for color palette
+                ztFrame = New clsFrame2(g)
+
 
 201:
                 ' In case of a batch conversion, we might rely on a shared .PAL file 
@@ -639,9 +638,7 @@ dBg:
 250:
                 With ztFrame
 251:
-                    .loadPNG(s)
-285:
-                    .renderFrame(Nothing, Nothing, False)
+                    .loadPNG(s) 
 
                 End With
 
@@ -941,6 +938,9 @@ dBug:
 20:
         frmMain.picBox.Image = editorGraphic.frames(intIndexFrameNumber).getImage(True)
 
+       
+
+
 21:
         ' Frame index 
         ' frmMain.tslFrame_Index.Text = intIndexFrameNumber & "/" & (editorGraphic.frames.Count - 1 - editorGraphic.extraFrame)
@@ -954,9 +954,7 @@ dBug:
 
 35:
         clsTasks.update_Info("Preview updated.")
-
-
-        Debug.Print("# Preview updated, now showing frame " & intIndexFrameNumber & ". Default: " & (frmMain.tbFrames.Value - 1))
+        'Debug.Print("# Preview updated, now showing frame " & intIndexFrameNumber & ". Default: " & (frmMain.tbFrames.Value - 1))
 
 
     End Sub
@@ -1069,6 +1067,7 @@ dBug:
             .tslFrame_Index.Text = IIf(editorGraphic.frames.Count = 0, "-", (editorGraphic.frames.IndexOf(editorFrame) + cfg_convert_startIndex) & " / " & (editorGraphic.frames.Count - 1 + cfg_convert_startIndex - editorGraphic.extraFrame))
 
             Debug.Print("updated info. [" & strReason & "]. Total frames = " & (editorGraphic.frames.Count - cfg_convert_startIndex - editorGraphic.extraFrame))
+            'Debug.Print(editorGraphic.extraFrame)
 
 
             With .tbFrames
@@ -1095,7 +1094,7 @@ dBug:
             '(IsNothing(editorGraphic.frames(0).cachedFrame) = False)
 
             If IsNothing(editorFrame) = False Then
-                If IsNothing(editorFrame.cachedFrame) = False Then
+                If IsNothing(editorFrame.coreImageBitmap) = False Then
                     .tsbFrame_ExportPNG.Enabled = True
                 End If
             End If
@@ -1455,7 +1454,7 @@ dBug:
 1000:
         ' For each file that is a ZT1 Graphic:
         For Each f As String In result
-            Debug.Print(f)
+            Debug.Print("Processing: " & f)
 
 
             ' Read graphic, update offsets of frames, save.

@@ -289,10 +289,10 @@ dBug:
                     ' We need to read every view for this graphic in the folder.
                     g.read(strPath.Replace("\", "/") & "/" & sAni)
 
-                    For Each ztFrame As clsFrame In g.frames
+                    For Each ztFrame As clsFrame2 In g.frames
 
                         ' Get original hex
-                        ztFrame.getHexFromFrame(Nothing, False)
+                        ztFrame.renderCoreImageFromHex()
 
                         '  Debug.Print("ztFrame offsetX = " & ztFrame.offsetX & "," & ztFrame.offsetY & "," & _
                         '              ztFrame.height & "," & ztFrame.width)
@@ -301,8 +301,9 @@ dBug:
                         ' Passes the bamboo.ani-test
                         Me.x0 = Math.Min(Me.x0, -ztFrame.offsetX)
                         Me.y0 = Math.Min(Me.y0, -ztFrame.offsetY)
-                        Me.x1 = Math.Max(Me.x1, -ztFrame.offsetX + ztFrame.width)
-                        Me.y1 = Math.Max(Me.y1, -ztFrame.offsetY + ztFrame.height)
+                        Me.x1 = Math.Max(Me.x1, -ztFrame.offsetX + ztFrame.coreImageBitmap.Width)
+                        Me.y1 = Math.Max(Me.y1, -ztFrame.offsetY + ztFrame.coreImageBitmap.Height)
+
                     Next
                 Next
             Else

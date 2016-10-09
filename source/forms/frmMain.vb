@@ -298,7 +298,7 @@ Public Class frmMain
             "___________________________" & vbCrLf & _
             "© since 2015 by Jeffrey Bostoen" & vbCrLf & _
             "https://github.com/jbostoen/ZTStudio" & vbCrLf & _
-            "jeffrey_bostoen@hotmail.com" & vbCrLf & _
+            "jbostoen@outlook.com" & vbCrLf & _
             vbCrLf & vbCrLf & _
             "Bugs? " & vbCrLf & _
             "-------------------" & vbCrLf & _

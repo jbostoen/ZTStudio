@@ -5,7 +5,7 @@
     ' [1 byte offset] [1 byte number of colors] [if present: indexes of colors]
 
     Dim di_offset As Integer = 0 ' only one byte. This is actually: 'skip X pixels in this line'. Max 255 at once.
-    Dim di_lstColors As New List(Of Integer)  ' refers to t he index of the color in a palette. Num colors = 0-255.
+    Dim di_lstColors As New List(Of Integer)  ' refers to the index of the color in a palette. Num colors = 0-255.
 
     Public Property offset As Integer
         Get

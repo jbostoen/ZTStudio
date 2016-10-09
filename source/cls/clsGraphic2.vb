@@ -386,7 +386,7 @@ dBg:
 
                 ' We also need to make sure that our render does not include the BG Frame!
                 ztFrame.lastUpdated = vbNullString
-                hexFrame = ztFrame.getHex(Nothing, False, True)
+                hexFrame = ztFrame.getHexFromFrame(Nothing, True)
 
                 ' Specify number of bytes of this frame.
                 hexSub.AddRange(Strings.Split(hexFrame.Count.ToString("X8").ReverseHEX(), " "), False)

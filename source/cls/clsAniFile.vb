@@ -292,7 +292,7 @@ dBug:
                     For Each ztFrame As clsFrame In g.frames
 
                         ' Get original hex
-                        ztFrame.getHex(Nothing, False, False)
+                        ztFrame.getHexFromFrame(Nothing, False)
 
                         '  Debug.Print("ztFrame offsetX = " & ztFrame.offsetX & "," & ztFrame.offsetY & "," & _
                         '              ztFrame.height & "," & ztFrame.width)

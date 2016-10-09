@@ -688,7 +688,7 @@ dBug:
 
 
 
-    Function getHex(Optional bm As Bitmap = Nothing, Optional blnRenderBGFrame As Boolean = True, Optional cacheLoad As Boolean = True) As List(Of String)
+    Function getHexFromFrame(Optional bm As Bitmap = Nothing, Optional cacheLoad As Boolean = True) As List(Of String)
 
 
         ' This function will output the HEX values for a frame. 
@@ -701,12 +701,12 @@ dBug:
             If IsNothing(Me.cachedFrame) Or cacheLoad = False Then
 
                 ' Render the frame from scratch.
-                bm = Me.renderFrame(New Bitmap(cfg_grid_numPixels * 2, cfg_grid_numPixels * 2), Me.parent.colorPalette, blnRenderBGFrame).Clone()
-                 
+                bm = Me.renderFrame(New Bitmap(cfg_grid_numPixels * 2, cfg_grid_numPixels * 2), Me.parent.colorPalette, cacheLoad).Clone()
+
             Else
 
                 ' Use a cached version (performance) of this frame.
-                bm = Me.cachedFrame 
+                bm = Me.cachedFrame
 
             End If
 
@@ -742,17 +742,26 @@ dBug:
 
         ' might be able to do this more efficiently?
         '  Return New Rectangle(coordA.X, coordA.Y, coordB.X - coordA.X, coordB.Y - coordA.Y)
-        If Me.height <> -1 And Me.width <> -1 And Me.offsetX <> 9999 And Me.offsetY <> 9999 Then
-            ' shortcut?
-            Debug.Print("Shortcut")
-            rect = New Rectangle( _
-                cfg_grid_numPixels - Me.offsetX, _
-                cfg_grid_numPixels - Me.offsetY, _
-                Me.width, Me.height)
+        'If Me.height <> -1 And Me.width <> -1 And Me.offsetX <> 9999 And Me.offsetY <> 9999 Then
+        ' shortcut?
+        '    Debug.Print("Shortcut")
+        '    rect = New Rectangle( _
+        '        cfg_grid_numPixels - Me.offsetX, _
+        '        cfg_grid_numPixels - Me.offsetY, _
+        '         Me.width, Me.height)
 
-        Else
-            rect = clsTasks.bitmap_getDefiningRectangle(bm)
-        End If
+        ' Else
+        '    rect = clsTasks.bitmap_getDefiningRectangle(bm)
+        'End If
+
+        ' we still need to find the occasional differences between above and this.
+        rect = clsTasks.bitmap_getDefiningRectangle(bm)
+
+        ' In some cases, we are out of luck: the defining rectangle's top left pixel is NOT our transparent color.
+        ' In this case, we'll need to do a minor variation.
+
+
+
         'Debug.Print("Known: x,y,oX,oY = " & Me.offsetX & " - " & Me.offsetY & " - " & Me.width & " - " & Me.height)
         'Debug.Print("Defining rectangle: x,y,oX,oY = " & rect.X & " - " & rect.Y & " - " & rect.Width & " - " & rect.Height)
 
@@ -784,7 +793,13 @@ dBug:
         'bv: coord pixel [0,0] --- w,h [1,1]
 
         ' APE / Zoot: top left color = transparent
-        Dim colTransparent As System.Drawing.Color = bm.GetPixel(rect.X, rect.Y)
+        'Dim colTransparent As System.Drawing.Color = bm.GetPixel(rect.X, rect.Y)
+
+        If Me.parent.colorPalette.colors.Count = 0 Then
+            Me.parent.colorPalette.colors.Add(bm.GetPixel(rect.X, rect.Y))
+        End If
+
+3005:
 
         ' 20150619 : after adjusting getDefiningRectangle: coord.Y <=, coord.x <=  --> <
         ' From to to bottom, from left to right
@@ -797,11 +812,12 @@ dBug:
 
             While coord.X < (rect.X + rect.Width)
 
-3001:
+3010:
                 ' Read the color.
                 c = bm.GetPixel(coord.X, coord.Y)
 
-                If c = colTransparent Then
+                'If c = colTransparent Then
+                If Me.parent.colorPalette.getColorIndex(c) = 0 Then
 
 3100:
                     ' We have a transparent pixel.
@@ -934,7 +950,7 @@ dBug:
             ' Easier to build it this way. Start by writing the dimensions: height, width.
             .AddRange(Strings.Split(Me.height.ToString("X4").ReverseHEX(), " "), False)
             .AddRange(Strings.Split(Me.width.ToString("X4").ReverseHEX(), " "), False)
-             
+
             If Me.offsetY >= 0 Then
                 .AddRange(Strings.Split(Me.offsetY.ToString("X4").ReverseHEX(), " "), False)
             Else
@@ -1142,7 +1158,7 @@ dBug:
 
 
         ' This is probably a dirty way to update the cached frame.
-        Me.getHex(bmpCanvas, False, False) ' store.
+        Me.getHexFromFrame(bmpCanvas, False) ' store.
 
 
     End Function

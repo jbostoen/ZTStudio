@@ -72,31 +72,42 @@ Public Class frmMain
 
     Private Sub picBox_MouseMove(sender As Object, e As MouseEventArgs) Handles picBox.MouseMove
 
+        On Error GoTo dBug
 
         ' If we have something in our canvas / if we have a cached frame rendered, 
         ' we will show color info on mouseover.
-
+1:
         If IsNothing(picBox.Image) Then Exit Sub
 
+2:
         ' frame might have been just initiated
         If IsNothing(editorFrame.coreImageBitmap) And IsNothing(editorFrame.coreImageHex) Then Exit Sub
          
 
 
-
+3:
         Dim bmTmp As Bitmap
-        bmTmp = editorFrame.getImage()
+        bmTmp = picBox.Image ' editorFrame.getImage()
+        Application.DoEvents()
 
+4:
+        If IsNothing(bmTmp) Then Exit Sub
+         
+
+20:
         Dim eX As Integer = (picBox.Width - bmtmp.Width) / 2
         Dim eY As Integer = (picBox.Height - bmtmp.Height) / 2
 
+100:
         If e.X - eX >= 0 And e.X - eX < bmtmp.Width And e.Y - eY >= 0 And e.Y - eY < bmtmp.Height Then
 
+101:
             Dim c As System.Drawing.Color = bmtmp.GetPixel(e.X - eX, e.Y - eY)
+
 
             If c.A <> 0 Then
 
-
+102:
                 lblColor.BackColor = c '.ToString()
                 lblColorDetails.Text = "Coordinates: x: " & e.X - eX & " , y: " & e.Y - eY & vbCrLf &
                     "RGB: " & c.R & "," & c.G & "," & c.B & vbCrLf & _
@@ -106,6 +117,7 @@ Public Class frmMain
 
             Else
 
+112:
                 ' Alpha, transparent.
                 lblColor.BackColor = picBox.BackColor
                 lblColorDetails.Text = vbNullString
@@ -114,12 +126,19 @@ Public Class frmMain
 
         Else
 
+122:
             lblColor.BackColor = picBox.BackColor
             lblColorDetails.Text = vbNullString
 
         End If
 
+        Exit Sub
 
+dBug:
+
+        MsgBox("Error in frmMain.picBox.MouseMove() " & vbCrLf & _
+            "Line " & Erl() & vbCrLf & _
+            Err.Number & " " & Err.Description, vbOKOnly + vbCritical + vbApplicationModal, "Error determining pixel color")
 
 
     End Sub
@@ -756,21 +775,7 @@ dBug:
         clsTasks.preview_update()
 
     End Sub
-
-    Private Sub dgvPaletteMain_CellClick(sender As Object, e As DataGridViewCellEventArgs) Handles dgvPaletteMain.CellClick
-
-    End Sub
      
-    Private Sub dgvPaletteMain_CellContentClick(sender As Object, e As DataGridViewCellEventArgs) Handles dgvPaletteMain.CellContentClick
-
-
-    End Sub
-
-    Private Sub dgvPaletteMain_CellContentDoubleClick(sender As Object, e As DataGridViewCellEventArgs) Handles dgvPaletteMain.CellContentDoubleClick
-
-         
-
-    End Sub
 
     Private Sub dgvPaletteMain_CellDoubleClick(sender As Object, e As DataGridViewCellEventArgs) Handles dgvPaletteMain.CellDoubleClick
 
@@ -992,16 +997,15 @@ dBug:
 
             If .ShowDialog() <> Windows.Forms.DialogResult.Cancel Then 
 
-                ' Replace palette file. 
-                editorGraphic.colorPalette.import_from_PNG(dlgOpen.FileName)
+                ' Replace palette file (should trigger a re-draw)
+                ' Forcefully add colors (some might be the same, after a recolor)
+                editorGraphic.colorPalette.import_from_PNG(dlgOpen.FileName, False)
 
-                ' Redraw
+                ' Update color list on the right
                 editorGraphic.colorPalette.fillPaletteGrid(dgvPaletteMain)
 
-                ' We need to force a refresh of rendered images.
-                For Each f As clsFrame2 In editorGraphic.frames
-                    f.coreImageBitmap = Nothing
-                Next
+               
+
                 clsTasks.preview_update()
 
             End If ' cancel check
@@ -1050,17 +1054,13 @@ dBug:
 
             If .ShowDialog() <> Windows.Forms.DialogResult.Cancel Then
 
-                ' Replace palette file. 
-                editorGraphic.colorPalette.import_from_GimpPalette(dlgOpen.FileName)
+                ' Replace palette file (should trigger a redraw of coreImageBitmap)
+                ' Forcefully add colors (some might be the same, after a recolor)
+                editorGraphic.colorPalette.import_from_GimpPalette(dlgOpen.FileName, True)
 
-                ' Redraw
+                ' Update color list on the right
                 editorGraphic.colorPalette.fillPaletteGrid(dgvPaletteMain)
-
-                ' We need to force a refresh of rendered images.
-                For Each f As clsFrame2 In editorGraphic.frames
-                    f.coreImageBitmap = Nothing
-                Next
-                clsTasks.preview_update()
+                 
 
             End If ' cancel check
 
@@ -1085,17 +1085,14 @@ dBug:
     Private Sub tsbFrame_OffsetUp_Click(sender As Object, e As EventArgs) Handles tsbFrame_OffsetUp.Click
 
     End Sub
+     
 
-    Private Sub Button1_Click_1(sender As Object, e As EventArgs)
+    Private Sub Button1_Click_2(sender As Object, e As EventArgs)
 
-        'picBox.Image = editorFrame.renderCoreImageFromHex()
-        Dim g As New clsGraphic2
-        g.read("c:\temp\output\objects\restrant\idle\ne")
 
-        Debug.Print("Frame #1 " & g.frames(0).coreImageHex.Count)
-        Debug.Print("Frame #2 " & g.frames(1).coreImageHex.Count)
+        'picBox.Image = editorGraphic.frames(0).renderCoreImageFromHex()
+        picBox.Image = editorGraphic.frames(0).getImage(True)
 
-        picBox.Image = g.frames(1).renderCoreImageFromHex()
 
 
     End Sub

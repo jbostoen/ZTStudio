@@ -5,8 +5,22 @@ Public Class clsPalette
 
     Dim pal_FileName As String = ""
     Dim pal_colors As new List(Of System.Drawing.Color)
+    Dim pal_parent As clsGraphic2 = Nothing
 
 
+    Public Sub New(myParent As clsGraphic2)
+        pal_parent = myParent
+    End Sub
+    Public Property parent As clsGraphic2
+        ' What is the parent object (clsGraphic2) of our frame? 
+        ' Or in other words: which ZT1 Graphic does this frame belong to?
+        Get
+            Return pal_parent
+        End Get
+        Set(value As clsGraphic2)
+            pal_parent = value 
+        End Set
+    End Property
     Public Property fileName As String
         ' The filename of the palette.
         Get
@@ -310,7 +324,7 @@ dBug:
         Debug.Print("Combine color palettes.")
 
 
-        Dim comPal As New clsPalette
+        Dim comPal As New clsPalette(Nothing)
 
         ' for each color palette: check if color exists in our new palette.
         For Each pal As clsPalette In lstPals
@@ -428,7 +442,19 @@ dBug:
         End While
 
 
-        Debug.Print("Loaded")
+200:
+        
+        ' There's actually two possibilities here.
+        ' Either we should regenerate the hex, since colors might have switched places.
+        ' Or we should regenerate the image, since it might just be a recolor. 
+        If IsNothing(Me.parent) = False Then
+            ' TODO: do something
+            For Each ztFrame As clsFrame2 In Me.parent.frames
+                ztFrame.coreImageBitmap = Nothing
+                ztFrame.getCoreImageBitmap() 
+            Next
+        Else 
+        End If
 
     End Function
 
@@ -497,8 +523,22 @@ dBug:
 
         Loop
 
-
-        Debug.Print("Loaded")
+200:
+         
+        ' There's actually two possibilities here.
+        ' Either we should regenerate the hex, since colors might have switched places.
+        ' Or we should regenerate the image, since it might just be a recolor. 
+        If IsNothing(Me.parent) = False Then
+            ' TODO: do something
+            For Each ztFrame As clsFrame2 In Me.parent.frames
+                ztFrame.coreImageBitmap = Nothing
+                ztFrame.getCoreImageBitmap()
+            Next
+            'MsgBox("Updated ZTFrame's coreImageBitmap?")
+        Else
+            'MsgBox("No parent?")
+            'MsgBox(Me.parent.frames.Count)
+        End If
 
         Exit Function
 
@@ -511,10 +551,6 @@ dBg:
 
      
 
-
-
-    Public Sub New()
-
-    End Sub
+     
 End Class
 

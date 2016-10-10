@@ -11,8 +11,8 @@ Public Class clsGraphic2
     ' All handling of palette files is done by a different class
 
 
-    Private clsGraphic_FileName As String                ' File name of graphic
-    Private clsGraphic_Palette As New clsPalette         ' Main color palette
+    Private clsGraphic_FileName As String                    ' File name of graphic
+    Private clsGraphic_Palette As New clsPalette(Me)         ' Main color palette
 
     Private clsGraphic_animationSpeed As Integer = 125     ' Speed in milliseconds for this animation
 
@@ -120,7 +120,7 @@ Public Class clsGraphic2
         ' Resets all defaults.
 
         ' Reset palettes
-        Me.colorPalette = New clsPalette
+        Me.colorPalette = New clsPalette(Me)
 
         ' Reset other info 
         clsGraphic_animationSpeed = 0
@@ -238,35 +238,25 @@ Public Class clsGraphic2
 
 103:
 
-            'MsgBox("frame entire hex = " & frameEntireHex.Count)
 
-            ' This case is really weird. It's for the Restaurant.
-            ' The idle animation's views (eg NE) contain 10 bytes: 00 00 00 00 00 00 00 00 D0 10
-            ' The idle view supposedly uses an extraFrame
-            ' Which means no height/width, no offsets, weird mystery bytes.
-            ' Perhaps it could be identified by mystery bytes?
-            ' Did we have this issue before our rewrite?
-            If frameEntireHex.Count = 10 Then
 
-                MsgBox(Strings.Join(frameEntireHex.ToArray(), " "))
-                If hexBytes(0) = "00" And hexBytes(1) = "00" And hexBytes(2) = "00" And hexBytes(3) = "00" Then
-                    ' don't even bother.
-                End If
-
-            Else 
-
-                ' Write our hex string to our frame
-                ztFrame.coreImageHex = frameEntireHex
-                ztFrames.Add(ztFrame, False)
-                 
-            End If
-
+            ' Write our hex string to our frame
+            ztFrame.coreImageHex = frameEntireHex
 
 104:
+            ' It's best to render the bitmap. This also sets offsets etc.
+            ztFrame.renderCoreImageFromHex()
+
+
+            ztFrames.Add(ztFrame, False)
+
+
+
+110:
             ' Remove those frame bytes
             hexBytes.Skip(intFrameBytes)
 
-105:
+155:
             'Debug.Print("Graphics: total bytes of frame " & (ztFrames.Count).ToString("00") & "/" & (clsGraphic_numFrames) & " = " & (Strings.Replace(ztFrame.hexString, " ", "").Length / 2) & vbTab & "Bytes left: " & hex.Length)
 
 
@@ -402,7 +392,7 @@ dBg:
 
                 ' We also need to make sure that our render does not include the BG Frame!
                 ztFrame.lastUpdated = vbNullString
-                hexFrame = ztFrame.getHex()
+                hexFrame = ztFrame.coreImageHex
 
 
                 ' Specify number of bytes of this frame.
@@ -542,4 +532,9 @@ dBug:
 
 
 
+    Public Sub New()
+
+        Me.colorPalette.parent = Me 
+
+    End Sub
 End Class

@@ -587,9 +587,11 @@ dBg:
                         ' Prefer .pal, fall back to .gpl, fall back to .png 
                         If File.Exists(sPath & ".pal") Then
 
-                            ztFrame.parent.colorPalette.readPal(sPath & ".pal")
-                            ztFrame.parent.colorPalette.fileName = sPath & ".pal"
-
+                            With ztFrame.parent.colorPalette
+                                .readPal(sPath & ".pal")
+                                .fileName = sPath & ".pal"
+                            End With
+                             
                             ' PNGs might cause issues if used as color palette here...
                             'ElseIf File.Exists(sPath & ".png") Then
 
@@ -598,8 +600,12 @@ dBg:
 
                         ElseIf File.Exists(sPath & ".gpl") Then
 
-                            ztFrame.parent.colorPalette.import_from_GimpPalette(sPath & ".gpl")
-                            ztFrame.parent.colorPalette.fileName = sPath & ".pal"
+                            With ztFrame.parent.colorPalette
+                                .import_from_GimpPalette(sPath & ".gpl")
+                                .fileName = sPath & ".pal"
+                                .writePal(.fileName, True)
+                            End With
+                             
 
                         ElseIf File.Exists(sPathB & ".pal") Then
 
@@ -613,9 +619,13 @@ dBg:
                             ' ztFrame.parent.colorPalette.fileName = sPathB & ".pal"
 
                         ElseIf File.Exists(sPathB & ".gpl") Then
+                            
+                            With ztFrame.parent.colorPalette
+                                .import_from_GimpPalette(sPathB & ".gpl")
+                                .fileName = sPathB & ".pal"
+                                .writePal(.fileName, True)
+                            End With
 
-                            ztFrame.parent.colorPalette.import_from_GimpPalette(sPathB & ".gpl")
-                            ztFrame.parent.colorPalette.fileName = sPathB & ".pal"
 
                         End If 
 
@@ -850,6 +860,16 @@ dBug:
             ' Loop through all subdirectories and add them to the stack.
             Dim directoryName As String
             For Each directoryName In Directory.GetDirectories(dir)
+
+                ' Just a warning, so users don't accidentally have "sitscratch" as animation name.
+                ' Actually '-' is supported as well.
+                If Path.GetFileName(directoryName).Length > 8 Or System.Text.RegularExpressions.Regex.IsMatch(Strings.Replace(Path.GetFileName(directoryName), "-", ""), "^[a-zA-Z0-9]+$") = False Then
+                    MsgBox("Directory name '" & Path.GetDirectoryName(directoryName) & "' is invalid." & vbCrLf & _
+                        "The limit is a maximum of 8 alphanumeric characters.", _
+                        vbOKOnly + vbCritical, _
+                        "Invalid directory name")
+                End If
+
                 stack.Push(directoryName)
             Next
 
@@ -928,12 +948,20 @@ dBug:
 
     Public Sub preview_update(Optional intIndexFrameNumber As Integer = -1)
 
+
+1:
         If editorGraphic.frames.Count = 0 Then Exit Sub
 
-
+2:
         If intIndexFrameNumber = -1 Then
             intIndexFrameNumber = frmMain.tbFrames.Value - 1
         End If
+
+
+3:
+        ' This case happens when a new frame is added, but no .PNG has been loaded yet
+        If editorGraphic.frames(intIndexFrameNumber).coreImageHex.Count = 0 Then Exit Sub
+
 
 20:
         frmMain.picBox.Image = editorGraphic.frames(intIndexFrameNumber).getImage(True)
@@ -1327,6 +1355,11 @@ dBug:
         ' Refresh
         editorGraphic.colorPalette.fillPaletteGrid(frmMain.dgvPaletteMain)
 
+        ' Update coreImageHex for each frame. Color indexes have changed.
+        For Each ztFrame As clsFrame2 In editorGraphic.frames
+            ztFrame.coreImageHex = Nothing
+            ztFrame.getHexFromBitmap()
+        Next
 
 
     End Sub
@@ -1358,7 +1391,7 @@ dBug:
 
             Else
 
-                Dim c As New clsPalette
+                Dim c As New clsPalette(Nothing)
                 Dim frmColPal As New frmPal
 
                 ' Read the .pal file

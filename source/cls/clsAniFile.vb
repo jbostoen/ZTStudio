@@ -153,7 +153,7 @@ dBug:
 
     ' === special functions ===
 
-    Public Function guessConfig(Optional sFileName As String = Nothing)
+    Public Function createAniConfig(Optional sFileName As String = Nothing)
 
 
 
@@ -173,7 +173,7 @@ dBug:
 1:
         If Me.fileName = "" Then
 
-            MsgBox("clsAniFile:guessAnimations assumes you've set the filename for the .ani-file.", _
+            MsgBox("clsAniFile.createAniConfig() assumes you've set the filename for the .ani-file.", _
                 vbOKOnly + vbCritical, "Error while guessing animations for .ani-file")
 
         Else
@@ -214,33 +214,33 @@ dBug:
                     .Add("S", False)
                 End With
 
-                 
+
 
 12:
-            elseIf File.Exists(strPath & "\NE") = True And _
+            ElseIf File.Exists(strPath & "\NE") = True And _
                 File.Exists(strPath & "\SE") = True And _
                 File.Exists(strPath & "\SW") = True And _
                 File.Exists(strPath & "\NW") = True Then
 
-            ' object
-            With Me.animations
-                .Add("NE", False)
-                .Add("SE", False)
-                .Add("SW", False)
-                .Add("NW", False)
-            End With
+                ' object
+                With Me.animations
+                    .Add("NE", False)
+                    .Add("SE", False)
+                    .Add("SW", False)
+                    .Add("NW", False)
+                End With
 
-            Debug.Print("... Detected: object")
+                Debug.Print("... Detected: object")
 
 
 13:
 
-            elseIf File.Exists(strPath & "\N") = True Then
+            ElseIf File.Exists(strPath & "\N") = True Then
 
-            ' icon
-            With Me.animations
-                .Add("N", False)
-            End With
+                ' icon
+                With Me.animations
+                    .Add("N", False)
+                End With
 
 
 
@@ -269,15 +269,15 @@ dBug:
                 File.Exists(strPath & "\19") = True And _
                 File.Exists(strPath & "\20") = True Then
 
-            ' paths
-            ' we could do this shorter
-            With Me.animations
-                Dim intX As Integer = 1
-                While intX <= 20
-                    .Add(intX.ToString("0"), False)
-                    intX += 1
-                End While
-            End With
+                ' paths
+                ' we could do this shorter
+                With Me.animations
+                    Dim intX As Integer = 1
+                    While intX <= 20
+                        .Add(intX.ToString("0"), False)
+                        intX += 1
+                    End While
+                End With
 
 
             End If
@@ -307,7 +307,7 @@ dBug:
                     Next
                 Next
             Else
-                Debug.Print("guessConfig: type not recognized.")
+                Debug.Print("createAniConfig: type not recognized.")
             End If
 
 
@@ -324,10 +324,13 @@ dBug:
         Exit Function
 
 dBug:
-        MsgBox("Error in clsAniFile:guessConfig at line " & Erl() & vbCrLf & _
+        MsgBox("Error in clsAniFile:createAniConfig at line " & Erl() & vbCrLf & _
             Err.Number & " - " & Err.Description, vbOKOnly + vbCritical, "Error while guessing config for .ani-file")
 
     End Function
 
 
+    Public Sub New(myFileName As String)
+        Me.fileName = myFileName
+    End Sub
 End Class

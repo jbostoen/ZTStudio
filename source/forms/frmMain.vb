@@ -321,8 +321,7 @@ dBug:
         MsgBox("About " & Application.ProductName & " " & Application.ProductVersion & vbCrLf & _
             "___________________________" & vbCrLf & _
             "© since 2015 by Jeffrey Bostoen" & vbCrLf & _
-            "https://github.com/jbostoen/ZTStudio" & vbCrLf & _
-            "jbostoen@outlook.com" & vbCrLf & _
+            "https://github.com/jbostoen/ZTStudio" & vbCrLf & _ 
             vbCrLf & vbCrLf & _
             "Bugs? " & vbCrLf & _
             "-------------------" & vbCrLf & _
@@ -528,12 +527,9 @@ dBug:
                 
                 If cfg_export_ZT1_Ani = 1 Then
                     Debug.Print("Try .ani")
-                    Dim cAni As New clsAniFile
-                    cAni.fileName = dlgSave.FileName.Replace(IO.Path.GetFileName(dlgSave.FileName), "")
-                    cAni.fileName = cAni.fileName & IO.Path.GetFileName(cAni.fileName.Substring(0, cAni.fileName.Length - 1)) & ".ani"
-                    Debug.Print("Ani = " & cAni.fileName)
-
-                    cAni.guessConfig()
+                    ' Get the folder + name of the folder + .ani
+                    Dim cAni As New clsAniFile(Path.GetDirectoryName(dlgSave.FileName) & "\" & Path.GetFileName(Path.GetDirectoryName(dlgSave.FileName)) & ".ani")
+                    cAni.createAniConfig()
                 End If
 
 60:

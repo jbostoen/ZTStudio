@@ -599,7 +599,6 @@ dBug2:
                     ztFrame.offsetY += coordOffsetChanges.Y
                     ztFrame.offsetX += coordOffsetChanges.X
 
-
                     'Debug.Print("Before: " & ztFrame.coreImageHex(4) & " - " & ztFrame.coreImageHex(5) & _
                     '            " ---> offset was " & (ztFrame.offsetY - coordOffsetChanges.Y) & " - now: " & ztFrame.offsetY & " --- " & ztFrame.offsetY.ToString("X4").ReverseHEX() & _
                     '            " --- " & (256 * 256 + ztFrame.offsetY).ToString("X4").ReverseHEX())
@@ -755,7 +754,18 @@ dBug:
         ' We will follow the same approach though, as the program can't know the right offsets.
         Me.offsetX = Math.Ceiling(bmpDraw.Width / 2)
         Me.offsetY = Math.Ceiling(bmpDraw.Height / 2)
-         
+
+
+
+        'Debug.Print("Normally our offsets are: " & Me.offsetX & " - " & Me.offsetY & " / w=" & bmpDraw.Width & ", h=" & bmpDraw.Height)
+
+        Dim rectCrop As Rectangle = clsTasks.bitmap_getDefiningRectangle(bmpDraw)
+        Dim bmpCropped As Bitmap = clsTasks.bitmap_getCropped(bmpDraw, rectCrop)
+
+        ' Improvement by cropping!
+        Me.offsetX -= rectCrop.X
+        Me.offsetY -= rectCrop.Y
+        bmpDraw = bmpCropped
 
 
 30:

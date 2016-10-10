@@ -496,6 +496,9 @@ dBg:
 
         For Each s As String In paths
 
+            'Debug.Print(s)
+
+
             ' The order is alphabetical.
             ' We could implement a way to check if the filename matches the expected frame.
             ' We should also check if there's at least 2 frames when someone starts to use <name>_extra.PNG
@@ -591,7 +594,7 @@ dBg:
                                 .readPal(sPath & ".pal")
                                 .fileName = sPath & ".pal"
                             End With
-                             
+
                             ' PNGs might cause issues if used as color palette here...
                             'ElseIf File.Exists(sPath & ".png") Then
 
@@ -605,7 +608,7 @@ dBg:
                                 .fileName = sPath & ".pal"
                                 .writePal(.fileName, True)
                             End With
-                             
+
 
                         ElseIf File.Exists(sPathB & ".pal") Then
 
@@ -619,7 +622,7 @@ dBg:
                             ' ztFrame.parent.colorPalette.fileName = sPathB & ".pal"
 
                         ElseIf File.Exists(sPathB & ".gpl") Then
-                            
+
                             With ztFrame.parent.colorPalette
                                 .import_from_GimpPalette(sPathB & ".gpl")
                                 .fileName = sPathB & ".pal"
@@ -627,10 +630,10 @@ dBg:
                             End With
 
 
-                        End If 
+                        End If
 
 
-                End If
+                    End If
 
 
 
@@ -648,7 +651,7 @@ dBg:
 250:
                 With ztFrame
 251:
-                    .loadPNG(s) 
+                    .loadPNG(s)
 
                 End With
 
@@ -684,12 +687,13 @@ dBg:
 1555:
         If cfg_export_ZT1_Ani = 1 And blnSingleConversion = True Then
             Debug.Print(Now.ToString() & ": convert_file_PNG_to_ZT1: Generate .ani file (single conversion)")
-            ' Only 1 graphic file is in this path. This is the case for icons, for example.
-            ' A .ani-file can be generated automatically.
-            Dim cAni As New clsAniFile
-            cAni.fileName = strPath.Replace(IO.Path.GetFileName(strPath), "")
-            cAni.fileName = cAni.fileName & IO.Path.GetFileName(cAni.fileName.Substring(0, cAni.fileName.Length - 1)) & ".ani"
-            cAni.guessConfig()
+
+            ' Only 1 graphic file is being generated. This is the case for icons, for example.
+            ' A .ani-file can be generated automatically.       
+            ' [folder path] + \ + [folder name] + .ani
+            Dim cAni As New clsAniFile(Path.GetDirectoryName(strPath) & "\" & Path.GetFileName(Path.GetDirectoryName(strPath)) & ".ani")
+            cAni.createAniConfig()
+
         End If
 
 
@@ -898,32 +902,10 @@ dBug:
 
 
 1100:
-        ' Experimantal. Generate a .ani-file in each directory. 
+        ' Generate a .ani-file in each directory. 
         ' Add the initial directory
-        stack.Push(strPath)
-        ' Continue processing for each stacked directory
-        Do While (stack.Count > 0)
-            ' Get top directory string
+        batch_generate_ANI(strPath)
 
-            Dim dir As String = stack.Pop
-
-            If cfg_export_ZT1_Ani = 1 Then
-                Dim cAni As New clsAniFile
-                Debug.Print(Now.ToString() & ": convert_file_PNG_to_ZT1: Generate .ani file (batch conversion)")
-                cAni.fileName = dir & "\" & Path.GetFileName(dir) & ".ani"
-                cAni.guessConfig()
-            End If
-
-            ' Loop through all subdirectories and add them to the stack.
-            Dim directoryName As String
-            For Each directoryName In Directory.GetDirectories(dir)
-                stack.Push(directoryName)
-            Next
-
-        Loop
-
-        ' Make sure everything is finished.
-        Application.DoEvents()
 
 1150:
         ' Do a clean up of our .PNG files if we had a successful conversion.
@@ -966,7 +948,7 @@ dBug:
 20:
         frmMain.picBox.Image = editorGraphic.frames(intIndexFrameNumber).getImage(True)
 
-       
+
 
 
 21:
@@ -1000,7 +982,7 @@ dBug:
 
     Function bitmap_getDefiningRectangle(bmInput As Bitmap) As Rectangle
 
-         
+
 
 101:
         ' Find most left
@@ -1368,7 +1350,7 @@ dBug:
 
         ' Get color
         Dim c As System.Drawing.Color = Color.Transparent
-         
+
 
         ' We had the color. Insert it at the position we want.
         editorGraphic.colorPalette.colors.Insert(intIndexNow + 1, c)
@@ -1507,6 +1489,13 @@ dBug:
         Next
 
 
+1200:
+        ' Generate a .ani-file in each directory. 
+        ' Add the initial directory
+        batch_generate_Ani(strPath)
+
+
+
 1950:
         MsgBox("Finished batch rotation fixing.", vbOKOnly + vbInformation, "Finished job")
 
@@ -1521,5 +1510,47 @@ dBug:
 
     End Sub
 
+
+    Function batch_generate_Ani(strPath As String) As Integer
+
+        Dim stack As New Stack(Of String)
+
+        stack.Push(strPath)
+        ' Continue processing for each stacked directory
+        Do While (stack.Count > 0)
+            ' Get top directory string
+
+            Dim dir As String = stack.Pop
+
+            If cfg_export_ZT1_Ani = 1 Then
+                Dim cAni As New clsAniFile(dir & "\" & Path.GetFileName(dir) & ".ani")
+                Debug.Print(Now.ToString() & ": Generate .ani file (batch conversion)")
+                cAni.createAniConfig()
+            End If
+
+            ' Loop through all subdirectories and add them to the stack.
+            Dim directoryName As String
+            For Each directoryName In Directory.GetDirectories(dir)
+                stack.Push(directoryName)
+            Next
+
+        Loop
+
+        ' Make sure everything is finished.
+        Application.DoEvents()
+
+        Return 0
+
+        Exit Function
+
+dBug:
+
+        MsgBox("An error occured while trying to list and batch rotation fix ZT1 Graphic files in this folder: " & vbCrLf & _
+            strPath & vbCrLf & vbCrLf & "Line: " & Erl() & vbCrLf & Err.Number & " - " & Err.Description, _
+            vbOKOnly + vbCritical, "Error during batch rotation fixing")
+
+        Return -1
+
+    End Function
 
 End Module

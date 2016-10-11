@@ -183,7 +183,10 @@ Public Class clsPalette
         If Me.colors.Contains(c) = True Then
 
             ' Color has been found, return the index
-            Return Me.colors.IndexOf(c)
+            ' restrant.pal has a color listed twice.
+            ' it seems to rely on the last index.
+            Return Me.colors.LastIndexOf(c)
+             
 
 
         ElseIf c.A = 0 Then

@@ -357,6 +357,8 @@ dBug:
         ' - keep canvas size / to relevant frame area / to relevant graphic area
         ' - render extra frame or not
 
+
+
 10:
         ' Loop over each frame of the ZT1 Graphic
         For Each ztFrame As clsFrame2 In g.frames
@@ -372,68 +374,19 @@ dBug:
             ' Since we are processing in batch, we (currently) do not offer the option to render a background ZT1 Graphic.
             ' This might however make a nice addition :)
 
-            If cfg_export_PNG_RenderBGFrame = True And g.extraFrame = 1 Then
+            ' RenderBGFrame: this is read as: 'render this as BG for every frame'
+            If cfg_export_PNG_RenderBGFrame = 0 And g.extraFrame = 1 Then
                 If g.frames.IndexOf(ztFrame) <> (g.frames.Count - 1) Then
                     ztFrame.savePNG(strFile & cfg_convert_fileNameDelimiter & (g.frames.IndexOf(ztFrame) + cfg_convert_startIndex).ToString("0000") & ".png")
                 Else
-                    ztFrame.savePNG(strFile & "_extra.png")
+                    ztFrame.savePNG(strFile & cfg_convert_fileNameDelimiter & "extra.png")
                 End If
             Else
                 ztFrame.savePNG(strFile & cfg_convert_fileNameDelimiter & (g.frames.IndexOf(ztFrame) + cfg_convert_startIndex).ToString("0000") & ".png")
 
             End If
 
-12:
-
-            '            'Debug.Print("TESTING " & editorBgGraphic.frames.Count)
-
-            '            ' Is there a BG ZT1 Graphic?
-            '            If editorBgGraphic.frames.Count > 0 And cfg_export_PNG_RenderBGZT1 = True Then
-
-            '                bm = editorBgGraphic.frames(0).renderFrame().Clone()
-
-            '            Else
-
-            '                bm = New Bitmap(cfg_grid_numPixels * 2, cfg_grid_numPixels * 2)
-
-            '            End If
-
-
-
-            '            ' There's an extra frame. What's the rendering option?
-            '            If g.extraFrame = 1 Then
-
-            '20:
-            '                ' Does the user want us to render the individual frames?
-
-            '21:
-            '                ' Write out ALL frames as seperate items.
-            '                If g.frames.IndexOf(ztFrame) <> (g.frames.Count - 1) Then
-
-            '                    ' Regular frames
-            '                    ztFrame.renderFrame(bm, , cfg_export_PNG_RenderBGFrame).Save(strFile & "_" & (g.frames.IndexOf(ztFrame) + cfg_convert_startIndex).ToString("0000") & ".png")
-
-            '                Else
-            '23:
-            '                    ' The extra frame
-            '                    ztFrame.renderFrame(bm, , False).Save(strFile & "_extra.png")
-
-            '                End If
-
-
-
-            '            Else
-
-            '30:
-            '                ' Write out all frames
-            '                Debug.Print("TESTING render a regular frame. " & g.frames.IndexOf(ztFrame) & " + " & cfg_convert_startIndex)
-            '                ztFrame.renderFrame(bm, g.colorPalette).Save(strFile & "_" & (g.frames.IndexOf(ztFrame) + cfg_convert_startIndex).ToString("0000") & ".png")
-
-            '            End If
-
-
-            'Debug.Print("Frame OK.")
-
+12: 
 
 
 
@@ -466,7 +419,7 @@ dBg:
 
         strPath = Strings.LCase(strPath)
 
-        Dim paths() As String
+        Dim paths As New List(Of String)
         Dim g As New clsGraphic2
         Dim ztFrame As clsFrame2
         Dim frameName As String = System.IO.Path.GetFileName(strPath)
@@ -481,7 +434,13 @@ dBg:
 
 
         ' Get the entire path
-        paths = System.IO.Directory.GetFiles(frameGraphicPath, frameName & cfg_convert_fileNameDelimiter & "????.png")
+        paths.AddRange(System.IO.Directory.GetFiles(frameGraphicPath, frameName & cfg_convert_fileNameDelimiter & "????.png"))
+
+        ' Fix for graphic_extra.PNG (legacy)
+        If File.Exists(frameGraphicPath & frameName & cfg_convert_fileNameDelimiter & "extra.png") = True Then
+            paths.Add(frameGraphicPath & frameName & cfg_convert_fileNameDelimiter & "extra.png")
+            g.extraFrame = 1
+        End If
 
 20:
         ' 20150624 : this should be done automatically when writing (?)
@@ -508,7 +467,7 @@ dBg:
             ' Extract the number of the frame (or _extra) from the filename
             'pngName = Split(System.IO.Path.GetFileNameWithoutExtension(s), "_")(1)
             ' 20161007 - changed this to adapt to different filename delimiters
-            If Strings.Right(System.IO.Path.GetFileNameWithoutExtension(s), 5) = "extra" Then
+            If Strings.Right(System.IO.Path.GetFileName(s).ToLower(), 9) = "extra.png" Then
                 pngName = "extra"
             Else
                 pngName = Strings.Right(System.IO.Path.GetFileNameWithoutExtension(s), 4)
@@ -582,6 +541,7 @@ dBg:
 
                     ' N should not be the only view (icon etc)
                     ' if it does seem to be the only view, we should NOT fall back on higher level.
+                    ' an icon is NOT animated.
 
                     If Directory.GetFiles(Path.GetDirectoryName(strPath), frameName & "*.png").Length <> _
                         Directory.GetFiles(Path.GetDirectoryName(strPath), "*.png").Length Then

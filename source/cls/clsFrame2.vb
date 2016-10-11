@@ -752,8 +752,9 @@ dBug:
         ' The offset is difficult. Zoot *seemed* to handle it by setting the offset to half the height/width. 
         ' That approach at least centers your image, but it might not be what's wanted.
         ' We will follow the same approach though, as the program can't know the right offsets.
-        Me.offsetX = Math.Ceiling(bmpDraw.Width / 2)
-        Me.offsetY = Math.Ceiling(bmpDraw.Height / 2)
+        Me.offsetX = Math.Ceiling(bmpDraw.Width / 2) + 1
+        Me.offsetY = Math.Ceiling(bmpDraw.Height / 2) + 1
+
 
 
 

@@ -5,6 +5,9 @@
 * Look for the folder ZTStudio-master/source/bin/Debug .
 * There you find ZTStudio.exe, which you can simply run.
 
+You do need .NET Framework 4.5.
+
+
 
 **Important note**
 

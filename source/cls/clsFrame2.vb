@@ -193,7 +193,7 @@ dBug:
 
     End Function
 
-     
+
 
 
     Function getImage(Optional blnDrawGrid As Boolean = False) As Bitmap
@@ -207,10 +207,10 @@ dBug:
 1:
         ' Draw frame.
         Dim bmOutput As Bitmap = Me.getCoreImageBitmapOnTransparentCanvas()
-         
+
 
 11:
-            ' Draw 'extra' background frame, e.g. restaurants?
+        ' Draw 'extra' background frame, e.g. restaurants?
         If Me.parent.extraFrame = 1 And cfg_export_PNG_RenderBGFrame = 1 Then
             bmOutput = clsTasks.images_Combine(Me.parent.frames(Me.parent.frames.Count - 1).getCoreImageBitmapOnTransparentCanvas(), bmOutput)
         End If
@@ -255,7 +255,7 @@ dBug:
 
         On Error GoTo dBug2
         Debug.Print(Now().ToString("yyyyMMdd HHmmss") & " clsFrame2.renderCoreImageFromHex: start")
-         
+
 
 
 
@@ -274,7 +274,7 @@ dBug:
         ' Now, let's proceed.
 
 
-  
+
 
 
         'Debug.Print("'" & strFrameHex & "'")
@@ -447,42 +447,42 @@ dBug:
                 frameHex.Skip(2)
 
 1400:
-                 
 
-                    ' We know how many colors are expected. 
-                    For intNumDrawingInstructions_colors_current = 0 To (intNumDrawingInstructions_colors - 1)
+
+                ' We know how many colors are expected. 
+                For intNumDrawingInstructions_colors_current = 0 To (intNumDrawingInstructions_colors - 1)
 
 
 1410:
-                        If blnIsShadow = True Then
-                            ' Marine Mania's underwater shadow format (compressed ZT1 Graphic)
-                            c = Color.Black
-                        Else
-                            ' In the traditional format, we fetch it from a color palette, by its index number.
-                            c = ztPal.colors(CInt("&H" & frameHex(intNumDrawingInstructions_colors_current)))
-                        End If
+                    If blnIsShadow = True Then
+                        ' Marine Mania's underwater shadow format (compressed ZT1 Graphic)
+                        c = Color.Black
+                    Else
+                        ' In the traditional format, we fetch it from a color palette, by its index number.
+                        c = ztPal.colors(CInt("&H" & frameHex(intNumDrawingInstructions_colors_current)))
+                    End If
 
 1413:
-                        ' Color the pixel.
-                        'Debug.Print("Drawing: x=" & intX & ", y=" & intY & " = " & c.ToString() & " / w=" & frameCoreImageBitmap.Width & ", h=" & frameCoreImageBitmap.Height)
-                        frameCoreImageBitmap.SetPixel(intX, intY, c)
+                    ' Color the pixel.
+                    'Debug.Print("Drawing: x=" & intX & ", y=" & intY & " = " & c.ToString() & " / w=" & frameCoreImageBitmap.Width & ", h=" & frameCoreImageBitmap.Height)
+                    frameCoreImageBitmap.SetPixel(intX, intY, c)
 
 1450:
-                        ' Be ready to draw next pixel.
-                        intX += 1
+                    ' Be ready to draw next pixel.
+                    intX += 1
 
 
-                    Next intNumDrawingInstructions_colors_current
+                Next intNumDrawingInstructions_colors_current
 1455:
-                    ' Rather than individually deleting those colors one by one from the bytes we (still) need to process, 
-                    ' we'll do it at once now.
-                    If blnIsShadow = False Then
-                        frameHex.Skip(intNumDrawingInstructions_colors_current)
-                    End If
+                ' Rather than individually deleting those colors one by one from the bytes we (still) need to process, 
+                ' we'll do it at once now.
+                If blnIsShadow = False Then
+                    frameHex.Skip(intNumDrawingInstructions_colors_current)
+                End If
 
 
 1500:
-                
+
 
 2040:
             Next intNumDrawingInstructions_current
@@ -519,7 +519,7 @@ dBug:
 
 
 
-         
+
 
         Debug.Print("Frame rendered.")
 
@@ -556,7 +556,7 @@ dBug2:
 
 
 
-     
+
 
     Public Function updateOffsets(coordOffsetChanges As Point, Optional blnBatchRotFix As Boolean = False)
 
@@ -725,7 +725,7 @@ dBug:
         On Error GoTo dBug
 
 
-5: 
+5:
         Dim bmpDrawTemp As Bitmap = Bitmap.FromFile(sFile)
         Dim bmpDraw As Bitmap
 
@@ -766,13 +766,17 @@ dBug:
         ' Improvement by cropping!
         Me.offsetX -= rectCrop.X
         Me.offsetY -= rectCrop.Y
-        bmpDraw = bmpCropped
 
+
+25:
+        If rectCrop.X <> 0 And rectCrop.Y <> 0 And Me.parent.colorPalette.colors.Count = 0 Then
+            Me.parent.colorPalette.colors.Add(bmpDraw.GetPixel(0, 0))
+        End If
 
 30:
         ' ZT Studio will crop the image at a later point.
         ' For now, we do it like this, so the image is aligned in an optimal way.
-        Me.getHexFromBitmap(bmpDraw)
+        Me.getHexFromBitmap(bmpCropped)
 
 
         'Debug.Print(Strings.Join(Me.coreImageHex.ToArray(), " "))
@@ -819,7 +823,7 @@ dBug:
                 bmImage = Me.coreImageBitmap
             End If
 
-        Else 
+        Else
 
             ' APE / Zoot: top left color = transparent.
             ' Only if no colors are known in our palette, we rely on that method.

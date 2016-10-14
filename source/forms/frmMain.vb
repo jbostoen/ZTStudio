@@ -26,8 +26,8 @@ Public Class frmMain
 
 
         ' Always start with one frame
-        editorFrame = New clsFrame2(editorGraphic) 
-        editorGraphic.frames.Add(editorFrame) 
+        editorFrame = New clsFrame2(editorGraphic)
+        editorGraphic.frames.Add(editorFrame)
 
 
         ' Output
@@ -62,9 +62,11 @@ Public Class frmMain
         'list the names of all files in the specified directory
         For Each dra In diar1
             tsbOpenPalBldg16.DropDownItems.Add(dra.Name)
-        Next 
+        Next
+
+
     End Sub
-     
+
 
     Private Sub picBox_MouseEnter(sender As Object, e As EventArgs) Handles picBox.MouseEnter
 
@@ -82,7 +84,7 @@ Public Class frmMain
 2:
         ' frame might have been just initiated
         If IsNothing(editorFrame.coreImageBitmap) And IsNothing(editorFrame.coreImageHex) Then Exit Sub
-         
+
 
 
 3:
@@ -92,7 +94,7 @@ Public Class frmMain
 
 4:
         If IsNothing(bmTmp) Then Exit Sub
-         
+
 
 20:
         Dim eX As Integer = (picBox.Width - bmtmp.Width) / 2
@@ -161,7 +163,7 @@ dBug:
         End If
 
     End Sub
-     
+
 
     Private Sub tbFrames_ValueChanged(sender As Object, e As EventArgs) Handles tbFrames.ValueChanged
 
@@ -195,7 +197,7 @@ dBug:
 
             cfg_grid_BackGroundColor = .Color
 
-             
+
         End With
 
 
@@ -207,14 +209,14 @@ dBug:
 
     Private Sub tsbZT1Open_Click(sender As Object, e As EventArgs) Handles tsbZT1Open.Click
 
-         
+
 
         With dlgOpen
             .Title = "Pick a ZT1 Graphic"
             .DefaultExt = ""
             .Filter = "All files|*.*"
             .InitialDirectory = System.IO.Path.GetDirectoryName(cfg_path_recentZT1)
-             
+
 
 
 
@@ -229,7 +231,7 @@ dBug:
                 End If
             End If
 
-            If .ShowDialog() <> Windows.Forms.DialogResult.Cancel Then 
+            If .ShowDialog() <> Windows.Forms.DialogResult.Cancel Then
 
                 If System.IO.File.Exists(dlgOpen.FileName) = True Then
 
@@ -256,14 +258,14 @@ dBug:
 
                         ' Keep filename
                         ssFileName.Text = dlgOpen.FileName
-                         
+
                         ' Draw first frame 
                         clsTasks.preview_update(0)
 
                         ' Add time indication
                         lblAnimTime.Text = ((editorGraphic.frames.Count - editorGraphic.extraFrame) * editorGraphic.animationSpeed) & " ms "
                         lblFrames.Text = (editorGraphic.frames.Count - editorGraphic.extraFrame) & " frames. "
-                         
+
                         ' Show default palette
                         editorGraphic.colorPalette.fillPaletteGrid(dgvPaletteMain)
 
@@ -290,7 +292,7 @@ dBug:
 
 
         End With
-    End Sub 
+    End Sub
 
     Private Sub tbFrames_ValueChanged1(sender As Object, e As EventArgs) Handles tbFrames.ValueChanged
 
@@ -321,7 +323,7 @@ dBug:
         MsgBox("About " & Application.ProductName & " " & Application.ProductVersion & vbCrLf & _
             "___________________________" & vbCrLf & _
             "© since 2015 by Jeffrey Bostoen" & vbCrLf & _
-            "https://github.com/jbostoen/ZTStudio" & vbCrLf & _ 
+            "https://github.com/jbostoen/ZTStudio" & vbCrLf & _
             vbCrLf & vbCrLf & _
             "Bugs? " & vbCrLf & _
             "-------------------" & vbCrLf & _
@@ -352,7 +354,7 @@ dBug:
 
                 ' was bminput
 
-              
+
                 ' bminput.cachedFrame.Save(dlgSave.FileName, System.Drawing.Imaging.ImageFormat.Png)
 
                 editorFrame.savePNG(dlgSave.FileName)
@@ -381,7 +383,7 @@ dBug:
             .DefaultExt = ".pal"
             .Filter = "ZT1 Color Palette files (*.pal)|*.pal|All files|*.*"
             .InitialDirectory = System.IO.Path.GetDirectoryName(cfg_path_recentZT1)
- 
+
 
             If .ShowDialog() <> Windows.Forms.DialogResult.Cancel Then
 
@@ -396,7 +398,7 @@ dBug:
 
 
 
-      
+
 
     Private Sub tsbSettings_Click(sender As Object, e As EventArgs) Handles tsbSettings.Click
 
@@ -524,7 +526,7 @@ dBug:
 50:
                 'GoTo 60
 
-                
+
                 If cfg_export_ZT1_Ani = 1 Then
                     Debug.Print("Try .ani")
                     ' Get the folder + name of the folder + .ani
@@ -641,11 +643,11 @@ dBug:
     Private Sub tsbFrame_IndexIncrease_Click(sender As Object, e As EventArgs) Handles tsbFrame_IndexIncrease.Click
 
         ' Change handled in slider control
-        tbFrames.Value += 1 
-         
+        tbFrames.Value += 1
+
 
     End Sub
-     
+
 
     Private Sub tsbFrame_OffsetUp_MouseDown(sender As Object, e As MouseEventArgs) Handles tsbFrame_OffsetUp.MouseDown
 
@@ -697,7 +699,7 @@ dBug:
 
         clsTasks.preview_update()
 
-         
+
 
     End Sub
 
@@ -750,7 +752,7 @@ dBug:
 
     End Sub
 
-     
+
 
     Private Sub tsbFrame_fpX_SelectedIndexChanged(sender As Object, e As EventArgs) Handles tsbFrame_fpX.SelectedIndexChanged
 
@@ -771,7 +773,7 @@ dBug:
         clsTasks.preview_update()
 
     End Sub
-     
+
 
     Private Sub dgvPaletteMain_CellDoubleClick(sender As Object, e As DataGridViewCellEventArgs) Handles dgvPaletteMain.CellDoubleClick
 
@@ -814,7 +816,7 @@ dBug:
         clsTasks.pal_moveColor(dgvPaletteMain.SelectedRows(0).Index, dgvPaletteMain.SelectedRows(0).Index + 1)
 
     End Sub
-     
+
 
     Private Sub mnuPal_Replace_Click(sender As Object, e As EventArgs) Handles mnuPal_Replace.Click
 
@@ -836,7 +838,7 @@ dBug:
         pal_addColor(dgvPaletteMain.SelectedRows(0).Index)
 
     End Sub
-     
+
 
     Private Sub tsbFrame_ImportPNG_MouseDown(sender As Object, e As MouseEventArgs) Handles tsbFrame_ImportPNG.MouseDown
 
@@ -847,8 +849,8 @@ dBug:
 
 
 0:
-            Dim ztFrame As New clsFrame2(editorGraphic) 
-2: 
+            Dim ztFrame As New clsFrame2(editorGraphic)
+2:
 
 10:
             ' Add the frame after the existing one(s)
@@ -895,7 +897,7 @@ dBug:
                         ' OK
                         With editorFrame
 
-                            .loadPNG(dlgOpen.FileName) 
+                            .loadPNG(dlgOpen.FileName)
 
                         End With
 
@@ -937,8 +939,8 @@ dBug:
     Private Sub tsbOpenPalBldg16_Click(sender As Object, e As EventArgs) Handles tsbOpenPalBldg16.Click
 
     End Sub
-     
-     
+
+
     Private Sub tsbFrame_fpY_Click(sender As Object, e As EventArgs) Handles tsbFrame_fpY.Click
 
     End Sub
@@ -954,7 +956,7 @@ dBug:
 
         Next
     End Sub
-     
+
 
     Private Sub mnuPal_ExportPNG_Click(sender As Object, e As EventArgs) Handles mnuPal_ExportPNG.Click
 
@@ -991,7 +993,7 @@ dBug:
             .InitialDirectory = System.IO.Path.GetDirectoryName(cfg_path_recentZT1)
 
 
-            If .ShowDialog() <> Windows.Forms.DialogResult.Cancel Then 
+            If .ShowDialog() <> Windows.Forms.DialogResult.Cancel Then
 
                 ' Replace palette file (should trigger a re-draw)
                 ' Forcefully add colors (some might be the same, after a recolor)
@@ -1000,7 +1002,7 @@ dBug:
                 ' Update color list on the right
                 editorGraphic.colorPalette.fillPaletteGrid(dgvPaletteMain)
 
-               
+
 
                 clsTasks.preview_update()
 
@@ -1056,7 +1058,7 @@ dBug:
 
                 ' Update color list on the right
                 editorGraphic.colorPalette.fillPaletteGrid(dgvPaletteMain)
-                 
+
 
             End If ' cancel check
 
@@ -1081,13 +1083,33 @@ dBug:
     Private Sub tsbFrame_OffsetUp_Click(sender As Object, e As EventArgs) Handles tsbFrame_OffsetUp.Click
 
     End Sub
-     
+
 
     Private Sub Button1_Click_2(sender As Object, e As EventArgs)
 
 
         'picBox.Image = editorGraphic.frames(0).renderCoreImageFromHex()
         picBox.Image = editorGraphic.frames(0).getImage(True)
+
+
+
+    End Sub
+
+    Private Sub tsbZT1New_Click(sender As Object, e As EventArgs) Handles tsbZT1New.Click
+
+
+        editorGraphic = New clsGraphic2
+
+
+        ' Always start with one frame
+        editorFrame = New clsFrame2(editorGraphic)
+        editorGraphic.frames.Add(editorFrame)
+
+        ' Update/reset color palette
+        editorGraphic.colorPalette.fillPaletteGrid(dgvPaletteMain)
+
+        ' Update frame 
+        picBox.Image = Nothing
 
 
 

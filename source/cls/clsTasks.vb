@@ -12,7 +12,7 @@ Module clsTasks
     ' The graphic writer will need to take care of the following things:
 
     ' (1) Write frames properly.
-     
+
 
 
     Sub config_load()
@@ -23,7 +23,7 @@ Module clsTasks
 
         Dim sFile As String = System.IO.Path.GetFullPath(Application.StartupPath) & "\settings.cfg"
 
-        On Error Resume Next 
+        On Error Resume Next
 
         ' Preview
         cfg_grid_BackGroundColor = System.Drawing.Color.FromArgb(iniRead(sFile, "preview", "bgColor", ""))
@@ -36,7 +36,7 @@ Module clsTasks
         ' Reads from ini and configures all.
         cfg_path_Root = iniRead(sFile, "paths", "root", "")
         cfg_path_recentPNG = iniRead(sFile, "paths", "recentPNG", "")
-        cfg_path_recentZT1 = iniRead(sFile, "paths", "recentZT1", "") 
+        cfg_path_recentZT1 = iniRead(sFile, "paths", "recentZT1", "")
         cfg_path_ColorPals8 = System.IO.Path.GetFullPath(Application.StartupPath) & "\pal8"
         cfg_path_ColorPals16 = System.IO.Path.GetFullPath(Application.StartupPath) & "\pal16"
 
@@ -386,7 +386,7 @@ dBug:
 
             End If
 
-12: 
+12:
 
 
 

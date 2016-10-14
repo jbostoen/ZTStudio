@@ -97,6 +97,7 @@ Partial Class frmMain
         Me.mnuPal_ExportPNG = New System.Windows.Forms.ToolStripMenuItem()
         Me.mnuPal_ImportPNG = New System.Windows.Forms.ToolStripMenuItem()
         Me.mnuPal_ImportGimpPalette = New System.Windows.Forms.ToolStripMenuItem()
+        Me.tsbZT1New = New System.Windows.Forms.ToolStripButton()
         CType(Me.picBox, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.tsZT1Graphic.SuspendLayout()
         Me.Panel1.SuspendLayout()
@@ -129,7 +130,7 @@ Partial Class frmMain
         '
         'tsZT1Graphic
         '
-        Me.tsZT1Graphic.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.tslZT1Graphic, Me.tsbZT1Open, Me.tsbZT1Write, Me.tsbZT1_OpenPal, Me.ToolStripSeparator6, Me.tslZT1_AnimSpeed, Me.tstZT1_AnimSpeed, Me.tsbGraphic_ExtraFrame})
+        Me.tsZT1Graphic.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.tslZT1Graphic, Me.tsbZT1New, Me.tsbZT1Open, Me.tsbZT1Write, Me.tsbZT1_OpenPal, Me.ToolStripSeparator6, Me.tslZT1_AnimSpeed, Me.tstZT1_AnimSpeed, Me.tsbGraphic_ExtraFrame})
         Me.tsZT1Graphic.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow
         Me.tsZT1Graphic.Location = New System.Drawing.Point(0, 0)
         Me.tsZT1Graphic.Name = "tsZT1Graphic"
@@ -693,6 +694,17 @@ Partial Class frmMain
         Me.mnuPal_ImportGimpPalette.Size = New System.Drawing.Size(244, 22)
         Me.mnuPal_ImportGimpPalette.Text = "Replace with GIMP Color palette"
         '
+        'tsbZT1New
+        '
+        Me.tsbZT1New.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.tsbZT1New.Image = CType(resources.GetObject("tsbZT1New.Image"), System.Drawing.Image)
+        Me.tsbZT1New.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None
+        Me.tsbZT1New.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.tsbZT1New.Name = "tsbZT1New"
+        Me.tsbZT1New.Size = New System.Drawing.Size(36, 36)
+        Me.tsbZT1New.Text = "New graphic"
+        Me.tsbZT1New.ToolTipText = "Open a ZT1 Graphics File"
+        '
         'frmMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -799,5 +811,6 @@ Partial Class frmMain
     Friend WithEvents mnuPal_SavePAL As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents mnuPal_ImportGimpPalette As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents tsbBatchRotFix As System.Windows.Forms.ToolStripButton
+    Friend WithEvents tsbZT1New As System.Windows.Forms.ToolStripButton
 
 End Class

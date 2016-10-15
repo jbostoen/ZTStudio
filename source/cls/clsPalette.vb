@@ -4,7 +4,7 @@ Public Class clsPalette
 
 
     Dim pal_FileName As String = ""
-    Dim pal_colors As new List(Of System.Drawing.Color)
+    Dim pal_colors As New List(Of System.Drawing.Color)
     Dim pal_parent As clsGraphic2 = Nothing
 
 
@@ -18,7 +18,7 @@ Public Class clsPalette
             Return pal_parent
         End Get
         Set(value As clsGraphic2)
-            pal_parent = value 
+            pal_parent = value
         End Set
     End Property
     Public Property fileName As String
@@ -101,8 +101,8 @@ Public Class clsPalette
 
 
     End Function
-     
-     
+
+
 
 
     Sub fillPaletteGrid(dgv As DataGridView)
@@ -125,14 +125,14 @@ Public Class clsPalette
         ' The benefit of that is that we could add it all at once.
         ' However, it turned out addRange took 5-6 seconds; while adding it to the DGV right away takes 2/3 secs
         Dim x As Integer = 0 ' we use this for autonumbering. We could've relied on .indexOf or something too, but this is quicker.
-        
+
 
         ' Prevent visible updates in between.
         dgv.Visible = False
 
         For Each col As System.Drawing.Color In pal_colors
 
-            Dim drRow As New DataGridViewRow 
+            Dim drRow As New DataGridViewRow
 
 
             With drRow
@@ -146,12 +146,12 @@ Public Class clsPalette
                 .Cells(0).Value = x.ToString("X2")
 
             End With
-             
 
-            dgv.Rows.Add(drRow) 
+
+            dgv.Rows.Add(drRow)
             x += 1 ' Autonumbering (row header)
 
-        Next 
+        Next
 
         ' Make our DataGridView visible again, everything has bene added.
         dgv.Visible = True
@@ -186,7 +186,7 @@ Public Class clsPalette
             ' restrant.pal has a color listed twice.
             ' it seems to rely on the last index.
             Return Me.colors.LastIndexOf(c)
-             
+
 
 
         ElseIf c.A = 0 Then
@@ -299,7 +299,7 @@ Public Class clsPalette
         For Each s As String In opHex
             fs.WriteByte(CByte("&H" & s))
         Next
-       
+
 
         fs.Close()
         fs.Dispose()
@@ -446,7 +446,7 @@ dBug:
 
 
 200:
-        
+
         ' There's actually two possibilities here.
         ' Either we should regenerate the hex, since colors might have switched places.
         ' Or we should regenerate the image, since it might just be a recolor. 
@@ -454,9 +454,9 @@ dBug:
             ' TODO: do something
             For Each ztFrame As clsFrame2 In Me.parent.frames
                 ztFrame.coreImageBitmap = Nothing
-                ztFrame.getCoreImageBitmap() 
+                ztFrame.getCoreImageBitmap()
             Next
-        Else 
+        Else
         End If
 
     End Function
@@ -487,7 +487,7 @@ dBug:
 
 10:
 
-        Dim objReader As New System.IO.StreamReader(sFileName) 
+        Dim objReader As New System.IO.StreamReader(sFileName)
 
         Dim textLine As String = ""
         Dim intLine As Integer = 1
@@ -527,7 +527,7 @@ dBug:
         Loop
 
 200:
-         
+
         ' There's actually two possibilities here.
         ' Either we should regenerate the hex, since colors might have switched places.
         ' Or we should regenerate the image, since it might just be a recolor. 
@@ -552,8 +552,8 @@ dBg:
     End Function
 
 
-     
 
-     
+
+
 End Class
 

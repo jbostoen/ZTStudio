@@ -327,13 +327,15 @@ dBug:
             vbCrLf & vbCrLf & _
             "Bugs? " & vbCrLf & _
             "-------------------" & vbCrLf & _
-            "Feel free to report them by e-mail. " & _
-            "Support not guaranteed. " & _
+            "Feel free to report them at GitHub or Zoo Tek Phoenix. " & _
+            "Support not guaranteed. " & vbCrLf & _
             "Include the graphic files which are causing the problem. " & vbCrLf & vbCrLf & _
             "Credits? " & vbCrLf & _
             "-------------------" & vbCrLf & _
             "Zoo Tycoon is a game created by Blue Fang and published by Microsoft Game Studios. " & _
-            "Credits to MadScientist and Jay for explaining the file format.", vbOKOnly + vbInformation, "About")
+            "Rapan Studios was responsible for the animal designs, but the graphic format is probably Blue Fang's." & vbCrLf & _
+            "Credits to MadScientist and Jay for explaining the file format." & vbCrLf & _
+            "Big thank you to Vondell for providing new PNG graphics to experiment with.", vbOKOnly + vbInformation, "About")
 
 
     End Sub

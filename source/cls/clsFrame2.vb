@@ -769,6 +769,11 @@ dBug:
 
 
 25:
+        ' Basically, this is (mostly) meant for plaques. Say we're importing a plaque, centered on a transparent background.
+        ' Our cropped version will simply have the plaque. Which means: the top left pixel of the cropped area is relevant 
+        ' and should NOT be transparent. So we need to add the color from the original image and add that as transparent color. 
+        ' This should've been avoided by setting the background color properly, but it's easily overlooked.  
+        ' Furthermore, it also requires our color palette to contain NO colors yet.
         If rectCrop.X <> 0 And rectCrop.Y <> 0 And Me.parent.colorPalette.colors.Count = 0 Then
             Me.parent.colorPalette.colors.Add(bmpDraw.GetPixel(0, 0))
         End If

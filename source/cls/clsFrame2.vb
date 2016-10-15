@@ -381,6 +381,15 @@ dBug:
             .Add(frameHex(9), False)
         End With
 
+         
+        'MsgBox(Me.parent.frames.IndexOf(Me).ToString() & vbCrLf & _
+        '        Strings.Join(Me.mysteryHEX.ToArray(), " ") & " - " & vbCrLf & _
+        '       CInt("&H" & Me.mysteryHEX(1) & Me.mysteryHEX(0)) & vbCrLf & vbCrLf & _
+        '       CInt("&H" & Me.mysteryHEX(0) & Me.mysteryHEX(1)) & vbCrLf & vbCrLf & _
+        '       "w=" & frameCoreImageBitmap.Width & ", h=" & frameCoreImageBitmap.Height, vbApplicationModal)
+
+
+
 46:
         ' We covered the first 10 bytes (height, width, offset Y, offset X, mystery bytes). 
         ' Remove them now to speed up further processing. We'll repeat this a few more times.
@@ -1088,17 +1097,43 @@ dBug:
             Case 0
                 ' Save PNG image. Complete canvas size.
 21:
-                Me.getImage().Save(strFileName, System.Drawing.Imaging.ImageFormat.Png)
+
+                Dim imgComb As Image
+                imgComb = New Bitmap(cfg_grid_numPixels * 2, cfg_grid_numPixels * 2)
+
+32:
+
+                ' Use ZT Studio's main window background color (transparent)
+                Using g As Graphics = Graphics.FromImage(imgComb)
+                    g.Clear(cfg_grid_BackGroundColor)
+                End Using
+
+
+35:
+                imgComb = clsTasks.images_Combine(imgComb, Me.getImage())
+
+ 
+
+
+                imgComb.Save(strFileName, System.Drawing.Imaging.ImageFormat.Png)
 
             Case 1
                 ' Only save cropped version (relevant area of graphic) 
 
-31:
+131:
                 ' Cheap trick: combine all images into 1, then get the relevant rectangle.
                 ' Some caching might be in order in the future :)
 
                 Dim imgComb As Image
                 imgComb = New Bitmap(cfg_grid_numPixels * 2, cfg_grid_numPixels * 2)
+
+
+132:
+                ' Use ZT Studio's main window background color (transparent)
+                Using g As Graphics = Graphics.FromImage(imgComb)
+                    g.Clear(cfg_grid_BackGroundColor)
+                End Using
+135:
 
                 For Each ztFrame As clsFrame2 In Me.parent.frames
                     imgComb = clsTasks.images_Combine(imgComb, ztFrame.getImage())
@@ -1112,7 +1147,7 @@ dBug:
             Case 2
                 ' Only save relevant area of frame
 
-41:
+141:
 
                 bmRect = bitmap_getDefiningRectangle(Me.getImage())
                 bmCropped = clsTasks.bitmap_getCropped(Me.getImage(), bmRect)

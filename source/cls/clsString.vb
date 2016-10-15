@@ -5,15 +5,14 @@ Module StringExtensions
     <Extension()>
     Public Function ReverseHEX(ByVal aString As String) As String
 
-        ' Input spaces or not? It doesn't matter.
-        aString = Strings.Replace(aString, " ", "")
+        Dim retString As String
 
-        Dim retString As String = ""
+        Dim lst As List(Of String) = Strings.Split(aString, " ").ToList()
+        lst.Reverse()
 
-        While aString.Length >= 2
-            retString = retString & Strings.Right(aString, 2) & " "
-            aString = Strings.Left(aString, aString.Length - 2)
-        End While
+
+        retString = Strings.Join(lst.ToArray(), " ")
+
 
         ' return reverse, with spaces
         Return Strings.Trim(retString)

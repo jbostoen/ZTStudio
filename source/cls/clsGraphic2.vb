@@ -379,7 +379,7 @@ dBg:
 
             ' === Now, for each frame ===
             Dim hexSub As New List(Of String)
-            Dim hexFrame As New List(Of String) 
+            Dim hexFrame As New List(Of String)
 
             Debug.Print("... Start writing frames.")
 
@@ -534,7 +534,7 @@ dBug:
 
     Public Sub New()
 
-        Me.colorPalette.parent = Me 
+        Me.colorPalette.parent = Me
 
     End Sub
 End Class

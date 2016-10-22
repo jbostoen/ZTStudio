@@ -56,7 +56,7 @@
                     ' Color index already existed. Overwrite.
                     editorGraphic.colorPalette.colors(intStart + drRow.Index - 1) = drRow.DefaultCellStyle.BackColor
                 End If
-                 
+
             End If
         Next
 

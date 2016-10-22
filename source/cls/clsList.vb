@@ -9,7 +9,7 @@ Public Class List(Of T)
 
         If forceUpdate = True Then
             'clsTasks.update_Info("List - item added. Overload.")
-        End If 
+        End If
 
 
     End Sub

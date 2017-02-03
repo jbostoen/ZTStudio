@@ -382,12 +382,12 @@ dBug:
         End With
 
          
-        ' MsgBox(Me.parent.frames.IndexOf(Me).ToString() & vbCrLf & _
-        '         Strings.Join(Me.mysteryHEX.ToArray(), " ") & " - " & vbCrLf & _
-        '        CInt("&H" & Me.mysteryHEX(1) & Me.mysteryHEX(0)) & vbCrLf & vbCrLf & _
-        '       CInt("&H" & Me.mysteryHEX(0) & Me.mysteryHEX(1)) & vbCrLf & vbCrLf & _
-        '       "w=" & frameCoreImageBitmap.Width & ", h=" & frameCoreImageBitmap.Height & vbCrLf & _
-        '       Me.coreImageHex.Count, vbApplicationModal)
+        Debug.Print("Mystery hex: " & Me.parent.frames.IndexOf(Me).ToString() & vbCrLf & _
+                  Strings.Join(Me.mysteryHEX.ToArray(), " ") & " - " & vbCrLf & _
+                 CInt("&H" & Me.mysteryHEX(1) & Me.mysteryHEX(0)) & vbCrLf & vbCrLf & _
+                CInt("&H" & Me.mysteryHEX(0) & Me.mysteryHEX(1)) & vbCrLf & vbCrLf & _
+                "w=" & frameCoreImageBitmap.Width & ", h=" & frameCoreImageBitmap.Height & vbCrLf & _
+                Me.coreImageHex.Count, vbApplicationModal)
 
 
 

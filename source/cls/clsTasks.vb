@@ -483,8 +483,13 @@ dBg:
                     "The files should be named something similar to: " & vbCrLf & _
                     frameName & cfg_convert_fileNameDelimiter & "000" & cfg_convert_startIndex & ".png (number increases)" & vbCrLf & _
                     "or " & frameName & cfg_convert_fileNameDelimiter & "extra.png (for the extra frame in certain ZT1 Graphics." & vbCrLf & vbCrLf & _
-                    "File which caused this error: '" & vbCrLf & s & vbCrLf & pngName & "'", vbOKOnly + vbCritical, "Error")
-                Exit Sub
+                    "File which caused this error: " & vbCrLf & "'" & s & "'" & vbCrLf & _
+                       "ZT Studio will close to prevent program or game crashes.", _
+                        vbOKOnly + vbCritical + vbApplicationModal, _
+                        "Invalid filename (pattern)")
+
+                End
+
 
             Else
 
@@ -828,10 +833,15 @@ dBug:
                 ' Just a warning, so users don't accidentally have "sitscratch" as animation name.
                 ' Actually '-' is supported as well.
                 If Path.GetFileName(directoryName).Length > 8 Or System.Text.RegularExpressions.Regex.IsMatch(Strings.Replace(Path.GetFileName(directoryName), "-", ""), "^[a-zA-Z0-9]+$") = False Then
-                    MsgBox("Directory name '" & Path.GetDirectoryName(directoryName) & "' is invalid." & vbCrLf & _
-                        "The limit is a maximum of 8 alphanumeric characters.", _
-                        vbOKOnly + vbCritical, _
+                    MsgBox("Directory name '" & Path.GetFileName(directoryName) & "' is invalid." & vbCrLf & _
+                        "The limit is a maximum of 8 alphanumeric characters." & vbCrLf & _
+                       "ZT Studio will close to prevent program or game crashes.", _
+                        vbOKOnly + vbCritical + vbApplicationModal, _
                         "Invalid directory name")
+
+                    ' better:
+                    End
+
                 End If
 
                 stack.Push(directoryName)

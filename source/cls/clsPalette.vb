@@ -207,16 +207,20 @@ Public Class clsPalette
                 Return Me.colors.Count - 1  ' return last item index
             Else
                 '    "Failed to add (" & c.R.ToString() & ", " & c.G.ToString() & ", " & c.B.ToString() & ", " & c.A.ToString() & ")." & vbCrLf & _
-                MsgBox("The current palette already contains " & Me.colors.Count & " colors." & vbCrLf & vbCrLf & _
-                       "Color: " & c.ToString() & vbCrLf & _
-                       "Transparent color: " & Me.colors(0).ToString & vbCrLf & _
-                       "This is the maximum we can allow." & vbCrLf & "Further errors could arise!" & vbCrLf & _
-                       Me.fileName, _
-                       vbOKOnly + vbCritical, "Too many colors!")
+
 
                 For Each col As System.Drawing.Color In Me.colors
                     Debug.Print(Me.colors.IndexOf(col).ToString("000") & " | " & col.ToString())
                 Next
+
+
+
+                MsgBox("The current palette (" & Me.fileName & ") already contains " & Me.colors.Count & " colors." & vbCrLf & vbCrLf & _
+                       "Color: " & c.ToString() & vbCrLf & _
+                       "Transparent color: " & Me.colors(0).ToString & vbCrLf & _
+                       "Graphic: " & Me.parent.fileName & vbCrLf & _
+                       "ZT Studio will close to prevent program or game crashes.", _
+                       vbOKOnly + vbCritical + vbApplicationModal, "Too many colors!")
 
 
 

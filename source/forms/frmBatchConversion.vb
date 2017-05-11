@@ -7,8 +7,8 @@
         Me.Enabled = False
 
         If rbPNG_to_ZT1.Checked = True Then
-
-            clsTasks.convert_folder_PNG_to_ZT1(cfg_path_Root, PB)
+            'have the user set this somewhere
+            clsTasks.convert_folder_PNG_to_ZT1(cfg_path_Root, 125, PB)
 
         Else
 

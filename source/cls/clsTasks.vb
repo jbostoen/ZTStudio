@@ -1268,6 +1268,7 @@ dBug:
 
     Sub pal_replaceColor(intIndex As Integer)
 
+        If intIndex < 0 Then Exit Sub
 
         With frmMain.dlgColor
             .Color = frmMain.dgvPaletteMain.Rows(intIndex).DefaultCellStyle.BackColor

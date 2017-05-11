@@ -1116,4 +1116,12 @@ dBug:
 
 
     End Sub
+
+    Private Sub dgvPaletteMain_CellContentClick(sender As Object, e As DataGridViewCellEventArgs) Handles dgvPaletteMain.CellContentClick
+
+    End Sub
+
+    Private Sub mnuPal_Opening(sender As Object, e As System.ComponentModel.CancelEventArgs) Handles mnuPal.Opening
+
+    End Sub
 End Class

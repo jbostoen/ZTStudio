@@ -148,9 +148,11 @@
   <ItemGroup>
     <EmbeddedResource Include="forms\frmBatchConversion.resx">
       <DependentUpon>frmBatchConversion.vb</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="forms\frmBatchRotationFix.resx">
       <DependentUpon>frmBatchRotationFix.vb</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="forms\frmMain.resx">
       <DependentUpon>frmMain.vb</DependentUpon>
@@ -158,9 +160,11 @@
     </EmbeddedResource>
     <EmbeddedResource Include="forms\frmPal.resx">
       <DependentUpon>frmPal.vb</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="forms\frmSettings.resx">
       <DependentUpon>frmSettings.vb</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="My Project\Resources.resx">
       <Generator>VbMyResourcesResXFileCodeGenerator</Generator>
@@ -179,7 +183,9 @@
       <CustomToolNamespace>My</CustomToolNamespace>
       <LastGenOutput>Settings.Designer.vb</LastGenOutput>
     </None>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Zebra.ico" />

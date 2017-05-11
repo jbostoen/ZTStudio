@@ -20,7 +20,7 @@
 
 
             ' We will configure our parameters.
-            Dim strArgAction = vbNullString
+            'Dim strArgAction = vbNullString
 
             For Each arg As String In Environment.GetCommandLineArgs()
                 Debug.Print("Arg: '" & arg & "'")
@@ -33,8 +33,6 @@
                 ' set arguments etc
                 Select Case argK
 
-
-
                     Case "/crop" : cfg_export_PNG_CanvasSize = CByte(argV)
                     Case "/startindex" : cfg_convert_startIndex = CByte(argV)
                     Case "/cleanup" : cfg_convert_deleteOriginal = CByte(argV)
@@ -42,10 +40,14 @@
                     Case "/rootfolder" : cfg_path_Root = argV
 
 
-                    Case "/convertfolder" : strArgAction = "convertfolder"
-                    Case "/convertfile" : strArgAction = "convertfile"
-
-
+                    Case "/convertfolder"
+                        'MsgBox(argV)
+                        'added a parameter for FPS from blender
+                        'could be ushort or mayyyybe even byte
+                        clsTasks.convert_folder_PNG_to_ZT1(cfg_path_Root, Int(argV))
+                        'MsgBox("Done with batch conversion!")
+                        End
+                    Case "/convertfile"
 
                 End Select
                 ' Parameters?
@@ -56,32 +58,25 @@
 
             Next
 
-
             ' Now perform action.
 
 
             ' Now, end.
-            Select Case vbNullString
+            'Select Case vbNullString
+            'Case "convertfile"
 
-                Case "convertfile"
+            ' Do conversion
+            'End
 
-                    ' Do conversion
-                    End
+            'Case "convertfolder"
 
-                Case "convertfolder"
+            '        ' Do conversion
+            '        End
+            '    Case Else
+            '        ' Default.
+            '        ' Just load.
 
-                    ' Do conversion
-                    End
-
-
-
-                Case Else
-                    ' Default.
-                    ' Just load.
-
-            End Select
-
-
+            'End Select
 
         End Sub
     End Class

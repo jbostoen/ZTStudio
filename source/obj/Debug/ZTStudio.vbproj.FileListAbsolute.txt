@@ -27,3 +27,7 @@ C:\Users\Jeffrey\Documents\GitHub\ZTStudio\source\obj\Debug\ZT Studio.exe
 C:\Users\Jeffrey\Documents\GitHub\ZTStudio\source\obj\Debug\ZT Studio.xml
 C:\Users\Jeffrey\Documents\GitHub\ZTStudio\source\obj\Debug\ZT Studio.pdb
 C:\Users\Jeffrey\Documents\GitHub\ZTStudio\source\obj\Debug\ZTStudio.vbprojResolveAssemblyReference.cache
+C:\Users\arnfi\Desktop\ZTStudio-2017.02.03-rereleased\source\bin\Debug\ZT Studio.exe.config
+C:\Users\arnfi\Desktop\ZTStudio-2017.02.03-rereleased\source\obj\Debug\ZT Studio.exe
+C:\Users\arnfi\Desktop\ZTStudio-2017.02.03-rereleased\source\obj\Debug\ZT Studio.xml
+C:\Users\arnfi\Desktop\ZTStudio-2017.02.03-rereleased\source\obj\Debug\ZT Studio.pdb

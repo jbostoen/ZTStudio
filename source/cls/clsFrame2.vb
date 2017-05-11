@@ -24,7 +24,7 @@ Public Class clsFrame2
     Private fr_parent As New clsGraphic2
 
     Private fr_MysteryHEX As New List(Of String)
-     
+
     Private fr_lastUpdated As String = Now.ToString("yyyyMMddHHmmss")                ' for caching purposes.
 
 
@@ -68,7 +68,7 @@ Public Class clsFrame2
         End Set
     End Property
 
-     
+
     Public Property offsetX As Integer
         ' The horizontal offset. How much should the image be moved to the left compared to the center of the square (based on the ZT1 cFootPrintX) ?
         Get
@@ -154,9 +154,9 @@ Public Class clsFrame2
 
 dBug:
 
-        MsgBox("Error in clsFrame2.getCoreImageBitmap()" & vbCrLf & _
-               "Line " & Erl() & vbCrLf & _
-            Err.Number & " - " & Err.Description, _
+        MsgBox("Error in clsFrame2.getCoreImageBitmap()" & vbCrLf &
+               "Line " & Erl() & vbCrLf &
+            Err.Number & " - " & Err.Description,
             vbOKOnly + vbCritical, "Error")
 
 
@@ -186,9 +186,9 @@ dBug:
 
 dBug:
 
-        MsgBox("Error in clsFrame2.getCoreImageBitmapOnTransparentCanvas()" & vbCrLf & _
-               "Line " & Erl() & vbCrLf & _
-            Err.Number & " - " & Err.Description, _
+        MsgBox("Error in clsFrame2.getCoreImageBitmapOnTransparentCanvas()" & vbCrLf &
+               "Line " & Erl() & vbCrLf &
+            Err.Number & " - " & Err.Description,
             vbOKOnly + vbCritical, "Error")
 
     End Function
@@ -237,9 +237,9 @@ dBug:
 
 dBug:
 
-        MsgBox("Error in clsFrame2.getImage()" & vbCrLf & _
-               "Line " & Erl() & vbCrLf & _
-            Err.Number & " - " & Err.Description, _
+        MsgBox("Error in clsFrame2.getImage()" & vbCrLf &
+               "Line " & Erl() & vbCrLf &
+            Err.Number & " - " & Err.Description,
             vbOKOnly + vbCritical, "Error")
 
 
@@ -324,18 +324,18 @@ dBug:
             blnIsShadow = True
 
             ' Of course, our previous values don't make sense.
-            frameCoreImageBitmap = New Bitmap( _
-                CInt("&H" & frameHex(2)), _
-                CInt("&H" & frameHex(0)) _
+            frameCoreImageBitmap = New Bitmap(
+                CInt("&H" & frameHex(2)),
+                CInt("&H" & frameHex(0))
             )
 
         Else
 
             ' All normal cases
             ' Our core image bitmap's canvas. Height and width are determined in the first few bytes (reversed).
-            frameCoreImageBitmap = New Bitmap( _
-                 CInt("&H" & frameHex(3) & frameHex(2)), _
-                 CInt("&H" & frameHex(1) & frameHex(0)) _
+            frameCoreImageBitmap = New Bitmap(
+                 CInt("&H" & frameHex(3) & frameHex(2)),
+                 CInt("&H" & frameHex(1) & frameHex(0))
                  )
 
 
@@ -381,12 +381,12 @@ dBug:
             .Add(frameHex(9), False)
         End With
 
-         
-        Debug.Print("Mystery hex: " & Me.parent.frames.IndexOf(Me).ToString() & vbCrLf & _
-                  Strings.Join(Me.mysteryHEX.ToArray(), " ") & " - " & vbCrLf & _
-                 CInt("&H" & Me.mysteryHEX(1) & Me.mysteryHEX(0)) & vbCrLf & vbCrLf & _
-                CInt("&H" & Me.mysteryHEX(0) & Me.mysteryHEX(1)) & vbCrLf & vbCrLf & _
-                "w=" & frameCoreImageBitmap.Width & ", h=" & frameCoreImageBitmap.Height & vbCrLf & _
+
+        Debug.Print("Mystery hex: " & Me.parent.frames.IndexOf(Me).ToString() & vbCrLf &
+                  Strings.Join(Me.mysteryHEX.ToArray(), " ") & " - " & vbCrLf &
+                 CInt("&H" & Me.mysteryHEX(1) & Me.mysteryHEX(0)) & vbCrLf & vbCrLf &
+                CInt("&H" & Me.mysteryHEX(0) & Me.mysteryHEX(1)) & vbCrLf & vbCrLf &
+                "w=" & frameCoreImageBitmap.Width & ", h=" & frameCoreImageBitmap.Height & vbCrLf &
                 Me.coreImageHex.Count, vbApplicationModal)
 
 
@@ -548,15 +548,15 @@ dBug2:
         ' Debug.Print("What's left of HEX() ? " & Strings.Join(hex.ToArray(), " "))
         ' Debug.Print("My index: " & Me.parent.frames.IndexOf(Me) & " - frame Length: " & Me.hexString.Length.ToString("X4"))
 
-        MsgBox("Error in clsFrame2.renderCoreImageFromHex()" & vbCrLf & _
-               "Line " & Erl() & vbCrLf & _
-               "Width, height: " & frameCoreImageBitmap.Width & ", " & frameCoreImageBitmap.Height & vbCrLf & _
-            "Offset x, y: " & Me.offsetX & ", " & Me.offsetY & vbCrLf & _
-            "Colors: Currently at drawing instruction " & intNumDrawingInstructions_current & "/" & intNumDrawingInstructions & ", color " & intNumDrawingInstructions_colors_current & "/" & intNumDrawingInstructions_colors & vbCrLf & _
-            "Last referenced x, y: " & intX & ", " & intY & vbCrLf & _
-            "Current length of framehex: " & frameHex.Count & vbCrLf & _
-            "Current length of colors: " & ztPal.colors.Count & vbCrLf & _
-             vbCrLf & Err.Number & " - " & Err.Description & _
+        MsgBox("Error in clsFrame2.renderCoreImageFromHex()" & vbCrLf &
+               "Line " & Erl() & vbCrLf &
+               "Width, height: " & frameCoreImageBitmap.Width & ", " & frameCoreImageBitmap.Height & vbCrLf &
+            "Offset x, y: " & Me.offsetX & ", " & Me.offsetY & vbCrLf &
+            "Colors: Currently at drawing instruction " & intNumDrawingInstructions_current & "/" & intNumDrawingInstructions & ", color " & intNumDrawingInstructions_colors_current & "/" & intNumDrawingInstructions_colors & vbCrLf &
+            "Last referenced x, y: " & intX & ", " & intY & vbCrLf &
+            "Current length of framehex: " & frameHex.Count & vbCrLf &
+            "Current length of colors: " & ztPal.colors.Count & vbCrLf &
+             vbCrLf & Err.Number & " - " & Err.Description &
             vbCrLf & "Line: " & Erl(), vbOKOnly + vbCritical, "Error")
 
 
@@ -690,7 +690,7 @@ dBug2:
 
 
 dBug:
-        MsgBox("Error occurred while updating offsets for frame." & vbCrLf & "Line: " & Erl() & vbCrLf & _
+        MsgBox("Error occurred while updating offsets for frame." & vbCrLf & "Line: " & Erl() & vbCrLf &
             Err.Number & " - " & Err.Description, vbOKOnly + vbCritical + vbApplicationModal, "Error while settings offsets")
 
 
@@ -720,7 +720,7 @@ dBug:
 
 
 dBug:
-        MsgBox("Error occurred while updating index for frame." & vbCrLf & "Line: " & Erl() & vbCrLf & _
+        MsgBox("Error occurred while updating index for frame." & vbCrLf & "Line: " & Erl() & vbCrLf &
             Err.Number & " - " & Err.Description, vbOKOnly + vbCritical, "Error while settings offsets")
 
 
@@ -767,12 +767,18 @@ dBug:
         Me.offsetY = Math.Ceiling(bmpDraw.Height / 2) + 1
 
 
-
+22:
 
         'Debug.Print("Normally our offsets are: " & Me.offsetX & " - " & Me.offsetY & " / w=" & bmpDraw.Width & ", h=" & bmpDraw.Height)
 
+        '5/17: fixed error in clsTasks.bitmap_getDefiningRectangle(bmpDraw) that caused crashing on all transparent images
         Dim rectCrop As Rectangle = clsTasks.bitmap_getDefiningRectangle(bmpDraw)
+        'MsgBox(bmpDraw.Width & "Rectangle definition: x,y,width,height: " & rectCrop.X & " - " & rectCrop.Y & " - " & rectCrop.Width & " - " & rectCrop.Height)
+
+23:
         Dim bmpCropped As Bitmap = clsTasks.bitmap_getCropped(bmpDraw, rectCrop)
+
+24:
 
         ' Improvement by cropping!
         Me.offsetX -= rectCrop.X
@@ -806,8 +812,8 @@ dBug:
 
 
 dBug:
-        MsgBox("Error occurred in clsFrame2.loadPNG()" & vbCrLf & _
-               "Line: " & Erl() & vbCrLf & _
+        MsgBox("Error occurred in clsFrame2.loadPNG()" & sFile & vbCrLf &
+               "Line: " & Erl() & vbCrLf &
             Err.Number & " - " & Err.Description, vbOKOnly + vbCritical, "Error while settings offsets")
 
 
@@ -835,8 +841,8 @@ dBug:
 
             ' Fall back to coreImageBitmap, if available.
             If IsNothing(Me.coreImageBitmap) = True Then
-                MsgBox("clsFrame2.getHexFromBitmap(): no bitmap was given as input, nor could we fall back to the coreImageBitmap.", _
-                    vbOKOnly + vbCritical + vbApplicationModal, _
+                MsgBox("clsFrame2.getHexFromBitmap(): no bitmap was given as input, nor could we fall back to the coreImageBitmap.",
+                    vbOKOnly + vbCritical + vbApplicationModal,
                     "Error while generating HEX for this frame")
                 Return generatedHex ' exits further processing
 
@@ -921,6 +927,7 @@ dBug:
 3010:
                 ' Read the color.
                 c = bmImage.GetPixel(intX, intY)
+3015:
 
                 ' If the color is considered to be transparent:
                 If Me.parent.colorPalette.getColorIndex(c) = 0 Then
@@ -1070,8 +1077,8 @@ dBug:
 
 
 dBug:
-        MsgBox("Error occurred in clsFrame2.getHexFromBitmap()" & vbCrLf & _
-               "Line: " & Erl() & vbCrLf & _
+        MsgBox("Error occurred in clsFrame2.getHexFromBitmap()" & vbCrLf &
+               "Line: " & Erl() & vbCrLf &
             Err.Number & " - " & Err.Description, vbOKOnly + vbCritical, "Error while generating HEX for this frame")
 
 
@@ -1119,7 +1126,7 @@ dBug:
 35:
                 imgComb = clsTasks.images_Combine(imgComb, Me.getImage())
 
- 
+
 
 
                 imgComb.Save(strFileName, System.Drawing.Imaging.ImageFormat.Png)
@@ -1169,9 +1176,9 @@ dBug:
 
 dBug:
 
-        MsgBox("Error in clsFrame:savePNG" & vbCrLf & _
-               "Line " & Erl() & vbCrLf & _
-            Err.Number & " - " & Err.Description, _
+        MsgBox("Error in clsFrame:savePNG" & vbCrLf &
+               "Line " & Erl() & vbCrLf &
+            Err.Number & " - " & Err.Description,
             vbApplicationModal + vbOKOnly + vbCritical, "Error while saving frame as .PNG")
 
 

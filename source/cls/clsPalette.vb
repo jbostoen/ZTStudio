@@ -82,10 +82,10 @@ Public Class clsPalette
 
 
             ' Turn into a color
-            pal.Add(System.Drawing.Color.FromArgb( _
-                CInt("&H" & hex(3)), _
-                CInt("&H" & hex(0)), _
-                CInt("&H" & hex(1)), _
+            pal.Add(System.Drawing.Color.FromArgb(
+                CInt("&H" & hex(3)),
+                CInt("&H" & hex(0)),
+                CInt("&H" & hex(1)),
                 CInt("&H" & hex(2))
                     ), False)
 
@@ -199,6 +199,7 @@ Public Class clsPalette
             ' Hotfix for opacity issue
             Return 0
 
+
         Else
             ' It doesn't contain our color. Can we still add it?
             If Me.colors.Count < 256 And addToPalette = True Then ' number of colors = [0-255]
@@ -206,26 +207,26 @@ Public Class clsPalette
                 Me.colors.Add(c, False)
                 Return Me.colors.Count - 1  ' return last item index
             Else
-                '    "Failed to add (" & c.R.ToString() & ", " & c.G.ToString() & ", " & c.B.ToString() & ", " & c.A.ToString() & ")." & vbCrLf & _
-
-
+                'now checking in HSV space to find the closest color in the full palette - pretty good!'
+                Dim h1 As Single
+                Dim s1 As Single
+                Dim v1 As Single
+                Dim h2 As Single
+                Dim s2 As Single
+                Dim v2 As Single
+                Dim dists As New List(Of Short)
+                h1 = c.GetHue()
+                s1 = c.GetSaturation()
+                v1 = c.GetBrightness()
                 For Each col As System.Drawing.Color In Me.colors
-                    Debug.Print(Me.colors.IndexOf(col).ToString("000") & " | " & col.ToString())
+                    h2 = h1 - col.GetHue()
+                    s2 = s1 - col.GetSaturation()
+                    v2 = v1 - col.GetBrightness()
+                    'in HSV we can use simple euclidean distance and it is reasonably good
+                    dists.Add(Math.Sqrt(h2 * h2 + s2 * s2 + v2 * v2))
                 Next
-
-
-
-                MsgBox("The current palette (" & Me.fileName & ") already contains " & Me.colors.Count & " colors." & vbCrLf & vbCrLf & _
-                       "Color: " & c.ToString() & vbCrLf & _
-                       "Transparent color: " & Me.colors(0).ToString & vbCrLf & _
-                       "Graphic: " & Me.parent.fileName & vbCrLf & _
-                       "ZT Studio will close to prevent program or game crashes.", _
-                       vbOKOnly + vbCritical + vbApplicationModal, "Too many colors!")
-
-
-
-
-                Return -1
+                'see at which index in the existing color palette the least distance occured
+                Return dists.LastIndexOf(dists.Min())
             End If
 
         End If
@@ -249,8 +250,8 @@ Public Class clsPalette
 1:
 
         If File.Exists(strFileName) = True And blnOverwrite = False Then
-            MsgBox("Error: could not create color palette." & vbCrLf & _
-                "There is already a color palette at this location: " & vbCrLf & _
+            MsgBox("Error: could not create color palette." & vbCrLf &
+                "There is already a color palette at this location: " & vbCrLf &
                 "'" & strFileName & "'", vbOKOnly + vbCritical, "Failed to create .pal-file")
 
             Return 0
@@ -313,7 +314,7 @@ Public Class clsPalette
 
 
 dBug:
-        MsgBox("Error while writing a color palette. " & vbCrLf & "Line: " & Erl() & vbCrLf & _
+        MsgBox("Error while writing a color palette. " & vbCrLf & "Line: " & Erl() & vbCrLf &
             Err.Number & " - " & Err.Description, vbOKOnly + vbCritical, "Failed to create color palette")
         Return 0
 
@@ -556,8 +557,4 @@ dBg:
     End Function
 
 
-
-
-
 End Class
-

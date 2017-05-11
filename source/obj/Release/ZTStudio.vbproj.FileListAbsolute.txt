@@ -1,0 +1,15 @@
+C:\Users\arnfi\Desktop\ZTStudio-2017.02.03-rereleased\source\bin\Release\ZT Studio.exe.config
+C:\Users\arnfi\Desktop\ZTStudio-2017.02.03-rereleased\source\bin\Release\ZT Studio.exe
+C:\Users\arnfi\Desktop\ZTStudio-2017.02.03-rereleased\source\bin\Release\ZT Studio.pdb
+C:\Users\arnfi\Desktop\ZTStudio-2017.02.03-rereleased\source\bin\Release\ZT Studio.xml
+C:\Users\arnfi\Desktop\ZTStudio-2017.02.03-rereleased\source\obj\Release\ZTStudio.vbprojResolveAssemblyReference.cache
+C:\Users\arnfi\Desktop\ZTStudio-2017.02.03-rereleased\source\obj\Release\ZTStudio.frmBatchConversion.resources
+C:\Users\arnfi\Desktop\ZTStudio-2017.02.03-rereleased\source\obj\Release\ZTStudio.frmBatchRotationFix.resources
+C:\Users\arnfi\Desktop\ZTStudio-2017.02.03-rereleased\source\obj\Release\ZTStudio.frmMain.resources
+C:\Users\arnfi\Desktop\ZTStudio-2017.02.03-rereleased\source\obj\Release\ZTStudio.frmPal.resources
+C:\Users\arnfi\Desktop\ZTStudio-2017.02.03-rereleased\source\obj\Release\ZTStudio.frmSettings.resources
+C:\Users\arnfi\Desktop\ZTStudio-2017.02.03-rereleased\source\obj\Release\ZTStudio.Resources.resources
+C:\Users\arnfi\Desktop\ZTStudio-2017.02.03-rereleased\source\obj\Release\ZTStudio.vbproj.GenerateResource.Cache
+C:\Users\arnfi\Desktop\ZTStudio-2017.02.03-rereleased\source\obj\Release\ZT Studio.exe
+C:\Users\arnfi\Desktop\ZTStudio-2017.02.03-rereleased\source\obj\Release\ZT Studio.xml
+C:\Users\arnfi\Desktop\ZTStudio-2017.02.03-rereleased\source\obj\Release\ZT Studio.pdb

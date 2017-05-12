@@ -29,6 +29,7 @@ Partial Class frmMain
         Me.dlgColor = New System.Windows.Forms.ColorDialog()
         Me.tsZT1Graphic = New System.Windows.Forms.ToolStrip()
         Me.tslZT1Graphic = New System.Windows.Forms.ToolStripLabel()
+        Me.tsbZT1New = New System.Windows.Forms.ToolStripButton()
         Me.tsbZT1Open = New System.Windows.Forms.ToolStripButton()
         Me.tsbZT1Write = New System.Windows.Forms.ToolStripButton()
         Me.tsbZT1_OpenPal = New System.Windows.Forms.ToolStripButton()
@@ -97,7 +98,6 @@ Partial Class frmMain
         Me.mnuPal_ExportPNG = New System.Windows.Forms.ToolStripMenuItem()
         Me.mnuPal_ImportPNG = New System.Windows.Forms.ToolStripMenuItem()
         Me.mnuPal_ImportGimpPalette = New System.Windows.Forms.ToolStripMenuItem()
-        Me.tsbZT1New = New System.Windows.Forms.ToolStripButton()
         CType(Me.picBox, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.tsZT1Graphic.SuspendLayout()
         Me.Panel1.SuspendLayout()
@@ -146,6 +146,17 @@ Partial Class frmMain
         Me.tslZT1Graphic.Size = New System.Drawing.Size(100, 22)
         Me.tslZT1Graphic.Text = "ZT1 Graphic"
         Me.tslZT1Graphic.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        '
+        'tsbZT1New
+        '
+        Me.tsbZT1New.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.tsbZT1New.Image = CType(resources.GetObject("tsbZT1New.Image"), System.Drawing.Image)
+        Me.tsbZT1New.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None
+        Me.tsbZT1New.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.tsbZT1New.Name = "tsbZT1New"
+        Me.tsbZT1New.Size = New System.Drawing.Size(36, 36)
+        Me.tsbZT1New.Text = "New graphic"
+        Me.tsbZT1New.ToolTipText = "Open a ZT1 Graphics File"
         '
         'tsbZT1Open
         '
@@ -218,7 +229,7 @@ Partial Class frmMain
         Me.Panel1.Font = New System.Drawing.Font("Segoe UI", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Panel1.Location = New System.Drawing.Point(0, 629)
         Me.Panel1.Name = "Panel1"
-        Me.Panel1.Size = New System.Drawing.Size(808, 151)
+        Me.Panel1.Size = New System.Drawing.Size(808, 112)
         Me.Panel1.TabIndex = 19
         '
         'lblColorDetails
@@ -260,7 +271,7 @@ Partial Class frmMain
         'ssBar
         '
         Me.ssBar.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ssFileName, Me.ssColor})
-        Me.ssBar.Location = New System.Drawing.Point(0, 129)
+        Me.ssBar.Location = New System.Drawing.Point(0, 90)
         Me.ssBar.Name = "ssBar"
         Me.ssBar.Size = New System.Drawing.Size(808, 22)
         Me.ssBar.TabIndex = 27
@@ -320,7 +331,7 @@ Partial Class frmMain
         Me.dgvPaletteMain.RowHeadersWidth = 75
         Me.dgvPaletteMain.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing
         Me.dgvPaletteMain.RowTemplate.Height = 20
-        Me.dgvPaletteMain.Size = New System.Drawing.Size(200, 663)
+        Me.dgvPaletteMain.Size = New System.Drawing.Size(200, 624)
         Me.dgvPaletteMain.TabIndex = 20
         '
         'colColor
@@ -638,7 +649,7 @@ Partial Class frmMain
         '
         Me.mnuPal.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.mnuPal_MoveEnd, Me.mnuPal_MoveUp, Me.mnuPal_MoveDown, Me.mnuPal_Replace, Me.mnuPal_Add, Me.mnuPal_SavePAL, Me.mnuPal_ExportPNG, Me.mnuPal_ImportPNG, Me.mnuPal_ImportGimpPalette})
         Me.mnuPal.Name = "mnuPal"
-        Me.mnuPal.Size = New System.Drawing.Size(245, 202)
+        Me.mnuPal.Size = New System.Drawing.Size(245, 224)
         '
         'mnuPal_MoveEnd
         '
@@ -694,22 +705,11 @@ Partial Class frmMain
         Me.mnuPal_ImportGimpPalette.Size = New System.Drawing.Size(244, 22)
         Me.mnuPal_ImportGimpPalette.Text = "Replace with GIMP Color palette"
         '
-        'tsbZT1New
-        '
-        Me.tsbZT1New.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
-        Me.tsbZT1New.Image = CType(resources.GetObject("tsbZT1New.Image"), System.Drawing.Image)
-        Me.tsbZT1New.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None
-        Me.tsbZT1New.ImageTransparentColor = System.Drawing.Color.Magenta
-        Me.tsbZT1New.Name = "tsbZT1New"
-        Me.tsbZT1New.Size = New System.Drawing.Size(36, 36)
-        Me.tsbZT1New.Text = "New graphic"
-        Me.tsbZT1New.ToolTipText = "Open a ZT1 Graphics File"
-        '
         'frmMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(1008, 780)
+        Me.ClientSize = New System.Drawing.Size(1008, 741)
         Me.Controls.Add(Me.Panel1)
         Me.Controls.Add(Me.picBox)
         Me.Controls.Add(Me.dgvPaletteMain)

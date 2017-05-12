@@ -1,4 +1,5 @@
-﻿
+﻿Option Explicit On
+ 
 Imports System
 Imports System.Reflection
 Imports System.Windows.Forms
@@ -17,8 +18,8 @@ Module mdlSettings
 
 
 
-    Public editorGraphic As New clsGraphic2         ' The clsGraphic2 object we use.
-    Public editorBgGraphic As New clsGraphic2       ' The background graphic, e.g. toy
+    Public editorGraphic As clsGraphic2             ' The clsGraphic2 object we use.
+    Public editorBgGraphic As clsGraphic2           ' The background graphic, e.g. toy
     Public editorFrame As clsFrame2                 ' The clsFrame we are currently viewing/editing
 
     Public bm As Bitmap
@@ -38,6 +39,8 @@ Module mdlSettings
     Public cfg_export_PNG_RenderBGFrame As Byte = 1 ' If a background frame is present: should it be rendered in all PNG output files (or separately?)
     Public cfg_export_PNG_CanvasSize As Integer = 0 ' Should the PNG be the size (height/width) of the canvas, or cropped? 
     Public cfg_export_PNG_RenderBGZT1 As Byte = 0 ' If a background ZT1 Graphic was chosen, should it be rendered in the PNG output files?
+    Public cfg_export_PNG_TransparentBG As Byte = 0 ' 0 = use ZT Studio background color; 1 = write transparent color
+
 
     ' Write ZT1
     Public cfg_export_ZT1_Ani As Byte = 1
@@ -54,6 +57,12 @@ Module mdlSettings
 
     ' Frame
     Public cfg_editor_rotFix_individualFrame As Byte = 0 ' determines whether we are fixing the position of an object in 1 frame or in the entire graphic
+    Public cfg_frame_defaultAnimSpeed As Integer = 125 ' Default animation speed
+
+
+    ' Palette
+    Public cfg_palette_quantization As Byte = 0 ' Set to 1 to allow quantization
+
 
     ' Grid
     Public cfg_grid_footPrintX As Byte = 2 ' the X-footprint in Zoo Tycoon.
@@ -72,9 +81,7 @@ Module mdlSettings
     ' - render and save all frames in an animation. Suggest name pattern.
     ' - allow crop to image (to either relevant pixels in frame, or graphic's relevant pixels)
 
-
-    ' - search and replace 8 characters and replace them with 8 in HEX
-    ' (although this feature should not be necessary since we can properly create graphics of our own)
+     
 
     ' - combine 2 different graphics?
     ' -- eg bounce (guest) + bounce (object)
@@ -86,22 +93,7 @@ Module mdlSettings
     ' cachedfame <=> writeFrame()
 
 
-
-
-    ' wanted commands: (case insensitive)
-    ' crop, clean up will take defaults from settings
-    ' /action:convert 
-    '   /file:<name of ZT1 graphic> 
-    '   /to:ZT1|png 
-    '   /crop:0|1|2 es|no
-    '   /cleanup:yes|no 
-    '   /renderBGFrame:y 
-    '   /renderBGFile:<filename>
-    '   /startIndex
-
-    ' /action:convert
-    '   /folder:<name of folder>
-    '   - settings above  -
+     
 
     Public Sub DoubleBuffered(ByVal dgv As DataGridView, ByVal setting As Boolean)
         Dim dgvType As Type = dgv.[GetType]()
@@ -110,14 +102,17 @@ Module mdlSettings
     End Sub
 
 
-    Public Sub iniWrite(ByVal iniFileName As String, ByVal Section As String, ByVal ParamName As String, ByVal ParamVal As String)
+    Public Function iniWrite(ByVal iniFileName As String, ByVal Section As String, ByVal ParamName As String, ByVal ParamVal As String) As Integer
         Dim Result As Integer = WritePrivateProfileString(Section, ParamName, ParamVal, iniFileName)
-    End Sub
+        Return 0
+    End Function
 
     Public Function iniRead(ByVal IniFileName As String, ByVal Section As String, ByVal ParamName As String, ByVal ParamDefault As String) As String
         Dim ParamVal As String = Space$(1024)
-        Dim LenParamVal As Long = GetPrivateProfileString(Section, ParamName, ParamDefault, ParamVal, Len(ParamVal), IniFileName)
+        Dim LenParamVal As Integer = GetPrivateProfileString(Section, ParamName, ParamDefault, ParamVal, Len(ParamVal), IniFileName)
         iniRead = Left$(ParamVal, LenParamVal)
+         
+
     End Function
 
 

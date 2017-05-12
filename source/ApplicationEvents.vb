@@ -12,75 +12,8 @@
         Private Sub MyApplication_Startup(sender As Object, e As ApplicationServices.StartupEventArgs) Handles Me.Startup
 
 
-            Debug.Print("Config: load.")
 
-            clsTasks.config_load()
-
-            Debug.Print("Config: OK.")
-
-
-            ' We will configure our parameters.
-            Dim strArgAction = vbNullString
-
-            For Each arg As String In Environment.GetCommandLineArgs()
-                Debug.Print("Arg: '" & arg & "'")
-
-
-
-                Dim argK As String = Strings.Split(arg.ToLower & ":", ":")(0)
-                Dim argV As String = Strings.Replace(arg, argK & ":", "", , , CompareMethod.Text)
-
-                ' set arguments etc
-                Select Case argK
-
-
-
-                    Case "/crop" : cfg_export_PNG_CanvasSize = CByte(argV)
-                    Case "/startindex" : cfg_convert_startIndex = CByte(argV)
-                    Case "/cleanup" : cfg_convert_deleteOriginal = CByte(argV)
-                    Case "/ztaf" : cfg_export_ZT1_AlwaysAddZTAFBytes = CByte(argV)
-                    Case "/rootfolder" : cfg_path_Root = argV
-
-
-                    Case "/convertfolder" : strArgAction = "convertfolder"
-                    Case "/convertfile" : strArgAction = "convertfile"
-
-
-
-                End Select
-                ' Parameters?
-
-
-                ' Process action
-
-
-            Next
-
-
-            ' Now perform action.
-
-
-            ' Now, end.
-            Select Case vbNullString
-
-                Case "convertfile"
-
-                    ' Do conversion
-                    End
-
-                Case "convertfolder"
-
-                    ' Do conversion
-                    End
-
-
-
-                Case Else
-                    ' Default.
-                    ' Just load.
-
-            End Select
-
+            ztStudio_StartUp()
 
 
         End Sub

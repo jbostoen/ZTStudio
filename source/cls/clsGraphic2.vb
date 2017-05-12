@@ -17,7 +17,7 @@ Public Class clsGraphic2
     Private clsGraphic_animationSpeed As Integer = 125     ' Speed in milliseconds for this animation
 
 
-    'Private clsGraphic_frames() As String
+    ' Private clsGraphic_frames() As String
     ' Strings containing HEX info about each frame.
     ' Each HEX string contains info about height, width, X/Y offsets, 
     ' and obviously how the image is rendered.
@@ -446,7 +446,7 @@ dBg:
         ' Let's not forget:
 1100:
         If Me.colorPalette.fileName = Me.fileName & ".pal" Then
-            Debug.Print("... Writing color palette (not shared).")
+            'Debug.Print("... Writing color palette (not shared).")
             Me.colorPalette.writePal(Me.colorPalette.fileName, True)
         End If
 
@@ -520,11 +520,11 @@ dBug:
 
         If info = "coreImageBitmap" Then Exit Sub
         If info = "coreImageHex" Then Exit Sub
-
+        If info = "fileName" Then Exit Sub ' no purpose (yet)
 
 
         ' This will trigger a refresh.
-        clsTasks.update_Info("Property of graphic changed.")
+        clsTasks.update_Info("Property of graphic changed: " & info)
 
         'RaiseEvent PropertyChanged(Me, New PropertyChangedEventArgs(info))
     End Sub
@@ -535,6 +535,7 @@ dBug:
     Public Sub New()
 
         Me.colorPalette.parent = Me
+
 
     End Sub
 End Class

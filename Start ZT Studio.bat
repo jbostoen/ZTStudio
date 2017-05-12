@@ -1,0 +1,1 @@
+start "" "%cd%\source\bin\release\ZT Studio.exe"

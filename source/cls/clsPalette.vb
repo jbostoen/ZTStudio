@@ -191,7 +191,12 @@ Public Class clsPalette
 
         ElseIf c.A = 0 Then
 
-            ' We have a different transparent color
+            ' We have a different transparent color, but the .PNG had something with alpha = 0 (transparent)
+            Return 0
+
+        ElseIf c = cfg_grid_BackGroundColor Then
+
+            ' The images we are importing, use a color which has been explicitly set as our background (or transparent) color in ZT Studio.
             Return 0
 
         ElseIf c.A = 255 And c.R = Me.colors(0).R And c.G = Me.colors(0).G And c.B = Me.colors(0).B Then
@@ -206,26 +211,54 @@ Public Class clsPalette
                 Me.colors.Add(c, False)
                 Return Me.colors.Count - 1  ' return last item index
             Else
-                '    "Failed to add (" & c.R.ToString() & ", " & c.G.ToString() & ", " & c.B.ToString() & ", " & c.A.ToString() & ")." & vbCrLf & _
 
+                ' Failed to add color: (" & c.R.ToString() & ", " & c.G.ToString() & ", " & c.B.ToString() & ", " & c.A.ToString() & ")." & vbCrLf & _
+                ' For Each col As System.Drawing.Color In Me.colors
+                ' Debug.Print(Me.colors.IndexOf(col).ToString("000") & " | " & col.ToString())
+                '  Next
 
-                For Each col As System.Drawing.Color In Me.colors
-                    Debug.Print(Me.colors.IndexOf(col).ToString("000") & " | " & col.ToString())
-                Next
+                ' No decision made yet
+                If cfg_palette_quantization = 0 Then
+                    If MsgBox("The current palette (" & Me.fileName & ") already contains " & Me.colors.Count & " colors." & vbCrLf & vbCrLf & _
+                           "Color: " & c.ToString() & vbCrLf & _
+                           "Transparent color: " & Me.colors(0).ToString & vbCrLf & _
+                           "Graphic: " & Me.parent.fileName & vbCrLf & vbCrLf & _
+                           "Zoo Tycoon 1 only supports 255 colors in each color palette." & vbCrLf & _
+                           "ZT Studio can attempt to pick the closest matching color (you can expect a degradation in quality)." & vbCrLf & _
+                           "Press [Yes] to ignore all warnings for the length of this session." & vbCrLf & _
+                           "Press [No] to quit ZT Studio and fix things first.", _
+                           vbYesNo + vbCritical + vbApplicationModal, "Too many colors!") = vbYes Then
+                        cfg_palette_quantization = 1
+                    Else
+                        ' Quit ZT Studio, we'll just get too many errors otherwise.
+                        End
+                    End If
+                End If
 
+                    ' Color quantization method by HENDRIX 
+                    'now checking in HSV space to find the closest color in the full palette - pretty good!'
+                    Dim h1 As Single
+                    Dim s1 As Single
+                    Dim v1 As Single
+                    Dim h2 As Single
+                    Dim s2 As Single
+                    Dim v2 As Single
+                    Dim dists As New List(Of Short)
+                    h1 = c.GetHue()
+                    s1 = c.GetSaturation()
+                    v1 = c.GetBrightness()
+                    For Each col As System.Drawing.Color In Me.colors
+                        h2 = h1 - col.GetHue()
+                        s2 = s1 - col.GetSaturation()
+                        v2 = v1 - col.GetBrightness()
+                        'in HSV we can use simple euclidean distance and it is reasonably good
+                        dists.Add(Math.Sqrt(h2 * h2 + s2 * s2 + v2 * v2))
+                    Next
+                    'see at which index in the existing color palette the least distance occured
+                    Return dists.LastIndexOf(dists.Min())
 
+ 
 
-                MsgBox("The current palette (" & Me.fileName & ") already contains " & Me.colors.Count & " colors." & vbCrLf & vbCrLf & _
-                       "Color: " & c.ToString() & vbCrLf & _
-                       "Transparent color: " & Me.colors(0).ToString & vbCrLf & _
-                       "Graphic: " & Me.parent.fileName & vbCrLf & _
-                       "ZT Studio will close to prevent program or game crashes.", _
-                       vbOKOnly + vbCritical + vbApplicationModal, "Too many colors!")
-
-
-
-
-                Return -1
             End If
 
         End If
@@ -359,14 +392,12 @@ dBug:
 
 
 
-    Function export_to_PNG(strExportFileName As String)
+    Function export_to_PNG(strExportFileName As String) As Integer
 
         ' This is for a feature where we first exported a color palette, by writing all known colors in a single image.
         ' The idea is that the .PNG can easily be recolored with a 3rd party program (eg GIMP)
         ' This way, the entire palette of an existing animal can be recolored at once. (recoloring was a well known method to create 'new' animals)
         ' Next, we reimport this. We'd only need to fix the shadow.
-
-
 
         Dim bmp As New Bitmap(16, 16)
 
@@ -376,7 +407,6 @@ dBug:
         Dim intY As Integer = 0
         Dim intColor As Integer
 
-        Debug.Print("testing export.")
 
         ' for each row
         While intY < 16
@@ -402,14 +432,13 @@ dBug:
 
         bmp.Save(strExportFileName, System.Drawing.Imaging.ImageFormat.Png)
 
-        Debug.Print("Exported .pal to .png => " & strExportFileName)
 
-
+        Return 0
 
     End Function
 
 
-    Function import_from_PNG(sFileName As String, Optional blnForceAddColor As Boolean = False)
+    Function import_from_PNG(sFileName As String, Optional blnForceAddColor As Boolean = False) As Integer
 
         ' This is for a feature where we first exported a color palette, by writing all known colors in a single image.
         ' The idea is that the .PNG can easily be recolored with a 3rd party program (eg GIMP)
@@ -432,8 +461,10 @@ dBug:
 
             While intX < bmp.Width
 
-                ' Do not add duplicate colors, e.g. transparent stuff etc
-                ' 20150815: unless it's forced. After recoloring, it seems some colors are identical?
+                ' Do not add duplicate colors, e.g. transparent stuff etc; UNLESS it's forced.
+                ' Use case: After recoloring, some colors are suddenly identical. 
+                ' Why does it make sense to force the color to be added anyway? 
+                ' Because if a user is replacing an existing palette, the indexes to the colors might not have been changed in the actual graphic.
                 If Me.colors.IndexOf(bmp.GetPixel(intX, intY)) < 0 Or blnForceAddColor = True Then
                     Me.colors.Add(bmp.GetPixel(intX, intY), False)
                 End If
@@ -463,13 +494,15 @@ dBug:
         Else
         End If
 
+        Return 0
+
     End Function
 
 
 
 
 
-    Function import_from_GimpPalette(sFileName As String, Optional blnForceAddColor As Boolean = False)
+    Function import_from_GimpPalette(sFileName As String, Optional blnForceAddColor As Boolean = False) As Integer
 
         On Error GoTo dBg
 
@@ -547,7 +580,7 @@ dBug:
             'MsgBox(Me.parent.frames.Count)
         End If
 
-        Exit Function
+        Return 0
 
 dBg:
         MsgBox("Unable to use the GIMP Color Palette:" & vbCrLf & sFileName & vbCrLf & Err.Number & " - " & Err.Description & vbCrLf & "Line in .gpl: " & textLine & vbCrLf & "Line in import_from_GimpPalette: " & Erl(), vbOKOnly + vbInformation, "Error using GIMP Palette")

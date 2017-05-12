@@ -34,6 +34,9 @@ Public Class clsFrame2
 
     Public Sub New(myParent As clsGraphic2)
         Me.parent = myParent
+
+        ' 20170512 - should we consider automatically adding this frame to the parent's frame collection?
+
     End Sub
     Public Property coreImageHex As List(Of String)
         ' What is the hex code for the core image?
@@ -272,12 +275,7 @@ dBug:
 20:
 
         ' Now, let's proceed.
-
-
-
-
-
-        'Debug.Print("'" & strFrameHex & "'")
+          
 
 30:
         ' Create a copy of this frame's bytes.
@@ -382,12 +380,12 @@ dBug:
         End With
 
          
-        Debug.Print("Mystery hex: " & Me.parent.frames.IndexOf(Me).ToString() & vbCrLf & _
-                  Strings.Join(Me.mysteryHEX.ToArray(), " ") & " - " & vbCrLf & _
-                 CInt("&H" & Me.mysteryHEX(1) & Me.mysteryHEX(0)) & vbCrLf & vbCrLf & _
-                CInt("&H" & Me.mysteryHEX(0) & Me.mysteryHEX(1)) & vbCrLf & vbCrLf & _
-                "w=" & frameCoreImageBitmap.Width & ", h=" & frameCoreImageBitmap.Height & vbCrLf & _
-                Me.coreImageHex.Count, vbApplicationModal)
+        ' Debug.Print("Mystery hex: " & Me.parent.frames.IndexOf(Me).ToString() & vbCrLf & _
+        '           Strings.Join(Me.mysteryHEX.ToArray(), " ") & " - " & vbCrLf & _
+        '          CInt("&H" & Me.mysteryHEX(1) & Me.mysteryHEX(0)) & vbCrLf & vbCrLf & _
+        '         CInt("&H" & Me.mysteryHEX(0) & Me.mysteryHEX(1)) & vbCrLf & vbCrLf & _
+        '        "w=" & frameCoreImageBitmap.Width & ", h=" & frameCoreImageBitmap.Height & vbCrLf & _
+        '        Me.coreImageHex.Count, vbApplicationModal)
 
 
 
@@ -516,10 +514,10 @@ dBug:
         ' Implemented a check for APE junk bytes and remove if any are left.
         ' Theoretically, there shouldn't be. But APE has the tendency to generate crap.
         If frameHex.Count > 0 Then
-            Debug.Print("   : APE Junk bytes: junk bytes: " & frameHex.Count)
+            'Debug.Print("   : APE Junk bytes: junk bytes: " & frameHex.Count)
             'Me.coreImageHex.RemoveRange(Me.coreImageHex.Count - frameHex.Count - 1, frameHex.Count)
         Else
-            Debug.Print("   : APE Junk bytes: none detected.")
+            'Debug.Print("   : APE Junk bytes: none detected.")
         End If
 
 
@@ -569,7 +567,7 @@ dBug2:
 
 
 
-    Public Function updateOffsets(coordOffsetChanges As Point, Optional blnBatchRotFix As Boolean = False)
+    Public Function updateOffsets(coordOffsetChanges As Point, Optional blnBatchRotFix As Boolean = False) As Integer
 
         ' This function is for the so called "rotation fixing", positioning fixing, correcting offsets.
         ' By default, changes are applied to all frames in the graphic rather than just this frame.
@@ -685,6 +683,7 @@ dBug2:
 
 21:
 
+        Return 0
 
         Exit Function
 
@@ -696,7 +695,7 @@ dBug:
 
     End Function
 
-    Public Function updateIndex(intNewIndex As Integer, Optional ztFrame As clsFrame2 = Nothing, Optional ztGraphic As clsGraphic2 = Nothing)
+    Public Function updateIndex(intNewIndex As Integer, Optional ztFrame As clsFrame2 = Nothing, Optional ztGraphic As clsGraphic2 = Nothing) As Integer
 
 
         On Error GoTo dBug
@@ -716,7 +715,7 @@ dBug:
         ' Add to wanted place
         ztGraphic.frames.Insert(intNewIndex, ztFrame)
 
-        Exit Function
+        Return 0
 
 
 dBug:
@@ -731,7 +730,7 @@ dBug:
 
 
 
-    Public Function loadPNG(sFile As String)
+    Public Function loadPNG(sFile As String) As Integer
 
         On Error GoTo dBug
 
@@ -767,8 +766,6 @@ dBug:
         Me.offsetY = Math.Ceiling(bmpDraw.Height / 2) + 1
 
 
-
-
         'Debug.Print("Normally our offsets are: " & Me.offsetX & " - " & Me.offsetY & " / w=" & bmpDraw.Width & ", h=" & bmpDraw.Height)
 
         Dim rectCrop As Rectangle = clsTasks.bitmap_getDefiningRectangle(bmpDraw)
@@ -798,11 +795,11 @@ dBug:
         'Debug.Print(Strings.Join(Me.coreImageHex.ToArray(), " "))
 
 31:
-        clsTasks.preview_update()
+        clsTasks.update_preview()
 
 
 
-        Exit Function
+        Return 0
 
 
 dBug:
@@ -1079,7 +1076,7 @@ dBug:
     End Function
 
 
-    Public Function savePNG(strFileName As String)
+    Public Function savePNG(strFileName As String) As Integer
 
         On Error GoTo dBug
 
@@ -1094,9 +1091,7 @@ dBug:
 
         Dim bmRect As New Rectangle(-9999, -9999, 0, 0)
         Dim bmCropped As Bitmap
-
-
-
+         
 
         Select Case cfg_export_PNG_CanvasSize
 
@@ -1112,16 +1107,13 @@ dBug:
 
                 ' Use ZT Studio's main window background color (transparent)
                 Using g As Graphics = Graphics.FromImage(imgComb)
-                    g.Clear(cfg_grid_BackGroundColor)
+                    'g.Clear(cfg_grid_BackGroundColor)
+                    g.Clear(IIf(cfg_export_PNG_TransparentBG = 0, cfg_grid_BackGroundColor, Color.Transparent))
                 End Using
 
 
 35:
                 imgComb = clsTasks.images_Combine(imgComb, Me.getImage())
-
- 
-
-
                 imgComb.Save(strFileName, System.Drawing.Imaging.ImageFormat.Png)
 
             Case 1
@@ -1138,10 +1130,12 @@ dBug:
 132:
                 ' Use ZT Studio's main window background color (transparent)
                 Using g As Graphics = Graphics.FromImage(imgComb)
-                    g.Clear(cfg_grid_BackGroundColor)
+                    g.Clear(IIf(cfg_export_PNG_TransparentBG = 0, cfg_grid_BackGroundColor, Color.Transparent))
                 End Using
 135:
 
+                ' Combine all images. Basically put them all on top of each other.
+                ' That way, it's easy to determine the most relevant pixel top/left and bottom/right
                 For Each ztFrame As clsFrame2 In Me.parent.frames
                     imgComb = clsTasks.images_Combine(imgComb, ztFrame.getImage())
                 Next
@@ -1165,7 +1159,7 @@ dBug:
 
 
 
-        Exit Function
+        Return 0
 
 dBug:
 

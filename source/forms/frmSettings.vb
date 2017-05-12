@@ -1,4 +1,6 @@
-﻿Public Class frmSettings
+﻿Option Explicit On
+ 
+Public Class frmSettings
 
     Private Sub frmSettings_FormClosing(sender As Object, e As FormClosingEventArgs) Handles Me.FormClosing
 
@@ -27,8 +29,8 @@
         txtFolderPal16.Text = cfg_path_ColorPals16
 
         ' Export stuff (to PNG)
-        chkRenderFrame_BGGraphic.Checked = cfg_export_PNG_RenderBGZT1
-        chkRenderFrame_RenderExtraFrame.Checked = cfg_export_PNG_RenderBGFrame
+        chkRenderFrame_BGGraphic.Checked = CBool(cfg_export_PNG_RenderBGZT1)
+        chkRenderFrame_RenderExtraFrame.Checked = CBool(cfg_export_PNG_RenderBGFrame)
         cboPNGExport_Crop.SelectedIndex = cfg_export_PNG_CanvasSize
 
         Debug.Print("Value of ZT Ani = " & cfg_export_ZT1_Ani & " - " & (cfg_export_ZT1_Ani = 1))
@@ -36,17 +38,20 @@
         ' Export to ZT1
         chkExportZT1_Ani.Checked = (cfg_export_ZT1_Ani = 1)
         chkExportZT1_AddZTAFBytes.Checked = (cfg_export_ZT1_AlwaysAddZTAFBytes = 1)
-         
+
 
         ' Conversion
         chkConvert_DeleteOriginal.Checked = (cfg_convert_deleteOriginal = 1)
         chkConvert_SharedColorPalette.Checked = (cfg_convert_sharedPalette = 1)
         chkConvert_Overwrite.Checked = (cfg_convert_overwrite = 1)
         numConvert_PNGStartIndex.Value = cfg_convert_startIndex
+        chkPNGTransparentBG.checked = (cfg_export_PNG_TransparentBG = 1)
 
 
         ' Frame
         chkEditor_Frame_Offsets_SingleFrame.Checked = (cfg_editor_rotFix_individualFrame = 1)
+        numFrameAnimSpeed.Value = cfg_frame_defaultAnimSpeed
+
 
 
     End Sub
@@ -179,7 +184,7 @@
     Private Sub chkExportZT1_Ani_CheckedChanged(sender As Object, e As EventArgs) Handles chkExportZT1_Ani.CheckedChanged
 
         If chkExportZT1_Ani.IsHandleCreated = False Then Exit Sub
-        cfg_export_ZT1_Ani = CByte(chkExportZT1_Ani.Checked * -1) 
+        cfg_export_ZT1_Ani = CByte(chkExportZT1_Ani.Checked * -1)
 
     End Sub
 
@@ -191,11 +196,48 @@
     Private Sub chkConvert_SharedColorPalette_CheckedChanged(sender As Object, e As EventArgs) Handles chkConvert_SharedColorPalette.CheckedChanged
 
         If chkConvert_SharedColorPalette.IsHandleCreated = False Then Exit Sub
-        cfg_convert_sharedPalette = CByte(chkConvert_SharedColorPalette.Checked * -1)
+        cfg_convert_sharedPalette = CByte(CInt(chkConvert_SharedColorPalette.Checked) * -1)
 
     End Sub
 
     Private Sub txtConvert_fileNameDelimiter_TextChanged(sender As Object, e As EventArgs) Handles txtConvert_fileNameDelimiter.TextChanged
         cfg_convert_fileNameDelimiter = txtConvert_fileNameDelimiter.Text
+    End Sub
+
+    Private Sub tpRenderingFrames_Click(sender As Object, e As EventArgs) Handles tpRenderingFrames.Click
+
+    End Sub
+
+    Private Sub frmSettings_MaximizedBoundsChanged(sender As Object, e As EventArgs) Handles Me.MaximizedBoundsChanged
+
+    End Sub
+
+    Private Sub txtFolderPal8_TextChanged(sender As Object, e As EventArgs) Handles txtFolderPal8.TextChanged
+
+    End Sub
+
+    Private Sub tpFolders_Click(sender As Object, e As EventArgs) Handles tpFolders.Click
+
+    End Sub
+
+    Private Sub tpWritePNG_Click(sender As Object, e As EventArgs) Handles tpWritePNG.Click
+
+    End Sub
+
+    Private Sub chkPNGTransparentBG_CheckedChanged(sender As Object, e As EventArgs) Handles chkPNGTransparentBG.CheckedChanged
+
+        If chkPNGTransparentBG.IsHandleCreated = False Then Exit Sub
+        cfg_export_PNG_TransparentBG = CByte(CInt(chkPNGTransparentBG.Checked) * -1)
+    End Sub
+
+    Private Sub numFrameAnimSpeed_ValueChanged(sender As Object, e As EventArgs) Handles numFrameAnimSpeed.ValueChanged
+
+        If numFrameAnimSpeed.IsHandleCreated = False Then Exit Sub
+        cfg_frame_defaultAnimSpeed = numFrameAnimSpeed.Value
+
+    End Sub
+
+    Private Sub numFrameAnimSpeed_VisibleChanged(sender As Object, e As EventArgs) Handles numFrameAnimSpeed.VisibleChanged
+
     End Sub
 End Class

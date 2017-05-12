@@ -1,4 +1,6 @@
 ﻿Option Explicit On
+
+
 Imports System.IO
 
 
@@ -9,16 +11,8 @@ Public Class frmMain
 
 
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-
-
-
-
-
-
-        'MsgBox((-21).ToString("X2").ReverseHEX())
-
-
-
+         
+         
 
         Debug.Flush()
         'mdlSettings.DoubleBuffered(dgvPaletteMain, True)
@@ -41,6 +35,9 @@ Public Class frmMain
         picBox.BackColor = cfg_grid_BackGroundColor
 
 
+        ' Grid
+        tsbFrame_fpX.Text = CStr(cfg_grid_footPrintX)
+        tsbFrame_fpY.Text = CStr(cfg_grid_footPrintY)
 
         'clsTasks.update_Info()
 
@@ -167,7 +164,7 @@ dBug:
 
     Private Sub tbFrames_ValueChanged(sender As Object, e As EventArgs) Handles tbFrames.ValueChanged
 
-        clsTasks.preview_update(tbFrames.Value - 1)
+        clsTasks.update_preview(tbFrames.Value - 1)
 
     End Sub
 
@@ -183,7 +180,7 @@ dBug:
             tbFrames.Value += 1
         End If
 
-        clsTasks.preview_update(tbFrames.Value - 1)
+        clsTasks.update_preview(tbFrames.Value - 1)
 
     End Sub
 
@@ -209,6 +206,7 @@ dBug:
 
     Private Sub tsbZT1Open_Click(sender As Object, e As EventArgs) Handles tsbZT1Open.Click
 
+         
 
 
         With dlgOpen
@@ -216,9 +214,7 @@ dBug:
             .DefaultExt = ""
             .Filter = "All files|*.*"
             .InitialDirectory = System.IO.Path.GetDirectoryName(cfg_path_recentZT1)
-
-
-
+             
 
             If dlgOpen.InitialDirectory = vbNullString Or System.IO.Directory.Exists(dlgOpen.InitialDirectory) = False Then
                 If System.IO.Directory.Exists(cfg_path_Root) Then
@@ -260,7 +256,7 @@ dBug:
                         ssFileName.Text = dlgOpen.FileName
 
                         ' Draw first frame 
-                        clsTasks.preview_update(0)
+                        clsTasks.update_preview(0)
 
                         ' Add time indication
                         lblAnimTime.Text = ((editorGraphic.frames.Count - editorGraphic.extraFrame) * editorGraphic.animationSpeed) & " ms "
@@ -296,7 +292,7 @@ dBug:
 
     Private Sub tbFrames_ValueChanged1(sender As Object, e As EventArgs) Handles tbFrames.ValueChanged
 
-        clsTasks.preview_update(tbFrames.Value - 1)
+        clsTasks.update_preview(tbFrames.Value - 1)
 
         Debug.Print("Value changed.")
 
@@ -327,15 +323,18 @@ dBug:
             vbCrLf & vbCrLf & _
             "Bugs? " & vbCrLf & _
             "-------------------" & vbCrLf & _
-            "Feel free to report them at GitHub or Zoo Tek Phoenix. " & _
-            "Support not guaranteed. " & vbCrLf & _
-            "Include the graphic files which are causing the problem. " & vbCrLf & vbCrLf & _
+            "- You can report them at GitHub or Zoo Tek Phoenix. " & vbCrLf & _
+            "- Support not guaranteed. " & vbCrLf & _
+            "- Include the graphic files which are causing the problem. " & vbCrLf & vbCrLf & _
             "Credits? " & vbCrLf & _
             "-------------------" & vbCrLf & _
-            "Zoo Tycoon is a game created by Blue Fang and published by Microsoft Game Studios. " & _
-            "Rapan Studios was responsible for the animal designs, but the graphic format is probably Blue Fang's." & vbCrLf & _
-            "Credits to MadScientist and Jay for explaining the file format." & vbCrLf & _
-            "Big thank you to Vondell for providing new PNG graphics to experiment with.", vbOKOnly + vbInformation, "About")
+            "- Blue Fang for creating Zoo Tycoon 1 (and maybe the graphic format)." & vbCrLf & _
+            "- Microsoft for publishing the game." & vbCrLf & _
+            "- Rapan Studios for the animal designs." & vbCrLf & _
+            "- MadScientist and Jay for explaining the file format." & vbCrLf & _
+            "- Vondell for providing new PNG graphics to experiment with." & vbCrLf & _
+            "- HENDRIX for some contributions to the source code.", _
+            vbOKOnly + vbInformation, "About ZT Studio")
 
 
     End Sub
@@ -470,7 +469,7 @@ dBug:
 
 
                         ' reDraw current frame 
-                        clsTasks.preview_update()
+                        clsTasks.update_preview()
 
                         ' Show default palette
                         'editorBgGraphic.colorPalette.fillPaletteGrid(dgvPaletteMain)
@@ -620,7 +619,7 @@ dBug:
 16:
         tbFrames.Value += 1
 
-        clsTasks.preview_update(tbFrames.Value - 1)
+        clsTasks.update_preview(tbFrames.Value - 1)
 
         Exit Sub
 
@@ -633,7 +632,7 @@ dBug:
 
         editorGraphic.frames.RemoveAt(tbFrames.Value - 1)
 
-        clsTasks.preview_update(tbFrames.Value - 1)
+        clsTasks.update_preview(tbFrames.Value - 1)
 
 
     End Sub
@@ -659,7 +658,7 @@ dBug:
             editorFrame.updateOffsets(New Point(0, 1))
         End If
 
-        clsTasks.preview_update()
+        clsTasks.update_preview()
 
     End Sub
 
@@ -672,7 +671,7 @@ dBug:
             editorFrame.updateOffsets(New Point(0, -1))
         End If
 
-        clsTasks.preview_update()
+        clsTasks.update_preview()
 
     End Sub
 
@@ -686,7 +685,7 @@ dBug:
             editorFrame.updateOffsets(New Point(1, 0))
         End If
 
-        clsTasks.preview_update()
+        clsTasks.update_preview()
 
     End Sub
 
@@ -699,7 +698,7 @@ dBug:
             editorFrame.updateOffsets(New Point(-1, 0))
         End If
 
-        clsTasks.preview_update()
+        clsTasks.update_preview()
 
 
 
@@ -715,7 +714,7 @@ dBug:
 
 
         ' Quick fix: on change, revert to frame 1.
-        clsTasks.preview_update(0)
+        clsTasks.update_preview(0)
 
 
 
@@ -740,16 +739,16 @@ dBug:
 
     Private Sub tsbDelete_PNG_Click(sender As Object, e As EventArgs) Handles tsbDelete_PNG.Click
 
-        clsTasks.cleanUp_PNG(cfg_path_Root)
-
+        clsTasks.cleanUp_files(cfg_path_Root, ".png")
         MsgBox("Finished clean up.", vbOKOnly + vbInformation, "Finished clean up.")
 
     End Sub
 
     Private Sub tsbDelete_ZT1Files_Click(sender As Object, e As EventArgs) Handles tsbDelete_ZT1Files.Click
 
-        clsTasks.cleanUp_ZT1Graphics(cfg_path_Root)
-        clsTasks.cleanUp_ZT1Pals(cfg_path_Root)
+        ' Cleanup ZT1 Graphics and color palettes
+        clsTasks.cleanUp_files(cfg_path_Root, "")
+        clsTasks.cleanUp_files(cfg_path_Root, ".pal")
         MsgBox("Finished clean up.", vbOKOnly + vbInformation, "Finished clean up.")
 
     End Sub
@@ -760,7 +759,7 @@ dBug:
 
         cfg_grid_footPrintX = tsbFrame_fpX.Text
         clsTasks.config_write()
-        clsTasks.preview_update()
+        clsTasks.update_preview()
 
     End Sub
 
@@ -772,16 +771,20 @@ dBug:
 
         cfg_grid_footPrintY = tsbFrame_fpY.Text
         clsTasks.config_write()
-        clsTasks.preview_update()
+        clsTasks.update_preview()
 
     End Sub
 
 
     Private Sub dgvPaletteMain_CellDoubleClick(sender As Object, e As DataGridViewCellEventArgs) Handles dgvPaletteMain.CellDoubleClick
 
-        ' Replace colors
-        clsTasks.pal_replaceColor(e.RowIndex)
+        ' Actual row rather than header. Avoid crash.
+        If e.RowIndex > -1 Then
 
+            ' Replace colors
+            clsTasks.pal_replaceColor(e.RowIndex)
+
+        End If
 
 
     End Sub
@@ -865,7 +868,7 @@ dBug:
 16:
             tbFrames.Value += 1
 
-            clsTasks.preview_update(tbFrames.Value - 1)
+            clsTasks.update_preview(tbFrames.Value - 1)
 
         End If
 
@@ -904,7 +907,7 @@ dBug:
                         End With
 
                         ' Draw first frame 
-                        clsTasks.preview_update()
+                        clsTasks.update_preview()
 
                         ' Show main color palette
                         editorFrame.parent.colorPalette.fillPaletteGrid(dgvPaletteMain)
@@ -1006,7 +1009,7 @@ dBug:
 
 
 
-                clsTasks.preview_update()
+                clsTasks.update_preview()
 
             End If ' cancel check
 
@@ -1114,6 +1117,10 @@ dBug:
         picBox.Image = Nothing
 
 
+
+    End Sub
+
+    Private Sub dgvPaletteMain_CellContentClick(sender As Object, e As DataGridViewCellEventArgs) Handles dgvPaletteMain.CellContentClick
 
     End Sub
 End Class

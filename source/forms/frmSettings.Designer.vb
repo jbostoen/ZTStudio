@@ -32,6 +32,8 @@ Partial Class frmSettings
         Me.chkExportZT1_Ani = New System.Windows.Forms.CheckBox()
         Me.chkExportZT1_AddZTAFBytes = New System.Windows.Forms.CheckBox()
         Me.tpRenderingFrames = New System.Windows.Forms.TabPage()
+        Me.numFrameAnimSpeed = New System.Windows.Forms.NumericUpDown()
+        Me.lblDefaultAnimSpeed = New System.Windows.Forms.Label()
         Me.chkRenderFrame_BGGraphic = New System.Windows.Forms.CheckBox()
         Me.chkRenderFrame_RenderExtraFrame = New System.Windows.Forms.CheckBox()
         Me.tpFolders = New System.Windows.Forms.TabPage()
@@ -45,6 +47,8 @@ Partial Class frmSettings
         Me.lblPalette8 = New System.Windows.Forms.Label()
         Me.lblWarnings = New System.Windows.Forms.Label()
         Me.tpConversions = New System.Windows.Forms.TabPage()
+        Me.txtConvert_fileNameDelimiter = New System.Windows.Forms.TextBox()
+        Me.lblConvert_fileNameDelimiter = New System.Windows.Forms.Label()
         Me.Label2 = New System.Windows.Forms.Label()
         Me.chkConvert_SharedColorPalette = New System.Windows.Forms.CheckBox()
         Me.chkConvert_Overwrite = New System.Windows.Forms.CheckBox()
@@ -52,12 +56,12 @@ Partial Class frmSettings
         Me.lblExportPNG_Index = New System.Windows.Forms.Label()
         Me.numConvert_PNGStartIndex = New System.Windows.Forms.NumericUpDown()
         Me.TabControl1 = New System.Windows.Forms.TabControl()
-        Me.lblConvert_fileNameDelimiter = New System.Windows.Forms.Label()
-        Me.txtConvert_fileNameDelimiter = New System.Windows.Forms.TextBox()
+        Me.chkPNGTransparentBG = New System.Windows.Forms.CheckBox()
         Me.tpEditGraphics.SuspendLayout()
         Me.tpWritePNG.SuspendLayout()
         Me.tpWriteZT1.SuspendLayout()
         Me.tpRenderingFrames.SuspendLayout()
+        CType(Me.numFrameAnimSpeed, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.tpFolders.SuspendLayout()
         Me.tpConversions.SuspendLayout()
         CType(Me.numConvert_PNGStartIndex, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -88,6 +92,7 @@ Partial Class frmSettings
         '
         'tpWritePNG
         '
+        Me.tpWritePNG.Controls.Add(Me.chkPNGTransparentBG)
         Me.tpWritePNG.Controls.Add(Me.Label1)
         Me.tpWritePNG.Controls.Add(Me.cboPNGExport_Crop)
         Me.tpWritePNG.Location = New System.Drawing.Point(4, 22)
@@ -152,6 +157,8 @@ Partial Class frmSettings
         '
         'tpRenderingFrames
         '
+        Me.tpRenderingFrames.Controls.Add(Me.numFrameAnimSpeed)
+        Me.tpRenderingFrames.Controls.Add(Me.lblDefaultAnimSpeed)
         Me.tpRenderingFrames.Controls.Add(Me.chkRenderFrame_BGGraphic)
         Me.tpRenderingFrames.Controls.Add(Me.chkRenderFrame_RenderExtraFrame)
         Me.tpRenderingFrames.Location = New System.Drawing.Point(4, 22)
@@ -161,6 +168,23 @@ Partial Class frmSettings
         Me.tpRenderingFrames.TabIndex = 2
         Me.tpRenderingFrames.Text = "Rendering frames"
         Me.tpRenderingFrames.UseVisualStyleBackColor = True
+        '
+        'numFrameAnimSpeed
+        '
+        Me.numFrameAnimSpeed.Location = New System.Drawing.Point(26, 80)
+        Me.numFrameAnimSpeed.Maximum = New Decimal(New Integer() {255, 0, 0, 0})
+        Me.numFrameAnimSpeed.Name = "numFrameAnimSpeed"
+        Me.numFrameAnimSpeed.Size = New System.Drawing.Size(120, 22)
+        Me.numFrameAnimSpeed.TabIndex = 36
+        '
+        'lblDefaultAnimSpeed
+        '
+        Me.lblDefaultAnimSpeed.AutoSize = True
+        Me.lblDefaultAnimSpeed.Location = New System.Drawing.Point(23, 64)
+        Me.lblDefaultAnimSpeed.Name = "lblDefaultAnimSpeed"
+        Me.lblDefaultAnimSpeed.Size = New System.Drawing.Size(137, 13)
+        Me.lblDefaultAnimSpeed.TabIndex = 34
+        Me.lblDefaultAnimSpeed.Text = "Default animation speed:"
         '
         'chkRenderFrame_BGGraphic
         '
@@ -315,6 +339,22 @@ Partial Class frmSettings
         Me.tpConversions.Text = "Conversions"
         Me.tpConversions.UseVisualStyleBackColor = True
         '
+        'txtConvert_fileNameDelimiter
+        '
+        Me.txtConvert_fileNameDelimiter.Location = New System.Drawing.Point(29, 231)
+        Me.txtConvert_fileNameDelimiter.Name = "txtConvert_fileNameDelimiter"
+        Me.txtConvert_fileNameDelimiter.Size = New System.Drawing.Size(205, 22)
+        Me.txtConvert_fileNameDelimiter.TabIndex = 33
+        '
+        'lblConvert_fileNameDelimiter
+        '
+        Me.lblConvert_fileNameDelimiter.AutoSize = True
+        Me.lblConvert_fileNameDelimiter.Location = New System.Drawing.Point(27, 213)
+        Me.lblConvert_fileNameDelimiter.Name = "lblConvert_fileNameDelimiter"
+        Me.lblConvert_fileNameDelimiter.Size = New System.Drawing.Size(107, 13)
+        Me.lblConvert_fileNameDelimiter.TabIndex = 32
+        Me.lblConvert_fileNameDelimiter.Text = "File name delimiter:"
+        '
         'Label2
         '
         Me.Label2.AutoSize = True
@@ -397,21 +437,15 @@ Partial Class frmSettings
         Me.TabControl1.Size = New System.Drawing.Size(718, 293)
         Me.TabControl1.TabIndex = 29
         '
-        'lblConvert_fileNameDelimiter
+        'chkPNGTransparentBG
         '
-        Me.lblConvert_fileNameDelimiter.AutoSize = True
-        Me.lblConvert_fileNameDelimiter.Location = New System.Drawing.Point(27, 213)
-        Me.lblConvert_fileNameDelimiter.Name = "lblConvert_fileNameDelimiter"
-        Me.lblConvert_fileNameDelimiter.Size = New System.Drawing.Size(110, 13)
-        Me.lblConvert_fileNameDelimiter.TabIndex = 32
-        Me.lblConvert_fileNameDelimiter.Text = "File name delimiter:"
-        '
-        'txtConvert_fileNameDelimiter
-        '
-        Me.txtConvert_fileNameDelimiter.Location = New System.Drawing.Point(29, 231)
-        Me.txtConvert_fileNameDelimiter.Name = "txtConvert_fileNameDelimiter"
-        Me.txtConvert_fileNameDelimiter.Size = New System.Drawing.Size(205, 22)
-        Me.txtConvert_fileNameDelimiter.TabIndex = 33
+        Me.chkPNGTransparentBG.AutoSize = True
+        Me.chkPNGTransparentBG.Location = New System.Drawing.Point(27, 59)
+        Me.chkPNGTransparentBG.Name = "chkPNGTransparentBG"
+        Me.chkPNGTransparentBG.Size = New System.Drawing.Size(381, 17)
+        Me.chkPNGTransparentBG.TabIndex = 15
+        Me.chkPNGTransparentBG.Text = "Use transparent background (instead of ZT Studio background color)"
+        Me.chkPNGTransparentBG.UseVisualStyleBackColor = True
         '
         'frmSettings
         '
@@ -431,6 +465,7 @@ Partial Class frmSettings
         Me.tpWriteZT1.PerformLayout()
         Me.tpRenderingFrames.ResumeLayout(False)
         Me.tpRenderingFrames.PerformLayout()
+        CType(Me.numFrameAnimSpeed, System.ComponentModel.ISupportInitialize).EndInit()
         Me.tpFolders.ResumeLayout(False)
         Me.tpFolders.PerformLayout()
         Me.tpConversions.ResumeLayout(False)
@@ -472,4 +507,7 @@ Partial Class frmSettings
     Friend WithEvents chkConvert_SharedColorPalette As System.Windows.Forms.CheckBox
     Friend WithEvents txtConvert_fileNameDelimiter As System.Windows.Forms.TextBox
     Friend WithEvents lblConvert_fileNameDelimiter As System.Windows.Forms.Label
+    Friend WithEvents lblDefaultAnimSpeed As System.Windows.Forms.Label
+    Friend WithEvents numFrameAnimSpeed As System.Windows.Forms.NumericUpDown
+    Friend WithEvents chkPNGTransparentBG As System.Windows.Forms.CheckBox
 End Class

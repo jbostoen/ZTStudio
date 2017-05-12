@@ -67,7 +67,7 @@
 
 
         editorGraphic.lastUpdated = Now.ToString("yyyyMMddHHmmss")
-        clsTasks.preview_update(frmMain.tbFrames.Value - 1)
+        clsTasks.update_preview(frmMain.tbFrames.Value - 1)
 
         ' Show palette again?
         editorGraphic.colorPalette.fillPaletteGrid(frmMain.dgvPaletteMain)

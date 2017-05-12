@@ -5,20 +5,20 @@
 * Look for the folder ZTStudio-master/source/bin/Debug .
 * There you find ZTStudio.exe, which you can simply run.
 
-You do need .NET Framework 4.5.
-
-
-
-**Important note**
-
-This is the code I've written in early 2015, after conceiving some ideas for a new unofficial expansion pack. But the most important thing realized, is this new ZT1 graphic editor.
-
-It's still called Zoot.NET in the source which was the working title. It bears no affiliation with MadScientist's ZOOT tool, although big kudos to him for documenting a lot of the aspects of the file format.
+You do need one of the following .NET Frameworks : 4.5 , 4.6 or 4.7 .
+In Windows 10, this is usually installed by default. No action needed.
+In Windows 7 and 8, you might need to download and install this from Microsoft.
+ 
 
 **Using this code?**
 
-Please credit MadScientist and myself.
-Pull Requests are welcome, although I'm not actively working on this tool anymore.
+Please credit:
+- MadScientist for figuring out most of the common ZT1 graphic format (and Jay for some additional info)
+- myself for ZT Studio and figuring out how the background frame and MM shadow format works
+- Vondell for providing demo/test graphics
+- HENDRIX for some contributions to the source code
+
+Pull Requests are welcome, although I'm not actively working on this tool anymore. 
 When forking or using code or ideas explained in the documentation: please publish the complete code of your project too.
 
 **More information**

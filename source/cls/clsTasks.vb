@@ -907,7 +907,6 @@ dBug:
 
     End Function
 
-
     Function bitmap_getDefiningRectangle(bmInput As Bitmap) As Rectangle
 
         ' Todo: this must be easier to go through. 
@@ -927,6 +926,27 @@ dBug:
         Dim curColor As System.Drawing.Color
         Dim curTransparentColor As System.Drawing.Color = bmInput.GetPixel(0, 0)
 
+        ' Optimized by HENDRIX
+        ' I like the new rectangle code, seems to be a good speedup!
+
+        ' However, I think  "If coordX >= coordA.X And coordX < coordB.X Then" can never be true. It works for Y. If we split it into
+        ' two loops, we can make use Of that condition. First Loop As it Is, getting left, top and bottom.
+        ' Second loop would swap While coordX and While coordY from the first loop, and only check the area that the other loop had not
+        ' covered to get the right coord.
+         
+        ' I had this idea before reading through your new code:
+        ' how about we split the while loops into four ones And break out of each as soon as we find a non-transparent pixel?
+        ' go over each line from the top -> get coordA.Y
+        ' go over each column from the left -> get coordA.X
+        ' go over each line from the bottom -> get coordB.Y
+        ' go over each column from the right -> get coordB.X
+        ' that would speed things up in cases where there is relatively little padding on each side, but a large defining rectangle
+
+        ' My new idea is a hybrid of that and your new code, and it runs a tiny bit faster and produces better results
+
+        'Dim start As DateTime = Now
+
+        'first, crop away stuff from top and bottom
         ' Left to right 
         While coordX <= (bmInput.Width - 1)
 
@@ -937,46 +957,66 @@ dBug:
                 ' Get color
                 curColor = bmInput.GetPixel(coordX, coordY)
 
-                If IsNothing(curColor) = True And curColor.A <> 255 Then
-                    curColor = bmInput.GetPixel(coordX, coordY)
-                End If
-
                 If curColor <> curTransparentColor And curColor.A = 255 Then
                     ' Color pixel
 
+                    'in this iteration it makes sense to check the other three
                     If coordX < coordA.X Then coordA.X = coordX ' Topleft: move to left
                     If coordY < coordA.Y Then coordA.Y = coordY ' Topleft: move to top
 
-                    If coordX > coordB.X Then coordB.X = coordX ' Bottomright: move to right
+                    'test is pointless, because coordX is always at least coordB.X+1
+                    coordB.X = coordX ' Bottomright: move to right
                     If coordY > coordB.Y Then coordB.Y = coordY ' Bottomright: move to bottom
 
                 End If
-
 
                 ' If the current pixel is larger than a.Y and smaller than b.Y, we should skip.
                 ' It's a bit late so I'm not thinking straight, this might be a pixel off. 
                 If coordY >= coordA.Y And coordY < coordB.Y Then
                     coordY = coordB.Y
-                Else 
+                Else
                     ' Default 
                     coordY += 1
                 End If
 
-
             End While
 
-
-            ' If the current pixel is larger than a.X (most left) and smaller than b.X (most right), we should skip.
-            ' It's a bit late so I'm not thinking straight, this might be a pixel off. 
-            If coordX >= coordA.X And coordX < coordB.X Then
-                coordX = coordB.X
-            Else 
-                coordX += 1
-            End If
+            coordX += 1
 
         End While
 
+        'MsgBox("w,h=" & coordA.X & "," & coordA.Y & " --- " & coordB.X & "," & coordB.Y)
+        'then crop away stuff from right
+        'but only the area we have not yet processed
+        coordY = coordA.Y
+        ' Top to bottom
+        While coordY <= (coordB.Y)
 
+            ' Right to left 
+            coordX = bmInput.Width - 1
+            While coordX > coordB.X
+
+                ' Get color
+                curColor = bmInput.GetPixel(coordX, coordY)
+
+                If curColor <> curTransparentColor And curColor.A = 255 Then
+                    ' Color pixel
+                    If coordX > coordB.X Then coordB.X = coordX ' Bottomright: move to right
+
+                End If
+                'I don't think we need any test here, do we?
+                coordX -= 1
+
+            End While
+
+            coordY += 1
+
+        End While
+        'Dim stop2 As DateTime = Now
+        'Dim elapsed As TimeSpan = stop2.Subtract(start)
+        'MsgBox(elapsed.Milliseconds & " Milliseconds.")
+        '~66 ms on average
+        'MsgBox("w,h=" & coordA.X & "," & coordA.Y & " --- " & coordB.X & "," & coordB.Y)
         ' enabled for cropping of frames, 20150619
         coordB.X += 1
         coordB.Y += 1
@@ -996,7 +1036,6 @@ dBug:
 
 
     End Function
-
 
     Public Function images_Combine(ByVal imgBack As Image, ByVal imgFront As Image) As Image
 
@@ -1536,20 +1575,50 @@ dBug:
 
                 ' These are actual settings.
                 ' If specified; they take priority over the values defined in settings.cfg
-                Case "/crop" : cfg_export_PNG_CanvasSize = CByte(argV)
-                Case "/cleanup" : cfg_convert_deleteOriginal = CByte(argV)
-                Case "/colorquantization" : cfg_palette_quantization = CByte(argV)
-                Case "/pathroot" : cfg_path_Root = argV
-                Case "/startindex" : cfg_convert_startIndex = CByte(argV)
-                Case "/ztaf" : cfg_export_ZT1_AlwaysAddZTAFBytes = CByte(argV)
+
+                ' Preview
+                Case "/preview.bgcolor" : cfg_grid_BackGroundColor = System.Drawing.Color.FromArgb(CInt(argV))
+                Case "/preview.fgcolor" : cfg_grid_ForeGroundColor = System.Drawing.Color.FromArgb(CInt(argV))
+                Case "/preview.zoom" : cfg_grid_zoom = CInt(argV)
+                Case "/preview.footprintX" : cfg_grid_footPrintX = CByte(argV)
+                Case "/preview.footprinty" : cfg_grid_footPrintY = CByte(argV)
+
+                    ' Paths
+                Case "/paths.root" : cfg_path_Root = argV
+                    ' ignore recent paths
+
+
+                    ' Export options
+                Case "/exportoptions.pngcrop" : cfg_export_PNG_CanvasSize = CByte(argV)
+                Case "/exportoptions.pngrenderextraframe" : cfg_export_PNG_RenderBGFrame = (CByte(argV) = 1)
+                Case "/exportoptions.pngrenderextragraphic" : cfg_export_PNG_RenderBGZT1 = (CByte(argV) = 1) ' this would require to supply the BG graphic. To implement.
+                Case "/exportoptions.pngrendertransparentbg" : cfg_export_PNG_TransparentBG = (CByte(argV) = 1)
+
+                Case "/exportoptions.zt1alwaysaddztafbytes" : cfg_export_ZT1_AlwaysAddZTAFBytes = (CByte(argV) = 1)
+                Case "/exportoptions.zt1ani" : cfg_export_ZT1_Ani = (CByte(argV) = 1)
+                     
+                    ' Conversion options
+                Case "/conversionoptions.deleteoriginal" : cfg_convert_deleteOriginal = (CByte(argV) = 1)
+                Case "/conversionoptions.filenamedelimeter" : cfg_convert_deleteOriginal = argV
+                Case "/conversionoptions.overwrite" : cfg_convert_overwrite = (CByte(argV) = 1)
+                Case "/conversionoptions.pngfilesindex" : cfg_convert_startIndex = CByte(argV)
+                Case "/conversionoptions.sharedpalette" : cfg_convert_sharedPalette = (CByte(argV) = 1)
+
+                    ' Editing options
+                Case "/editing.individualrotationfix" : cfg_editor_rotFix_individualFrame = (CByte(argV) = 1)
+                Case "/editing.animationspeed" : cfg_frame_defaultAnimSpeed = CInt(argV)
+
+                    ' Not remembered but can be supplied:  
+                Case "/extra.colorquantization" : cfg_palette_quantization = CByte(argV)
+
 
 
                     ' These are actions. 
                     ' An action can be an automated process doing lots of stuff (e.g. convertfolder)
-                Case "/convertfolder"
+                Case "/action.convertfolder"
                     strArgAction = "convertfolder"
                     strArgActionValue = argV
-                Case "/convertfile"
+                Case "/action.convertfile"
                     strArgAction = "convertfile"
                     strArgActionValue = argV
 

@@ -299,6 +299,7 @@ dBg:
 
 
         On Error GoTo dBug
+        'Debug.Print("... Start writing graphic at " & Now.ToString("HH:mm:ss"))
 
         Dim opHexGraphic As New List(Of String)
 
@@ -329,7 +330,7 @@ dBg:
         Dim palName As String = Me.colorPalette.fileName
         palName = Strings.Replace(palName, "\", "/")
         palName = Strings.Replace(palName, Strings.Replace(cfg_path_Root, "\", "/") & "/", "", , , CompareMethod.Text)
-        Debug.Print(palName & vbCrLf & Strings.Replace(cfg_path_Root, "\", "/"))
+        'Debug.Print(".... Palette: " & palName & vbCrLf & Strings.Replace(cfg_path_Root, "\", "/"))
 
 
         With opHexGraphic
@@ -381,7 +382,7 @@ dBg:
             Dim hexSub As New List(Of String)
             Dim hexFrame As New List(Of String)
 
-            Debug.Print("... Start writing frames.")
+            'Debug.Print("... Start writing frames at " & Now.ToString("HH:mm:ss"))
 
             For Each ztFrame As clsFrame2 In Me.frames
 
@@ -404,7 +405,7 @@ dBg:
 
             Next
 
-            Debug.Print("... End writing frames.")
+            'Debug.Print("... End writing frames at " & Now.ToString("HH:mm:ss"))
 
 800:
             ' We have prepared everything, so it's easy to calculate how many bytes we'll have left.
@@ -450,6 +451,10 @@ dBg:
             Me.colorPalette.writePal(Me.colorPalette.fileName, True)
         End If
 
+
+1200:
+
+        'Debug.Print("... End writing graphic at " & Now.ToString("HH:mm:ss"))
         Return 1
 
         Exit Function
@@ -520,7 +525,7 @@ dBug:
 
         If info = "coreImageBitmap" Then Exit Sub
         If info = "coreImageHex" Then Exit Sub
-        If info = "fileName" Then Exit Sub ' no purpose (yet)
+        If info = "fileName" Then Exit Sub ' no purpose (yet) to trigger a refresh of info
 
 
         ' This will trigger a refresh.

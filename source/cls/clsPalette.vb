@@ -224,8 +224,9 @@ Public Class clsPalette
                            "Transparent color: " & Me.colors(0).ToString & vbCrLf & _
                            "Graphic: " & Me.parent.fileName & vbCrLf & vbCrLf & _
                            "Zoo Tycoon 1 only supports 255 colors in each color palette." & vbCrLf & _
-                           "ZT Studio can attempt to pick the closest matching color (you can expect a degradation in quality)." & vbCrLf & _
-                           "Press [Yes] to ignore all warnings for the length of this session." & vbCrLf & _
+                           "ZT Studio can pick the closest matching color used so far." & vbCrLf & _
+                           "You can expect a degradation in quality." & vbCrLf & _
+                           "Press [Yes] to ignore all warnings until you close ZT Studio." & vbCrLf & _
                            "Press [No] to quit ZT Studio and fix things first.", _
                            vbYesNo + vbCritical + vbApplicationModal, "Too many colors!") = vbYes Then
                         cfg_palette_quantization = 1
@@ -274,7 +275,7 @@ Public Class clsPalette
     Public Function writePal(strFileName As String, blnOverwrite As Boolean) As Integer
 
 
-        Debug.Print("Write .PAL to " & strFileName)
+        'Debug.Print("... Write .PAL to " & strFileName   )
 
 
         On Error GoTo dBug
@@ -298,7 +299,7 @@ Public Class clsPalette
         Dim opHex As New List(Of String) ' output hex
         Dim x As Integer
 
-        Debug.Print(pal_colors.Count.ToString("X4"))
+        'Debug.Print(pal_colors.Count.ToString("X4"))
 
         With opHex
             .Add(Strings.Right(pal_colors.Count.ToString("X4"), 2), False)

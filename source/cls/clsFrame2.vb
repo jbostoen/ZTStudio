@@ -795,7 +795,11 @@ dBug:
         'Debug.Print(Strings.Join(Me.coreImageHex.ToArray(), " "))
 
 31:
-        clsTasks.update_preview()
+        ' 20170513 loadPNG is called only from frmMain and from clsTasks.
+        ' It doesn't make sense to call it when not working with the interface; so do it separately now in frmMain
+        ' -> turns out this was already the case?!
+        ' clsTasks.update_preview()
+
 
 
 
@@ -851,6 +855,9 @@ dBug:
             End If
 
         End If
+
+
+
 
         ' === Rewrite.
 

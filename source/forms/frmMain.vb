@@ -605,11 +605,8 @@ dBug:
 0:
         Dim ztFrame As New clsFrame2(editorGraphic)
 2:
-        'editorFrame = ztFrame
-        'Debug.Print(tbFrames.Value)
 
 10:
-        'editorGraphic.frames.Insert(tbFrames.Value - 1, ztFrame)
         editorGraphic.frames.Insert(tbFrames.Value, ztFrame) ' add after
 
 15:
@@ -883,7 +880,7 @@ dBug:
             .InitialDirectory = System.IO.Path.GetDirectoryName(cfg_path_recentPNG)
 
             ' If most recent directory does not exist anymore:
-            If dlgOpen.InitialDirectory = vbNullString Or System.IO.Directory.Exists(dlgOpen.InitialDirectory) Then
+            If dlgOpen.InitialDirectory = vbNullString Or System.IO.Directory.Exists(dlgOpen.InitialDirectory) = False Then
                 .InitialDirectory = cfg_path_Root
 
             End If
@@ -900,11 +897,8 @@ dBug:
                     Else
 
                         ' OK
-                        With editorFrame
+                        editorFrame.loadPNG(dlgOpen.FileName)
 
-                            .loadPNG(dlgOpen.FileName)
-
-                        End With
 
                         ' Draw first frame 
                         clsTasks.update_preview()

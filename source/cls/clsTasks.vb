@@ -329,40 +329,45 @@ dBg:
 
 
     End Sub
-    Public Sub convert_file_PNG_to_ZT1(strPath As String, Optional blnSingleConversion As Boolean = True)
+    Public Function convert_file_PNG_to_ZT1(strPath As String, Optional blnSingleConversion As Boolean = True) As Integer
 
         On Error GoTo dBg
 
 
         ' In this sub, we get the file name of a PNG image we'll convert.
-        ' In reality, the strPath should (currently) be a reference to any PNG image.
-        ' We'll find others in the same series.
-        ' Cleanup of .PNG files only happens automatically in batch conversions.
+        ' But the filename should NOT be that of the  .PNG, but rather the one for the final ZT1 graphic. 
+        ' That's why it's named strPath for now. This functoin will find others in the same series.  
+        ' Advise: Cleanup of .PNG files only happens automatically in batch conversions.
 
 0:
 
         strPath = Strings.LCase(strPath)
 
+        Dim strPathDir As String = Path.GetDirectoryName(strPath)
+
+
         Dim paths As New List(Of String)
         Dim g As New clsGraphic2
         Dim ztFrame As clsFrame2
-        Dim frameName As String = System.IO.Path.GetFileName(strPath)
-        Dim frameGraphicPath As String = Strings.Left(strPath, strPath.Length - frameName.Length)
+        Dim graphicName As String = System.IO.Path.GetFileName(strPath)
+        Dim frameGraphicPath As String = Strings.Left(strPath, strPath.Length - graphicName.Length)
 
 
         Dim pngName As String
 
+
 10:
-        Debug.Print("Graphic: " & strPath & " (" & frameName & ")")
+        Debug.Print("Convert PNG to ZT1: " & strPath & " (" & graphicName & ") " & Now.ToString("HH:mm:ss"))
 
 
 
-        ' Get the entire path
-        paths.AddRange(System.IO.Directory.GetFiles(frameGraphicPath, frameName & cfg_convert_fileNameDelimiter & "????.png"))
+        ' Get the entire list of .PNG files matching the naming convention for this graphic.
+        ' Anything else is irrelevant to process.
+        paths.AddRange(System.IO.Directory.GetFiles(frameGraphicPath, graphicName & cfg_convert_fileNameDelimiter & "????.png"))
 
         ' Fix for graphic_extra.PNG (legacy)
-        If File.Exists(frameGraphicPath & frameName & cfg_convert_fileNameDelimiter & "extra.png") = True Then
-            paths.Add(frameGraphicPath & frameName & cfg_convert_fileNameDelimiter & "extra.png")
+        If File.Exists(frameGraphicPath & graphicName & cfg_convert_fileNameDelimiter & "extra.png") = True Then
+            paths.Add(frameGraphicPath & graphicName & cfg_convert_fileNameDelimiter & "extra.png")
             g.extraFrame = 1
         End If
 
@@ -377,6 +382,7 @@ dBg:
 
 100:
 
+        Debug.Print("Before going over each PNG: " & Now.ToString("HH:mm:ss"))
         For Each s As String In paths
 
             'Debug.Print(s)
@@ -390,7 +396,7 @@ dBg:
 105:
             ' Extract the number of the frame (or _extra) from the filename
             'pngName = Split(System.IO.Path.GetFileNameWithoutExtension(s), "_")(1)
-            ' 20161007 - changed this to adapt to different filename delimiters
+            ' 20161007 - changed this to adapt to different filename delimiters, including an empty one.
             If Strings.Right(System.IO.Path.GetFileName(s).ToLower(), 9) = "extra.png" Then
                 pngName = "extra"
             Else
@@ -401,12 +407,14 @@ dBg:
 
 110:
 
+
             If pngName.Length <> 4 And pngName <> "extra" Then
 
+                ' This could occur if for some reason we have for instance a ne.png file instead of the expected ne[delimeter]0000.png file
                 MsgBox("A .PNG-file has been detected which does not match the pattern expected." & vbCrLf & _
                     "The files should be named something similar to: " & vbCrLf & _
-                    frameName & cfg_convert_fileNameDelimiter & "000" & cfg_convert_startIndex & ".png (number increases)" & vbCrLf & _
-                    "or " & frameName & cfg_convert_fileNameDelimiter & "extra.png (for the extra frame in certain ZT1 Graphics." & vbCrLf & vbCrLf & _
+                    graphicName & cfg_convert_fileNameDelimiter & "000" & cfg_convert_startIndex & ".png (number increases)" & vbCrLf & _
+                    "or " & graphicName & cfg_convert_fileNameDelimiter & "extra.png (for the extra frame in certain ZT1 Graphics." & vbCrLf & vbCrLf & _
                     "File which caused this error: " & vbCrLf & "'" & s & "'" & vbCrLf & _
                        "ZT Studio will close to prevent program or game crashes.", _
                         vbOKOnly + vbCritical + vbApplicationModal, _
@@ -420,71 +428,107 @@ dBg:
 120:
 
                 If pngName = "extra" Then
-                    ' there's an extra frame
+                    ' There's an extra background frame.
                     g.extraFrame = 1
 
 125:
                 ElseIf IsNumeric(pngName) = True Then
-                    If (CInt(pngName) - cfg_convert_startIndex).ToString("0000") <> g.frames.Count.ToString("0000") Then
+
+                    ' Here we check whether the pattern is still appropriate.
+                    ' The specification is that - depending on a variable to see if we start counting from 0 or 1 - 
+                    ' the user should have PNGs named <graphicName><delimeter>0000.png, <graphicName><delimeter>0001.png, ... 
+                    ' This checks if no number is skipped or invalid.
+                    If (CInt(pngName) - cfg_convert_startIndex) <> g.frames.Count Then
 
 135:
                         ' Check if file name pattern is okay
-                        MsgBox("The file name ('" & frameGraphicPath & frameName & cfg_convert_fileNameDelimiter & (CInt(pngName)).ToString("0000") & ".png') does not match the expected name " & _
-                               "('" & frameGraphicPath & frameName & cfg_convert_fileNameDelimiter & (g.frames.Count + cfg_convert_startIndex).ToString("0000") & ".png')" & vbCrLf & vbCrLf & _
+                        MsgBox("The file name ('" & frameGraphicPath & graphicName & cfg_convert_fileNameDelimiter & (CInt(pngName)).ToString("0000") & ".png') does not match the expected name " & _
+                               "('" & frameGraphicPath & graphicName & cfg_convert_fileNameDelimiter & (g.frames.Count + cfg_convert_startIndex).ToString("0000") & ".png')" & vbCrLf & vbCrLf & _
                                "Your current starting index is: " & cfg_convert_startIndex & vbCrLf & _
-                               "Do not store other .png-files starting with '" & frameGraphicPath & frameName & "' in that folder.", vbOKOnly + vbCritical, "Error")
-                        Exit Sub
+                               "Do not store other .png-files starting with '" & frameGraphicPath & graphicName & "' in that folder.", vbOKOnly + vbCritical, "Error")
+
+                        Return -1
 
                     End If
 
 140:
-                Else
-                    ' Non-numeric.
-                    ' Non-extra.
-                    ' This PNG is either unexpected or a palette file or something.
 
-                End If
+                ElseIf pngName = Path.GetFileName(strPathDir) Then
+
+                    ' This checks the last part of the directory path of this graphic.
+                    ' One exception which we could accept, is an extremely uncommon one.
+                    ' if it's a .PNG palette file, it could be a coincidence.
+                    ' Difficult to come up with such an example at the moment.
+
+145:
+                    Else
+
+                        ' Non-numeric.
+                        ' Non-extra.
+                    ' This PNG is quite unexpected...
+
+
+                        ' Check if file name pattern is okay
+                        MsgBox("The file name ('" & frameGraphicPath & graphicName & cfg_convert_fileNameDelimiter & pngName & ".png') does not match the expected name " & _
+                               "('" & frameGraphicPath & graphicName & cfg_convert_fileNameDelimiter & (g.frames.Count + cfg_convert_startIndex).ToString("0000") & ".png')" & vbCrLf & vbCrLf & _
+                               "Your current starting index is: " & cfg_convert_startIndex & vbCrLf & _
+                               "Do not store other .png-files starting with '" & frameGraphicPath & graphicName & "' in that folder.", vbOKOnly + vbCritical, "Error")
+
+                        Return -1
+
+                    End If
 
 200:
-                ztFrame = New clsFrame2(g)
+                    ztFrame = New clsFrame2(g)
 
 
 201:
-                ' In case of a batch conversion, we might rely on a shared .PAL file 
-                ' usually, this would be objects/restrant/restrant.pal
-                ' animals/ibex/ibex.pal 
+                    ' In case of a batch conversion, we might rely on a shared .PAL file 
+                    ' usually, this would be objects/restrant/restrant.pal
+                    ' animals/ibex/ibex.pal 
 
-                ' to make it a bit more simple, and to allow for easier recoloring of baby (working on Red Panda now), 
-                ' it would be better if the palette is not under animals/redpanda/redpanda.pal but animals/redpanda/m/redpanda.pal
-                ' this should work for fences etc as well.
+                    ' to make it a bit more simple, and to allow for easier recoloring of baby (working on Red Panda now), 
+                    ' it would be better if the palette is not under animals/redpanda/redpanda.pal but animals/redpanda/m/redpanda.pal
+                    ' this should work for fences etc as well.
 
 202:
 
-                If cfg_convert_sharedPalette = 1 And blnSingleConversion = False Then
+                    If cfg_convert_sharedPalette = 1 And blnSingleConversion = False Then
+
+                        ' 20170513: changed behavior for even more flexibility. 
+                        ' We try to get a shared palette:
+                        ' - in the same folder as the graphic (animals/redpanda/m/walk - walk.pal) - in case this animation uses colors not used anywhere else.
+                        ' - in the folder one level up (animals/redpanda/m - m.pal) - in case a palette is shared for the gender (male, female, young)
+                        ' - in the folder two levels up (animals/redpanda - redpanda.pal) - in case a palette is shared for (most of) the animal
+                        ' This method should also work just fine for objects.
+
+                        Dim sPath0 As String
+                        Dim sPath1 As String
+                        Dim sPath2 As String
 
 
-                    ' sPath is just the parent folder, eg objects/restrant/restrant.pal if the graphic is objects/restrant/idle/SE
-                    ' sPathB is parent of parent, eg animals/redpanda/redpanda.pal. This is only a first fallback mechanism.
-                    ' This allows the user to use a different palette for a male vs young model if both have different colors/are recolors.
+                    sPath0 = Path.GetDirectoryName(strPathDir)
+                        sPath1 = Path.GetDirectoryName(sPath0)
+                        sPath2 = Path.GetDirectoryName(sPath1)
 
-                    Dim sPath As String
-                    Dim sPathParent As String
-                    sPath = Path.GetDirectoryName(Path.GetDirectoryName(strPath))
-                    sPath = sPath & "\" & Path.GetFileName(sPath)
-                    sPathParent = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(strPath)))
-                    sPathParent = sPathParent & "\" & Path.GetFileName(sPathParent)
+                        sPath0 = sPath0 & "\" & Path.GetFileName(sPath0)
+                        sPath1 = sPath1 & "\" & Path.GetFileName(sPath1)
+                        sPath2 = sPath2 & "\" & Path.GetFileName(sPath2)
 
 
-                    ' N should not be the only view (icon etc)
-                    ' if it does seem to be the only view, we should NOT fall back on higher level.
-                    ' an icon is NOT animated 
 
-                    If Directory.GetFiles(Path.GetDirectoryName(strPath), frameName & "*.png").Length <> _
-                        Directory.GetFiles(Path.GetDirectoryName(strPath), "*.png").Length Then
+
+                        ' N should not be the only view (icon etc) in this folder.
+                        ' If it does seem to be the only view, we should NOT fall back on higher level.
+                        ' An icon is NOT animated and often contains very different colors (plaque, icon in menu). 
+                        ' An exception to this rule could be the list icon, but it's not worth making an exception for it.
+
+                    If Directory.GetFiles(strPathDIr, graphicName & "*.png").Length <> _
+                            Directory.GetFiles(strpathdir, "*.png").Length Then
 
 
                         ' 20170502 Optimized by Hendrix.
-                        Dim inpaths() As String = {sPath, sPathParent}
+                        Dim inpaths() As String = {sPath0, sPath1, sPath2}
                         Dim exts() As String = {".pal", ".gpl", ".png"}
 
                         ' No palette has been saved/set yet for this graphic.
@@ -492,7 +536,7 @@ dBg:
 
                             ' Figure out if there is a preferred, already prepared palette to be used.
                             ' Two ideas come to mind here:
-                            ' - palette within same folder gets priority over palette in higher level folder
+                            ' - palette at lower level folder gets priority over palette in higher level folder
                             ' - .pal (ZT1 Graphic) > .gpl (GIMP Palette) > .png
 
                             ' Debug.Print("### Trying to detect color palette. ")
@@ -500,7 +544,6 @@ dBg:
                             For Each inpath As String In inpaths
                                 For Each ext As String In exts
 
-                                  
                                     If File.Exists(inpath & ext) = True Then
                                         With ztFrame.parent.colorPalette
                                             ' We only want to read a new palette once
@@ -512,19 +555,17 @@ dBg:
                                             ' Now go by priority.
                                             ' Go-to is usually a bad practice, but it's good here to break our 2 (!) loops.
                                             Select Case ext
-                                                Case ".pal" 
-                                                    .readPal(.fileName) 
+                                                Case ".pal"
+                                                    .readPal(.fileName)
                                                     GoTo paletteReady
-                                                Case ".gpl" 
+                                                Case ".gpl"
                                                     .import_from_GimpPalette(inpath & ext)
                                                     .writePal(.fileName, True)
                                                     GoTo paletteReady
-                                                Case ".png" 
+                                                Case ".png"
                                                     .import_from_PNG(inpath & ext)
                                                     .writePal(.fileName, True)
-                                                    GoTo paletteReady
-
-
+                                                    GoTo paletteReady 
                                             End Select
 
                                         End With
@@ -548,21 +589,19 @@ paletteReady:
                 End If
 
 
-
-
-
 245:
-                ' Add this frame to our parent graphic
-                g.frames.Add(ztFrame)
+                ' Add this frame to our parent graphic's frame collection 
+                g.frames.Add(ztFrame) 
 
 
-250:
-                ' Create a frame from the .PNG-file
-                ztFrame.loadPNG(s)
+250: 
+                    ' Create a frame from the .PNG-file
+                ztFrame.loadPNG(s) 
 
             End If
         Next
 
+        Debug.Print("Before write: " & Now.ToString("HH:mm:ss"))
 
 
 1530:
@@ -570,6 +609,7 @@ paletteReady:
         g.write(strPath)
 
 
+        'Debug.Print("After write: " & Now.ToString("HH:mm:ss"))
 
 1555:
         If cfg_export_ZT1_Ani = 1 And blnSingleConversion = True Then
@@ -578,14 +618,14 @@ paletteReady:
             ' Only 1 graphic file is being generated. This is the case for icons, for example.
             ' A .ani-file can be generated automatically.       
             ' [folder path] + \ + [folder name] + .ani
-            Dim cAni As New clsAniFile(Path.GetDirectoryName(strPath) & "\" & Path.GetFileName(Path.GetDirectoryName(strPath)) & ".ani")
+            Dim cAni As New clsAniFile(strpathdir & "\" & Path.GetFileName(strpathdir) & ".ani")
             cAni.createAniConfig()
 
         End If
 
 
-
-        Debug.Print("Converted file from ZT1 to PNG.")
+         
+        Debug.Print("Graphic converted: " & strPath & " (" & graphicName & ") " & Now.ToString("HH:mm:ss"))
 
 9999:
         ' Clear everything.
@@ -594,14 +634,15 @@ paletteReady:
 
 
 
-        Exit Sub
+        Return 0
+
 
 dBg:
         MsgBox("Error occured in convert_file_PNG_to_ZT1:" & vbCrLf & "Line: " & Erl() & vbCrLf & _
             Err.Number & " - " & Err.Description, vbOKOnly + vbCritical, "Error in conversion PNG -> ZT1")
 
 
-    End Sub
+    End Function
     Public Sub convert_folder_ZT1_to_PNG(strPath As String, Optional PB As ProgressBar = Nothing)
 
         ' This will find all ZT1 Graphics in a folder and generate PNGs from it. It works recursively.
@@ -731,10 +772,12 @@ dBug:
                     ' 5 (extra) + 4 (.png) = 9 chars.
                     ' eg objects/yourobj/NE_extra.png 
                     strGraphicName = Strings.Left(f, Len(f) - 9 - Len(cfg_convert_fileNameDelimiter))
+                    ' Debug.Print("strgraphicname extra='" & strGraphicName & "'")
                 Else
                     ' 4 (0000) + 4 (.png) = 8 chars. 
                     ' eg objects/yourobj/NE_0001.png 
-                    strGraphicName = Strings.Left(f, Len(f) - 8)
+                    strGraphicName = Strings.Left(f, Len(f) - 8 - Len(cfg_convert_fileNameDelimiter))
+                    ' Debug.Print("strgraphicname='" & strGraphicName & "'")
                 End If
 
                 If result.Contains(strGraphicName) = False Then
@@ -829,23 +872,20 @@ dBug:
 
 
 3:
-        ' This case happens when a new frame is added, but no .PNG has been loaded yet
+        ' The sub gets triggered when a new frame has been added, but no .PNG has been loaded yet
         If editorGraphic.frames(intIndexFrameNumber).coreImageHex.Count = 0 Then Exit Sub
 
 
 20:
         frmMain.picBox.Image = editorGraphic.frames(intIndexFrameNumber).getImage(True)
-
-
-
+         
 
 21:
         ' Frame index 
         ' frmMain.tslFrame_Index.Text = intIndexFrameNumber & "/" & (editorGraphic.frames.Count - 1 - editorGraphic.extraFrame)
         ' frmMain.tslFrame_Index.Text = IIf(editorGraphic.frames.Count = 0, "-", (intIndexFrameNumber + cfg_convert_startIndex) & " / " & (editorGraphic.frames.Count - cfg_convert_startIndex - editorGraphic.extraFrame))
 
-        'Debug.Print("updated preview")
-
+        'Debug.Print("updated preview") 
 
 30:
         editorFrame = editorGraphic.frames(intIndexFrameNumber)
@@ -1482,6 +1522,9 @@ dBug:
 
         For Each arg As String In Environment.GetCommandLineArgs()
 
+            Debug.Print(arg)
+
+
             ' Arguments are specified as:  ZTStudio.exe /arg1:<val1> /argN:<valN>
             ' We are expecting valid arguments.
             argK = Strings.Split(arg.ToLower & ":", ":")(0)
@@ -1509,6 +1552,8 @@ dBug:
                 Case "/convertfile"
                     strArgAction = "convertfile"
                     strArgActionValue = argV
+
+
 
 
             End Select

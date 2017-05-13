@@ -1,5 +1,5 @@
 ﻿Option Explicit On
- 
+
 
 Imports System.IO
 
@@ -80,7 +80,7 @@ Module clsTasks
 
         ' Now, if our path is no longer valid, pop up 'Settings'-window automatically
         If System.IO.Directory.Exists(cfg_path_Root) = False Then
-             
+
 
             ' But let's give some suggestions.
             cfg_path_Root = System.IO.Path.GetFullPath(Application.StartupPath)
@@ -120,9 +120,9 @@ Module clsTasks
 
         ' Only now should we create our objects.
 
-        editorgraphic = New clsGraphic2         ' The clsGraphic2 object we use.
+        editorGraphic = New clsGraphic2         ' The clsGraphic2 object we use.
         editorBgGraphic = New clsGraphic2       ' The background graphic, e.g. toy
-        
+
 
 
 
@@ -163,7 +163,7 @@ dBug:
         iniWrite(sFile, "exportOptions", "pngCrop", cfg_export_PNG_CanvasSize.ToString())
         iniWrite(sFile, "exportOptions", "pngRenderExtraFrame", cfg_export_PNG_RenderBGFrame.ToString())
         iniWrite(sFile, "exportOptions", "pngRenderExtraGraphic", cfg_export_PNG_RenderBGZT1.ToString())
-        iniWrite(sFile, "exportOptions", "pngRenderTransparentBG", cfg_export_PNG_transparentBG.ToString())
+        iniWrite(sFile, "exportOptions", "pngRenderTransparentBG", cfg_export_PNG_TransparentBG.ToString())
 
         ' Export ZT1 (entire graphic)
         iniWrite(sFile, "exportOptions", "zt1Ani", cfg_export_ZT1_Ani.ToString())
@@ -251,8 +251,8 @@ dBug:
 
 dBug:
 
-        MsgBox("An error occured while trying to clean up ZT1 Graphic files in this folder: " & vbCrLf & _
-            strPath & vbCrLf & vbCrLf & "Line: " & Erl() & vbCrLf & Err.Number & " - " & Err.Description, _
+        MsgBox("An error occured while trying to clean up ZT1 Graphic files in this folder: " & vbCrLf &
+            strPath & vbCrLf & vbCrLf & "Line: " & Erl() & vbCrLf & Err.Number & " - " & Err.Description,
             vbOKOnly + vbCritical, "Error during clean up")
 
 
@@ -324,7 +324,7 @@ dBug:
         Exit Sub
 
 dBg:
-        MsgBox("Error occured in convert_file_ZT1_to_PNG:" & vbCrLf & "Line: " & Erl() & vbCrLf & _
+        MsgBox("Error occured in convert_file_ZT1_to_PNG:" & vbCrLf & "Line: " & Erl() & vbCrLf &
             Err.Number & " - " & Err.Description, vbOKOnly + vbCritical, "Error in conversion ZT1 -> PNG")
 
 
@@ -403,13 +403,13 @@ dBg:
 
             If pngName.Length <> 4 And pngName <> "extra" Then
 
-                MsgBox("A .PNG-file has been detected which does not match the pattern expected." & vbCrLf & _
-                    "The files should be named something similar to: " & vbCrLf & _
-                    frameName & cfg_convert_fileNameDelimiter & "000" & cfg_convert_startIndex & ".png (number increases)" & vbCrLf & _
-                    "or " & frameName & cfg_convert_fileNameDelimiter & "extra.png (for the extra frame in certain ZT1 Graphics." & vbCrLf & vbCrLf & _
-                    "File which caused this error: " & vbCrLf & "'" & s & "'" & vbCrLf & _
-                       "ZT Studio will close to prevent program or game crashes.", _
-                        vbOKOnly + vbCritical + vbApplicationModal, _
+                MsgBox("A .PNG-file has been detected which does not match the pattern expected." & vbCrLf &
+                    "The files should be named something similar to: " & vbCrLf &
+                    frameName & cfg_convert_fileNameDelimiter & "000" & cfg_convert_startIndex & ".png (number increases)" & vbCrLf &
+                    "or " & frameName & cfg_convert_fileNameDelimiter & "extra.png (for the extra frame in certain ZT1 Graphics." & vbCrLf & vbCrLf &
+                    "File which caused this error: " & vbCrLf & "'" & s & "'" & vbCrLf &
+                       "ZT Studio will close to prevent program or game crashes.",
+                        vbOKOnly + vbCritical + vbApplicationModal,
                         "Invalid filename (pattern)")
 
                 End
@@ -429,9 +429,9 @@ dBg:
 
 135:
                         ' Check if file name pattern is okay
-                        MsgBox("The file name ('" & frameGraphicPath & frameName & cfg_convert_fileNameDelimiter & (CInt(pngName)).ToString("0000") & ".png') does not match the expected name " & _
-                               "('" & frameGraphicPath & frameName & cfg_convert_fileNameDelimiter & (g.frames.Count + cfg_convert_startIndex).ToString("0000") & ".png')" & vbCrLf & vbCrLf & _
-                               "Your current starting index is: " & cfg_convert_startIndex & vbCrLf & _
+                        MsgBox("The file name ('" & frameGraphicPath & frameName & cfg_convert_fileNameDelimiter & (CInt(pngName)).ToString("0000") & ".png') does not match the expected name " &
+                               "('" & frameGraphicPath & frameName & cfg_convert_fileNameDelimiter & (g.frames.Count + cfg_convert_startIndex).ToString("0000") & ".png')" & vbCrLf & vbCrLf &
+                               "Your current starting index is: " & cfg_convert_startIndex & vbCrLf &
                                "Do not store other .png-files starting with '" & frameGraphicPath & frameName & "' in that folder.", vbOKOnly + vbCritical, "Error")
                         Exit Sub
 
@@ -479,7 +479,7 @@ dBg:
                     ' if it does seem to be the only view, we should NOT fall back on higher level.
                     ' an icon is NOT animated 
 
-                    If Directory.GetFiles(Path.GetDirectoryName(strPath), frameName & "*.png").Length <> _
+                    If Directory.GetFiles(Path.GetDirectoryName(strPath), frameName & "*.png").Length <>
                         Directory.GetFiles(Path.GetDirectoryName(strPath), "*.png").Length Then
 
 
@@ -500,7 +500,7 @@ dBg:
                             For Each inpath As String In inpaths
                                 For Each ext As String In exts
 
-                                  
+
                                     If File.Exists(inpath & ext) = True Then
                                         With ztFrame.parent.colorPalette
                                             ' We only want to read a new palette once
@@ -512,14 +512,14 @@ dBg:
                                             ' Now go by priority.
                                             ' Go-to is usually a bad practice, but it's good here to break our 2 (!) loops.
                                             Select Case ext
-                                                Case ".pal" 
-                                                    .readPal(.fileName) 
+                                                Case ".pal"
+                                                    .readPal(.fileName)
                                                     GoTo paletteReady
-                                                Case ".gpl" 
+                                                Case ".gpl"
                                                     .import_from_GimpPalette(inpath & ext)
                                                     .writePal(.fileName, True)
                                                     GoTo paletteReady
-                                                Case ".png" 
+                                                Case ".png"
                                                     .import_from_PNG(inpath & ext)
                                                     .writePal(.fileName, True)
                                                     GoTo paletteReady
@@ -597,7 +597,7 @@ paletteReady:
         Exit Sub
 
 dBg:
-        MsgBox("Error occured in convert_file_PNG_to_ZT1:" & vbCrLf & "Line: " & Erl() & vbCrLf & _
+        MsgBox("Error occured in convert_file_PNG_to_ZT1:" & vbCrLf & "Line: " & Erl() & vbCrLf &
             Err.Number & " - " & Err.Description, vbOKOnly + vbCritical, "Error in conversion PNG -> ZT1")
 
 
@@ -681,8 +681,8 @@ dBg:
 
 dBug:
 
-        MsgBox("An error occured while trying to list and convert ZT1 Graphic files in this folder: " & vbCrLf & _
-            strPath & vbCrLf & vbCrLf & "Line: " & Erl() & vbCrLf & Err.Number & " - " & Err.Description, _
+        MsgBox("An error occured while trying to list and convert ZT1 Graphic files in this folder: " & vbCrLf &
+            strPath & vbCrLf & vbCrLf & "Line: " & Erl() & vbCrLf & Err.Number & " - " & Err.Description,
             vbOKOnly + vbCritical, "Error during ZT1 to PNG batch conversion")
 
     End Sub
@@ -751,11 +751,11 @@ dBug:
                 ' Just a warning, so users don't accidentally have "sitscratch" as animation name.
                 ' Actually '-' is supported as well.
                 If Path.GetFileName(directoryName).Length > 8 Or System.Text.RegularExpressions.Regex.IsMatch(Strings.Replace(Path.GetFileName(directoryName), "-", ""), "^[a-zA-Z0-9]+$") = False Then
-                    MsgBox("Directory name '" & Path.GetFileName(directoryName) & "' is invalid." & vbCrLf & _
-                        "The limit of a folder name is a maximum of 8 alphanumeric characters." & vbCrLf & _
-                        "You will need to rename the folder manually and then retry." & vbCrLf & _
-                       "ZT Studio will close to prevent program or game crashes.", _
-                        vbOKOnly + vbCritical + vbApplicationModal, _
+                    MsgBox("Directory name '" & Path.GetFileName(directoryName) & "' is invalid." & vbCrLf &
+                        "The limit of a folder name is a maximum of 8 alphanumeric characters." & vbCrLf &
+                        "You will need to rename the folder manually and then retry." & vbCrLf &
+                       "ZT Studio will close to prevent program or game crashes.",
+                        vbOKOnly + vbCritical + vbApplicationModal,
                         "Invalid directory name")
 
                     ' better:
@@ -807,8 +807,8 @@ dBug:
 
 dBug:
 
-        MsgBox("An error occured while trying to list and convert PNG files in this folder: " & vbCrLf & _
-            strPath & vbCrLf & vbCrLf & "Line: " & Erl() & vbCrLf & Err.Number & " - " & Err.Description, _
+        MsgBox("An error occured while trying to list and convert PNG files in this folder: " & vbCrLf &
+            strPath & vbCrLf & vbCrLf & "Line: " & Erl() & vbCrLf & Err.Number & " - " & Err.Description,
             vbOKOnly + vbCritical, "Error during PNG to ZT1 batch conversion")
 
     End Sub
@@ -851,7 +851,7 @@ dBug:
         editorFrame = editorGraphic.frames(intIndexFrameNumber)
 
 35:
-        clsTasks.update_Info("Preview updated.")
+        clsTasks.update_info("Preview updated.")
         'Debug.Print("# Preview updated, now showing frame " & intIndexFrameNumber & ". Default: " & (frmMain.tbFrames.Value - 1))
 
 
@@ -887,6 +887,29 @@ dBug:
         Dim curColor As System.Drawing.Color
         Dim curTransparentColor As System.Drawing.Color = bmInput.GetPixel(0, 0)
 
+        'I like the new rectangle code, seems to be a good speedup!
+
+        'However, I think  "If coordX >= coordA.X And coordX < coordB.X Then" can never be true. It works for Y. If we split it into
+        'two loops, we can make use Of that condition. First Loop As it Is, getting left, top and bottom.
+        'Second loop would swap While coordX and While coordY from the first loop, and only check the area that the other loop had not
+        'covered to get the right coord.
+
+        ' I think "If IsNothing(curColor) = True And curColor.A <> 255 Then ...End If" is redundant, because it does the exact same two lines above without condidtions? 
+
+
+        'I had this idea before reading through your new code:
+        'how about we split the while loops into four ones And break out of each as soon as we find a non-transparent pixel?
+        'go over each line from the top -> get coordA.Y
+        'go over each column from the left -> get coordA.X
+        'go over each line from the bottom -> get coordB.Y
+        'go over each column from the right -> get coordB.X
+        'that would speed things up in cases where there is relatively little padding on each side, but a large defining rectangle
+
+        'My new idea is a hybrid of that and your new code, and it runs a tiny bit faster and produces better results
+
+        'Dim start As DateTime = Now
+
+        'first, crop away stuff from top and bottom
         ' Left to right 
         While coordX <= (bmInput.Width - 1)
 
@@ -897,46 +920,66 @@ dBug:
                 ' Get color
                 curColor = bmInput.GetPixel(coordX, coordY)
 
-                If IsNothing(curColor) = True And curColor.A <> 255 Then
-                    curColor = bmInput.GetPixel(coordX, coordY)
-                End If
-
                 If curColor <> curTransparentColor And curColor.A = 255 Then
                     ' Color pixel
 
+                    'in this iteration it makes sense to check the other three
                     If coordX < coordA.X Then coordA.X = coordX ' Topleft: move to left
                     If coordY < coordA.Y Then coordA.Y = coordY ' Topleft: move to top
 
-                    If coordX > coordB.X Then coordB.X = coordX ' Bottomright: move to right
+                    'test is pointless, because coordX is always at least coordB.X+1
+                    coordB.X = coordX ' Bottomright: move to right
                     If coordY > coordB.Y Then coordB.Y = coordY ' Bottomright: move to bottom
 
                 End If
-
 
                 ' If the current pixel is larger than a.Y and smaller than b.Y, we should skip.
                 ' It's a bit late so I'm not thinking straight, this might be a pixel off. 
                 If coordY >= coordA.Y And coordY < coordB.Y Then
                     coordY = coordB.Y
-                Else 
+                Else
                     ' Default 
                     coordY += 1
                 End If
 
-
             End While
 
-
-            ' If the current pixel is larger than a.X (most left) and smaller than b.X (most right), we should skip.
-            ' It's a bit late so I'm not thinking straight, this might be a pixel off. 
-            If coordX >= coordA.X And coordX < coordB.X Then
-                coordX = coordB.X
-            Else 
-                coordX += 1
-            End If
+            coordX += 1
 
         End While
 
+        'MsgBox("w,h=" & coordA.X & "," & coordA.Y & " --- " & coordB.X & "," & coordB.Y)
+        'then crop away stuff from right
+        'but only the area we have not yet processed
+        coordY = coordA.Y
+        ' Top to bottom
+        While coordY <= (coordB.Y)
 
+            ' Right to left 
+            coordX = bmInput.Width - 1
+            While coordX > coordB.X
+
+                ' Get color
+                curColor = bmInput.GetPixel(coordX, coordY)
+
+                If curColor <> curTransparentColor And curColor.A = 255 Then
+                    ' Color pixel
+                    If coordX > coordB.X Then coordB.X = coordX ' Bottomright: move to right
+
+                End If
+                'I don't think we need any test here, do we?
+                coordX -= 1
+
+            End While
+
+            coordY += 1
+
+        End While
+        'Dim stop2 As DateTime = Now
+        'Dim elapsed As TimeSpan = stop2.Subtract(start)
+        'MsgBox(elapsed.Milliseconds & " Milliseconds.")
+        '~66 ms on average
+        'MsgBox("w,h=" & coordA.X & "," & coordA.Y & " --- " & coordB.X & "," & coordB.Y)
         ' enabled for cropping of frames, 20150619
         coordB.X += 1
         coordB.Y += 1
@@ -1411,8 +1454,8 @@ dBug:
 
 dBug:
 
-        MsgBox("An error occured while trying to list and batch rotation fix ZT1 Graphic files in this folder: " & vbCrLf & _
-            strPath & vbCrLf & vbCrLf & "Line: " & Erl() & vbCrLf & Err.Number & " - " & Err.Description, _
+        MsgBox("An error occured while trying to list and batch rotation fix ZT1 Graphic files in this folder: " & vbCrLf &
+            strPath & vbCrLf & vbCrLf & "Line: " & Erl() & vbCrLf & Err.Number & " - " & Err.Description,
             vbOKOnly + vbCritical, "Error during batch rotation fixing")
 
     End Sub
@@ -1452,8 +1495,8 @@ dBug:
 
 dBug:
 
-        MsgBox("An error occured while trying to list and batch rotation fix ZT1 Graphic files in this folder: " & vbCrLf & _
-            strPath & vbCrLf & vbCrLf & "Line: " & Erl() & vbCrLf & Err.Number & " - " & Err.Description, _
+        MsgBox("An error occured while trying to list and batch rotation fix ZT1 Graphic files in this folder: " & vbCrLf &
+            strPath & vbCrLf & vbCrLf & "Line: " & Erl() & vbCrLf & Err.Number & " - " & Err.Description,
             vbOKOnly + vbCritical, "Error during batch rotation fixing")
 
         Return -1
@@ -1555,11 +1598,11 @@ dBug:
 
 dBug:
 
-        If MsgBox("It seems an invalid value for a command line argument was specified (" & argK & ")." & vbCrLf & _
-            "Please read the proper documentation and specify values properly." & vbCrLf & _
-            vbCrLf & _
-            "Example:" & vbCrLf & _
-            "ZTStudio.exe /convertFolder:path-to-folder /ZTAF:1" & vbCrLf & vbCrLf & _
+        If MsgBox("It seems an invalid value for a command line argument was specified (" & argK & ")." & vbCrLf &
+            "Please read the proper documentation and specify values properly." & vbCrLf &
+            vbCrLf &
+            "Example:" & vbCrLf &
+            "ZTStudio.exe /convertFolder:path-to-folder /ZTAF:1" & vbCrLf & vbCrLf &
             "Details: error in ztStudio_StartUp at line " & Erl() & vbCrLf & Err.Number & " - " & Err.Description, vbOKOnly + vbCritical, "Invalid value for command line argument") = vbOK Then
             End
         End If

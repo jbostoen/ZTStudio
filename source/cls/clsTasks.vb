@@ -1037,6 +1037,23 @@ dBug:
 
     End Function
 
+    Public Function images_Combine_centered(ByVal imgBack As Image, ByVal imgFront As Image) As Image
+        'this can now combine images of any size and will center them on each other
+
+        Dim x_max As UShort = Math.Max(imgBack.Width, imgFront.Width)
+        Dim y_max As UShort = Math.Max(imgBack.Height, imgFront.Height)
+
+        Dim bmp As New Bitmap(x_max, y_max)
+        Dim g As Graphics = Graphics.FromImage(bmp)
+
+        g.InterpolationMode = Drawing2D.InterpolationMode.NearestNeighbor ' prevent softening
+        g.DrawImage(imgBack, CInt((x_max - imgBack.Width) / 2), CInt((y_max - imgBack.Height) / 2), imgBack.Width, imgBack.Height)
+        g.DrawImage(imgFront, CInt((x_max - imgFront.Width) / 2), CInt((y_max - imgFront.Height) / 2), imgFront.Width, imgFront.Height)
+        g.Dispose()
+        Return bmp
+
+    End Function
+
     Public Function images_Combine(ByVal imgBack As Image, ByVal imgFront As Image) As Image
 
         Dim bmp As New Bitmap(imgBack.Width, imgBack.Height)

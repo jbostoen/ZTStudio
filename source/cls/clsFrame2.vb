@@ -157,86 +157,57 @@ Public Class clsFrame2
 
 dBug:
 
-        MsgBox("Error in clsFrame2.getCoreImageBitmap()" & vbCrLf & _
-               "Line " & Erl() & vbCrLf & _
-            Err.Number & " - " & Err.Description, _
+        MsgBox("Error in clsFrame2.getCoreImageBitmap()" & vbCrLf &
+               "Line " & Erl() & vbCrLf &
+            Err.Number & " - " & Err.Description,
             vbOKOnly + vbCritical, "Error")
 
 
     End Function
-    Function getCoreImageBitmapOnTransparentCanvas() As Bitmap
+
+    Function getCoreImageBitmapOnTransparentCanvas(Optional aroundOrigin As Boolean = False) As Bitmap
 
         On Error GoTo dBug
-
 1:
-
-11:
-        ' Draw on transparent canvas
-        Dim bmOutput As New Bitmap(cfg_grid_numPixels * 2, cfg_grid_numPixels * 2)
-        Dim g As Graphics = Graphics.FromImage(bmOutput)
-
-
-        Dim imgB = Me.getCoreImageBitmap()
-21:
-        g.InterpolationMode = Drawing2D.InterpolationMode.NearestNeighbor ' prevent softening 
-        g.DrawImage(imgB, cfg_grid_numPixels - Me.offsetX + 1, cfg_grid_numPixels - Me.offsetY + 1, imgB.Width, imgB.Height)
-        g.Dispose()
-
-31:
-        Return bmOutput
-
-        Exit Function
-
-dBug:
-
-        MsgBox("Error in clsFrame2.getCoreImageBitmapOnTransparentCanvas()" & vbCrLf & _
-               "Line " & Erl() & vbCrLf & _
-            Err.Number & " - " & Err.Description, _
-            vbOKOnly + vbCritical, "Error")
-
-    End Function
-
-
-
-    Function getCoreImageBitmap_centered(Optional blnDrawGrid As Boolean = False) As Bitmap
-
-        'This will return the image without any unneeded padding, but still padded so it is centered around the origin
-        'this means the original can be exactly reconstructed without manually fixing the offset
-
-        On Error GoTo dBug
-
+        Dim x_dim As Short
+        Dim y_dim As Short
         Dim imgB = Me.getCoreImageBitmap()
 
-        'convert everything relative to the center
-        Dim x_dim As Short = Math.Max(Math.Abs(Me.offsetX), Math.Abs(Me.offsetX - imgB.Width))
-        Dim y_dim As Short = Math.Max(Math.Abs(Me.offsetY), Math.Abs(Me.offsetY - imgB.Height))
+        Select Case aroundOrigin
+            Case False
+                ' Draw on transparent canvas
+                x_dim = cfg_grid_numPixels
+                y_dim = cfg_grid_numPixels
+            Case True
+                'convert everything relative to the center
+                'I don't know why, but the + and -1 are needed to avoid changing the image size
+                x_dim = Math.Max(Math.Abs(Me.offsetX), Math.Abs(Me.offsetX - imgB.Width)) + 1
+                y_dim = Math.Max(Math.Abs(Me.offsetY), Math.Abs(Me.offsetY - imgB.Height)) - 1
+        End Select
 
         ' Draw on transparent canvas
         Dim bmOutput As New Bitmap(x_dim * 2, y_dim * 2)
         Dim g As Graphics = Graphics.FromImage(bmOutput)
 
-21:
         g.InterpolationMode = Drawing2D.InterpolationMode.NearestNeighbor ' prevent softening 
-        g.DrawImage(imgB, x_dim - Me.offsetX, y_dim - Me.offsetY, imgB.Width, imgB.Height)
+        g.DrawImage(imgB, x_dim - Me.offsetX + 1, y_dim - Me.offsetY + 1, imgB.Width, imgB.Height)
+31:
         g.Dispose()
-
-31:
         Return bmOutput
-
 
         Exit Function
 
 dBug:
 
-        MsgBox("Error in clsFrame2.getImage_centered()" & vbCrLf &
+        MsgBox("Error in clsFrame2.getCoreImageBitmapOnTransparentCanvas()" & vbCrLf &
                "Line " & Erl() & vbCrLf &
             Err.Number & " - " & Err.Description,
             vbOKOnly + vbCritical, "Error")
 
-
     End Function
 
-    Function getImage_centered(Optional blnDrawGrid As Boolean = False) As Bitmap
+
+    Function getImage(Optional blnDrawGrid As Boolean = False, Optional centered As Boolean = False) As Bitmap
 
         ' GetImage will return a bitmap/image.
         ' It will render the core image in this frame; and then add backgrounds.
@@ -246,68 +217,19 @@ dBug:
 
 1:
         ' Draw frame.
-        Dim bmOutput As Bitmap = Me.getCoreImageBitmap_centered()
+        Dim bmOutput As Bitmap = Me.getCoreImageBitmapOnTransparentCanvas(centered)
 
 
 11:
         ' Draw 'extra' background frame, e.g. restaurants?
         If Me.parent.extraFrame = 1 And cfg_export_PNG_RenderBGFrame = 1 Then
-            bmOutput = clsTasks.images_Combine_centered(Me.parent.frames(Me.parent.frames.Count - 1).getCoreImageBitmap_centered(), bmOutput)
+            bmOutput = clsTasks.images_Combine(Me.parent.frames(Me.parent.frames.Count - 1).getCoreImageBitmapOnTransparentCanvas(centered), bmOutput)
         End If
 
 21:
         ' Optional background ZT1 Graphic frame, e.g. animal + toy?
         If editorBgGraphic.frames.Count > 0 And cfg_export_PNG_RenderBGZT1 = 1 Then
-            bmOutput = clsTasks.images_Combine_centered(editorBgGraphic.frames(0).getCoreImageBitmap_centered(), bmOutput)
-        End If
-
-31:
-        ' Draw grid?
-        If blnDrawGrid = True Then
-            bmOutput = clsTasks.images_Combine_centered(clsTasks.grid_drawFootPrintXY(cfg_grid_footPrintX, cfg_grid_footPrintY, 0), bmOutput)
-        End If
-
-
-
-41:
-        Return bmOutput
-
-
-        Exit Function
-
-dBug:
-
-        MsgBox("Error in clsFrame2.getImage()" & vbCrLf &
-               "Line " & Erl() & vbCrLf &
-            Err.Number & " - " & Err.Description,
-            vbOKOnly + vbCritical, "Error")
-
-
-    End Function
-
-    Function getImage(Optional blnDrawGrid As Boolean = False) As Bitmap
-
-        ' GetImage will return a bitmap/image.
-        ' It will render the core image in this frame; and then add backgrounds.
-        ' There's an option to render the image on top of a visible grid (as you have in ZT1).
-
-        On Error GoTo dBug
-
-1:
-        ' Draw frame.
-        Dim bmOutput As Bitmap = Me.getCoreImageBitmapOnTransparentCanvas()
-
-
-11:
-        ' Draw 'extra' background frame, e.g. restaurants?
-        If Me.parent.extraFrame = 1 And cfg_export_PNG_RenderBGFrame = 1 Then
-            bmOutput = clsTasks.images_Combine(Me.parent.frames(Me.parent.frames.Count - 1).getCoreImageBitmapOnTransparentCanvas(), bmOutput)
-        End If
-
-21:
-        ' Optional background ZT1 Graphic frame, e.g. animal + toy?
-        If editorBgGraphic.frames.Count > 0 And cfg_export_PNG_RenderBGZT1 = 1 Then
-            bmOutput = clsTasks.images_Combine(editorBgGraphic.frames(0).getCoreImageBitmapOnTransparentCanvas(), bmOutput)
+            bmOutput = clsTasks.images_Combine(editorBgGraphic.frames(0).getCoreImageBitmapOnTransparentCanvas(centered), bmOutput)
         End If
 
 31:
@@ -326,9 +248,9 @@ dBug:
 
 dBug:
 
-        MsgBox("Error in clsFrame2.getImage()" & vbCrLf & _
-               "Line " & Erl() & vbCrLf & _
-            Err.Number & " - " & Err.Description, _
+        MsgBox("Error in clsFrame2.getImage()" & vbCrLf &
+               "Line " & Erl() & vbCrLf &
+            Err.Number & " - " & Err.Description,
             vbOKOnly + vbCritical, "Error")
 
 
@@ -1181,6 +1103,7 @@ dBug:
         ' 0 = canvas size
         ' 1 = relevant pixel area of graphic
         ' 2 = relevant pixel area of frame
+        ' 3 = around the grid origin of frame
 
         Dim bmRect As New Rectangle(-9999, -9999, 0, 0)
         Dim bmCropped As Bitmap
@@ -1247,7 +1170,9 @@ dBug:
                 bmCropped = clsTasks.bitmap_getCropped(Me.getImage(), bmRect)
                 bmCropped.Save(strFileName, System.Drawing.Imaging.ImageFormat.Png)
             Case 3
-                Me.getImage_centered().Save(strFileName, System.Drawing.Imaging.ImageFormat.Png)
+                'center around the origin
+                'this is much faster and avoids all cropping, but preserves the offset
+                Me.getImage(, True).Save(strFileName, System.Drawing.Imaging.ImageFormat.Png)
         End Select
 
 

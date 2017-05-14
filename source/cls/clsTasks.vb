@@ -933,7 +933,7 @@ dBug:
         ' two loops, we can make use Of that condition. First Loop As it Is, getting left, top and bottom.
         ' Second loop would swap While coordX and While coordY from the first loop, and only check the area that the other loop had not
         ' covered to get the right coord.
-         
+
         ' I had this idea before reading through your new code:
         ' how about we split the while loops into four ones And break out of each as soon as we find a non-transparent pixel?
         ' go over each line from the top -> get coordA.Y
@@ -943,8 +943,6 @@ dBug:
         ' that would speed things up in cases where there is relatively little padding on each side, but a large defining rectangle
 
         ' My new idea is a hybrid of that and your new code, and it runs a tiny bit faster and produces better results
-
-        'Dim start As DateTime = Now
 
         'first, crop away stuff from top and bottom
         ' Left to right 
@@ -1012,10 +1010,7 @@ dBug:
             coordY += 1
 
         End While
-        'Dim stop2 As DateTime = Now
-        'Dim elapsed As TimeSpan = stop2.Subtract(start)
-        'MsgBox(elapsed.Milliseconds & " Milliseconds.")
-        '~66 ms on average
+
         'MsgBox("w,h=" & coordA.X & "," & coordA.Y & " --- " & coordB.X & "," & coordB.Y)
         ' enabled for cropping of frames, 20150619
         coordB.X += 1
@@ -1037,7 +1032,7 @@ dBug:
 
     End Function
 
-    Public Function images_Combine_centered(ByVal imgBack As Image, ByVal imgFront As Image) As Image
+    Public Function images_Combine(ByVal imgBack As Image, ByVal imgFront As Image) As Image
         'this can now combine images of any size and will center them on each other
 
         Dim x_max As UShort = Math.Max(imgBack.Width, imgFront.Width)
@@ -1049,19 +1044,6 @@ dBug:
         g.InterpolationMode = Drawing2D.InterpolationMode.NearestNeighbor ' prevent softening
         g.DrawImage(imgBack, CInt((x_max - imgBack.Width) / 2), CInt((y_max - imgBack.Height) / 2), imgBack.Width, imgBack.Height)
         g.DrawImage(imgFront, CInt((x_max - imgFront.Width) / 2), CInt((y_max - imgFront.Height) / 2), imgFront.Width, imgFront.Height)
-        g.Dispose()
-        Return bmp
-
-    End Function
-
-    Public Function images_Combine(ByVal imgBack As Image, ByVal imgFront As Image) As Image
-
-        Dim bmp As New Bitmap(imgBack.Width, imgBack.Height)
-        Dim g As Graphics = Graphics.FromImage(bmp)
-
-        g.InterpolationMode = Drawing2D.InterpolationMode.NearestNeighbor ' prevent softening
-        g.DrawImage(imgBack, 0, 0, imgBack.Width, imgBack.Height)
-        g.DrawImage(imgFront, 0, 0, imgFront.Width, imgFront.Height)
         g.Dispose()
         Return bmp
 
@@ -1146,16 +1128,12 @@ dBug:
 
 
 
-    Function grid_drawFootPrintXY(intFootPrintX As Integer, intFootPrintY As Integer, view As Byte, Optional bmInput As Bitmap = Nothing) As Bitmap
+    Function grid_drawFootPrintXY(intFootPrintX As Integer, intFootPrintY As Integer, view As Byte) As Bitmap
 
         ' Draws a certain amount of squares.
         ' ZT1 uses either 1/4th of a square, or complete squares from there on. 
         ' Anything else doesn't seem to be too reliable!
 
-
-        If IsNothing(bmInput) = True Then
-            bmInput = New Bitmap(cfg_grid_numPixels * 2, cfg_grid_numPixels * 2)
-        End If
 
         ' This function calculates where to put the center of the image.
         ' View:
@@ -1172,6 +1150,11 @@ dBug:
         Dim intWidth As Integer = (intFootPrintX + intFootPrintY) * 16
         Dim intHeight As Integer = intWidth / 2
 
+        'every grid square adds this much for x and y - we must consider both directions to be efficient!
+        Dim x_dim As Integer = intFootPrintX * 16 + intFootPrintY * 16
+        Dim y_dim As Integer = intFootPrintY * 8 + intFootPrintX * 8
+        Dim bmInput As New Bitmap(x_dim * 2, y_dim * 2)
+
         ' eerste punt tov onze gegenereerde grid: +16px Y (center)
         ' eerste punt tov onze gegenereerde grid: intFootprintX * 32
 
@@ -1186,14 +1169,6 @@ dBug:
 
         Dim coord As New Point(0, 0)
 
-        '
-        'Dim curPoint As Integer = 1
-        'Dim numSquaresInRow As Integer = 1
-        'Dim curSquare As Integer = 0
-
-        Dim intAddition As Integer = 1
-
-
 
         coord.X = (intFootPrintX / 2) * 32 ' possibly adjustment of 16px needed (o the left?
         Debug.Print(intHeight)
@@ -1207,22 +1182,14 @@ dBug:
         For intCurFootPrintX = 2 To intFootPrintX Step 2
 
             ' Starting point:
-            coord.X = cfg_grid_numPixels - (intWidth / 2) + (intFootPrintX / 2 * 32)
-            ' coord.X = coord.X - (intFootPrintX / 2) * 32
-            'coord.X = coord.X + (intCurFootPrintX / 2) * 32
-            'coord.X = coord.X - ((intFootPrintX / 2) * 32 / 2) + (intCurFootPrintX / 2) * 32
+            coord.X = x_dim - (intWidth / 2) + (intFootPrintX / 2 * 32)
 
-
-            'coord.X = cfg_grid_numPixels - (((intFootPrintX - intCurFootPrintX) / 2) * 32)
-
-            coord.X = cfg_grid_numPixels - (intWidth / 2)  ' Move to the left
+            coord.X = x_dim - (intWidth / 2)  ' Move to the left
             coord.X = coord.X + ((intFootPrintX - intCurFootPrintX) / 2) * 32  ' What can we add?
 
             'Debug.Print("X = " & coord.X)
 
-
-
-            coord.Y = cfg_grid_numPixels - (intHeight / 2) + 16 * (intCurFootPrintX / 2)
+            coord.Y = y_dim - (intHeight / 2) + 16 * (intCurFootPrintX / 2)
             coord.Y -= 16
 
 
@@ -1241,9 +1208,6 @@ dBug:
                 grid_drawSquare(coord, bmInput)
 
             Next
-
-
-
 
 
         Next

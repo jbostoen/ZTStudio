@@ -248,6 +248,49 @@ dBug:
 
     End Function
 
+
+    Function getImage_unpadded(Optional blnDrawGrid As Boolean = False) As Bitmap
+
+        'nb. draw grid, background etc is unsupported for now, but it should be possible to get the dimensions of that frame 
+        'and perform the same calculations, then take the max of both dimensions and use that for the canvas
+
+        ' GetImage will return a bitmap/image.
+        ' It will render the core image in this frame; and then add backgrounds.
+        ' There's an option to render the image on top of a visible grid (as you have in ZT1).
+
+        On Error GoTo dBug
+
+        Dim imgB = Me.getCoreImageBitmap()
+
+        'convert everything relative to the center
+        Dim x_dim As Short = Math.Max(Math.Abs(Me.offsetX), Math.Abs(Me.offsetX - imgB.Width))
+        Dim y_dim As Short = Math.Max(Math.Abs(Me.offsetY), Math.Abs(Me.offsetY - imgB.Height))
+
+        ' Draw on transparent canvas
+        Dim bmOutput As New Bitmap(x_dim * 2, y_dim * 2)
+        Dim g As Graphics = Graphics.FromImage(bmOutput)
+
+21:
+        g.InterpolationMode = Drawing2D.InterpolationMode.NearestNeighbor ' prevent softening 
+        g.DrawImage(imgB, x_dim - Me.offsetX, y_dim - Me.offsetY, imgB.Width, imgB.Height)
+        g.Dispose()
+
+31:
+        Return bmOutput
+
+
+        Exit Function
+
+dBug:
+
+        MsgBox("Error in clsFrame2.getImage_unpadded()" & vbCrLf &
+               "Line " & Erl() & vbCrLf &
+            Err.Number & " - " & Err.Description,
+            vbOKOnly + vbCritical, "Error")
+
+
+    End Function
+
     Function renderCoreImageFromHex() As Bitmap
 
         ' This function will read the frame's bytes (hex).
@@ -1091,7 +1134,8 @@ dBug:
 
         Dim bmRect As New Rectangle(-9999, -9999, 0, 0)
         Dim bmCropped As Bitmap
-         
+
+        'MsgBox("Offsets X" & Me.offsetX & " Y " & Me.offsetY)
 
         Select Case cfg_export_PNG_CanvasSize
 
@@ -1149,11 +1193,18 @@ dBug:
                 ' Only save relevant area of frame
 
 141:
-
                 bmRect = bitmap_getDefiningRectangle(Me.getImage())
                 bmCropped = clsTasks.bitmap_getCropped(Me.getImage(), bmRect)
                 bmCropped.Save(strFileName, System.Drawing.Imaging.ImageFormat.Png)
 
+            Case 3
+                ' Only save relevant area of frame
+
+142:
+                'MsgBox("case 3")
+
+                'bmCropped = 
+                Me.getImage_unpadded().Save(strFileName, System.Drawing.Imaging.ImageFormat.Png)
 
         End Select
 

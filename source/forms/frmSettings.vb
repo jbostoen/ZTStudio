@@ -21,6 +21,7 @@ Public Class frmSettings
             .Add("Keep canvas size (" & cfg_grid_numPixels & " x " & cfg_grid_numPixels & ")")
             .Add("Crop to largest relevant width / height in this graphic")
             .Add("Crop to relevant pixels of this frame")
+            .Add("Crop around center (fast but experimental)")
         End With
 
         ' Paths

@@ -365,7 +365,7 @@ Partial Class frmMain
         Me.tsbFrame_ImportPNG.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.tsbFrame_ImportPNG.Name = "tsbFrame_ImportPNG"
         Me.tsbFrame_ImportPNG.Size = New System.Drawing.Size(36, 36)
-        Me.tsbFrame_ImportPNG.Text = "Open graphic to use in this frame"
+        Me.tsbFrame_ImportPNG.Text = "Open .PNG to use in this frame"
         '
         'tsbFrame_ExportPNG
         '
@@ -375,7 +375,7 @@ Partial Class frmMain
         Me.tsbFrame_ExportPNG.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.tsbFrame_ExportPNG.Name = "tsbFrame_ExportPNG"
         Me.tsbFrame_ExportPNG.Size = New System.Drawing.Size(36, 36)
-        Me.tsbFrame_ExportPNG.Text = "Save frame as PNG"
+        Me.tsbFrame_ExportPNG.Text = "Save frame as .PNG"
         '
         'ToolStripSeparator7
         '

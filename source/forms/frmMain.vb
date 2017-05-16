@@ -504,7 +504,7 @@ dBug:
             .DefaultExt = ""
             .AddExtension = True
             .InitialDirectory = System.IO.Path.GetDirectoryName(cfg_path_recentZT1)
-            .Filter = "ZT1 Graphics (*)|*"
+            .Filter = "ZT1 Graphics|*"
 
 
             If .ShowDialog() <> Windows.Forms.DialogResult.Cancel Then

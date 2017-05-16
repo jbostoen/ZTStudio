@@ -24,7 +24,7 @@ Public Class clsFrame2
     Private fr_parent As New clsGraphic2
 
     Private fr_MysteryHEX As New List(Of String)
-     
+
     Private fr_lastUpdated As String = Now.ToString("yyyyMMddHHmmss")                ' for caching purposes.
 
 
@@ -71,7 +71,7 @@ Public Class clsFrame2
         End Set
     End Property
 
-     
+
     Public Property offsetX As Integer
         ' The horizontal offset. How much should the image be moved to the left compared to the center of the square (based on the ZT1 cFootPrintX) ?
         Get
@@ -165,15 +165,15 @@ dBug:
 
     End Function
 
-    Function getCoreImageBitmapOnTransparentCanvas(Optional aroundOrigin As Boolean = False) As Bitmap
+    Function getCoreImageBitmapOnTransparentCanvas(Optional blnAroundOrigin As Boolean = False) As Bitmap
 
         On Error GoTo dBug
 1:
-        Dim x_dim As Short
-        Dim y_dim As Short
+        Dim x_dim As Integer
+        Dim y_dim As Integer
         Dim imgB = Me.getCoreImageBitmap()
 
-        Select Case aroundOrigin
+        Select Case blnAroundOrigin
             Case False
                 ' Draw on transparent canvas
                 x_dim = cfg_grid_numPixels
@@ -207,7 +207,7 @@ dBug:
     End Function
 
 
-    Function getImage(Optional blnDrawGrid As Boolean = False, Optional centered As Boolean = False) As Bitmap
+    Function getImage(Optional blnDrawGrid As Boolean = False, Optional blnCentered As Boolean = False) As Bitmap
 
         ' GetImage will return a bitmap/image.
         ' It will render the core image in this frame; and then add backgrounds.
@@ -217,19 +217,19 @@ dBug:
 
 1:
         ' Draw frame.
-        Dim bmOutput As Bitmap = Me.getCoreImageBitmapOnTransparentCanvas(centered)
+        Dim bmOutput As Bitmap = Me.getCoreImageBitmapOnTransparentCanvas(blnCentered)
 
 
 11:
         ' Draw 'extra' background frame, e.g. restaurants?
         If Me.parent.extraFrame = 1 And cfg_export_PNG_RenderBGFrame = 1 Then
-            bmOutput = clsTasks.images_Combine(Me.parent.frames(Me.parent.frames.Count - 1).getCoreImageBitmapOnTransparentCanvas(centered), bmOutput)
+            bmOutput = clsTasks.images_Combine(Me.parent.frames(Me.parent.frames.Count - 1).getCoreImageBitmapOnTransparentCanvas(blnCentered), bmOutput)
         End If
 
 21:
         ' Optional background ZT1 Graphic frame, e.g. animal + toy?
         If editorBgGraphic.frames.Count > 0 And cfg_export_PNG_RenderBGZT1 = 1 Then
-            bmOutput = clsTasks.images_Combine(editorBgGraphic.frames(0).getCoreImageBitmapOnTransparentCanvas(centered), bmOutput)
+            bmOutput = clsTasks.images_Combine(editorBgGraphic.frames(0).getCoreImageBitmapOnTransparentCanvas(blnCentered), bmOutput)
         End If
 
 31:
@@ -283,7 +283,7 @@ dBug:
 20:
 
         ' Now, let's proceed.
-          
+
 
 30:
         ' Create a copy of this frame's bytes.
@@ -387,7 +387,7 @@ dBug:
             .Add(frameHex(9), False)
         End With
 
-         
+
         ' Debug.Print("Mystery hex: " & Me.parent.frames.IndexOf(Me).ToString() & vbCrLf & _
         '           Strings.Join(Me.mysteryHEX.ToArray(), " ") & " - " & vbCrLf & _
         '          CInt("&H" & Me.mysteryHEX(1) & Me.mysteryHEX(0)) & vbCrLf & vbCrLf & _
@@ -1107,7 +1107,7 @@ dBug:
 
         Dim bmRect As New Rectangle(-9999, -9999, 0, 0)
         Dim bmCropped As Bitmap
-         
+
 
         Select Case cfg_export_PNG_CanvasSize
 

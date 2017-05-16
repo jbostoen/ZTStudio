@@ -1,5 +1,5 @@
 ﻿Option Explicit On
- 
+
 
 Imports System.IO
 
@@ -80,7 +80,7 @@ Module clsTasks
 
         ' Now, if our path is no longer valid, pop up 'Settings'-window automatically
         If System.IO.Directory.Exists(cfg_path_Root) = False Then
-             
+
 
             ' But let's give some suggestions.
             cfg_path_Root = System.IO.Path.GetFullPath(Application.StartupPath)
@@ -122,7 +122,7 @@ Module clsTasks
 
         editorgraphic = New clsGraphic2         ' The clsGraphic2 object we use.
         editorBgGraphic = New clsGraphic2       ' The background graphic, e.g. toy
-        
+
 
 
 
@@ -461,67 +461,67 @@ dBg:
                     ' Difficult to come up with such an example at the moment.
 
 145:
-                    Else
+                Else
 
-                        ' Non-numeric.
-                        ' Non-extra.
+                    ' Non-numeric.
+                    ' Non-extra.
                     ' This PNG is quite unexpected...
 
 
-                        ' Check if file name pattern is okay
-                        MsgBox("The file name ('" & frameGraphicPath & graphicName & cfg_convert_fileNameDelimiter & pngName & ".png') does not match the expected name " & _
-                               "('" & frameGraphicPath & graphicName & cfg_convert_fileNameDelimiter & (g.frames.Count + cfg_convert_startIndex).ToString("0000") & ".png')" & vbCrLf & vbCrLf & _
-                               "Your current starting index is: " & cfg_convert_startIndex & vbCrLf & _
-                               "Do not store other .png-files starting with '" & frameGraphicPath & graphicName & "' in that folder.", vbOKOnly + vbCritical, "Error")
+                    ' Check if file name pattern is okay
+                    MsgBox("The file name ('" & frameGraphicPath & graphicName & cfg_convert_fileNameDelimiter & pngName & ".png') does not match the expected name " & _
+                           "('" & frameGraphicPath & graphicName & cfg_convert_fileNameDelimiter & (g.frames.Count + cfg_convert_startIndex).ToString("0000") & ".png')" & vbCrLf & vbCrLf & _
+                           "Your current starting index is: " & cfg_convert_startIndex & vbCrLf & _
+                           "Do not store other .png-files starting with '" & frameGraphicPath & graphicName & "' in that folder.", vbOKOnly + vbCritical, "Error")
 
-                        Return -1
+                    Return -1
 
-                    End If
+                End If
 
 200:
-                    ztFrame = New clsFrame2(g)
+                ztFrame = New clsFrame2(g)
 
 
 201:
-                    ' In case of a batch conversion, we might rely on a shared .PAL file 
-                    ' usually, this would be objects/restrant/restrant.pal
-                    ' animals/ibex/ibex.pal 
+                ' In case of a batch conversion, we might rely on a shared .PAL file 
+                ' usually, this would be objects/restrant/restrant.pal
+                ' animals/ibex/ibex.pal 
 
-                    ' to make it a bit more simple, and to allow for easier recoloring of baby (working on Red Panda now), 
-                    ' it would be better if the palette is not under animals/redpanda/redpanda.pal but animals/redpanda/m/redpanda.pal
-                    ' this should work for fences etc as well.
+                ' to make it a bit more simple, and to allow for easier recoloring of baby (working on Red Panda now), 
+                ' it would be better if the palette is not under animals/redpanda/redpanda.pal but animals/redpanda/m/redpanda.pal
+                ' this should work for fences etc as well.
 
 202:
 
-                    If cfg_convert_sharedPalette = 1 And blnSingleConversion = False Then
+                If cfg_convert_sharedPalette = 1 And blnSingleConversion = False Then
 
-                        ' 20170513: changed behavior for even more flexibility. 
-                        ' We try to get a shared palette:
-                        ' - in the same folder as the graphic (animals/redpanda/m/walk - walk.pal) - in case this animation uses colors not used anywhere else.
-                        ' - in the folder one level up (animals/redpanda/m - m.pal) - in case a palette is shared for the gender (male, female, young)
-                        ' - in the folder two levels up (animals/redpanda - redpanda.pal) - in case a palette is shared for (most of) the animal
-                        ' This method should also work just fine for objects.
+                    ' 20170513: changed behavior for even more flexibility. 
+                    ' We try to get a shared palette:
+                    ' - in the same folder as the graphic (animals/redpanda/m/walk - walk.pal) - in case this animation uses colors not used anywhere else.
+                    ' - in the folder one level up (animals/redpanda/m - m.pal) - in case a palette is shared for the gender (male, female, young)
+                    ' - in the folder two levels up (animals/redpanda - redpanda.pal) - in case a palette is shared for (most of) the animal
+                    ' This method should also work just fine for objects.
 
-                        Dim sPath0 As String
-                        Dim sPath1 As String
-                        Dim sPath2 As String
+                    Dim sPath0 As String
+                    Dim sPath1 As String
+                    Dim sPath2 As String
 
 
                     sPath0 = Path.GetDirectoryName(strPathDir)
-                        sPath1 = Path.GetDirectoryName(sPath0)
-                        sPath2 = Path.GetDirectoryName(sPath1)
+                    sPath1 = Path.GetDirectoryName(sPath0)
+                    sPath2 = Path.GetDirectoryName(sPath1)
 
-                        sPath0 = sPath0 & "\" & Path.GetFileName(sPath0)
-                        sPath1 = sPath1 & "\" & Path.GetFileName(sPath1)
-                        sPath2 = sPath2 & "\" & Path.GetFileName(sPath2)
-
-
+                    sPath0 = sPath0 & "\" & Path.GetFileName(sPath0)
+                    sPath1 = sPath1 & "\" & Path.GetFileName(sPath1)
+                    sPath2 = sPath2 & "\" & Path.GetFileName(sPath2)
 
 
-                        ' N should not be the only view (icon etc) in this folder.
-                        ' If it does seem to be the only view, we should NOT fall back on higher level.
-                        ' An icon is NOT animated and often contains very different colors (plaque, icon in menu). 
-                        ' An exception to this rule could be the list icon, but it's not worth making an exception for it.
+
+
+                    ' N should not be the only view (icon etc) in this folder.
+                    ' If it does seem to be the only view, we should NOT fall back on higher level.
+                    ' An icon is NOT animated and often contains very different colors (plaque, icon in menu). 
+                    ' An exception to this rule could be the list icon, but it's not worth making an exception for it.
 
                     If Directory.GetFiles(strPathDIr, graphicName & "*.png").Length <> _
                             Directory.GetFiles(strpathdir, "*.png").Length Then
@@ -565,7 +565,7 @@ dBg:
                                                 Case ".png"
                                                     .import_from_PNG(inpath & ext)
                                                     .writePal(.fileName, True)
-                                                    GoTo paletteReady 
+                                                    GoTo paletteReady
                                             End Select
 
                                         End With
@@ -591,12 +591,12 @@ paletteReady:
 
 245:
                 ' Add this frame to our parent graphic's frame collection 
-                g.frames.Add(ztFrame) 
+                g.frames.Add(ztFrame)
 
 
-250: 
-                    ' Create a frame from the .PNG-file
-                ztFrame.loadPNG(s) 
+250:
+                ' Create a frame from the .PNG-file
+                ztFrame.loadPNG(s)
 
             End If
         Next
@@ -624,7 +624,7 @@ paletteReady:
         End If
 
 
-         
+
         Debug.Print("Graphic converted: " & strPath & " (" & graphicName & ") " & Now.ToString("HH:mm:ss"))
 
 9999:
@@ -878,7 +878,7 @@ dBug:
 
 20:
         frmMain.picBox.Image = editorGraphic.frames(intIndexFrameNumber).getImage(True)
-         
+
 
 21:
         ' Frame index 
@@ -900,6 +900,7 @@ dBug:
 
 
     Function bitmap_getCropped(bmInput As Bitmap, rect As Rectangle) As Bitmap
+         
 
 
         Return bmInput.Clone(rect, bmInput.PixelFormat)
@@ -1035,8 +1036,8 @@ dBug:
     Public Function images_Combine(ByVal imgBack As Image, ByVal imgFront As Image) As Image
         'this can now combine images of any size and will center them on each other
 
-        Dim x_max As UShort = Math.Max(imgBack.Width, imgFront.Width)
-        Dim y_max As UShort = Math.Max(imgBack.Height, imgFront.Height)
+        Dim x_max As Integer = Math.Max(imgBack.Width, imgFront.Width)
+        Dim y_max As Integer = Math.Max(imgBack.Height, imgFront.Height)
 
         Dim bmp As New Bitmap(x_max, y_max)
         Dim g As Graphics = Graphics.FromImage(bmp)
@@ -1577,7 +1578,7 @@ dBug:
 
                 Case "/exportoptions.zt1alwaysaddztafbytes" : cfg_export_ZT1_AlwaysAddZTAFBytes = (CByte(argV) = 1)
                 Case "/exportoptions.zt1ani" : cfg_export_ZT1_Ani = (CByte(argV) = 1)
-                     
+
                     ' Conversion options
                 Case "/conversionoptions.deleteoriginal" : cfg_convert_deleteOriginal = (CByte(argV) = 1)
                 Case "/conversionoptions.filenamedelimeter" : cfg_convert_deleteOriginal = argV
@@ -1596,10 +1597,16 @@ dBug:
 
                     ' These are actions. 
                     ' An action can be an automated process doing lots of stuff (e.g. convertfolder)
-                Case "/action.convertfolder"
-                    strArgAction = "convertfolder"
+                Case "/action.convertfolder.topng"
+                    strArgAction = "convertfolder.topng"
                     strArgActionValue = argV
-                Case "/action.convertfile"
+                Case "/action.convertfolder.tozt1"
+                    strArgAction = "convertfolder.tozt1"
+                    strArgActionValue = argV
+                Case "/action.convertfile.topng"
+                    strArgAction = "convertfile.topng"
+                    strArgActionValue = argV
+                Case "/action.convertfile.tozt1"
                     strArgAction = "convertfile"
                     strArgActionValue = argV
 
@@ -1622,18 +1629,34 @@ dBug:
         ' Eg if they say  ZTStudio.exe /convertFolder:<path> /ZTAF:1 instead of /ZTAF:1 /convertFolder:<path>, they might not get the right result.
         Select Case vbNullString
 
-            Case "convertfile"
+            Case "convertfile.topng"
+                ' Do conversion.
+                ' Then exit.
+                clsTasks.convert_file_ZT1_to_PNG(strArgActionValue)
+
+                End
+            Case "convertfile.tozt1"
                 ' Do conversion.
                 ' Then exit.
                 clsTasks.convert_file_PNG_to_ZT1(strArgActionValue)
 
                 End
+                
+            Case "convertfolder.topng"
 
-            Case "convertfolder"
+                ' Do conversion.
+                ' Then exit.
+                clsTasks.convert_folder_ZT1_to_PNG(strArgActionValue)
+
+                End
+
+            Case "convertfolder.tozt1"
 
                 ' Do conversion.
                 ' Then exit.
                 clsTasks.convert_folder_PNG_to_ZT1(strArgActionValue)
+
+                End
 
 
             Case Else
@@ -1659,6 +1682,22 @@ dBug:
             End
         End If
 
+
+    End Function
+
+
+    Function ztStudio_TestMainFeatures() As Byte
+
+        ' To be implemented. 
+        ' This function is meant to check if our (main) functions still give the results we expect. 
+        ' We can do this most efficiently of we go for a batch conversion ( ZT1 <=> PNG or reversed ) and check hashes of the files.
+        ' Other things to check, might include modifications to the color palette.
+
+        ' The idea is to add this check once the Red Panda gets released at Zoo Tek Phoenix.
+
+
+
+        Return 0
 
     End Function
 

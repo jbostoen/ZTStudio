@@ -28,6 +28,11 @@ Module clsTasks
 10:
         Dim sFile As String = System.IO.Path.GetFullPath(Application.StartupPath) & "\settings.cfg"
 
+        If File.Exists(sFile) = False Then
+            If MsgBox("ZT Studio is missing the settings.cfg file.", vbOKOnly + vbCritical + vbOK) = vbOK Then
+                End
+            End If
+        End If
         'On Error Resume Next
 
 
@@ -120,7 +125,7 @@ Module clsTasks
 
         ' Only now should we create our objects.
 
-        editorgraphic = New clsGraphic2         ' The clsGraphic2 object we use.
+        editorGraphic = New clsGraphic2         ' The clsGraphic2 object we use.
         editorBgGraphic = New clsGraphic2       ' The background graphic, e.g. toy
 
 
@@ -901,6 +906,7 @@ dBug:
 
     Function bitmap_getCropped(bmInput As Bitmap, rect As Rectangle) As Bitmap
          
+        Debug.Print("w,h=" & bmInput.Width & "," & bmInput.Height)
 
 
         Return bmInput.Clone(rect, bmInput.PixelFormat)
@@ -909,6 +915,9 @@ dBug:
     End Function
 
     Function bitmap_getDefiningRectangle(bmInput As Bitmap) As Rectangle
+
+        On Error GoTo dBug
+
 
         ' Todo: this must be easier to go through. 
         ' It doesn't make sense to search through all pixels from left to right, top to bottom. 
@@ -984,9 +993,11 @@ dBug:
 
         End While
 
-        'MsgBox("w,h=" & coordA.X & "," & coordA.Y & " --- " & coordB.X & "," & coordB.Y)
-        'then crop away stuff from right
-        'but only the area we have not yet processed
+
+200:
+          ' MsgBox("w,h=" & coordA.X & "," & coordA.Y & " --- " & coordB.X & "," & coordB.Y)
+        ' then crop away stuff from right
+        ' but only the area we have not yet processed
         coordY = coordA.Y
         ' Top to bottom
         While coordY <= (coordB.Y)
@@ -1012,24 +1023,32 @@ dBug:
 
         End While
 
+901:
         'MsgBox("w,h=" & coordA.X & "," & coordA.Y & " --- " & coordB.X & "," & coordB.Y)
         ' enabled for cropping of frames, 20150619
         coordB.X += 1
         coordB.Y += 1
 
 
+999:
         ' 20170512 
         ' HENDRIX found out that transparent frames can cause issues.
         ' This is a more simple fix, since it seems this is valid in ZT1 after all?
         If coordA.X = bmInput.Width And coordA.Y = bmInput.Height Then
-            coordA = New Point(1, 1)
-            coordB = New Point(2, 2)
+            coordA = New Point(0, 0)
+            coordB = New Point(1, 1)
         End If
 
-        'MsgBox("w,h=" & coordA.X & "," & coordA.Y & " --- " & coordB.X & "," & coordB.Y)
+        'Debug.Print("x1,y1=" & coordA.X & "," & coordA.Y & " --- x2,y2 " & coordB.X & "," & coordB.Y)
         Return New Rectangle(coordA.X, coordA.Y, coordB.X - coordA.X, coordB.Y - coordA.Y)
 
 
+        Exit Function
+
+dBug:
+        MsgBox("Error while obtaining the 'defining rectangle' of this graphic." & vbCrLf & _
+            "Erl " & Erl() & " - " & Err.Number & " - " & Err.Description, _
+            vbOKOnly + vbCritical, "Critical error")
 
     End Function
 

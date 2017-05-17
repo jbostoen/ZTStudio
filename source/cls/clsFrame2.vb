@@ -773,12 +773,16 @@ dBug:
         Me.offsetX = Math.Ceiling(bmpDraw.Width / 2) + 1
         Me.offsetY = Math.Ceiling(bmpDraw.Height / 2) + 1
 
+21:
 
         'Debug.Print("Normally our offsets are: " & Me.offsetX & " - " & Me.offsetY & " / w=" & bmpDraw.Width & ", h=" & bmpDraw.Height)
 
         Dim rectCrop As Rectangle = clsTasks.bitmap_getDefiningRectangle(bmpDraw)
+
+22:
         Dim bmpCropped As Bitmap = clsTasks.bitmap_getCropped(bmpDraw, rectCrop)
 
+23:
         ' Improvement by cropping!
         Me.offsetX -= rectCrop.X
         Me.offsetY -= rectCrop.Y

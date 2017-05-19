@@ -799,9 +799,9 @@ dBug:
         End If
 
 30:
-        ' ZT Studio will crop the image at a later point.
-        ' For now, we do it like this, so the image is aligned in an optimal way.
-        Me.getHexFromBitmap(bmpCropped)
+        ' ZT Studio has cropped the image.
+        ' Let's generate hex.
+        Me.bitmap_to_hex(bmpCropped)
 
 
         'Debug.Print(Strings.Join(Me.coreImageHex.ToArray(), " "))
@@ -828,17 +828,17 @@ dBug:
 
     End Function
 
-    Public Function getHexFromBitmap(Optional bmImage As Bitmap = Nothing) As List(Of String)
+    Public Function bitmap_to_hex(Optional bmImage As Bitmap = Nothing) As List(Of String)
 
         On Error GoTo dBug
 
 
-        ' This function takes an optional bitmap or falls back to .coreImageBitmap.
+        ' This function takes an optional bitmap or falls back to what is set in .coreImageBitmap.
         ' It generates the hex code for this image.
 
         ' Important note: 
         ' Our offsets should have been set already. 
-        ' They should NOT be changed in getHexFromBitmap(), since they might overwrite/change updated offsets!
+        ' They should NOT be changed in bitmap_to_hex(), since they might overwrite/change updated offsets!
 1:
         Dim generatedHex As New List(Of String)
 
@@ -861,10 +861,15 @@ dBug:
 
             ' APE / Zoot: top left color = transparent.
             ' Only if no colors are known in our palette, we rely on that method.
-            ' Reason: it works differently in batch conversions.
+            ' Reason: it works differently in batch conversions. 
+            ' 20170519: this might not work properly for (cropped) plaques!
             If Me.parent.colorPalette.colors.Count = 0 Then
                 Me.parent.colorPalette.colors.Add(bmImage.GetPixel(0, 0))
             End If
+
+            ' 20170519. Store bmImage. After all, we'll be storing our hex as well.
+            Me.coreImageBitmap = bmImage
+
 
         End If
 
@@ -1076,7 +1081,7 @@ dBug:
 
 9502:
         ' Reset. Should be regenerated from our hex.
-        Me.coreImageBitmap = Nothing
+        ' Me.coreImageBitmap = Nothing - 20170519 - what was the point again in doing this?
         Me.coreImageHex = generatedHex
 
 

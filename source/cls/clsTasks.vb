@@ -1327,7 +1327,7 @@ dBug:
         ' Update coreImageHex for each frame. Color indexes have changed.
         For Each ztFrame As clsFrame2 In editorGraphic.frames
             ztFrame.coreImageHex = Nothing
-            ztFrame.getHexFromBitmap()
+            ztFrame.bitmap_to_hex() ' 20170519 - is it necessary to update this already? It could be generated when called.
         Next
 
 
@@ -1544,6 +1544,10 @@ dBug:
     Function ztStudio_StartUp() As Byte
 
         On Error GoTo dBug
+
+         
+
+
 
 10:
 

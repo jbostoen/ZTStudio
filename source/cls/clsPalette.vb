@@ -180,14 +180,15 @@ Public Class clsPalette
             Me.colors.Add(System.Drawing.Color.FromArgb(0, cfg_grid_BackGroundColor), False)
         End If
 
-        If Me.colors.Contains(c) = True Then
+        ' Store so we don't need to call both .contains() and .lastindexof()
+        Dim intColorIndex As Integer = Me.colors.LastIndexOf(c)
+
+        If intColorIndex >= 0 Then
 
             ' Color has been found, return the index
             ' restrant.pal has a color listed twice.
             ' it seems to rely on the last index.
-            Return Me.colors.LastIndexOf(c)
-
-
+            Return intColorIndex 
 
         ElseIf c.A = 0 Then
 
@@ -236,29 +237,29 @@ Public Class clsPalette
                     End If
                 End If
 
-                    ' Color quantization method by HENDRIX 
-                    'now checking in HSV space to find the closest color in the full palette - pretty good!'
-                    Dim h1 As Single
-                    Dim s1 As Single
-                    Dim v1 As Single
-                    Dim h2 As Single
-                    Dim s2 As Single
-                    Dim v2 As Single
-                    Dim dists As New List(Of Short)
-                    h1 = c.GetHue()
-                    s1 = c.GetSaturation()
-                    v1 = c.GetBrightness()
-                    For Each col As System.Drawing.Color In Me.colors
-                        h2 = h1 - col.GetHue()
-                        s2 = s1 - col.GetSaturation()
-                        v2 = v1 - col.GetBrightness()
-                        'in HSV we can use simple euclidean distance and it is reasonably good
-                        dists.Add(Math.Sqrt(h2 * h2 + s2 * s2 + v2 * v2))
-                    Next
-                    'see at which index in the existing color palette the least distance occured
-                    Return dists.LastIndexOf(dists.Min())
+                ' Color quantization method by HENDRIX 
+                'now checking in HSV space to find the closest color in the full palette - pretty good!'
+                Dim h1 As Single
+                Dim s1 As Single
+                Dim v1 As Single
+                Dim h2 As Single
+                Dim s2 As Single
+                Dim v2 As Single
+                Dim dists As New List(Of Short)
+                h1 = c.GetHue()
+                s1 = c.GetSaturation()
+                v1 = c.GetBrightness()
+                For Each col As System.Drawing.Color In Me.colors
+                    h2 = h1 - col.GetHue()
+                    s2 = s1 - col.GetSaturation()
+                    v2 = v1 - col.GetBrightness()
+                    'in HSV we can use simple euclidean distance and it is reasonably good
+                    dists.Add(Math.Sqrt(h2 * h2 + s2 * s2 + v2 * v2))
+                Next
+                'see at which index in the existing color palette the least distance occured
+                Return dists.LastIndexOf(dists.Min())
 
- 
+
 
             End If
 

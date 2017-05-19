@@ -2,8 +2,7 @@
 * https://github.com/jbostoen/ZTStudio/releases
 * Each release (latest on top) offers the program + source code. Choose to download the .ZIP-file.
 * Download and unzip to your PC
-* Look for the folder ZTStudio-master/source/bin/Debug .
-* There you find ZTStudio.exe, which you can simply run.
+* Run "Start ZT Studio.bat"
 
 You do need one of the following .NET Frameworks : 4.5 , 4.6 or 4.7 .
 In Windows 10, this is usually installed by default. No action needed.

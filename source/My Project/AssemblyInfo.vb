@@ -12,7 +12,7 @@ Imports System.Runtime.InteropServices
 <Assembly: AssemblyDescription("A tool to view and edit Zoo Tycoon graphics.")> 
 <Assembly: AssemblyCompany("")> 
 <Assembly: AssemblyProduct("ZT Studio")> 
-<Assembly: AssemblyCopyright("Copyright ©  2015")> 
+<Assembly: AssemblyCopyright("Copyright © since 2015")> 
 <Assembly: AssemblyTrademark("")> 
 
 <Assembly: ComVisible(False)>
@@ -31,5 +31,5 @@ Imports System.Runtime.InteropServices
 ' by using the '*' as shown below:
 ' <Assembly: AssemblyVersion("1.0.*")> 
 
-<Assembly: AssemblyVersion("1.0.2017.0512")> 
-<Assembly: AssemblyFileVersion("1.0.2017.0512")> 
+<Assembly: AssemblyVersion("1.0.2017.0602")> 
+<Assembly: AssemblyFileVersion("1.0.2017.0602")> 

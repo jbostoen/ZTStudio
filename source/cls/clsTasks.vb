@@ -2,6 +2,8 @@
 
 
 Imports System.IO
+Imports System.Drawing.Imaging
+Imports System.Runtime.InteropServices
 
 ' This module just combines a few of the functions we've created.
 
@@ -168,7 +170,7 @@ dBug:
         iniWrite(sFile, "exportOptions", "pngCrop", cfg_export_PNG_CanvasSize.ToString())
         iniWrite(sFile, "exportOptions", "pngRenderExtraFrame", cfg_export_PNG_RenderBGFrame.ToString())
         iniWrite(sFile, "exportOptions", "pngRenderExtraGraphic", cfg_export_PNG_RenderBGZT1.ToString())
-        iniWrite(sFile, "exportOptions", "pngRenderTransparentBG", cfg_export_PNG_transparentBG.ToString())
+        iniWrite(sFile, "exportOptions", "pngRenderTransparentBG", cfg_export_PNG_TransparentBG.ToString())
 
         ' Export ZT1 (entire graphic)
         iniWrite(sFile, "exportOptions", "zt1Ani", cfg_export_ZT1_Ani.ToString())
@@ -528,8 +530,8 @@ dBg:
                     ' An icon is NOT animated and often contains very different colors (plaque, icon in menu). 
                     ' An exception to this rule could be the list icon, but it's not worth making an exception for it.
 
-                    If Directory.GetFiles(strPathDIr, graphicName & "*.png").Length <> _
-                            Directory.GetFiles(strpathdir, "*.png").Length Then
+                    If Directory.GetFiles(strPathDir, graphicName & "*.png").Length <> _
+                            Directory.GetFiles(strPathDir, "*.png").Length Then
 
 
                         ' 20170502 Optimized by Hendrix.
@@ -623,7 +625,7 @@ paletteReady:
             ' Only 1 graphic file is being generated. This is the case for icons, for example.
             ' A .ani-file can be generated automatically.       
             ' [folder path] + \ + [folder name] + .ani
-            Dim cAni As New clsAniFile(strpathdir & "\" & Path.GetFileName(strpathdir) & ".ani")
+            Dim cAni As New clsAniFile(strPathDir & "\" & Path.GetFileName(strPathDir) & ".ani")
             cAni.createAniConfig()
 
         End If
@@ -896,7 +898,7 @@ dBug:
         editorFrame = editorGraphic.frames(intIndexFrameNumber)
 
 35:
-        clsTasks.update_Info("Preview updated.")
+        clsTasks.update_info("Preview updated.")
         'Debug.Print("# Preview updated, now showing frame " & intIndexFrameNumber & ". Default: " & (frmMain.tbFrames.Value - 1))
 
 
@@ -905,16 +907,176 @@ dBug:
 
 
     Function bitmap_getCropped(bmInput As Bitmap, rect As Rectangle) As Bitmap
-         
+
         Debug.Print("w,h=" & bmInput.Width & "," & bmInput.Height)
 
 
         Return bmInput.Clone(rect, bmInput.PixelFormat)
 
 
+
+
     End Function
 
+     
     Function bitmap_getDefiningRectangle(bmInput As Bitmap) As Rectangle
+
+        On Error GoTo dBug
+
+
+        ' Todo: this must be easier to go through. 
+        ' It doesn't make sense to search through all pixels from left to right, top to bottom. 
+
+101:
+        ' Find most left
+        ' Find most top
+        ' Find most right
+        ' Find most bottom
+
+        Dim coordX As Integer = 0
+        Dim coordY As Integer = 0
+
+        Dim coordA As New Point(bmInput.Width, bmInput.Height)
+        Dim coordB As New Point(0, 0)
+        Dim curColor As System.Drawing.Color
+        Dim curTransparentColor As System.Drawing.Color = bmInput.GetPixel(0, 0)
+         
+        ' Optimized by HENDRIX
+        ' I like the new rectangle code, seems to be a good speedup!
+
+        ' However, I think  "If coordX >= coordA.X And coordX < coordB.X Then" can never be true. It works for Y. If we split it into
+        ' two loops, we can make use Of that condition. First Loop As it Is, getting left, top and bottom.
+        ' Second loop would swap While coordX and While coordY from the first loop, and only check the area that the other loop had not
+        ' covered to get the right coord.
+
+        ' I had this idea before reading through your new code:
+        ' how about we split the while loops into four ones And break out of each as soon as we find a non-transparent pixel?
+        ' go over each line from the top -> get coordA.Y
+        ' go over each column from the left -> get coordA.X
+        ' go over each line from the bottom -> get coordB.Y
+        ' go over each column from the right -> get coordB.X
+        ' that would speed things up in cases where there is relatively little padding on each side, but a large defining rectangle
+
+        ' My new idea is a hybrid of that and your new code, and it runs a tiny bit faster and produces better results
+
+102:
+
+
+        Const px As System.Drawing.GraphicsUnit = GraphicsUnit.Pixel
+        Const fmtArgb As Imaging.PixelFormat = Imaging.PixelFormat.Format32bppArgb
+        Dim boundsF As RectangleF = bmInput.GetBounds(px)
+        Dim bounds As New Rectangle
+        bounds.Location = New Point(CInt(boundsF.X), CInt(boundsF.Y))
+        bounds.Size = New Size(CInt(boundsF.Width), CInt(boundsF.Height))
+        Dim bmClone As Bitmap = bmInput.Clone(bounds, fmtArgb)
+        Dim bmData As System.Drawing.Imaging.BitmapData = bmClone.LockBits(bounds, Imaging.ImageLockMode.ReadWrite, bmClone.PixelFormat)
+        Dim offsetToFirstPixel As IntPtr = bmData.Scan0
+        Dim byteCount As Integer = Math.Abs(bmData.Stride) * bmClone.Height
+        Dim bitmapBytes(byteCount - 1) As Byte
+        System.Runtime.InteropServices.Marshal.Copy(offsetToFirstPixel, bitmapBytes, 0, byteCount)
+
+110:
+        ' rectangle = bounds ?
+        Dim StartOffset As Integer = (0 * bmData.Stride)
+        Dim EndOffset As Integer = StartOffset + ((bmInput.Height) * bmData.Stride) - 1
+        Dim RectLeftOffset As Integer = (0 * 4)
+        Dim RectRightOffset As Integer = (0 + (bmInput.Width) * 4) - 1
+        Dim X As Integer = 0
+        Dim y As Integer = 0
+
+
+
+        Debug.Print("from " & StartOffset & " to " & EndOffset & " (total bytes: " & bitmapBytes.Length & ")")
+        Debug.Print("offset left from " & RectLeftOffset & " to " & RectRightOffset)
+
+
+        Dim pixelLocation As Point 
+
+
+
+251:
+        For FirstOffsetInEachLine As Integer = StartOffset To EndOffset Step bmData.Stride
+            X = 0
+            For PixelOffset As Integer = RectLeftOffset To RectRightOffset Step 4
+                pixelLocation = New Point(X, y)
+                'bitmapBytes(FirstOffsetInEachLine + PixelOffset) = FillColor.B
+                'bitmapBytes(FirstOffsetInEachLine + PixelOffset + 1) = FillColor.G
+                'bitmapBytes(FirstOffsetInEachLine + PixelOffset + 2) = FillColor.R
+                'bitmapBytes(FirstOffsetInEachLine + PixelOffset + 3) = FillColor.A
+
+                'If X > 510 And y > 510 Then
+                '    Debug.Print(bitmapBytes(FirstOffsetInEachLine + PixelOffset + 3))
+                'End If
+
+                ' Non-transparent
+                If bitmapBytes(FirstOffsetInEachLine + PixelOffset + 3) = 255 And _
+                    bitmapBytes(FirstOffsetInEachLine + PixelOffset) <> curTransparentColor.B And _
+                    bitmapBytes(FirstOffsetInEachLine + PixelOffset + 1) <> curTransparentColor.G And _
+                    bitmapBytes(FirstOffsetInEachLine + PixelOffset + 2) <> curTransparentColor.R Then
+
+                    ' We found a non transparent color
+                    If X < coordA.X Then coordA.X = X ' Topleft: move to left
+                    If y < coordA.Y Then coordA.Y = y ' Topleft: move to top
+
+                    If y > coordB.Y Then coordB.Y = y ' Bottomright: move to bottom 
+                    If X > coordB.X Then coordB.X = X ' Bottomright: move to right
+
+
+                End If
+
+
+                X += 1
+            Next
+            y += 1
+        Next
+
+        'Debug.Print("Last read pixel x=" & X & ",y=" & y)
+        'Debug.Print(coordA.ToString() & " --- " & coordB.ToString())
+
+
+        ' Unlock
+        System.Runtime.InteropServices.Marshal.Copy(bitmapBytes, 0, offsetToFirstPixel, byteCount)
+        bmClone.UnlockBits(bmData)
+
+         
+
+
+901:
+        'MsgBox("w,h=" & coordA.X & "," & coordA.Y & " --- " & coordB.X & "," & coordB.Y)
+        ' enabled for cropping of frames, 20150619
+        coordB.X += 1
+        coordB.Y += 1
+         
+
+999:
+        ' 20170512 
+        ' HENDRIX found out that transparent frames can cause issues.
+        ' This is a more simple fix, since it seems this is valid in ZT1 after all?
+        If coordA.X = bmInput.Width And coordA.Y = bmInput.Height Then
+            coordA = New Point(0, 0)
+            coordB = New Point(1, 1)
+        End If
+
+         
+
+        ' Test comparison
+        'Debug.Print("New defining x1,y1=" & coordA.X & "," & coordA.Y & " --- x2,y2 " & coordB.X & "," & coordB.Y)
+        'Dim rectOld = bitmap_getDefiningRectangle_old(bmInput)
+        'Debug.Print("Old defining x1,y1=" & rectOld.X & "," & rectOld.Y & " --- x2,y2 " & rectOld.Width + rectOld.X & "," & rectOld.Height + rectOld.Y)
+
+        Return New Rectangle(coordA.X, coordA.Y, coordB.X - coordA.X, coordB.Y - coordA.Y)
+
+
+        Exit Function
+
+dBug:
+        MsgBox("Error while obtaining the 'defining rectangle' of this graphic." & vbCrLf & _
+            "Erl " & Erl() & " - " & Err.Number & " - " & Err.Description & vbCrLf & _
+            "Last processed: " & pixellocation.x & " - " & pixellocation.y, _
+            vbOKOnly + vbCritical, "Critical error")
+
+    End Function
+    Function bitmap_getDefiningRectangle_old(bmInput As Bitmap) As Rectangle
 
         On Error GoTo dBug
 
@@ -995,7 +1157,7 @@ dBug:
 
 
 200:
-          ' MsgBox("w,h=" & coordA.X & "," & coordA.Y & " --- " & coordB.X & "," & coordB.Y)
+        ' MsgBox("w,h=" & coordA.X & "," & coordA.Y & " --- " & coordB.X & "," & coordB.Y)
         ' then crop away stuff from right
         ' but only the area we have not yet processed
         coordY = coordA.Y
@@ -1545,7 +1707,7 @@ dBug:
 
         On Error GoTo dBug
 
-         
+
 
 
 
@@ -1664,7 +1826,7 @@ dBug:
                 clsTasks.convert_file_PNG_to_ZT1(strArgActionValue)
 
                 End
-                
+
             Case "convertfolder.topng"
 
                 ' Do conversion.

@@ -248,6 +248,9 @@ dBug:
 
                     Else
 
+                        ' Reset any previous info.
+                        editorGraphic = New clsGraphic2
+
                         ' OK
                         editorGraphic.read(dlgOpen.FileName)
 
@@ -277,8 +280,7 @@ dBug:
                 End If
 
                 ' Remember
-                cfg_path_recentZT1 = System.IO.Path.GetFullPath(dlgOpen.FileName)
-
+                cfg_path_recentZT1 = System.IO.Path.GetFullPath(dlgOpen.FileName) 
                 clsTasks.config_write()
 
                 ' What has been opened, might need to be saved.
@@ -474,6 +476,9 @@ dBug:
                         ' Show default palette
                         'editorBgGraphic.colorPalette.fillPaletteGrid(dgvPaletteMain)
 
+                        ' Remember
+                        cfg_path_recentZT1 = System.IO.Path.GetFullPath(dlgOpen.FileName)
+                        clsTasks.config_write()
 
                     End If
                 Else

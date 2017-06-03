@@ -63,6 +63,9 @@
   <PropertyGroup>
     <ApplicationIcon>Zebra.ico</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>My Project\app.manifest</ApplicationManifest>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -97,8 +100,8 @@
     <Compile Include="cls\clsString.vb" />
     <Compile Include="cls\clsTasks.vb" />
     <Compile Include="cls\clsPalette.vb" />
-    <Compile Include="cls\mdlBitmapManipulation.vb" />
     <Compile Include="cls\mdlSettings.vb" />
+    <Compile Include="cls\mdlTests.vb" />
     <Compile Include="forms\frmBatchConversion.Designer.vb">
       <DependentUpon>frmBatchConversion.vb</DependentUpon>
     </Compile>
@@ -171,6 +174,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="My Project\app.manifest" />
     <None Include="My Project\Application.myapp">
       <Generator>MyApplicationCodeGenerator</Generator>
       <LastGenOutput>Application.Designer.vb</LastGenOutput>

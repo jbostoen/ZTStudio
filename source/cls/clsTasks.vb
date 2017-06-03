@@ -923,9 +923,9 @@ dBug:
 
         On Error GoTo dBug
 
-
-        ' Todo: this must be easier to go through. 
-        ' It doesn't make sense to search through all pixels from left to right, top to bottom. 
+        ' This new method using LockBits is much faster than a previous version where we were using GetPixel. 
+        ' This is a big performance boost when loading 512x512 (canvas size) images.
+        ' For now, the old function still exists to make sure we have a comparison if regressions are detected.
 
 101:
         ' Find most left
@@ -941,23 +941,6 @@ dBug:
         Dim curColor As System.Drawing.Color
         Dim curTransparentColor As System.Drawing.Color = bmInput.GetPixel(0, 0)
          
-        ' Optimized by HENDRIX
-        ' I like the new rectangle code, seems to be a good speedup!
-
-        ' However, I think  "If coordX >= coordA.X And coordX < coordB.X Then" can never be true. It works for Y. If we split it into
-        ' two loops, we can make use Of that condition. First Loop As it Is, getting left, top and bottom.
-        ' Second loop would swap While coordX and While coordY from the first loop, and only check the area that the other loop had not
-        ' covered to get the right coord.
-
-        ' I had this idea before reading through your new code:
-        ' how about we split the while loops into four ones And break out of each as soon as we find a non-transparent pixel?
-        ' go over each line from the top -> get coordA.Y
-        ' go over each column from the left -> get coordA.X
-        ' go over each line from the bottom -> get coordB.Y
-        ' go over each column from the right -> get coordB.X
-        ' that would speed things up in cases where there is relatively little padding on each side, but a large defining rectangle
-
-        ' My new idea is a hybrid of that and your new code, and it runs a tiny bit faster and produces better results
 
 102:
 

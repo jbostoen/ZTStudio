@@ -832,7 +832,9 @@ dBug:
 
             'Debug.Print("Convert file PNG to ZT1: " & f)
             clsTasks.convert_file_PNG_to_ZT1(f, False)
-            PB.Value += 1
+            If IsNothing(PB) = False Then
+                PB.Value += 1
+            End If
 
             Application.DoEvents()
 
@@ -1795,7 +1797,7 @@ dBug:
         ' See which action was specified. 
         ' We do this now because users might quickly change the order of arguments. 
         ' Eg if they say  ZTStudio.exe /convertFolder:<path> /ZTAF:1 instead of /ZTAF:1 /convertFolder:<path>, they might not get the right result.
-        Select Case vbNullString
+        Select Case strArgAction
 
             Case "convertfile.topng"
                 ' Do conversion.

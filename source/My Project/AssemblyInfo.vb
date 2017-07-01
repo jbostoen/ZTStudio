@@ -8,7 +8,7 @@ Imports System.Runtime.InteropServices
 
 ' Review the values of the assembly attributes
 
-<Assembly: AssemblyTitle("ZT Studio")> 
+<Assembly: AssemblyTitle("0701")> 
 <Assembly: AssemblyDescription("A tool to view and edit Zoo Tycoon graphics.")> 
 <Assembly: AssemblyCompany("")> 
 <Assembly: AssemblyProduct("ZT Studio")> 
@@ -31,5 +31,5 @@ Imports System.Runtime.InteropServices
 ' by using the '*' as shown below:
 ' <Assembly: AssemblyVersion("1.0.*")> 
 
-<Assembly: AssemblyVersion("1.0.2017.0603")> 
-<Assembly: AssemblyFileVersion("1.0.2017.0603")> 
+<Assembly: AssemblyVersion("1.0.2017.0701")> 
+<Assembly: AssemblyFileVersion("1.0.2017.0701")> 

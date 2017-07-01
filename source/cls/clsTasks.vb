@@ -920,7 +920,7 @@ dBug:
 
     End Function
 
-     
+
     Function bitmap_getDefiningRectangle(bmInput As Bitmap) As Rectangle
 
         On Error GoTo dBug
@@ -942,7 +942,7 @@ dBug:
         Dim coordB As New Point(0, 0)
         Dim curColor As System.Drawing.Color
         Dim curTransparentColor As System.Drawing.Color = bmInput.GetPixel(0, 0)
-         
+
 
 102:
 
@@ -975,7 +975,7 @@ dBug:
         Debug.Print("offset left from " & RectLeftOffset & " to " & RectRightOffset)
 
 
-        Dim pixelLocation As Point 
+        Dim pixelLocation As Point
 
 
 
@@ -1023,7 +1023,7 @@ dBug:
         System.Runtime.InteropServices.Marshal.Copy(bitmapBytes, 0, offsetToFirstPixel, byteCount)
         bmClone.UnlockBits(bmData)
 
-         
+
 
 
 901:
@@ -1031,7 +1031,7 @@ dBug:
         ' enabled for cropping of frames, 20150619
         coordB.X += 1
         coordB.Y += 1
-         
+
 
 999:
         ' 20170512 
@@ -1042,7 +1042,7 @@ dBug:
             coordB = New Point(1, 1)
         End If
 
-         
+
 
         ' Test comparison
         'Debug.Print("New defining x1,y1=" & coordA.X & "," & coordA.Y & " --- x2,y2 " & coordB.X & "," & coordB.Y)

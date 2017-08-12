@@ -81,6 +81,8 @@ Module clsTasks
         cfg_frame_defaultAnimSpeed = CInt(iniRead(sFile, "editing", "animationSpeed", ""))
 
 70:
+        ' Palette
+        cfg_palette_import_png_force_add_colors = CByte(iniRead(sFile, "palette", "importPNGforceAddColors", ""))
 
 
 100:
@@ -129,7 +131,7 @@ Module clsTasks
 
         editorGraphic = New clsGraphic2         ' The clsGraphic2 object we use.
         editorBgGraphic = New clsGraphic2       ' The background graphic, e.g. toy
-
+         
 
 
 
@@ -186,6 +188,9 @@ dBug:
         ' Frame editing
         iniWrite(sFile, "editing", "individualRotationFix", cfg_editor_rotFix_individualFrame.ToString())
         iniWrite(sFile, "editing", "animationSpeed", cfg_frame_defaultAnimSpeed.ToString())
+
+        ' Palette
+        iniWrite(sFile, "palette", "importPNGforceAddColors", cfg_palette_import_png_force_add_colors.ToString())
 
 
         Return 0

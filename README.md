@@ -17,10 +17,13 @@ Please credit:
 - Vondell for providing demo/test graphics
 - HENDRIX for some contributions to the source code
 
-Pull Requests are welcome, although I'm not actively working on this tool anymore. 
+Pull Requests and bug reports are welcome, although I'm not actively working on this tool anymore. 
 When forking or using code or ideas explained in the documentation: please publish the complete code of your project too.
 
 **More information**
 
 See our Wiki pages on GitHub.
+They also contain a few power tips and how-to's. 
+
+
 

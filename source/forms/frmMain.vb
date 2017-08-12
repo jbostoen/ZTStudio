@@ -999,15 +999,15 @@ dBug:
 
             If .ShowDialog() <> Windows.Forms.DialogResult.Cancel Then
 
-                ' Replace palette file (should trigger a re-draw)
+                ' Replace palette file (should trigger a re-draw AFTERWARDS )
                 ' Forcefully add colors (some might be the same, after a recolor)
-                editorGraphic.colorPalette.import_from_PNG(dlgOpen.FileName, False)
+                editorGraphic.colorPalette.import_from_PNG(dlgOpen.FileName)
 
                 ' Update color list on the right
                 editorGraphic.colorPalette.fillPaletteGrid(dgvPaletteMain)
 
 
-
+                ' Now after the color palette has been replaced, our preview must be updated
                 clsTasks.update_preview()
 
             End If ' cancel check

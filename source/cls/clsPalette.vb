@@ -440,7 +440,7 @@ dBug:
     End Function
 
 
-    Function import_from_PNG(sFileName As String, Optional blnForceAddColor As Boolean = False) As Integer
+    Function import_from_PNG(sFileName As String) As Integer
 
         ' This is for a feature where we first exported a color palette, by writing all known colors in a single image.
         ' The idea is that the .PNG can easily be recolored with a 3rd party program (eg GIMP)
@@ -464,10 +464,12 @@ dBug:
             While intX < bmp.Width
 
                 ' Do not add duplicate colors, e.g. transparent stuff etc; UNLESS it's forced.
-                ' Use case: After recoloring, some colors are suddenly identical. 
-                ' Why does it make sense to force the color to be added anyway? 
+                ' Use case: After recoloring, some colors are suddenly identical (especially after they're made brighter or darker). 
+                ' We have to add duplicate colors in that case, because we re-generate the preview from the hex values. 
+                ' The hex values still reference the original indexes of their colors. So changes there would screw things up and raise errors.
+
                 ' Because if a user is replacing an existing palette, the indexes to the colors might not have been changed in the actual graphic.
-                If Me.colors.IndexOf(bmp.GetPixel(intX, intY)) < 0 Or blnForceAddColor = True Then
+                If Me.colors.IndexOf(bmp.GetPixel(intX, intY)) < 0 Or cfg_palette_import_png_force_add_colors = 1 Then
                     Me.colors.Add(bmp.GetPixel(intX, intY), False)
                 End If
 

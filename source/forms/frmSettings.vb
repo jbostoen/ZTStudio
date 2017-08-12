@@ -53,6 +53,8 @@ Public Class frmSettings
         chkEditor_Frame_Offsets_SingleFrame.Checked = (cfg_editor_rotFix_individualFrame = 1)
         numFrameAnimSpeed.Value = cfg_frame_defaultAnimSpeed
 
+        ' Palette
+        chkPalImportPNGForceAddAll.Checked = (cfg_palette_import_png_force_add_colors = 1)
 
 
     End Sub
@@ -239,6 +241,22 @@ Public Class frmSettings
     End Sub
 
     Private Sub numFrameAnimSpeed_VisibleChanged(sender As Object, e As EventArgs) Handles numFrameAnimSpeed.VisibleChanged
+
+    End Sub
+
+    Private Sub cboPNGExport_Crop_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cboPNGExport_Crop.SelectedIndexChanged
+
+    End Sub
+
+    Private Sub TabPage1_Click(sender As Object, e As EventArgs) Handles tpPalette.Click
+
+
+    End Sub
+
+    Private Sub chkPalImportPNGForceAddAll_CheckedChanged(sender As Object, e As EventArgs) Handles chkPalImportPNGForceAddAll.CheckedChanged
+
+        If chkPalImportPNGForceAddAll.IsHandleCreated = False Then Exit Sub
+        cfg_palette_import_png_force_add_colors = CByte(CInt(chkPalImportPNGForceAddAll.Checked) * -1)
 
     End Sub
 End Class

@@ -62,6 +62,7 @@ Module mdlSettings
 
     ' Palette
     Public cfg_palette_quantization As Byte = 0 ' Set to 1 to allow quantization
+    Public cfg_palette_import_png_force_add_colors As Byte = 0 ' Set to 1 to force duplicate colors to be processed (recommended after recolors - some colors, especially when making things brighter or darker, may end up the same.)
 
 
     ' Grid

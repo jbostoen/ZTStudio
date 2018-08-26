@@ -717,7 +717,9 @@ dBg:
         For Each f As String In result
             Debug.Print(f)
             clsTasks.convert_file_ZT1_to_PNG(f)
-            PB.Value += 1
+            If IsNothing(PB) = False Then
+                PB.Value += 1
+            End If
         Next
 
 
@@ -1623,8 +1625,9 @@ dBug:
 1110:
             g.write(f)
 
-
-            PB.Value += 1
+            If IsNothing(PB) = False Then
+                PB.Value += 1
+            End If
         Next
 
 

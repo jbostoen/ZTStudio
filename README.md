@@ -22,8 +22,10 @@ When forking or using code or ideas explained in the documentation: please publi
 
 **More information**
 
-See our Wiki pages on GitHub.
+See Wiki pages on GitHub.
 They also contain a few power tips and how-to's. 
 
+**Sponsoring features**
 
+If you're still interested in a feature/enhancement listed under "Issues" or a specific feature, you can also sponsor a feature. Contact me to discuss the details.
 

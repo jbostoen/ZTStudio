@@ -1,6 +1,6 @@
 
-[![License](https://img.shields.io/github/license/jbostoen/iTop-custom-extensions)](https://github.com/jbostoen/iTop-custom-extensions/blob/master/license.md)
-[![Release](https://img.shields.io/github/release/jbostoen/iTop-custom-extensions)](https://github.com/jbostoen/iTop-custom-extensions/releases)
+[![License](https://img.shields.io/github/license/jbostoen/ZTStudio)](https://github.com/jbostoen/ZTStudio/blob/master/license.md)
+[![Release](https://img.shields.io/github/release/jbostoen/ZTStudio)](https://github.com/jbostoen/ZTStudio/releases)
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.me/jbostoen)
 
 Donations are appreciated, both as a 'thank you!' or to encourage further development.

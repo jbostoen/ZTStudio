@@ -1,4 +1,4 @@
-﻿Public Class clsDrawingInstr
+﻿Public Class ClsDrawingInstr
 
     ' A drawing instruction block.
     ' This consists of a simple pattern:
@@ -7,7 +7,7 @@
     Dim di_offset As Integer = 0 ' only one byte. This is actually: 'skip X pixels in this line'. Max 255 at once.
     Dim di_lstColors As New List(Of Integer)  ' refers to the index of the color in a palette. Num colors = 0-255.
 
-    Public Property offset As Integer
+    Public Property Offset As Integer
         ' How many transparent pixels do we have before we start drawing this block?
         Get
             Return di_offset
@@ -17,7 +17,7 @@
         End Set
     End Property
 
-    Public Property pixelColors As List(Of Integer)
+    Public Property PixelColors As List(Of Integer)
         ' Contains the pixels which will be drawn horizontally (row) and their color.
         Get
             Return di_lstColors
@@ -27,7 +27,7 @@
         End Set
     End Property
 
-    Public Function getHex() As List(Of String)
+    Public Function GetHex() As List(Of String)
 
         ' Returns the hex code for this drawing block.
         On Error GoTo dBg
@@ -37,7 +37,7 @@
 
 1:
         ' Offset.
-        opHex.Add(Me.offset.ToString("X2"), False)
+        opHex.Add(Me.Offset.ToString("X2"), False)
 
 2:
         ' Num colors. 0 - 255
@@ -55,7 +55,7 @@
         Exit Function
 
 dBg:
-        MsgBox("Error in class clsDrawingInstr, getHex(), line " & Erl() & vbCrLf & _
+        MsgBox("Error in class clsDrawingInstr, getHex(), line " & Erl() & vbCrLf &
             Err.Number & " " & Err.Description, vbOKOnly + vbCritical, "Error while generating frame HEX")
 
     End Function

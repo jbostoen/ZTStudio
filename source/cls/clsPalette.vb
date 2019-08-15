@@ -1,27 +1,27 @@
 ﻿Imports System.IO
 
-Public Class clsPalette
+Public Class ClsPalette
 
 
-    Dim pal_FileName As String = ""
+    Dim pal_FileName As String = vbNullString
     Dim pal_colors As New List(Of System.Drawing.Color)
-    Dim pal_parent As clsGraphic2 = Nothing
+    Dim pal_parent As ClsGraphic2 = Nothing
 
 
-    Public Sub New(myParent As clsGraphic2)
+    Public Sub New(myParent As ClsGraphic2)
         pal_parent = myParent
     End Sub
-    Public Property parent As clsGraphic2
+    Public Property Parent As ClsGraphic2
         ' What is the parent object (clsGraphic2) of our frame? 
         ' Or in other words: which ZT1 Graphic does this frame belong to?
         Get
             Return pal_parent
         End Get
-        Set(value As clsGraphic2)
+        Set(value As ClsGraphic2)
             pal_parent = value
         End Set
     End Property
-    Public Property fileName As String
+    Public Property FileName As String
         ' The filename of the palette.
         Get
             Return pal_FileName
@@ -32,7 +32,7 @@ Public Class clsPalette
     End Property
 
 
-    Public Property colors As List(Of System.Drawing.Color)
+    Public Property Colors As List(Of System.Drawing.Color)
         ' This will contain all colors.
         Get
             Return pal_colors
@@ -42,7 +42,7 @@ Public Class clsPalette
         End Set
     End Property
 
-    Function readPal(Optional strFileName As String = vbNullString) As Integer
+    Function ReadPal(Optional strFileName As String = vbNullString) As Integer
 
 
         If strFileName <> vbNullString Then pal_FileName = strFileName
@@ -82,10 +82,10 @@ Public Class clsPalette
 
 
             ' Turn into a color
-            pal.Add(System.Drawing.Color.FromArgb( _
-                CInt("&H" & hex(3)), _
-                CInt("&H" & hex(0)), _
-                CInt("&H" & hex(1)), _
+            pal.Add(System.Drawing.Color.FromArgb(
+                CInt("&H" & hex(3)),
+                CInt("&H" & hex(0)),
+                CInt("&H" & hex(1)),
                 CInt("&H" & hex(2))
                     ), False)
 
@@ -105,7 +105,7 @@ Public Class clsPalette
 
 
 
-    Sub fillPaletteGrid(dgv As DataGridView)
+    Sub FillPaletteGrid(dgv As DataGridView)
 
 
 
@@ -167,50 +167,56 @@ Public Class clsPalette
 
     End Sub
 
-    Public Function getColorIndex(c As System.Drawing.Color, Optional addToPalette As Boolean = True) As Integer
+    ''' <summary>
+    ''' Returns the index of a color within this palette.
+    ''' </summary>
+    ''' <param name="cColor">The color of which the index in this palette should be returned</param>
+    ''' <param name="blnAddToPalette">Add the color to the palette if it's not present</param>
+    ''' <returns></returns>
+    Public Function GetColorIndex(cColor As System.Drawing.Color, Optional blnAddToPalette As Boolean = True) As Integer
 
         ' This function is used to find the index of a color in our color palette.
         ' If not found, it is added - until the maximum number of 255 (+1 transparent) colors has been reached.
 
-
-        If Me.colors.Count = 0 Then
-            ' We are working with a brand new color palette.
-            ' There's no transparent color just yet. Define.
-            ' was 0, 255, 0, 255 (pink)
-            Me.colors.Add(System.Drawing.Color.FromArgb(0, cfg_grid_BackGroundColor), False)
+        If Me.Colors.Count = 0 Then
+            ' This is a new color palette with no colors defined yet.
+            ' Define the first color (transparent color) in this palette.
+            Me.Colors.Add(System.Drawing.Color.FromArgb(0, cfg_grid_BackGroundColor), False)
         End If
 
         ' Store so we don't need to call both .contains() and .lastindexof()
-        Dim intColorIndex As Integer = Me.colors.LastIndexOf(c)
+        Dim intColorIndex As Integer = Me.Colors.LastIndexOf(cColor)
 
         If intColorIndex >= 0 Then
 
             ' Color has been found, return the index
             ' restrant.pal has a color listed twice.
             ' it seems to rely on the last index.
-            Return intColorIndex 
+            Return intColorIndex
 
-        ElseIf c.A = 0 Then
+        ElseIf ccolor.A = 0 Then
 
-            ' We have a different transparent color, but the .PNG had something with alpha = 0 (transparent)
+            ' This color palette uses a different transparent color.
+            ' However, the .PNG contained a color with with alpha = 0 (transparent)
             Return 0
 
-        ElseIf c = cfg_grid_BackGroundColor Then
+        ElseIf ccolor = cfg_grid_BackGroundColor Then
 
-            ' The images we are importing, use a color which has been explicitly set as our background (or transparent) color in ZT Studio.
+            ' The images being imported use a color which has been explicitly set as the background (or transparent) color in ZT Studio.
             Return 0
 
-        ElseIf c.A = 255 And c.R = Me.colors(0).R And c.G = Me.colors(0).G And c.B = Me.colors(0).B Then
+        ElseIf ccolor.A = 255 And ccolor.R = Me.Colors(0).R And ccolor.G = Me.Colors(0).G And ccolor.B = Me.Colors(0).B Then
 
             ' Hotfix for opacity issue
+            ' The specified color is opaque, but all color values are the same of the transparent color within this palette
             Return 0
 
         Else
             ' It doesn't contain our color. Can we still add it?
-            If Me.colors.Count < 256 And addToPalette = True Then ' number of colors = [0-255]
+            If Me.Colors.Count < 256 And blnAddToPalette = True Then ' number of colors = [0-255]
                 ' Yeah sure, just add it to the color palette.
-                Me.colors.Add(c, False)
-                Return Me.colors.Count - 1  ' return last item index
+                Me.Colors.Add(cColor, False)
+                Return Me.Colors.Count - 1  ' return last item index
             Else
 
                 ' Failed to add color: (" & c.R.ToString() & ", " & c.G.ToString() & ", " & c.B.ToString() & ", " & c.A.ToString() & ")." & vbCrLf & _
@@ -220,15 +226,15 @@ Public Class clsPalette
 
                 ' No decision made yet
                 If cfg_palette_quantization = 0 Then
-                    If MsgBox("The current palette (" & Me.fileName & ") already contains " & Me.colors.Count & " colors." & vbCrLf & vbCrLf & _
-                           "Color: " & c.ToString() & vbCrLf & _
-                           "Transparent color: " & Me.colors(0).ToString & vbCrLf & _
-                           "Graphic: " & Me.parent.fileName & vbCrLf & vbCrLf & _
-                           "Zoo Tycoon 1 only supports 255 colors in each color palette." & vbCrLf & _
-                           "ZT Studio can pick the closest matching color used so far." & vbCrLf & _
-                           "You can expect a degradation in quality." & vbCrLf & _
-                           "Press [Yes] to ignore all warnings until you close ZT Studio." & vbCrLf & _
-                           "Press [No] to quit ZT Studio and fix things first.", _
+                    If MsgBox("The current palette (" & Me.FileName & ") already contains " & Me.Colors.Count & " colors." & vbCrLf & vbCrLf &
+                           "Color: " & cColor.ToString() & vbCrLf &
+                           "Transparent color: " & Me.Colors(0).ToString & vbCrLf &
+                           "Graphic: " & Me.Parent.FileName & vbCrLf & vbCrLf &
+                           "Zoo Tycoon 1 only supports 255 colors in each color palette." & vbCrLf &
+                           "ZT Studio can pick the closest matching color used so far." & vbCrLf &
+                           "You can expect a degradation in quality." & vbCrLf &
+                           "Press [Yes] to ignore all warnings until you close ZT Studio." & vbCrLf &
+                           "Press [No] to quit ZT Studio and fix things first.",
                            vbYesNo + vbCritical + vbApplicationModal, "Too many colors!") = vbYes Then
                         cfg_palette_quantization = 1
                     Else
@@ -246,10 +252,10 @@ Public Class clsPalette
                 Dim s2 As Single
                 Dim v2 As Single
                 Dim dists As New List(Of Short)
-                h1 = c.GetHue()
-                s1 = c.GetSaturation()
-                v1 = c.GetBrightness()
-                For Each col As System.Drawing.Color In Me.colors
+                h1 = cColor.GetHue()
+                s1 = cColor.GetSaturation()
+                v1 = cColor.GetBrightness()
+                For Each col As System.Drawing.Color In Me.Colors
                     h2 = h1 - col.GetHue()
                     s2 = s1 - col.GetSaturation()
                     v2 = v1 - col.GetBrightness()
@@ -273,7 +279,7 @@ Public Class clsPalette
 
 
 
-    Public Function writePal(strFileName As String, blnOverwrite As Boolean) As Integer
+    Public Function WritePal(strFileName As String, blnOverwrite As Boolean) As Integer
 
 
         'Debug.Print("... Write .PAL to " & strFileName   )
@@ -284,8 +290,8 @@ Public Class clsPalette
 1:
 
         If File.Exists(strFileName) = True And blnOverwrite = False Then
-            MsgBox("Error: could not create color palette." & vbCrLf & _
-                "There is already a color palette at this location: " & vbCrLf & _
+            MsgBox("Error: could not create color palette." & vbCrLf &
+                "There is already a color palette at this location: " & vbCrLf &
                 "'" & strFileName & "'", vbOKOnly + vbCritical, "Failed to create .pal-file")
 
             Return 0
@@ -348,7 +354,7 @@ Public Class clsPalette
 
 
 dBug:
-        MsgBox("Error while writing a color palette. " & vbCrLf & "Line: " & Erl() & vbCrLf & _
+        MsgBox("Error while writing a color palette. " & vbCrLf & "Line: " & Erl() & vbCrLf &
             Err.Number & " - " & Err.Description, vbOKOnly + vbCritical, "Failed to create color palette")
         Return 0
 
@@ -357,7 +363,7 @@ dBug:
 
     ' === extra functions ===
 
-    Function combineColorPalettes(lstPals As List(Of clsPalette)) As clsPalette
+    Function CombineColorPalettes(lstPals As List(Of ClsPalette)) As ClsPalette
 
 
         ' This function should allow to create/combine color palettes.
@@ -366,15 +372,15 @@ dBug:
         Debug.Print("Combine color palettes.")
 
 
-        Dim comPal As New clsPalette(Nothing)
+        Dim comPal As New ClsPalette(Nothing)
 
         ' for each color palette: check if color exists in our new palette.
-        For Each pal As clsPalette In lstPals
-            For Each col As System.Drawing.Color In pal.colors
+        For Each pal As ClsPalette In lstPals
+            For Each col As System.Drawing.Color In pal.Colors
 
                 ' add color if it's not in our list
-                If comPal.colors.IndexOf(col) < 0 Then
-                    comPal.colors.Add(col, False)
+                If comPal.Colors.IndexOf(col) < 0 Then
+                    comPal.Colors.Add(col, False)
                 End If
 
 
@@ -383,7 +389,7 @@ dBug:
 
 
         ' also:
-        Me.colors = comPal.colors
+        Me.Colors = comPal.Colors
 
 
         Return comPal
@@ -394,7 +400,7 @@ dBug:
 
 
 
-    Function export_to_PNG(strExportFileName As String) As Integer
+    Sub Export_to_PNG(strExportFileName As String)
 
         ' This is for a feature where we first exported a color palette, by writing all known colors in a single image.
         ' The idea is that the .PNG can easily be recolored with a 3rd party program (eg GIMP)
@@ -414,9 +420,9 @@ dBug:
         While intY < 16
 
             ' for each col
-            While intX < 16 And intColor < Me.colors.Count
+            While intX < 16 And intColor < Me.Colors.Count
 
-                bmp.SetPixel(intX, intY, Me.colors(intColor))
+                bmp.SetPixel(intX, intY, Me.Colors(intColor))
                 intColor += 1
                 intX += 1
             End While
@@ -434,13 +440,13 @@ dBug:
 
         bmp.Save(strExportFileName, System.Drawing.Imaging.ImageFormat.Png)
 
-
-        Return 0
-
-    End Function
+        bmp.Dispose()
 
 
-    Function import_from_PNG(sFileName As String) As Integer
+    End Sub
+
+
+    Sub Import_from_PNG(sFileName As String)
 
         ' This is for a feature where we first exported a color palette, by writing all known colors in a single image.
         ' The idea is that the .PNG can easily be recolored with a 3rd party program (eg GIMP)
@@ -451,12 +457,11 @@ dBug:
 
         Dim bmp As Bitmap = Image.FromFile(sFileName)
 
-
         Dim intX As Integer = 0
         Dim intY As Integer = 0
 
         ' Clear current palette (please prevent redraws at this point)
-        Me.colors.Clear(False)
+        Me.Colors.Clear(False)
 
         ' Row by row
         While intY < bmp.Height
@@ -469,8 +474,8 @@ dBug:
                 ' The hex values still reference the original indexes of their colors. So changes there would screw things up and raise errors.
 
                 ' Because if a user is replacing an existing palette, the indexes to the colors might not have been changed in the actual graphic.
-                If Me.colors.IndexOf(bmp.GetPixel(intX, intY)) < 0 Or cfg_palette_import_png_force_add_colors = 1 Then
-                    Me.colors.Add(bmp.GetPixel(intX, intY), False)
+                If Me.Colors.IndexOf(bmp.GetPixel(intX, intY)) < 0 Or cfg_palette_import_png_force_add_colors = 1 Then
+                    Me.Colors.Add(bmp.GetPixel(intX, intY), False)
                 End If
 
                 intX += 1
@@ -489,33 +494,27 @@ dBug:
         ' There's actually two possibilities here.
         ' Either we should regenerate the hex, since colors might have switched places.
         ' Or we should regenerate the image, since it might just be a recolor. 
-        If IsNothing(Me.parent) = False Then
+        If IsNothing(Me.Parent) = False Then
             ' TODO: do something
-            For Each ztFrame As clsFrame2 In Me.parent.frames
-                ztFrame.coreImageBitmap = Nothing
-                ztFrame.getCoreImageBitmap()
+            For Each ztFrame As ClsFrame2 In Me.Parent.Frames
+                ztFrame.CoreImageBitmap = Nothing
+                ztFrame.GetCoreImageBitmap()
             Next
         Else
         End If
 
-        Return 0
 
-    End Function
-
+    End Sub
 
 
-
-
-    Function import_from_GimpPalette(sFileName As String, Optional blnForceAddColor As Boolean = False) As Integer
+    Sub Import_from_GimpPalette(sFileName As String)
 
         On Error GoTo dBg
 
 0:
+        ' Contrary to Import_from_PNG, this one is specifically designed for the free and open source GIMP
 
-        ' Contrary to import_from_PNG, this one is specifically designed for the free and open source GIMP
-
-        ' Typical file: 
-
+        ' Typical file contents: 
 
         ' GIMP Palette
         ' Name:   RedPanda copy
@@ -525,7 +524,6 @@ dBug:
         ' <line for each color>
         ' 254 255 252	#254
 
-
 10:
 
         Dim objReader As New System.IO.StreamReader(sFileName)
@@ -534,7 +532,7 @@ dBug:
         Dim intLine As Integer = 1
 
         ' Clear current palette (please prevent redraws at this point)
-        Me.colors.Clear(False)
+        Me.Colors.Clear(False)
 
         ' Read file.
         Do While objReader.Peek() <> -1
@@ -545,19 +543,17 @@ dBug:
             ' Remove double white spaces etc 
             textLine = Strings.Trim(System.Text.RegularExpressions.Regex.Replace(textLine, "\s+", " "))
 
-
-
             ' Ignore the first few lines of the GPL file AND the transparent color
             If intLine = 5 And textLine <> "" Then
 21:
-                Me.colors.Add(System.Drawing.Color.FromArgb(Split(textLine, " ")(0), Split(textLine, " ")(1), Split(textLine, " ")(2)))
+                Me.Colors.Add(System.Drawing.Color.FromArgb(Split(textLine, " ")(0), Split(textLine, " ")(1), Split(textLine, " ")(2)))
 
 
             ElseIf intLine > 5 And textLine <> "" Then
 
 22:
-                ' Add to this color palette
-                Me.getColorIndex(System.Drawing.Color.FromArgb(Split(textLine, " ")(0), Split(textLine, " ")(1), Split(textLine, " ")(2)), True)
+                ' Add to this color palette. Using GetColorIndex(color, True), it will prevent duplicates.
+                Me.GetColorIndex(System.Drawing.Color.FromArgb(Split(textLine, " ")(0), Split(textLine, " ")(1), Split(textLine, " ")(2)), True)
 
 
             End If
@@ -570,13 +566,13 @@ dBug:
 200:
 
         ' There's actually two possibilities here.
-        ' Either we should regenerate the hex, since colors might have switched places.
-        ' Or we should regenerate the image, since it might just be a recolor. 
-        If IsNothing(Me.parent) = False Then
+        ' Either regenerate the hex, since colors might have switched places.
+        ' Or regenerate the image, since it might just be a recolor. 
+        If IsNothing(Me.Parent) = False Then
             ' TODO: do something
-            For Each ztFrame As clsFrame2 In Me.parent.frames
-                ztFrame.coreImageBitmap = Nothing
-                ztFrame.getCoreImageBitmap()
+            For Each ztFrame As ClsFrame2 In Me.Parent.Frames
+                ztFrame.CoreImageBitmap = Nothing
+                ztFrame.GetCoreImageBitmap()
             Next
             'MsgBox("Updated ZTFrame's coreImageBitmap?")
         Else
@@ -584,13 +580,12 @@ dBug:
             'MsgBox(Me.parent.frames.Count)
         End If
 
-        Return 0
 
 dBg:
         MsgBox("Unable to use the GIMP Color Palette:" & vbCrLf & sFileName & vbCrLf & Err.Number & " - " & Err.Description & vbCrLf & "Line in .gpl: " & textLine & vbCrLf & "Line in import_from_GimpPalette: " & Erl(), vbOKOnly + vbInformation, "Error using GIMP Palette")
 
 
-    End Function
+    End Sub
 
 
 

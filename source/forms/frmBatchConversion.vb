@@ -1,7 +1,7 @@
 ﻿Public Class frmBatchConversion
 
 
-    Private Sub btnConvert_Click(sender As Object, e As EventArgs) Handles btnConvert.Click
+    Private Sub BtnConvert_Click(sender As Object, e As EventArgs) Handles btnConvert.Click
 
         ' Prevent double click, clicking too fast etc. 
         ' We'll re-enable this when the batch process has finished.

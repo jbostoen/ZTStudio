@@ -20,9 +20,9 @@ Module mdlSettings
 
     Public editorGraphic As clsGraphic2             ' The clsGraphic2 object we use.
     Public editorBgGraphic As clsGraphic2           ' The background graphic, e.g. toy
-    Public editorFrame As clsFrame2                 ' The clsFrame we are currently viewing/editing
+    Public editorFrame As ClsFrame2                 ' The clsFrame we are currently viewing/editing
 
-    Public bm As Bitmap
+    Public BM As Bitmap
 
 
     Public cfg_grid_BackGroundColor As Color = Color.White ' What is the default background color?
@@ -32,8 +32,8 @@ Module mdlSettings
     Public cfg_grid_zoom As Integer = 1 ' Default zoom level
 
     Public cfg_path_Root As String = "C:\Program Files (x86)\Microsoft Games\Zoo Tycoon" ' Default location of our project folder. The user should select a <root>folder with contents similar to <root>/animals/ibex/m/
-    Public cfg_path_ColorPals8 As String = "X:\Projecten\Animal Antics\Tools\Zoot_Net\res\pal8" ' Location of color palettes (for color replacement) - 8 shades
-    Public cfg_path_ColorPals16 As String = "X:\Projecten\Animal Antics\Tools\Zoot_Net\res\pal16" ' Location of color palettes (for color replacement) - 16 shades
+    Public cfg_path_ColorPals8 As String = "C:\Users\root\Documents\GitHub\ZTStudio\source\bin\Release\pal8" ' Location of color palettes (for color replacement) - 8 shades
+    Public cfg_path_ColorPals16 As String = "C:\Users\root\Documents\GitHub\ZTStudio\source\bin\Release\pal16" ' Location of color palettes (for color replacement) - 16 shades
 
     ' Export
     Public cfg_export_PNG_RenderBGFrame As Byte = 1 ' If a background frame is present: should it be rendered in all PNG output files (or separately?)
@@ -103,16 +103,16 @@ Module mdlSettings
     End Sub
 
 
-    Public Function iniWrite(ByVal iniFileName As String, ByVal Section As String, ByVal ParamName As String, ByVal ParamVal As String) As Integer
+    Public Function IniWrite(ByVal iniFileName As String, ByVal Section As String, ByVal ParamName As String, ByVal ParamVal As String) As Integer
         Dim Result As Integer = WritePrivateProfileString(Section, ParamName, ParamVal, iniFileName)
         Return 0
     End Function
 
-    Public Function iniRead(ByVal IniFileName As String, ByVal Section As String, ByVal ParamName As String, ByVal ParamDefault As String) As String
+    Public Function IniRead(ByVal IniFileName As String, ByVal Section As String, ByVal ParamName As String, ByVal ParamDefault As String) As String
         Dim ParamVal As String = Space$(1024)
         Dim LenParamVal As Integer = GetPrivateProfileString(Section, ParamName, ParamDefault, ParamVal, Len(ParamVal), IniFileName)
-        iniRead = Left$(ParamVal, LenParamVal)
-         
+        IniRead = Left$(ParamVal, LenParamVal)
+
 
     End Function
 

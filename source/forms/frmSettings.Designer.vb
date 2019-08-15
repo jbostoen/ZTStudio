@@ -89,7 +89,7 @@ Partial Class frmSettings
         Me.chkEditor_Frame_Offsets_SingleFrame.Name = "chkEditor_Frame_Offsets_SingleFrame"
         Me.chkEditor_Frame_Offsets_SingleFrame.Size = New System.Drawing.Size(491, 17)
         Me.chkEditor_Frame_Offsets_SingleFrame.TabIndex = 22
-        Me.chkEditor_Frame_Offsets_SingleFrame.Text = "Adjust offsets of a single frame (instead of all frames in the graphic) when ""rot" & _
+        Me.chkEditor_Frame_Offsets_SingleFrame.Text = "Adjust offsets of a single frame (instead of all frames in the graphic) when ""rot" &
     "ation fixing"""
         Me.chkEditor_Frame_Offsets_SingleFrame.UseVisualStyleBackColor = True
         '
@@ -111,9 +111,10 @@ Partial Class frmSettings
         Me.chkPNGTransparentBG.AutoSize = True
         Me.chkPNGTransparentBG.Location = New System.Drawing.Point(24, 73)
         Me.chkPNGTransparentBG.Name = "chkPNGTransparentBG"
-        Me.chkPNGTransparentBG.Size = New System.Drawing.Size(381, 17)
+        Me.chkPNGTransparentBG.Size = New System.Drawing.Size(481, 17)
         Me.chkPNGTransparentBG.TabIndex = 15
-        Me.chkPNGTransparentBG.Text = "Use transparent background (instead of ZT Studio background color)"
+        Me.chkPNGTransparentBG.Text = "Use transparent background with alphachannel (instead of ZT Studio background col" &
+    "or)"
         Me.chkPNGTransparentBG.UseVisualStyleBackColor = True
         '
         'Label1
@@ -163,7 +164,7 @@ Partial Class frmSettings
         Me.chkExportZT1_AddZTAFBytes.AutoSize = True
         Me.chkExportZT1_AddZTAFBytes.Location = New System.Drawing.Point(24, 15)
         Me.chkExportZT1_AddZTAFBytes.Name = "chkExportZT1_AddZTAFBytes"
-        Me.chkExportZT1_AddZTAFBytes.Size = New System.Drawing.Size(337, 17)
+        Me.chkExportZT1_AddZTAFBytes.Size = New System.Drawing.Size(338, 17)
         Me.chkExportZT1_AddZTAFBytes.TabIndex = 28
         Me.chkExportZT1_AddZTAFBytes.Text = "Add ""ZT Animation File""-bytes even if there's no ""extra frame"""
         Me.chkExportZT1_AddZTAFBytes.UseVisualStyleBackColor = True
@@ -206,9 +207,9 @@ Partial Class frmSettings
         Me.chkRenderFrame_BGGraphic.CheckState = System.Windows.Forms.CheckState.Checked
         Me.chkRenderFrame_BGGraphic.Location = New System.Drawing.Point(24, 38)
         Me.chkRenderFrame_BGGraphic.Name = "chkRenderFrame_BGGraphic"
-        Me.chkRenderFrame_BGGraphic.Size = New System.Drawing.Size(607, 17)
+        Me.chkRenderFrame_BGGraphic.Size = New System.Drawing.Size(608, 17)
         Me.chkRenderFrame_BGGraphic.TabIndex = 17
-        Me.chkRenderFrame_BGGraphic.Text = "Render chosen background ZT1 Graphic (e.g. main graphic = Orang utan swinging, ba" & _
+        Me.chkRenderFrame_BGGraphic.Text = "Render chosen background ZT1 Graphic (e.g. main graphic = Orang utan swinging, ba" &
     "ckground: rope swing toy)"
         Me.chkRenderFrame_BGGraphic.UseVisualStyleBackColor = True
         '
@@ -219,9 +220,9 @@ Partial Class frmSettings
         Me.chkRenderFrame_RenderExtraFrame.CheckState = System.Windows.Forms.CheckState.Checked
         Me.chkRenderFrame_RenderExtraFrame.Location = New System.Drawing.Point(24, 15)
         Me.chkRenderFrame_RenderExtraFrame.Name = "chkRenderFrame_RenderExtraFrame"
-        Me.chkRenderFrame_RenderExtraFrame.Size = New System.Drawing.Size(630, 17)
+        Me.chkRenderFrame_RenderExtraFrame.Size = New System.Drawing.Size(631, 17)
         Me.chkRenderFrame_RenderExtraFrame.TabIndex = 16
-        Me.chkRenderFrame_RenderExtraFrame.Text = "Render the extra frame in a graphic in all other frames (in case of a ZTAF-file w" & _
+        Me.chkRenderFrame_RenderExtraFrame.Text = "Render the extra frame in a graphic in all other frames (in case of a ZTAF-file w" &
     "ith a background frame, e.g. restaurant)"
         Me.chkRenderFrame_RenderExtraFrame.UseVisualStyleBackColor = True
         '
@@ -354,7 +355,7 @@ Partial Class frmSettings
         '
         'txtConvert_fileNameDelimiter
         '
-        Me.txtConvert_fileNameDelimiter.Location = New System.Drawing.Point(21, 231)
+        Me.txtConvert_fileNameDelimiter.Location = New System.Drawing.Point(21, 257)
         Me.txtConvert_fileNameDelimiter.Name = "txtConvert_fileNameDelimiter"
         Me.txtConvert_fileNameDelimiter.Size = New System.Drawing.Size(205, 22)
         Me.txtConvert_fileNameDelimiter.TabIndex = 33
@@ -364,9 +365,10 @@ Partial Class frmSettings
         Me.lblConvert_fileNameDelimiter.AutoSize = True
         Me.lblConvert_fileNameDelimiter.Location = New System.Drawing.Point(18, 215)
         Me.lblConvert_fileNameDelimiter.Name = "lblConvert_fileNameDelimiter"
-        Me.lblConvert_fileNameDelimiter.Size = New System.Drawing.Size(107, 13)
+        Me.lblConvert_fileNameDelimiter.Size = New System.Drawing.Size(458, 39)
         Me.lblConvert_fileNameDelimiter.TabIndex = 32
-        Me.lblConvert_fileNameDelimiter.Text = "File name delimiter:"
+        Me.lblConvert_fileNameDelimiter.Text = "File name delimiter:" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "This is the character used in filenames, between the name o" &
+    "f the graphic and the frame." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "For example, _ is the delimiter in NE_0000.png "
         '
         'Label2
         '
@@ -387,7 +389,7 @@ Partial Class frmSettings
         Me.chkConvert_SharedColorPalette.Name = "chkConvert_SharedColorPalette"
         Me.chkConvert_SharedColorPalette.Size = New System.Drawing.Size(440, 30)
         Me.chkConvert_SharedColorPalette.TabIndex = 30
-        Me.chkConvert_SharedColorPalette.Text = "Use one shared color palette for each graphic's animations/views - except icons. " & _
+        Me.chkConvert_SharedColorPalette.Text = "Use one shared color palette for each graphic's animations/views - except icons. " &
     "" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "(Caution: max 255 colors shared among all frames!)"
         Me.chkConvert_SharedColorPalette.UseVisualStyleBackColor = True
         '
@@ -412,9 +414,9 @@ Partial Class frmSettings
         Me.chkConvert_DeleteOriginal.CheckState = System.Windows.Forms.CheckState.Checked
         Me.chkConvert_DeleteOriginal.Location = New System.Drawing.Point(21, 127)
         Me.chkConvert_DeleteOriginal.Name = "chkConvert_DeleteOriginal"
-        Me.chkConvert_DeleteOriginal.Size = New System.Drawing.Size(357, 30)
+        Me.chkConvert_DeleteOriginal.Size = New System.Drawing.Size(358, 30)
         Me.chkConvert_DeleteOriginal.TabIndex = 28
-        Me.chkConvert_DeleteOriginal.Text = "Delete the source file after conversion. " & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "(e.g. converting from .PNG-files to ZT" & _
+        Me.chkConvert_DeleteOriginal.Text = "Delete the source file after conversion. " & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "(e.g. converting from .PNG-files to ZT" &
     "1: .PNG files will be deleted)"
         Me.chkConvert_DeleteOriginal.UseVisualStyleBackColor = True
         '
@@ -468,7 +470,7 @@ Partial Class frmSettings
         Me.chkPalImportPNGForceAddAll.Name = "chkPalImportPNGForceAddAll"
         Me.chkPalImportPNGForceAddAll.Size = New System.Drawing.Size(494, 17)
         Me.chkPalImportPNGForceAddAll.TabIndex = 23
-        Me.chkPalImportPNGForceAddAll.Text = "Add all colors (even identical) when importing from .PNG files (recommended after" & _
+        Me.chkPalImportPNGForceAddAll.Text = "Add all colors (even identical) when importing from .PNG files (recommended after" &
     " recolors)"
         Me.chkPalImportPNGForceAddAll.UseVisualStyleBackColor = True
         '

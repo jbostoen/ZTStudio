@@ -19,7 +19,7 @@ Module clsTasks
 
 
 
-    Public Function config_load() As Integer
+    Public Function Config_load() As Integer
 
         ' This tasks reads all settings from the .ini-file.
         ' For an explanation of these parameters: check mdlSettings.vb
@@ -82,7 +82,7 @@ Module clsTasks
 
 70:
         ' Palette
-        cfg_palette_import_png_force_add_colors = CByte(iniRead(sFile, "palette", "importPNGforceAddColors", ""))
+        cfg_palette_import_png_force_add_colors = CByte(iniRead(sFile, "palette", "importPNGForceAddColors", ""))
 
 
 100:
@@ -129,9 +129,9 @@ Module clsTasks
 
         ' Only now should we create our objects.
 
-        editorGraphic = New clsGraphic2         ' The clsGraphic2 object we use.
-        editorBgGraphic = New clsGraphic2       ' The background graphic, e.g. toy
-         
+        editorGraphic = New ClsGraphic2         ' The clsGraphic2 object we use.
+        editorBgGraphic = New ClsGraphic2       ' The background graphic, e.g. toy
+
 
 
 
@@ -144,7 +144,7 @@ dBug:
     End Function
 
 
-    Public Function config_write() As Integer
+    Public Function Config_write() As Integer
 
         ' This tasks writes all settings to the .ini-file.
         ' For an explanation of these parameters: check mdlSettings.vb
@@ -190,14 +190,14 @@ dBug:
         iniWrite(sFile, "editing", "animationSpeed", cfg_frame_defaultAnimSpeed.ToString())
 
         ' Palette
-        iniWrite(sFile, "palette", "importPNGforceAddColors", cfg_palette_import_png_force_add_colors.ToString())
+        iniWrite(sFile, "palette", "importPNGForceAddColors", cfg_palette_import_png_force_add_colors.ToString())
 
 
         Return 0
 
     End Function
 
-    Public Function cleanUp_files(strPath As String, strExtension As String) As Integer
+    Public Function CleanUp_files(strPath As String, strExtension As String) As Integer
 
         ' Expected as strExtension:
         ' ".png"
@@ -263,15 +263,15 @@ dBug:
 
 dBug:
 
-        MsgBox("An error occured while trying to clean up ZT1 Graphic files in this folder: " & vbCrLf & _
-            strPath & vbCrLf & vbCrLf & "Line: " & Erl() & vbCrLf & Err.Number & " - " & Err.Description, _
+        MsgBox("An error occured while trying to clean up ZT1 Graphic files in this folder: " & vbCrLf &
+            strPath & vbCrLf & vbCrLf & "Line: " & Erl() & vbCrLf & Err.Number & " - " & Err.Description,
             vbOKOnly + vbCritical, "Error during clean up")
 
 
     End Function
 
 
-    Public Sub convert_file_ZT1_to_PNG(strFile As String)
+    Public Sub Convert_file_ZT1_to_PNG(strFile As String)
 
         ' This function will convert a ZT1 Graphic to a PNG file.
         ' It will first render the ZT1 Graphic and then it will export it to one or multiple .PNG-files.
@@ -283,10 +283,10 @@ dBug:
 
 5:
         ' Create a new instance of a ZT1 Graphic object.
-        Dim g As New clsGraphic2
+        Dim g As New ClsGraphic2
 
         ' Read the ZT1 Graphic
-        g.read(strFile)
+        g.Read(strFile)
 
         ' We will render this set of frames within this ZT1 Graphic.
         ' However, there are two main options:
@@ -297,12 +297,12 @@ dBug:
 
 10:
         ' Loop over each frame of the ZT1 Graphic
-        For Each ztFrame As clsFrame2 In g.frames
+        For Each ztFrame As ClsFrame2 In g.Frames
 
 11:
 
             ' the bitmap's save function does not overwrite, nor warn 
-            System.IO.File.Delete(strFile & cfg_convert_fileNameDelimiter & (g.frames.IndexOf(ztFrame) + cfg_convert_startIndex).ToString("0000") & ".png")
+            System.IO.File.Delete(strFile & cfg_convert_fileNameDelimiter & (g.Frames.IndexOf(ztFrame) + cfg_convert_startIndex).ToString("0000") & ".png")
 
             ' Save frames as PNG, just autonumber the frames.
             ' Exception: if we have an extra frame which should be rendered separately rather than as background. 
@@ -311,14 +311,14 @@ dBug:
             ' This might however make a nice addition :)
 
             ' RenderBGFrame: this is read as: 'render this as BG for every frame'
-            If cfg_export_PNG_RenderBGFrame = 0 And g.extraFrame = 1 Then
-                If g.frames.IndexOf(ztFrame) <> (g.frames.Count - 1) Then
-                    ztFrame.savePNG(strFile & cfg_convert_fileNameDelimiter & (g.frames.IndexOf(ztFrame) + cfg_convert_startIndex).ToString("0000") & ".png")
+            If cfg_export_PNG_RenderBGFrame = 0 And g.ExtraFrame = 1 Then
+                If g.Frames.IndexOf(ztFrame) <> (g.Frames.Count - 1) Then
+                    ztFrame.SavePNG(strFile & cfg_convert_fileNameDelimiter & (g.Frames.IndexOf(ztFrame) + cfg_convert_startIndex).ToString("0000") & ".png")
                 Else
-                    ztFrame.savePNG(strFile & cfg_convert_fileNameDelimiter & "extra.png")
+                    ztFrame.SavePNG(strFile & cfg_convert_fileNameDelimiter & "extra.png")
                 End If
             Else
-                ztFrame.savePNG(strFile & cfg_convert_fileNameDelimiter & (g.frames.IndexOf(ztFrame) + cfg_convert_startIndex).ToString("0000") & ".png")
+                ztFrame.SavePNG(strFile & cfg_convert_fileNameDelimiter & (g.Frames.IndexOf(ztFrame) + cfg_convert_startIndex).ToString("0000") & ".png")
 
             End If
 
@@ -336,12 +336,12 @@ dBug:
         Exit Sub
 
 dBg:
-        MsgBox("Error occured in convert_file_ZT1_to_PNG:" & vbCrLf & "Line: " & Erl() & vbCrLf & _
+        MsgBox("Error occured in convert_file_ZT1_to_PNG:" & vbCrLf & "Line: " & Erl() & vbCrLf &
             Err.Number & " - " & Err.Description, vbOKOnly + vbCritical, "Error in conversion ZT1 -> PNG")
 
 
     End Sub
-    Public Function convert_file_PNG_to_ZT1(strPath As String, Optional blnSingleConversion As Boolean = True) As Integer
+    Public Function Convert_file_PNG_to_ZT1(strPath As String, Optional blnSingleConversion As Boolean = True) As Integer
 
         On Error GoTo dBg
 
@@ -359,8 +359,8 @@ dBg:
 
 
         Dim paths As New List(Of String)
-        Dim g As New clsGraphic2
-        Dim ztFrame As clsFrame2
+        Dim g As New ClsGraphic2
+        Dim ztFrame As ClsFrame2
         Dim graphicName As String = System.IO.Path.GetFileName(strPath)
         Dim frameGraphicPath As String = Strings.Left(strPath, strPath.Length - graphicName.Length)
 
@@ -380,7 +380,7 @@ dBg:
         ' Fix for graphic_extra.PNG (legacy)
         If File.Exists(frameGraphicPath & graphicName & cfg_convert_fileNameDelimiter & "extra.png") = True Then
             paths.Add(frameGraphicPath & graphicName & cfg_convert_fileNameDelimiter & "extra.png")
-            g.extraFrame = 1
+            g.ExtraFrame = 1
         End If
 
 20:
@@ -422,14 +422,14 @@ dBg:
 
             If pngName.Length <> 4 And pngName <> "extra" Then
 
-                ' This could occur if for some reason we have for instance a ne.png file instead of the expected ne[delimeter]0000.png file
-                MsgBox("A .PNG-file has been detected which does not match the pattern expected." & vbCrLf & _
-                    "The files should be named something similar to: " & vbCrLf & _
-                    graphicName & cfg_convert_fileNameDelimiter & "000" & cfg_convert_startIndex & ".png (number increases)" & vbCrLf & _
-                    "or " & graphicName & cfg_convert_fileNameDelimiter & "extra.png (for the extra frame in certain ZT1 Graphics." & vbCrLf & vbCrLf & _
-                    "File which caused this error: " & vbCrLf & "'" & s & "'" & vbCrLf & _
-                       "ZT Studio will close to prevent program or game crashes.", _
-                        vbOKOnly + vbCritical + vbApplicationModal, _
+                ' This could occur if for some reason we have for instance a ne.png file instead of the expected ne[delimiter]0000.png file
+                MsgBox("A .PNG-file has been detected which does not match the pattern expected." & vbCrLf &
+                    "The files should be named something similar to: " & vbCrLf &
+                    graphicName & cfg_convert_fileNameDelimiter & "000" & cfg_convert_startIndex & ".png (number increases)" & vbCrLf &
+                    "or " & graphicName & cfg_convert_fileNameDelimiter & "extra.png (for the extra frame in certain ZT1 Graphics." & vbCrLf & vbCrLf &
+                    "File which caused this error: " & vbCrLf & "'" & s & "'" & vbCrLf &
+                       "ZT Studio will close to prevent program or game crashes.",
+                        vbOKOnly + vbCritical + vbApplicationModal,
                         "Invalid filename (pattern)")
 
                 End
@@ -441,22 +441,22 @@ dBg:
 
                 If pngName = "extra" Then
                     ' There's an extra background frame.
-                    g.extraFrame = 1
+                    g.ExtraFrame = 1
 
 125:
                 ElseIf IsNumeric(pngName) = True Then
 
                     ' Here we check whether the pattern is still appropriate.
                     ' The specification is that - depending on a variable to see if we start counting from 0 or 1 - 
-                    ' the user should have PNGs named <graphicName><delimeter>0000.png, <graphicName><delimeter>0001.png, ... 
+                    ' the user should have PNGs named <graphicName><delimiter>0000.png, <graphicName><delimiter>0001.png, ... 
                     ' This checks if no number is skipped or invalid.
-                    If (CInt(pngName) - cfg_convert_startIndex) <> g.frames.Count Then
+                    If (CInt(pngName) - cfg_convert_startIndex) <> g.Frames.Count Then
 
 135:
                         ' Check if file name pattern is okay
-                        MsgBox("The file name ('" & frameGraphicPath & graphicName & cfg_convert_fileNameDelimiter & (CInt(pngName)).ToString("0000") & ".png') does not match the expected name " & _
-                               "('" & frameGraphicPath & graphicName & cfg_convert_fileNameDelimiter & (g.frames.Count + cfg_convert_startIndex).ToString("0000") & ".png')" & vbCrLf & vbCrLf & _
-                               "Your current starting index is: " & cfg_convert_startIndex & vbCrLf & _
+                        MsgBox("The file name ('" & frameGraphicPath & graphicName & cfg_convert_fileNameDelimiter & (CInt(pngName)).ToString("0000") & ".png') does not match the expected name " &
+                               "('" & frameGraphicPath & graphicName & cfg_convert_fileNameDelimiter & (g.Frames.Count + cfg_convert_startIndex).ToString("0000") & ".png')" & vbCrLf & vbCrLf &
+                               "Your current starting index is: " & cfg_convert_startIndex & vbCrLf &
                                "Do not store other .png-files starting with '" & frameGraphicPath & graphicName & "' in that folder.", vbOKOnly + vbCritical, "Error")
 
                         Return -1
@@ -481,9 +481,9 @@ dBg:
 
 
                     ' Check if file name pattern is okay
-                    MsgBox("The file name ('" & frameGraphicPath & graphicName & cfg_convert_fileNameDelimiter & pngName & ".png') does not match the expected name " & _
-                           "('" & frameGraphicPath & graphicName & cfg_convert_fileNameDelimiter & (g.frames.Count + cfg_convert_startIndex).ToString("0000") & ".png')" & vbCrLf & vbCrLf & _
-                           "Your current starting index is: " & cfg_convert_startIndex & vbCrLf & _
+                    MsgBox("The file name ('" & frameGraphicPath & graphicName & cfg_convert_fileNameDelimiter & pngName & ".png') does not match the expected name " &
+                           "('" & frameGraphicPath & graphicName & cfg_convert_fileNameDelimiter & (g.Frames.Count + cfg_convert_startIndex).ToString("0000") & ".png')" & vbCrLf & vbCrLf &
+                           "Your current starting index is: " & cfg_convert_startIndex & vbCrLf &
                            "Do not store other .png-files starting with '" & frameGraphicPath & graphicName & "' in that folder.", vbOKOnly + vbCritical, "Error")
 
                     Return -1
@@ -491,7 +491,7 @@ dBg:
                 End If
 
 200:
-                ztFrame = New clsFrame2(g)
+                ztFrame = New ClsFrame2(g)
 
 
 201:
@@ -535,55 +535,58 @@ dBg:
                     ' An icon is NOT animated and often contains very different colors (plaque, icon in menu). 
                     ' An exception to this rule could be the list icon, but it's not worth making an exception for it.
 
-                    If Directory.GetFiles(strPathDir, graphicName & "*.png").Length <> _
+                    If Directory.GetFiles(strPathDir, graphicName & "*.png").Length <>
                             Directory.GetFiles(strPathDir, "*.png").Length Then
 
 
                         ' 20170502 Optimized by Hendrix.
-                        Dim inpaths() As String = {sPath0, sPath1, sPath2}
+                        Dim inPaths() As String = {sPath0, sPath1, sPath2}
                         Dim exts() As String = {".pal", ".gpl", ".png"}
 
                         ' No palette has been saved/set yet for this graphic.
-                        If ztFrame.parent.colorPalette.fileName = "" Then
+                        If ztFrame.Parent.ColorPalette.FileName = vbNullString Then
 
-                            ' Figure out if there is a preferred, already prepared palette to be used.
+                            ' Figure out if there is a preferred palette (perhaps already prepared by the user) to be used.
                             ' Two ideas come to mind here:
-                            ' - palette at lower level folder gets priority over palette in higher level folder
-                            ' - .pal (ZT1 Graphic) > .gpl (GIMP Palette) > .png
+                            ' (1) Palette at lower level folder gets priority over palette in higher level folder
+                            '     For example: an animal might use one palette for nearly all animations, except one
+                            '   
+                            ' (2) Palette of certain type (file extension) gets priority over another one.
+                            '     Order: .pal(ZT1 Graphic) > .gpl (GIMP Palette) > .png
 
                             ' Debug.Print("### Trying to detect color palette. ")
 
-                            For Each inpath As String In inpaths
+                            For Each inPath As String In inPaths
                                 For Each ext As String In exts
 
-                                    If File.Exists(inpath & ext) = True Then
-                                        With ztFrame.parent.colorPalette
+                                    If File.Exists(inPath & ext) = True Then
+                                        With ztFrame.Parent.ColorPalette
                                             ' We only want to read a new palette once
                                             ' But we must ignore different extensions, so we don't reload in each loop
 
                                             ' Set filename.
-                                            .fileName = inpath & ".pal"
+                                            .FileName = inPath & ".pal"
 
                                             ' Now go by priority.
                                             ' Go-to is usually a bad practice, but it's good here to break our 2 (!) loops.
                                             Select Case ext
                                                 Case ".pal"
-                                                    .readPal(.fileName)
+                                                    .ReadPal(.FileName)
                                                     GoTo paletteReady
                                                 Case ".gpl"
-                                                    .import_from_GimpPalette(inpath & ext)
-                                                    .writePal(.fileName, True)
+                                                    .Import_from_GimpPalette(inPath & ext)
+                                                    .WritePal(.FileName, True)
                                                     GoTo paletteReady
                                                 Case ".png"
-                                                    .import_from_PNG(inpath & ext)
-                                                    .writePal(.fileName, True)
+                                                    .Import_from_PNG(inPath & ext)
+                                                    .WritePal(.FileName, True)
                                                     GoTo paletteReady
                                             End Select
 
                                         End With
                                     End If
                                 Next ext
-                            Next inpath
+                            Next inPath
 
 paletteReady:
 
@@ -603,12 +606,12 @@ paletteReady:
 
 245:
                 ' Add this frame to our parent graphic's frame collection 
-                g.frames.Add(ztFrame)
+                g.Frames.Add(ztFrame)
 
 
 250:
                 ' Create a frame from the .PNG-file
-                ztFrame.loadPNG(s)
+                ztFrame.LoadPNG(s)
 
             End If
         Next
@@ -618,7 +621,7 @@ paletteReady:
 
 1530:
         ' Create our ZT1 Graphic. 
-        g.write(strPath)
+        g.Write(strPath)
 
 
         'Debug.Print("After write: " & Now.ToString("HH:mm:ss"))
@@ -630,8 +633,8 @@ paletteReady:
             ' Only 1 graphic file is being generated. This is the case for icons, for example.
             ' A .ani-file can be generated automatically.       
             ' [folder path] + \ + [folder name] + .ani
-            Dim cAni As New clsAniFile(strPathDir & "\" & Path.GetFileName(strPathDir) & ".ani")
-            cAni.createAniConfig()
+            Dim cAni As New ClsAniFile(strPathDir & "\" & Path.GetFileName(strPathDir) & ".ani")
+            cAni.CreateAniConfig()
 
         End If
 
@@ -650,12 +653,12 @@ paletteReady:
 
 
 dBg:
-        MsgBox("Error occured in convert_file_PNG_to_ZT1:" & vbCrLf & "Line: " & Erl() & vbCrLf & _
+        MsgBox("Error occured in convert_file_PNG_to_ZT1:" & vbCrLf & "Line: " & Erl() & vbCrLf &
             Err.Number & " - " & Err.Description, vbOKOnly + vbCritical, "Error in conversion PNG -> ZT1")
 
 
     End Function
-    Public Sub convert_folder_ZT1_to_PNG(strPath As String, Optional PB As ProgressBar = Nothing)
+    Public Sub Convert_folder_ZT1_to_PNG(strPath As String, Optional PB As ProgressBar = Nothing)
 
         ' This will find all ZT1 Graphics in a folder and generate PNGs from it. It works recursively.
         ' The progress can be shown in a progress bar.
@@ -716,7 +719,7 @@ dBg:
         ' For each file that is a ZT1 Graphic:
         For Each f As String In result
             Debug.Print(f)
-            clsTasks.convert_file_ZT1_to_PNG(f)
+            clsTasks.Convert_file_ZT1_to_PNG(f)
             If IsNothing(PB) = False Then
                 PB.Value += 1
             End If
@@ -728,20 +731,20 @@ dBg:
         If cfg_convert_deleteOriginal = 1 Then
             ' Currently ZT1 Graphics and ZT1 Color palettes have their own sub in which the files get deleted.
             ' It might be possible to merge them at some point and you could even gain a small performance boost.
-            clsTasks.cleanUp_files(strPath, "")
-            clsTasks.cleanUp_files(strPath, ".pal")
+            clsTasks.CleanUp_files(strPath, "")
+            clsTasks.CleanUp_files(strPath, ".pal")
         End If
 
         Exit Sub
 
 dBug:
 
-        MsgBox("An error occured while trying to list and convert ZT1 Graphic files in this folder: " & vbCrLf & _
-            strPath & vbCrLf & vbCrLf & "Line: " & Erl() & vbCrLf & Err.Number & " - " & Err.Description, _
+        MsgBox("An error occured while trying to list and convert ZT1 Graphic files in this folder: " & vbCrLf &
+            strPath & vbCrLf & vbCrLf & "Line: " & Erl() & vbCrLf & Err.Number & " - " & Err.Description,
             vbOKOnly + vbCritical, "Error during ZT1 to PNG batch conversion")
 
     End Sub
-    Public Sub convert_folder_PNG_to_ZT1(strPath As String, Optional PB As ProgressBar = Nothing)
+    Public Sub Convert_folder_PNG_to_ZT1(strPath As String, Optional PB As ProgressBar = Nothing)
 
         ' We have the path containing .PNG-files which need to be converted into a ZT1 Graphic.
         ' We should get the unique prefixes. (eg. e_0001.png => e is the prefix. So 'e' should be the name of the view.
@@ -808,11 +811,11 @@ dBug:
                 ' Just a warning, so users don't accidentally have "sitscratch" as animation name.
                 ' Actually '-' is supported as well.
                 If Path.GetFileName(directoryName).Length > 8 Or System.Text.RegularExpressions.Regex.IsMatch(Strings.Replace(Path.GetFileName(directoryName), "-", ""), "^[a-zA-Z0-9]+$") = False Then
-                    MsgBox("Directory name '" & Path.GetFileName(directoryName) & "' is invalid." & vbCrLf & _
-                        "The limit of a folder name is a maximum of 8 alphanumeric characters." & vbCrLf & _
-                        "You will need to rename the folder manually and then retry." & vbCrLf & _
-                       "ZT Studio will close to prevent program or game crashes.", _
-                        vbOKOnly + vbCritical + vbApplicationModal, _
+                    MsgBox("Directory name '" & Path.GetFileName(directoryName) & "' is invalid." & vbCrLf &
+                        "The limit of a folder name is a maximum of 8 alphanumeric characters." & vbCrLf &
+                        "You will need to rename the folder manually and then retry." & vbCrLf &
+                       "ZT Studio will close to prevent program or game crashes.",
+                        vbOKOnly + vbCritical + vbApplicationModal,
                         "Invalid directory name")
 
                     ' better:
@@ -838,7 +841,7 @@ dBug:
         For Each f As String In result
 
             'Debug.Print("Convert file PNG to ZT1: " & f)
-            clsTasks.convert_file_PNG_to_ZT1(f, False)
+            clsTasks.Convert_file_PNG_to_ZT1(f, False)
             If IsNothing(PB) = False Then
                 PB.Value += 1
             End If
@@ -857,17 +860,15 @@ dBug:
 1150:
         ' Do a clean up of our .PNG files if we had a successful conversion.
         If cfg_convert_deleteOriginal = 1 Then
-            clsTasks.cleanUp_files(strPath, ".png")
+            clsTasks.CleanUp_files(strPath, ".png")
         End If
-
-
 
         Exit Sub
 
 dBug:
 
-        MsgBox("An error occured while trying to list and convert PNG files in this folder: " & vbCrLf & _
-            strPath & vbCrLf & vbCrLf & "Line: " & Erl() & vbCrLf & Err.Number & " - " & Err.Description, _
+        MsgBox("An error occured while trying to list and convert PNG files in this folder: " & vbCrLf &
+            strPath & vbCrLf & vbCrLf & "Line: " & Erl() & vbCrLf & Err.Number & " - " & Err.Description,
             vbOKOnly + vbCritical, "Error during PNG to ZT1 batch conversion")
 
     End Sub
@@ -875,25 +876,32 @@ dBug:
 
 
 
-    Public Sub update_preview(Optional intIndexFrameNumber As Integer = -1)
-
+    ''' <summary>
+    ''' 
+    ''' </summary>
+    ''' <param name="intIndexFrameNumber"></param>
+    Public Sub Update_preview(Optional intIndexFrameNumber As Integer = -1)
 
 1:
-        If editorGraphic.frames.Count = 0 Then Exit Sub
-
-2:
-        If intIndexFrameNumber = -1 Then
-            intIndexFrameNumber = frmMain.tbFrames.Value - 1
+        ' Can't update if there are no frames.
+        If editorGraphic.Frames.Count = 0 Then
+            Exit Sub
         End If
 
+2:
+        ' SHortcut. If no index number for the frame was specified, assume the currently visible frame needs to be updated.
+        If intIndexFrameNumber = -1 Then
+            intIndexFrameNumber = FrmMain.TbFrames.Value - 1
+        End If
 
 3:
         ' The sub gets triggered when a new frame has been added, but no .PNG has been loaded yet
-        If editorGraphic.frames(intIndexFrameNumber).coreImageHex.Count = 0 Then Exit Sub
-
+        If editorGraphic.Frames(intIndexFrameNumber).CoreImageHex.Count = 0 Then
+            Exit Sub
+        End If
 
 20:
-        frmMain.picBox.Image = editorGraphic.frames(intIndexFrameNumber).getImage(True)
+        FrmMain.picBox.Image = editorGraphic.Frames(intIndexFrameNumber).GetImage(True)
 
 
 21:
@@ -904,37 +912,41 @@ dBug:
         'Debug.Print("updated preview") 
 
 30:
-        editorFrame = editorGraphic.frames(intIndexFrameNumber)
+        editorFrame = editorGraphic.Frames(intIndexFrameNumber)
 
 35:
-        clsTasks.update_info("Preview updated.")
+        clsTasks.Update_Info("Preview updated.")
         'Debug.Print("# Preview updated, now showing frame " & intIndexFrameNumber & ". Default: " & (frmMain.tbFrames.Value - 1))
-
 
     End Sub
 
 
+    ''' <summary>
+    ''' Returns a cropped version of the given bitmap
+    ''' </summary>
+    ''' <param name="bmInput">Bitmap image</param>
+    ''' <param name="rRectangle">Rectangle used to crop the bitmap</param>
+    ''' <returns>Bitmap</returns>
+    Function Bitmap_getCropped(bmInput As Bitmap, rRectangle As Rectangle) As Bitmap
 
-    Function bitmap_getCropped(bmInput As Bitmap, rect As Rectangle) As Bitmap
-
-        Debug.Print("w,h=" & bmInput.Width & "," & bmInput.Height)
-
-
-        Return bmInput.Clone(rect, bmInput.PixelFormat)
-
-
-
+        ' Debug.Print("w,h=" & bmInput.Width & "," & bmInput.Height)
+        Return bmInput.Clone(rRectangle, bmInput.PixelFormat)
 
     End Function
 
-
-    Function bitmap_getDefiningRectangle(bmInput As Bitmap) As Rectangle
+    ''' <summary>
+    ''' Returns the defining rectangle for this bitmap.
+    ''' This means the rectangle which contains all colored (non-transparent) pixels
+    ''' </summary>
+    ''' <param name="bmInput">Bitmap image</param>
+    ''' <returns>Rectangle</returns>
+    Function Bitmap_getDefiningRectangle(bmInput As Bitmap) As Rectangle
 
         On Error GoTo dBug
 
-        ' This new method using LockBits is much faster than a previous version where we were using GetPixel. 
+        ' This new method using LockBits is much faster than a previous version where GetPixel() was used. 
         ' This is a big performance boost when loading 512x512 (canvas size) images.
-        ' For now, the old function still exists to make sure we have a comparison if regressions are detected.
+        ' For now, the old function still exists to make sure regressions can be detected.
 
 101:
         ' Find most left
@@ -952,14 +964,10 @@ dBug:
 
 
 102:
-
-
         Const px As System.Drawing.GraphicsUnit = GraphicsUnit.Pixel
         Const fmtArgb As Imaging.PixelFormat = Imaging.PixelFormat.Format32bppArgb
         Dim boundsF As RectangleF = bmInput.GetBounds(px)
-        Dim bounds As New Rectangle
-        bounds.Location = New Point(CInt(boundsF.X), CInt(boundsF.Y))
-        bounds.Size = New Size(CInt(boundsF.Width), CInt(boundsF.Height))
+        Dim bounds As New Rectangle(New Point(CInt(boundsF.X), CInt(boundsF.Y)), New Size(CInt(boundsF.Width), CInt(boundsF.Height)))
         Dim bmClone As Bitmap = bmInput.Clone(bounds, fmtArgb)
         Dim bmData As System.Drawing.Imaging.BitmapData = bmClone.LockBits(bounds, Imaging.ImageLockMode.ReadWrite, bmClone.PixelFormat)
         Dim offsetToFirstPixel As IntPtr = bmData.Scan0
@@ -976,15 +984,10 @@ dBug:
         Dim X As Integer = 0
         Dim y As Integer = 0
 
-
-
         Debug.Print("from " & StartOffset & " to " & EndOffset & " (total bytes: " & bitmapBytes.Length & ")")
         Debug.Print("offset left from " & RectLeftOffset & " to " & RectRightOffset)
 
-
         Dim pixelLocation As Point
-
-
 
 251:
         For FirstOffsetInEachLine As Integer = StartOffset To EndOffset Step bmData.Stride
@@ -1001,9 +1004,9 @@ dBug:
                 'End If
 
                 ' Non-transparent
-                If bitmapBytes(FirstOffsetInEachLine + PixelOffset + 3) = 255 And _
-                    bitmapBytes(FirstOffsetInEachLine + PixelOffset) <> curTransparentColor.B And _
-                    bitmapBytes(FirstOffsetInEachLine + PixelOffset + 1) <> curTransparentColor.G And _
+                If bitmapBytes(FirstOffsetInEachLine + PixelOffset + 3) = 255 And
+                    bitmapBytes(FirstOffsetInEachLine + PixelOffset) <> curTransparentColor.B And
+                    bitmapBytes(FirstOffsetInEachLine + PixelOffset + 1) <> curTransparentColor.G And
                     bitmapBytes(FirstOffsetInEachLine + PixelOffset + 2) <> curTransparentColor.R Then
 
                     ' We found a non transparent color
@@ -1013,9 +1016,7 @@ dBug:
                     If y > coordB.Y Then coordB.Y = y ' Bottomright: move to bottom 
                     If X > coordB.X Then coordB.X = X ' Bottomright: move to right
 
-
                 End If
-
 
                 X += 1
             Next
@@ -1031,44 +1032,46 @@ dBug:
         bmClone.UnlockBits(bmData)
 
 
-
-
 901:
         'MsgBox("w,h=" & coordA.X & "," & coordA.Y & " --- " & coordB.X & "," & coordB.Y)
         ' enabled for cropping of frames, 20150619
         coordB.X += 1
         coordB.Y += 1
 
-
 999:
         ' 20170512 
-        ' HENDRIX found out that transparent frames can cause issues.
-        ' This is a more simple fix, since it seems this is valid in ZT1 after all?
+        ' HENDRIX found out that completely transparent frames can cause issues.
+        ' This is a simple fix, since it seems that a 1x1 frame is valid in ZT1, even if it's transparent.
         If coordA.X = bmInput.Width And coordA.Y = bmInput.Height Then
             coordA = New Point(0, 0)
             coordB = New Point(1, 1)
         End If
 
-
-
-        ' Test comparison
+        ' Test to compare with the older, slower method
         'Debug.Print("New defining x1,y1=" & coordA.X & "," & coordA.Y & " --- x2,y2 " & coordB.X & "," & coordB.Y)
         'Dim rectOld = bitmap_getDefiningRectangle_old(bmInput)
         'Debug.Print("Old defining x1,y1=" & rectOld.X & "," & rectOld.Y & " --- x2,y2 " & rectOld.Width + rectOld.X & "," & rectOld.Height + rectOld.Y)
 
         Return New Rectangle(coordA.X, coordA.Y, coordB.X - coordA.X, coordB.Y - coordA.Y)
 
-
         Exit Function
 
 dBug:
-        MsgBox("Error while obtaining the 'defining rectangle' of this graphic." & vbCrLf & _
-            "Erl " & Erl() & " - " & Err.Number & " - " & Err.Description & vbCrLf & _
-            "Last processed: " & pixellocation.x & " - " & pixellocation.y, _
+        MsgBox("Error while obtaining the 'defining rectangle' of this graphic." & vbCrLf &
+            "Erl " & Erl() & " - " & Err.Number & " - " & Err.Description & vbCrLf &
+            "Last processed: " & pixelLocation.X & " - " & pixelLocation.Y,
             vbOKOnly + vbCritical, "Critical error")
 
     End Function
-    Function bitmap_getDefiningRectangle_old(bmInput As Bitmap) As Rectangle
+
+
+    ''' <summary>
+    ''' Deprecated! Previous version of determining the relevant rectangle.
+    ''' Only left here in case a regression is spotted.
+    ''' </summary>
+    ''' <param name="bmInput">Bitmap image</param>
+    ''' <returns>Rectangle</returns>
+    Function Bitmap_GetDefiningRectangle_old(bmInput As Bitmap) As Rectangle
 
         On Error GoTo dBug
 
@@ -1200,13 +1203,19 @@ dBug:
         Exit Function
 
 dBug:
-        MsgBox("Error while obtaining the 'defining rectangle' of this graphic." & vbCrLf & _
-            "Erl " & Erl() & " - " & Err.Number & " - " & Err.Description, _
+        MsgBox("Error while obtaining the 'defining rectangle' of this graphic." & vbCrLf &
+            "Erl " & Erl() & " - " & Err.Number & " - " & Err.Description,
             vbOKOnly + vbCritical, "Critical error")
 
     End Function
 
-    Public Function images_Combine(ByVal imgBack As Image, ByVal imgFront As Image) As Image
+    ''' <summary>
+    ''' Combines two images into one
+    ''' </summary>
+    ''' <param name="imgBack">Image 1</param>
+    ''' <param name="imgFront">Image 2</param>
+    ''' <returns>Image</returns>
+    Public Function Images_Combine(ByVal imgBack As Image, ByVal imgFront As Image) As Image
         'this can now combine images of any size and will center them on each other
 
         Dim x_max As Integer = Math.Max(imgBack.Width, imgFront.Width)
@@ -1225,59 +1234,95 @@ dBug:
 
 
     ' === Extra ===
-    Sub update_info(strReason As String)
+
+    ''' <summary>
+    ''' Saves the main graphic as a ZT1 Graphic file.
+    ''' Saves as the specified filename.
+    ''' </summary>
+    ''' <param name="sFileName">Filename</param>
+    Sub Save_Graphic(sFileName As String)
+
+        ' 20150624. We have <filename>.pal here. 
+        ' We do this to avoid issues with shared color palettes, if users are NOT familiar with them.
+        ' We are assuming pro users will only tweak and use the batch conversion.
+        With editorGraphic
+            .FileName = sFileName
+            .ColorPalette.FileName = editorGraphic.FileName & ".pal"
+            .Write(sFileName, True)
+        End With
+
+50:
+        If cfg_export_ZT1_Ani = 1 Then
+            Debug.Print("Try .ani")
+            ' Get the folder + name of the folder + .ani
+            Dim cAni As New ClsAniFile(Path.GetDirectoryName(sFileName) & "\" & Path.GetFileName(Path.GetDirectoryName(sFileName)) & ".ani")
+            cAni.CreateAniConfig()
+        End If
+
+60:
+        FrmMain.ssFileName.Text = Now.ToString("yyyy-MM-dd HH:mm:ss") & ": saved " & sFileName
+
+
+    End Sub
+
+    ''' <summary>
+    ''' Updates info in main screen.
+    ''' Updates shown info such as animation speed, number of frames, current frame, ...
+    ''' Enables/disables certain controls (for example, button to render background frame)
+    ''' </summary>
+    ''' <param name="strReason"></param>
+    Sub Update_Info(strReason As String)
 
         ' Displays updated info.
 
-        With frmMain
+        With FrmMain
 
+            .tstZT1_AnimSpeed.Text = editorGraphic.AnimationSpeed
+            .tslFrame_Index.Text = IIf(editorGraphic.Frames.Count = 0, "-", (editorGraphic.Frames.IndexOf(editorFrame) + cfg_convert_startIndex) & " / " & (editorGraphic.Frames.Count - 1 + cfg_convert_startIndex - editorGraphic.ExtraFrame))
 
-            .tstZT1_AnimSpeed.Text = editorGraphic.animationSpeed
-            .tslFrame_Index.Text = IIf(editorGraphic.frames.Count = 0, "-", (editorGraphic.frames.IndexOf(editorFrame) + cfg_convert_startIndex) & " / " & (editorGraphic.frames.Count - 1 + cfg_convert_startIndex - editorGraphic.extraFrame))
-
-            Debug.Print("updated info. [" & strReason & "]. Total frames = " & (editorGraphic.frames.Count - cfg_convert_startIndex - editorGraphic.extraFrame))
+            Debug.Print("updated info. [" & strReason & "]. Total frames = " & (editorGraphic.Frames.Count - cfg_convert_startIndex - editorGraphic.ExtraFrame))
             'Debug.Print(editorGraphic.extraFrame)
 
-
-            With .tbFrames
+            With .TbFrames
                 .Minimum = 1
-                .Maximum = (editorGraphic.frames.Count - editorGraphic.extraFrame) ' for actually generated files: - editorGraphic.extraFrame)
+                .Maximum = (editorGraphic.Frames.Count - editorGraphic.ExtraFrame) ' for actually generated files: - editorGraphic.extraFrame)
 
                 If .Maximum < 1 Then
                     .Minimum = 1
                     .Maximum = 1
                 End If
-                If .Value < .Minimum Then .Value = .Minimum
+                If .Value < .Minimum Then
+                    .Value = .Minimum
+                End If
 
             End With
 
-
             ' == Graphic
-            .tsbGraphic_ExtraFrame.Enabled = (editorGraphic.frames.Count > 1)
-            .tsbGraphic_ExtraFrame.Checked = (editorGraphic.extraFrame = 1)
+            .tsbGraphic_ExtraFrame.Enabled = (editorGraphic.Frames.Count > 1)
+            .tsbGraphic_ExtraFrame.Checked = (editorGraphic.ExtraFrame = 1)
 
             ' == Frame
-            .tsbFrame_Delete.Enabled = (editorGraphic.frames.Count > 1)
+            .tsbFrame_Delete.Enabled = (editorGraphic.Frames.Count > 1)
             .tsbFrame_ExportPNG.Enabled = False
 
             '(IsNothing(editorGraphic.frames(0).cachedFrame) = False)
 
             If IsNothing(editorFrame) = False Then
-                If IsNothing(editorFrame.coreImageBitmap) = False Then
+                If IsNothing(editorFrame.CoreImageBitmap) = False Then
                     .tsbFrame_ExportPNG.Enabled = True
                 End If
             End If
 
 
-            .tsbFrame_ImportPNG.Enabled = (editorGraphic.frames.Count > 0)
+            .tsbFrame_ImportPNG.Enabled = (editorGraphic.Frames.Count > 0)
 
-            .tsbFrame_OffsetDown.Enabled = (editorGraphic.frames.Count > 0)
-            .tsbFrame_OffsetUp.Enabled = (editorGraphic.frames.Count > 0)
-            .tsbFrame_OffsetLeft.Enabled = (editorGraphic.frames.Count > 0)
-            .tsbFrame_OffsetRight.Enabled = (editorGraphic.frames.Count > 0)
+            .tsbFrame_OffsetDown.Enabled = (editorGraphic.Frames.Count > 0)
+            .tsbFrame_OffsetUp.Enabled = (editorGraphic.Frames.Count > 0)
+            .tsbFrame_OffsetLeft.Enabled = (editorGraphic.Frames.Count > 0)
+            .tsbFrame_OffsetRight.Enabled = (editorGraphic.Frames.Count > 0)
 
-            .tsbFrame_IndexIncrease.Enabled = (editorGraphic.frames.Count > 1 And editorGraphic.frames.IndexOf(editorFrame) <> (editorGraphic.frames.Count - 1 - editorGraphic.extraFrame))
-            .tsbFrame_IndexDecrease.Enabled = (editorGraphic.frames.Count > 1 And editorGraphic.frames.IndexOf(editorFrame) <> 0)
+            .tsbFrame_IndexIncrease.Enabled = (editorGraphic.Frames.Count > 1 And editorGraphic.Frames.IndexOf(editorFrame) <> (editorGraphic.Frames.Count - 1 - editorGraphic.ExtraFrame))
+            .tsbFrame_IndexDecrease.Enabled = (editorGraphic.Frames.Count > 1 And editorGraphic.Frames.IndexOf(editorFrame) <> 0)
 
             .picBox.BackColor = cfg_grid_BackGroundColor
 
@@ -1286,28 +1331,25 @@ dBug:
 
             Else
                 '.tbFrames.Value = editorGraphic.frames.IndexOf(editorFrame) + 1
-                .tslFrame_Offset.Text = editorFrame.offsetX & " , " & editorFrame.offsetY
+                .tslFrame_Offset.Text = editorFrame.OffsetX & " , " & editorFrame.OffsetY
             End If
 
-
-
-
         End With
-
-
-
-
 
     End Sub
 
 
-
-    Function grid_drawFootPrintXY(intFootPrintX As Integer, intFootPrintY As Integer, view As Byte) As Bitmap
+    ''' <summary>
+    ''' Draws an isometric grid (squares).
+    ''' </summary>
+    ''' <param name="intFootPrintX">Sets the amount of squares (X)</param>
+    ''' <param name="intFootPrintY">Sets the amount of squares (Y)</param>
+    ''' <returns></returns>
+    Function Grid_DrawFootPrintXY(intFootPrintX As Integer, intFootPrintY As Integer) As Bitmap
 
         ' Draws a certain amount of squares.
         ' ZT1 uses either 1/4th of a square, or complete squares from there on. 
         ' Anything else doesn't seem to be too reliable!
-
 
         ' This function calculates where to put the center of the image.
         ' View:
@@ -1318,36 +1360,27 @@ dBug:
 
         ' SE, x10, y8 = front view, 5 squares. Side: 4 squares.
 
-        ' We will need to draw a bitmap with our squares.
-        ' But first, we'll need to calculate the top left pixel of the center of our grid.
+        ' Draw bitmap with squares first.
+        ' To do so, calculate the top left pixel of the center of the grid.
 
         Dim intWidth As Integer = (intFootPrintX + intFootPrintY) * 16
         Dim intHeight As Integer = intWidth / 2
 
-        'every grid square adds this much for x and y - we must consider both directions to be efficient!
+        ' Every grid square adds this much for X and Y - consider both directions to be efficient!
         Dim x_dim As Integer = intFootPrintX * 16 + intFootPrintY * 16
         Dim y_dim As Integer = intFootPrintY * 8 + intFootPrintX * 8
         Dim bmInput As New Bitmap(x_dim * 2, y_dim * 2)
 
-        ' eerste punt tov onze gegenereerde grid: +16px Y (center)
-        ' eerste punt tov onze gegenereerde grid: intFootprintX * 32
+        ' first point of the generated grid: intFootprintX * 32, +16px Y (center), 
 
-        ' we need to find the center of our generated grid.
-        ' next, we need to align it with the center of our image.
+        ' Find the center of the grid generated.
+        ' Next, align it with the center of the image.
 
-        ' We know the starting coordinate. We know the number of squares. We know if it's even or not (= extra row) 
-        ' We will keep track of how many squares we draw.
-        ' We will not draw more squares than our max width.
-        Dim intRow As Integer = 1
+        ' Starting info: coordinate, number of squares, even or odd (= extra row) 
+        ' Keep track of how many squares are drawn
+        ' Do not draw more squares than the max width
 
-
-        Dim coord As New Point(0, 0)
-
-
-        coord.X = (intFootPrintX / 2) * 32 ' possibly adjustment of 16px needed (o the left?
-        Debug.Print(intHeight)
-
-        coord.Y = 0 'cfg_grid_numPixels '- (intHeight / 2)
+        Dim coord As New Point((intFootPrintX / 2) * 32, 0)
 
         ' Think with X=10,Y=8
         Dim intCurFootPrintX As Integer
@@ -1359,16 +1392,12 @@ dBug:
             coord.X = x_dim - (intWidth / 2) + (intFootPrintX / 2 * 32)
 
             coord.X = x_dim - (intWidth / 2)  ' Move to the left
-            coord.X = coord.X + ((intFootPrintX - intCurFootPrintX) / 2) * 32  ' What can we add?
+            coord.X += ((intFootPrintX - intCurFootPrintX) / 2) * 32  ' What can we add?
 
             'Debug.Print("X = " & coord.X)
 
             coord.Y = y_dim - (intHeight / 2) + 16 * (intCurFootPrintX / 2)
             coord.Y -= 16
-
-
-            'Debug.Print("Start: " & coord.X & "," & coord.Y)
-
 
             ' Draw the first block, which is easy. 
             For intCurFootPrintY = 2 To intFootPrintY Step 2
@@ -1379,31 +1408,32 @@ dBug:
 
                 'Debug.Print(" --> " & coord.X & "," & coord.Y)
 
-                grid_drawSquare(coord, bmInput)
+                Grid_DrawSquare(coord, bmInput)
 
             Next
-
 
         Next
 
         Return bmInput
 
-
-
-
     End Function
 
-    Function grid_drawSquare(coordTopLeft As Point, Optional bmInput As Bitmap = Nothing) As Bitmap
+    ''' <summary>
+    ''' Draws a square (for a grid)
+    ''' </summary>
+    ''' <param name="coordTopLeft">The top left coordinate</param>
+    ''' <param name="bmInput">The bitmap to drawn on. If not specified</param>
+    ''' <returns></returns>
+    Function Grid_DrawSquare(coordTopLeft As Point, Optional bmInput As Bitmap = Nothing) As Bitmap
 
         If IsNothing(bmInput) = True Then
-            bmInput = bm
+            bmInput = mdlSettings.BM
         End If
 
-        Dim intX As Integer = 0
+        Dim intX As Integer
         Dim intY As Integer = 0
 
         ' === Top left
-        intY = 0
         For intX = -31 To 0
 
             bmInput.SetPixel(coordTopLeft.X + intX, coordTopLeft.Y + intY, cfg_grid_ForeGroundColor)
@@ -1427,18 +1457,17 @@ dBug:
         bmInput.SetPixel(coordTopLeft.X + 1, coordTopLeft.Y, cfg_grid_ForeGroundColor)
         bmInput.SetPixel(coordTopLeft.X + 1, coordTopLeft.Y + 1, cfg_grid_ForeGroundColor)
 
-
-
         'picBox.Image = bmInput
 
         Return bmInput
 
-
     End Function
 
-
-    Sub pal_replaceColor(intIndex As Integer)
-
+    ''' <summary>
+    ''' Replaces color (specified by index) in the main color palette
+    ''' </summary>
+    ''' <param name="intIndex">Index of color to be replaced</param>
+    Sub Pal_ReplaceColor(intIndex As Integer)
 
         With frmMain.dlgColor
             .Color = frmMain.dgvPaletteMain.Rows(intIndex).DefaultCellStyle.BackColor
@@ -1450,62 +1479,84 @@ dBug:
 
         End With
 
-
-        editorGraphic.colorPalette.colors(intIndex) = frmMain.dlgColor.Color
-
-
+        editorGraphic.ColorPalette.Colors(intIndex) = frmMain.dlgColor.Color
 
         'frmMain.dgvPaletteMain.Rows(intIndex).DefaultCellStyle.BackColor = frmMain.dlgColor.Color
         'frmMain.dgvPaletteMain.Rows(intIndex).DefaultCellStyle.SelectionBackColor = frmMain.dlgColor.Color  ' prevent selection highlighting (blue)
 
         'On Error Resume Nex
 
-        editorGraphic.colorPalette.fillPaletteGrid(frmMain.dgvPaletteMain)
+        editorGraphic.ColorPalette.FillPaletteGrid(frmMain.dgvPaletteMain)
 
     End Sub
 
-    Sub pal_moveColor(intIndexNow As Integer, intIndexDest As Integer)
+    ''' <summary>
+    ''' Moves color in the palette to a new position.
+    ''' This has repercussions: order of colors changes, hex values need to be updated!
+    ''' </summary>
+    ''' <param name="intIndexNow">Current index</param>
+    ''' <param name="intIndexDest">Wanted index</param>
+    Sub Pal_MoveColor(intIndexNow As Integer, intIndexDest As Integer)
 
         ' Get color
-        Dim c As System.Drawing.Color = editorGraphic.colorPalette.colors(intIndexNow)
+        Dim cColorToMove As System.Drawing.Color = editorGraphic.ColorPalette.Colors(intIndexNow)
 
         ' Delete the original.
-        editorGraphic.colorPalette.colors.RemoveAt(intIndexNow)
+        editorGraphic.ColorPalette.Colors.RemoveAt(intIndexNow)
 
         ' We had the color. Insert it at the position we want.
-        editorGraphic.colorPalette.colors.Insert(intIndexDest, c)
+        editorGraphic.ColorPalette.Colors.Insert(intIndexDest, cColorToMove)
 
         ' Refresh
-        editorGraphic.colorPalette.fillPaletteGrid(frmMain.dgvPaletteMain)
+        editorGraphic.ColorPalette.FillPaletteGrid(frmMain.dgvPaletteMain)
 
         ' Update coreImageHex for each frame. Color indexes have changed.
-        For Each ztFrame As clsFrame2 In editorGraphic.frames
-            ztFrame.coreImageHex = Nothing
-            ztFrame.bitmap_to_hex() ' 20170519 - is it necessary to update this already? It could be generated when called.
+        For Each ztFrame As ClsFrame2 In editorGraphic.Frames
+            ztFrame.CoreImageHex = Nothing
+            ztFrame.Bitmap_to_hex() ' 20170519 - is it necessary to update this already? It could be generated when called.
         Next
 
 
     End Sub
 
-    Sub pal_addColor(intIndexNow As Integer)
+    ''' <summary>
+    ''' Adds a new color entry at the specified index. 
+    ''' The color hasn't been picked yet, so by default it's transparent.
+    ''' </summary>
+    ''' <param name="intIndexNow">Index</param>
+    Sub Pal_AddColor(intIndexNow As Integer)
 
         ' Get color
-        Dim c As System.Drawing.Color = Color.Transparent
+        Dim cColor As System.Drawing.Color = cfg_grid_BackGroundColor
 
 
-        ' We had the color. Insert it at the position we want.
-        editorGraphic.colorPalette.colors.Insert(intIndexNow + 1, c)
+        With frmMain.dlgColor
+            .Color = cColor
+
+            .AllowFullOpen = True
+            .FullOpen = True
+            .SolidColorOnly = True
+            .ShowDialog()
+
+        End With
+
+        cColor = frmMain.dlgColor.Color
+
+        ' Insert it at the position we want.
+        editorGraphic.ColorPalette.Colors.Insert(intIndexNow + 1, cColor)
 
         ' Refresh
-        editorGraphic.colorPalette.fillPaletteGrid(frmMain.dgvPaletteMain)
-
+        editorGraphic.ColorPalette.FillPaletteGrid(frmMain.dgvPaletteMain)
 
 
     End Sub
 
 
-
-    Sub pal_open(strFileName As String)
+    ''' <summary>
+    ''' Opens a color palette, displays it as a separate window.
+    ''' </summary>
+    ''' <param name="strFileName">Filename of the ZT1 color palette (.pal)</param>
+    Sub Pal_Open(strFileName As String)
 
         If File.Exists(strFileName) Then
 
@@ -1514,87 +1565,82 @@ dBug:
 
             Else
 
-                Dim c As New clsPalette(Nothing)
+                Dim cpPallete As New ClsPalette(Nothing)
                 Dim frmColPal As New frmPal
 
                 ' Read the .pal file
-                If c.readPal(strFileName) <> 0 Then
+                If cpPallete.ReadPal(strFileName) <> 0 Then
 
-
-                    c.fillPaletteGrid(frmColPal.dgvPal)
+                    cpPallete.FillPaletteGrid(frmColPal.dgvPal)
 
                     frmColPal.ssFileName.Text = Path.GetFileName(strFileName)
 
-                    If c.colors.Count <> 9 And c.colors.Count <> 17 Then
-                        ' This feature was originally meant to show a preview using the pal8 or pal16-files.
-                        ' However, it might be extended for use with recolors - there, we don't know the number of colors in the palette.
-
-                        'frmColPal.Controls.Remove(frmColPal.btnUseInMainPal)
-                    End If
+                    ' This feature was originally meant to show a preview using the pal8 or pal16-files.
+                    ' That's why initially when loading another color palette (separate window), the button to replace the main palette with this palette, 
+                    ' was originally exclusive to color palettes which contained 8 or 16 colors (+1 transparent)
+                    ' However, it might be extended so it can be used with recolors. In which case the number of colors is unknown.
+                    ' If cpPallete.Colors.Count <> 9 And cpPallete.Colors.Count <> 17 Then
+                    '   frmColPal.Controls.Remove(frmColPal.btnUseInMainPal)
+                    ' End If
 
                     frmColPal.Show()
-
 
                 End If
 
             End If
 
-
         End If
-
-
 
     End Sub
 
-
-
-
-
-    Public Sub batch_rotationfix_folder_ZT1(strPath As String, pntOffset As Point, Optional PB As ProgressBar = Nothing)
-
-        ' This will find all ZT1 Graphics in a folder and adjust the rotations within that folder. 
-        ' It's especially useful when you import frames from a program like Blender and you notice the animal should be a bit more central (up/down).
-        ' The progress can be shown in a progress bar.
+    ''' <summary>
+    ''' Batch rotation fixes all animations in a selected folder.
+    ''' This sub will find all ZT1 Graphics in the folder and adjust the offsets of each frame.
+    '''  
+    ''' It's especially useful when importing frames from another program, such as Blender, and the user sees the animal should just be a bit more central (up/down).
+    ''' </summary>
+    ''' <param name="strPath">Path to folder</param>
+    ''' <param name="pntOffset">The offsets to apply</param>
+    ''' <param name="PB">The bar which will indicate progress</param>
+    Public Sub Batch_RotationFix_Folder_ZT1(strPath As String, pntOffset As Point, Optional PB As ProgressBar = Nothing)
 
         On Error GoTo dBug
 
 0:
 
-        ' First we will create a recursive list.
+        ' Creating a recursive file list.
 
         ' This list stores the results.
-        Dim result As New List(Of String)
+        Dim lstFiles As New List(Of String)
 
         ' This stack stores the directories to process.
-        Dim stack As New Stack(Of String)
+        Dim stackDirectories As New Stack(Of String)
 
         ' Add the initial directory
-        stack.Push(strPath)
+        stackDirectories.Push(strPath)
 
 10:
 
         ' Continue processing for each stacked directory
-        Do While (stack.Count > 0)
+        Do While (stackDirectories.Count > 0)
             ' Get top directory string
 
 15:
-
-
-            Dim dir As String = stack.Pop
+            Dim strDirectory As String = stackDirectories.Pop
 
 20:
-            For Each f As String In Directory.GetFiles(dir, "*")
+            For Each strFile As String In Directory.GetFiles(strDirectory, "*")
                 ' Only ZT1 files
-                If Path.GetExtension(f) = vbNullString Then
-                    result.Add(f)
+                If Path.GetExtension(strFile) = vbNullString Then
+                    lstFiles.Add(strFile)
                 End If
             Next
 
 25:
             ' Loop through all subdirectories and add them to the stack.
-            Dim directoryName As String
-            For Each directoryName In Directory.GetDirectories(dir)
-                stack.Push(directoryName)
+            Dim strSubDirectoryName As String
+            For Each strSubDirectoryName In Directory.GetDirectories(strDirectory)
+                stackDirectories.Push(strSubDirectoryName)
             Next
 
         Loop
@@ -1604,76 +1650,75 @@ dBug:
         If IsNothing(PB) = False Then
             PB.Minimum = 0
             PB.Value = 0
-            PB.Maximum = result.Count
+            PB.Maximum = lstFiles.Count
         End If
 
 1000:
         ' For each file that is a ZT1 Graphic:
-        For Each f As String In result
+        For Each f As String In lstFiles
             Debug.Print("Processing: " & f)
 
-
             ' Read graphic, update offsets of frames, save.
-            Dim g As New clsGraphic2
+            Dim g As New ClsGraphic2
 
 1100:
-            g.read(f)
+            g.Read(f)
 
 1105:
-            g.frames(0).updateOffsets(pntOffset, True)
+            g.Frames(0).UpdateOffsets(pntOffset, True)
 
 1110:
-            g.write(f)
+            g.Write(f)
 
             If IsNothing(PB) = False Then
                 PB.Value += 1
             End If
         Next
 
-
 1200:
         ' Generate a .ani-file in each directory. 
         ' Add the initial directory
         batch_generate_Ani(strPath)
 
-
-
 1950:
         MsgBox("Finished batch rotation fixing.", vbOKOnly + vbInformation, "Finished job")
-
 
         Exit Sub
 
 dBug:
 
-        MsgBox("An error occured while trying to list and batch rotation fix ZT1 Graphic files in this folder: " & vbCrLf & _
-            strPath & vbCrLf & vbCrLf & "Line: " & Erl() & vbCrLf & Err.Number & " - " & Err.Description, _
+        MsgBox("An error occured while trying to list and batch rotation fix ZT1 Graphic files in this folder: " & vbCrLf &
+            strPath & vbCrLf & vbCrLf & "Line: " & Erl() & vbCrLf & Err.Number & " - " & Err.Description,
             vbOKOnly + vbCritical, "Error during batch rotation fixing")
 
     End Sub
 
+    ''' <summary>
+    ''' Attempts to create .ani file for each animation. Experimental.
+    ''' </summary>
+    ''' <param name="strPath">Path to folder</param>
+    Sub Batch_Generate_Ani(strPath As String)
 
-    Function batch_generate_Ani(strPath As String) As Integer
+        Dim stackDirectories As New Stack(Of String)
 
-        Dim stack As New Stack(Of String)
+        stackDirectories.Push(strPath)
 
-        stack.Push(strPath)
         ' Continue processing for each stacked directory
-        Do While (stack.Count > 0)
+        Do While (stackDirectories.Count > 0)
             ' Get top directory string
 
-            Dim dir As String = stack.Pop
+            Dim strDirectoryName As String = stackDirectories.Pop
 
             If cfg_export_ZT1_Ani = 1 Then
-                Dim cAni As New clsAniFile(dir & "\" & Path.GetFileName(dir) & ".ani")
+                Dim cAni As New ClsAniFile(strDirectoryName & "\" & Path.GetFileName(strDirectoryName) & ".ani")
                 Debug.Print(Now.ToString() & ": Generate .ani file (batch conversion)")
-                cAni.createAniConfig()
+                cAni.CreateAniConfig()
             End If
 
             ' Loop through all subdirectories and add them to the stack.
-            Dim directoryName As String
-            For Each directoryName In Directory.GetDirectories(dir)
-                stack.Push(directoryName)
+            Dim strSubDirectoryName As String
+            For Each strSubDirectoryName In Directory.GetDirectories(strDirectoryName)
+                stackDirectories.Push(strSubDirectoryName)
             Next
 
         Loop
@@ -1681,35 +1726,30 @@ dBug:
         ' Make sure everything is finished.
         Application.DoEvents()
 
-        Return 0
-
-        Exit Function
+        Exit Sub
 
 dBug:
 
-        MsgBox("An error occured while trying to list and batch rotation fix ZT1 Graphic files in this folder: " & vbCrLf & _
-            strPath & vbCrLf & vbCrLf & "Line: " & Erl() & vbCrLf & Err.Number & " - " & Err.Description, _
+        MsgBox("An error occured while trying to list and batch rotation fix ZT1 Graphic files in this folder: " & vbCrLf &
+            strPath & vbCrLf & vbCrLf & "Line: " & Erl() & vbCrLf & Err.Number & " - " & Err.Description,
             vbOKOnly + vbCritical, "Error during batch rotation fixing")
 
-        Return -1
 
-    End Function
+    End Sub
 
-
-    Function ztStudio_StartUp() As Byte
+    ''' <summary>
+    ''' Loads settings
+    ''' Processes command line parameters
+    ''' </summary>
+    Sub ZTStudio_StartUp()
 
         On Error GoTo dBug
 
-
-
-
-
 10:
-
         ' Load the initial config. 
         ' settings.cfg contains the default values.
         ' Some parameters can be overwritten by the command line parameters; but they are not stored permanently.
-        clsTasks.config_load()
+        clsTasks.Config_load()
 
 20:
 
@@ -1722,7 +1762,6 @@ dBug:
         For Each arg As String In Environment.GetCommandLineArgs()
 
             Debug.Print(arg)
-
 
             ' Arguments are specified as:  ZTStudio.exe /arg1:<val1> /argN:<valN>
             ' We are expecting valid arguments.
@@ -1759,7 +1798,7 @@ dBug:
 
                     ' Conversion options
                 Case "/conversionoptions.deleteoriginal" : cfg_convert_deleteOriginal = (CByte(argV) = 1)
-                Case "/conversionoptions.filenamedelimeter" : cfg_convert_deleteOriginal = argV
+                Case "/conversionoptions.filenamedelimiter" : cfg_convert_deleteOriginal = argV
                 Case "/conversionoptions.overwrite" : cfg_convert_overwrite = (CByte(argV) = 1)
                 Case "/conversionoptions.pngfilesindex" : cfg_convert_startIndex = CByte(argV)
                 Case "/conversionoptions.sharedpalette" : cfg_convert_sharedPalette = (CByte(argV) = 1)
@@ -1770,8 +1809,6 @@ dBug:
 
                     ' Not remembered but can be supplied:  
                 Case "/extra.colorquantization" : cfg_palette_quantization = CByte(argV)
-
-
 
                     ' These are actions. 
                     ' An action can be an automated process doing lots of stuff (e.g. convertfolder)
@@ -1788,9 +1825,6 @@ dBug:
                     strArgAction = "convertfile"
                     strArgActionValue = argV
 
-
-
-
             End Select
             ' Parameters?
 
@@ -1800,40 +1834,38 @@ dBug:
 
         Next
 
-
 30:
-        ' See which action was specified. 
-        ' We do this now because users might quickly change the order of arguments. 
-        ' Eg if they say  ZTStudio.exe /convertFolder:<path> /ZTAF:1 instead of /ZTAF:1 /convertFolder:<path>, they might not get the right result.
+        ' See which action was specified and only do the conversion now.
+        ' Users could assume the order of parameters doesn't matter, for instance:
+        ' ZTStudio.exe /convertFolder:<path> /ZTAF:1 -> would have been converted already while not respecting this configuration option. 
+        ' ZTStudio.exe /ZTAF:1 /convertFolder:<path> -> would correctly apply the configuration option.
+        ' Assume users are unaware and make it easy for them not to get frustrated, so only convert at the en:
+
         Select Case strArgAction
 
             Case "convertfile.topng"
                 ' Do conversion.
                 ' Then exit.
-                clsTasks.convert_file_ZT1_to_PNG(strArgActionValue)
-
+                clsTasks.Convert_file_ZT1_to_PNG(strArgActionValue)
                 End
+
             Case "convertfile.tozt1"
                 ' Do conversion.
                 ' Then exit.
-                clsTasks.convert_file_PNG_to_ZT1(strArgActionValue)
-
+                clsTasks.Convert_file_PNG_to_ZT1(strArgActionValue)
                 End
 
             Case "convertfolder.topng"
-
                 ' Do conversion.
                 ' Then exit.
-                clsTasks.convert_folder_ZT1_to_PNG(strArgActionValue)
-
+                clsTasks.Convert_folder_ZT1_to_PNG(strArgActionValue)
                 End
 
             Case "convertfolder.tozt1"
 
                 ' Do conversion.
                 ' Then exit.
-                clsTasks.convert_folder_PNG_to_ZT1(strArgActionValue)
-
+                clsTasks.Convert_folder_PNG_to_ZT1(strArgActionValue)
                 End
 
 
@@ -1843,40 +1875,34 @@ dBug:
 
         End Select
 
-
-
-        Return 0
-
-
+        Exit Sub
 
 dBug:
 
-        If MsgBox("It seems an invalid value for a command line argument was specified (" & argK & ")." & vbCrLf & _
-            "Please read the proper documentation and specify values properly." & vbCrLf & _
-            vbCrLf & _
-            "Example:" & vbCrLf & _
-            "ZTStudio.exe /convertFolder:path-to-folder /ZTAF:1" & vbCrLf & vbCrLf & _
-            "Details: error in ztStudio_StartUp at line " & Erl() & vbCrLf & Err.Number & " - " & Err.Description, vbOKOnly + vbCritical, "Invalid value for command line argument") = vbOK Then
+        If MsgBox("It seems an invalid value for a command line argument was specified (" & argK & ")." & vbCrLf &
+            "Please read the proper documentation and specify values properly." & vbCrLf &
+            vbCrLf &
+            "Example:" & vbCrLf &
+            "ZTStudio.exe /convertFolder:path-to-folder /ZTAF:1" & vbCrLf & vbCrLf &
+            "Details: error in ztStudio_StartUp() at line " & Erl() & vbCrLf & Err.Number & " - " & Err.Description, vbOKOnly + vbCritical, "Invalid value for command line argument") = vbOK Then
             End
         End If
 
 
-    End Function
+    End Sub
 
 
-    Function ztStudio_TestMainFeatures() As Byte
+    Sub ZTStudio_TestMainFeatures()
 
         ' To be implemented. 
-        ' This function is meant to check if our (main) functions still give the results we expect. 
-        ' We can do this most efficiently of we go for a batch conversion ( ZT1 <=> PNG or reversed ) and check hashes of the files.
-        ' Other things to check, might include modifications to the color palette.
+        ' This function is meant to check if the (main) functions still give the results we expect. 
+        ' Could be done by using some predefined tasks, such as batch conversion ( ZT1 <=> PNG or reversed ) and check if file hashes are still as expected.
+        ' Other things to check might include making modifications to the color palette.
 
         ' The idea is to add this check once the Red Panda gets released at Zoo Tek Phoenix.
 
 
 
-        Return 0
-
-    End Function
+    End Sub
 
 End Module

@@ -11,8 +11,9 @@
     <AssemblyName>ZT Studio</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <MyType>WindowsForms</MyType>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <IsWebBootstrapper>false</IsWebBootstrapper>
+    <TargetFrameworkProfile />
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -23,10 +24,10 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>false</MapFileExtensions>
-    <ApplicationRevision>829</ApplicationRevision>
-    <ApplicationVersion>1.0.2016.%2a</ApplicationVersion>
+    <ApplicationRevision>815</ApplicationRevision>
+    <ApplicationVersion>1.0.2019.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
-    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <BootstrapperEnabled>false</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -98,39 +99,39 @@
     <Compile Include="cls\clsGraphic2.vb" />
     <Compile Include="cls\clsList.vb" />
     <Compile Include="cls\clsString.vb" />
-    <Compile Include="cls\clsTasks.vb" />
+    <Compile Include="cls\ClsTasks.vb" />
     <Compile Include="cls\clsPalette.vb" />
     <Compile Include="cls\mdlSettings.vb" />
     <Compile Include="cls\mdlTests.vb" />
-    <Compile Include="forms\frmBatchConversion.Designer.vb">
-      <DependentUpon>frmBatchConversion.vb</DependentUpon>
+    <Compile Include="forms\FrmBatchConversion.Designer.vb">
+      <DependentUpon>FrmBatchConversion.vb</DependentUpon>
     </Compile>
-    <Compile Include="forms\frmBatchConversion.vb">
+    <Compile Include="forms\FrmBatchConversion.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="forms\frmBatchRotationFix.Designer.vb">
-      <DependentUpon>frmBatchRotationFix.vb</DependentUpon>
+    <Compile Include="forms\FrmBatchRotationFix.Designer.vb">
+      <DependentUpon>FrmBatchRotationFix.vb</DependentUpon>
     </Compile>
-    <Compile Include="forms\frmBatchRotationFix.vb">
+    <Compile Include="forms\FrmBatchRotationFix.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="forms\frmMain.vb">
+    <Compile Include="forms\FrmMain.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="forms\frmMain.Designer.vb">
-      <DependentUpon>frmMain.vb</DependentUpon>
+    <Compile Include="forms\FrmMain.Designer.vb">
+      <DependentUpon>FrmMain.vb</DependentUpon>
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="forms\frmPal.Designer.vb">
-      <DependentUpon>frmPal.vb</DependentUpon>
+    <Compile Include="forms\FrmPal.Designer.vb">
+      <DependentUpon>FrmPal.vb</DependentUpon>
     </Compile>
-    <Compile Include="forms\frmPal.vb">
+    <Compile Include="forms\FrmPal.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="forms\frmSettings.Designer.vb">
-      <DependentUpon>frmSettings.vb</DependentUpon>
+    <Compile Include="forms\FrmSettings.Designer.vb">
+      <DependentUpon>FrmSettings.vb</DependentUpon>
     </Compile>
-    <Compile Include="forms\frmSettings.vb">
+    <Compile Include="forms\FrmSettings.vb">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="My Project\AssemblyInfo.vb" />
@@ -150,21 +151,21 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="forms\frmBatchConversion.resx">
-      <DependentUpon>frmBatchConversion.vb</DependentUpon>
+    <EmbeddedResource Include="forms\FrmBatchConversion.resx">
+      <DependentUpon>FrmBatchConversion.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="forms\frmBatchRotationFix.resx">
-      <DependentUpon>frmBatchRotationFix.vb</DependentUpon>
+    <EmbeddedResource Include="forms\FrmBatchRotationFix.resx">
+      <DependentUpon>FrmBatchRotationFix.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="forms\frmMain.resx">
-      <DependentUpon>frmMain.vb</DependentUpon>
+    <EmbeddedResource Include="forms\FrmMain.resx">
+      <DependentUpon>FrmMain.vb</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="forms\frmPal.resx">
-      <DependentUpon>frmPal.vb</DependentUpon>
+    <EmbeddedResource Include="forms\FrmPal.resx">
+      <DependentUpon>FrmPal.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="forms\frmSettings.resx">
-      <DependentUpon>frmSettings.vb</DependentUpon>
+    <EmbeddedResource Include="forms\FrmSettings.resx">
+      <DependentUpon>FrmSettings.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="My Project\Resources.resx">
       <Generator>VbMyResourcesResXFileCodeGenerator</Generator>
@@ -190,9 +191,9 @@
     <Content Include="Zebra.ico" />
   </ItemGroup>
   <ItemGroup>
-    <BootstrapperPackage Include=".NETFramework,Version=v4.5">
+    <BootstrapperPackage Include=".NETFramework,Version=v4.7.2">
       <Visible>False</Visible>
-      <ProductName>Microsoft .NET Framework 4.5 %28x86 and x64%29</ProductName>
+      <ProductName>Microsoft .NET Framework 4.7.2 %28x86 and x64%29</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">

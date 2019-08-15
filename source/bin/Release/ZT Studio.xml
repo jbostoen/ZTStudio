@@ -2,23 +2,170 @@
 <doc>
 <assembly>
 <name>
-ZTStudio
+ZT Studio
 </name>
 </assembly>
 <members>
+<member name="T:ZTStudio.My.Resources.Resources">
+<summary>
+  A strongly-typed resource class, for looking up localized strings, etc.
+</summary>
+</member>
 <member name="P:ZTStudio.My.Resources.Resources.ResourceManager">
-	<summary>
+<summary>
   Returns the cached ResourceManager instance used by this class.
 </summary>
-</member><member name="P:ZTStudio.My.Resources.Resources.Culture">
-	<summary>
+</member>
+<member name="P:ZTStudio.My.Resources.Resources.Culture">
+<summary>
   Overrides the current thread's CurrentUICulture property for all
   resource lookups using this strongly typed resource class.
 </summary>
-</member><member name="T:ZTStudio.My.Resources.Resources">
-	<summary>
-  A strongly-typed resource class, for looking up localized strings, etc.
-</summary>
+</member>
+<member name="M:ZTStudio.ClsFrame2.#ctor(ZTStudio.ClsGraphic2)">
+ <summary>
+ New frame object has been created.
+ </summary>
+ <param name="myParent"></param>
+</member>
+<member name="P:ZTStudio.ClsFrame2.CoreImageHex">
+ <summary>
+ Hex values for this ZT1 frame (if set)
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:ZTStudio.ClsFrame2.CoreImageBitmap">
+ <summary>
+ Image bitmap (if set)
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:ZTStudio.ClsFrame2.Parent">
+ <summary>
+ Parent graphic of this ZT1 frame
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:ZTStudio.ClsFrame2.LastUpdated">
+ <summary>
+ Timestamp of last update. Used to see if re-rendering the frame is needed.
+ </summary>
+ <returns>Timestamp</returns>
+</member>
+<member name="M:ZTStudio.ClsFrame2.GetCoreImageBitmap">
+ <summary>
+ Returns the core bitmap image. 
+ If the ZT1 Graphic has been rendered (CoreImageBitmap is set), it returns this cached version.
+ If the ZT1 Graphic hasn't been rendered yet, it renders the ZT1 Graphic from the hex values.
+ </summary>
+ <returns></returns>
+</member>
+<member name="M:ZTStudio.ClsFrame2.GetImage(System.Boolean,System.Boolean)">
+ <summary>
+ Returns a bitmap image for this frame.
+ If a background frame within this graphic exists, it will also be rendered if enabled. (for example: Restaurant)
+ If a background graphic has been set, it will also be rendered if enabled. (for example: Orang Utan toy)
+ </summary>
+ <param name="blnDrawGrid">Add grid. Defaults to false.</param>
+ <param name="blnCentered"></param>
+ <returns></returns>
+</member>
+<member name="M:ZTStudio.clsTasks.Update_preview(System.Int32)">
+ <summary>
+ 
+ </summary>
+ <param name="intIndexFrameNumber"></param>
+</member>
+<member name="M:ZTStudio.clsTasks.Bitmap_getCropped(System.Drawing.Bitmap,System.Drawing.Rectangle)">
+ <summary>
+ Returns a cropped version of the given bitmap
+ </summary>
+ <param name="bmInput">Bitmap image</param>
+ <param name="rRectangle">Rectangle used to crop the bitmap</param>
+ <returns>Bitmap</returns>
+</member>
+<member name="M:ZTStudio.clsTasks.Bitmap_getDefiningRectangle(System.Drawing.Bitmap)">
+ <summary>
+ Returns the defining rectangle for this bitmap.
+ This means the rectangle which contains all colored (non-transparent) pixels
+ </summary>
+ <param name="bmInput">Bitmap image</param>
+ <returns>Rectangle</returns>
+</member>
+<member name="M:ZTStudio.clsTasks.bitmap_getDefiningRectangle_old(System.Drawing.Bitmap)">
+ <summary>
+ Deprecated! Previous version of determining the relevant rectangle.
+ Only left here in case a regression is spotted.
+ </summary>
+ <param name="bmInput">Bitmap image</param>
+ <returns>Rectangle</returns>
+</member>
+<member name="M:ZTStudio.clsTasks.Save_Graphic(System.String)">
+ <summary>
+ Saves the main graphic as a ZT1 Graphic file.
+ Saves as the specified filename.
+ </summary>
+ <param name="sFileName">Filename</param>
+</member>
+<member name="M:ZTStudio.clsTasks.Update_Info(System.String)">
+ <summary>
+ Updates info in main screen.
+ Updates shown info such as animation speed, number of frames, current frame, ...
+ Enables/disables certain controls (for example, button to render background frame)
+ </summary>
+ <param name="strReason"></param>
+</member>
+<member name="M:ZTStudio.clsTasks.Grid_DrawFootPrintXY(System.Int32,System.Int32)">
+ <summary>
+ Draws an isometric grid (squares).
+ </summary>
+ <param name="intFootPrintX">Sets the amount of squares (X)</param>
+ <param name="intFootPrintY">Sets the amount of squares (Y)</param>
+ <returns></returns>
+</member>
+<member name="M:ZTStudio.clsTasks.Grid_DrawSquare(System.Drawing.Point,System.Drawing.Bitmap)">
+ <summary>
+ Draws a square (for a grid)
+ </summary>
+ <param name="coordTopLeft">The top left coordinate</param>
+ <param name="bmInput">The bitmap to drawn on. If not specified</param>
+ <returns></returns>
+</member>
+<member name="M:ZTStudio.clsTasks.Pal_ReplaceColor(System.Int32)">
+ <summary>
+ Replaces color (specified by index) in the main color palette
+ </summary>
+ <param name="intIndex">Index of color to be replaced</param>
+</member>
+<member name="M:ZTStudio.clsTasks.Pal_MoveColor(System.Int32,System.Int32)">
+ <summary>
+ Moves color in the palette to a new position.
+ This has repercussions: order of colors changes, hex values need to be updated!
+ </summary>
+ <param name="intIndexNow">Current index</param>
+ <param name="intIndexDest">Wanted index</param>
+</member>
+<member name="M:ZTStudio.clsTasks.Pal_AddColor(System.Int32)">
+ <summary>
+ Adds a new color entry at the specified index. 
+ The color hasn't been picked yet, so by default it's transparent.
+ </summary>
+ <param name="intIndexNow">Index</param>
+</member>
+<member name="M:ZTStudio.ClsPalette.GetColorIndex(System.Drawing.Color,System.Boolean)">
+ <summary>
+ Returns the index of a color within this palette.
+ </summary>
+ <param name="cColor">The color of which the index in this palette should be returned</param>
+ <param name="blnAddToPalette">Add the color to the palette if it's not present</param>
+ <returns></returns>
+</member>
+<member name="M:ZTStudio.frmMain.mnuPal_ImportGimpPalette_Click(System.Object,System.EventArgs)">
+ <summary>
+ Button triggers an action to import a GIMP Color Palette
+ </summary>
+ <param name="sender"></param>
+ <param name="e"></param>
 </member>
 </members>
 </doc>

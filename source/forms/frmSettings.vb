@@ -1,18 +1,18 @@
 ﻿Option Explicit On
- 
-Public Class frmSettings
 
-    Private Sub frmSettings_FormClosing(sender As Object, e As FormClosingEventArgs) Handles Me.FormClosing
+Public Class FrmSettings
+
+    Private Sub FrmSettings_FormClosing(sender As Object, e As FormClosingEventArgs) Handles Me.FormClosing
 
         ' Just re-load the settings here to apply them.
-        clsTasks.config_write()
+        clsTasks.Config_write()
 
-        clsTasks.config_load()
+        clsTasks.Config_load()
 
 
     End Sub
 
-    Private Sub frmSettings_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+    Private Sub FrmSettings_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
 
 
@@ -46,7 +46,7 @@ Public Class frmSettings
         chkConvert_SharedColorPalette.Checked = (cfg_convert_sharedPalette = 1)
         chkConvert_Overwrite.Checked = (cfg_convert_overwrite = 1)
         numConvert_PNGStartIndex.Value = cfg_convert_startIndex
-        chkPNGTransparentBG.checked = (cfg_export_PNG_TransparentBG = 1)
+        chkPNGTransparentBG.Checked = (cfg_export_PNG_TransparentBG = 1)
 
 
         ' Frame
@@ -59,7 +59,7 @@ Public Class frmSettings
 
     End Sub
 
-    Private Sub btnBrowse_Click(sender As Object, e As EventArgs) Handles btnBrowse.Click
+    Private Sub BtnBrowse_Click(sender As Object, e As EventArgs) Handles btnBrowse.Click
 
         With dlgBrowseFolder
 
@@ -77,7 +77,7 @@ Public Class frmSettings
 
     End Sub
 
-    Private Sub btnBrowsePal8_Click(sender As Object, e As EventArgs) Handles btnBrowsePal8.Click
+    Private Sub BtnBrowsePal8_Click(sender As Object, e As EventArgs) Handles btnBrowsePal8.Click
 
         With dlgBrowseFolder
 
@@ -95,7 +95,7 @@ Public Class frmSettings
 
     End Sub
 
-    Private Sub btnBrowsePal16_Click(sender As Object, e As EventArgs) Handles btnBrowsePal16.Click
+    Private Sub BtnBrowsePal16_Click(sender As Object, e As EventArgs) Handles btnBrowsePal16.Click
 
         With dlgBrowseFolder
 
@@ -116,20 +116,20 @@ Public Class frmSettings
 
 
 
-    Private Sub cboPNGExport_Crop_SelectedValueChanged(sender As Object, e As EventArgs) Handles cboPNGExport_Crop.SelectedValueChanged
-
+    Private Sub CboPNGExport_Crop_SelectedValueChanged(sender As Object, e As EventArgs) Handles cboPNGExport_Crop.SelectedValueChanged
 
         ' 0 = normal;
         ' 1 = cropped to relevant pixels of the largest frame;
         ' 2 = cropped to relevant pixels of this frame;
-        If cboPNGExport_Crop.IsHandleCreated = False Then Exit Sub
+        If cboPNGExport_Crop.IsHandleCreated = False Then
+            Exit Sub
+        End If
+
         cfg_export_PNG_CanvasSize = cboPNGExport_Crop.SelectedIndex
-
-
 
     End Sub
 
-    Private Sub chkRenderFrame_RenderExtraFrame_CheckedChanged(sender As Object, e As EventArgs) Handles chkRenderFrame_RenderExtraFrame.CheckedChanged
+    Private Sub ChkRenderFrame_RenderExtraFrame_CheckedChanged(sender As Object, e As EventArgs) Handles chkRenderFrame_RenderExtraFrame.CheckedChanged
 
         If chkRenderFrame_RenderExtraFrame.IsHandleCreated = False Then Exit Sub
         cfg_export_PNG_RenderBGFrame = CByte(chkRenderFrame_RenderExtraFrame.Checked * -1)
@@ -137,14 +137,14 @@ Public Class frmSettings
 
     End Sub
 
-    Private Sub chkExportPNG_BGGraphic_CheckedChanged(sender As Object, e As EventArgs) Handles chkRenderFrame_BGGraphic.CheckedChanged
+    Private Sub ChkExportPNG_BGGraphic_CheckedChanged(sender As Object, e As EventArgs) Handles chkRenderFrame_BGGraphic.CheckedChanged
 
         If chkRenderFrame_BGGraphic.IsHandleCreated = False Then Exit Sub
         cfg_export_PNG_RenderBGZT1 = CByte(chkRenderFrame_BGGraphic.Checked * -1)
 
     End Sub
 
-    Private Sub numExportPNG_StartIndex_ValueChanged(sender As Object, e As EventArgs) Handles numConvert_PNGStartIndex.ValueChanged
+    Private Sub NumExportPNG_StartIndex_ValueChanged(sender As Object, e As EventArgs) Handles numConvert_PNGStartIndex.ValueChanged
 
         If numConvert_PNGStartIndex.IsHandleCreated = False Then Exit Sub
         cfg_convert_startIndex = numConvert_PNGStartIndex.Value
@@ -153,7 +153,7 @@ Public Class frmSettings
 
     End Sub
 
-    Private Sub chkFrame_Offsets_SingleFrame_CheckedChanged(sender As Object, e As EventArgs) Handles chkEditor_Frame_Offsets_SingleFrame.CheckedChanged
+    Private Sub ChkFrame_Offsets_SingleFrame_CheckedChanged(sender As Object, e As EventArgs) Handles chkEditor_Frame_Offsets_SingleFrame.CheckedChanged
 
         If chkEditor_Frame_Offsets_SingleFrame.IsHandleCreated = False Then Exit Sub
         cfg_editor_rotFix_individualFrame = CByte(chkEditor_Frame_Offsets_SingleFrame.Checked * -1)
@@ -161,14 +161,14 @@ Public Class frmSettings
     End Sub
 
 
-    Private Sub chkConvert_AddZTAFBytes_CheckedChanged(sender As Object, e As EventArgs) Handles chkExportZT1_AddZTAFBytes.CheckedChanged
+    Private Sub ChkConvert_AddZTAFBytes_CheckedChanged(sender As Object, e As EventArgs) Handles chkExportZT1_AddZTAFBytes.CheckedChanged
 
         If chkExportZT1_AddZTAFBytes.IsHandleCreated = False Then Exit Sub
         cfg_export_ZT1_AlwaysAddZTAFBytes = CByte(chkExportZT1_AddZTAFBytes.Checked * -1)
 
     End Sub
 
-    Private Sub chkConvert_DeleteOriginal_CheckedChanged(sender As Object, e As EventArgs) Handles chkConvert_DeleteOriginal.CheckedChanged
+    Private Sub ChkConvert_DeleteOriginal_CheckedChanged(sender As Object, e As EventArgs) Handles chkConvert_DeleteOriginal.CheckedChanged
 
         If chkConvert_DeleteOriginal.IsHandleCreated = False Then Exit Sub
         cfg_convert_deleteOriginal = CByte(chkConvert_DeleteOriginal.Checked * -1)
@@ -176,7 +176,7 @@ Public Class frmSettings
 
     End Sub
 
-    Private Sub chkConvert_Overwrite_CheckedChanged(sender As Object, e As EventArgs) Handles chkConvert_Overwrite.CheckedChanged
+    Private Sub ChkConvert_Overwrite_CheckedChanged(sender As Object, e As EventArgs) Handles chkConvert_Overwrite.CheckedChanged
 
         If chkConvert_Overwrite.IsHandleCreated = False Then Exit Sub
         cfg_convert_overwrite = CByte(chkConvert_Overwrite.Checked * -1)
@@ -184,7 +184,7 @@ Public Class frmSettings
     End Sub
 
 
-    Private Sub chkExportZT1_Ani_CheckedChanged(sender As Object, e As EventArgs) Handles chkExportZT1_Ani.CheckedChanged
+    Private Sub ChkExportZT1_Ani_CheckedChanged(sender As Object, e As EventArgs) Handles chkExportZT1_Ani.CheckedChanged
 
         If chkExportZT1_Ani.IsHandleCreated = False Then Exit Sub
         cfg_export_ZT1_Ani = CByte(chkExportZT1_Ani.Checked * -1)
@@ -192,59 +192,59 @@ Public Class frmSettings
     End Sub
 
 
-    Private Sub tpConversions_Click(sender As Object, e As EventArgs) Handles tpConversions.Click
+    Private Sub TpConversions_Click(sender As Object, e As EventArgs) Handles tpConversions.Click
 
     End Sub
 
-    Private Sub chkConvert_SharedColorPalette_CheckedChanged(sender As Object, e As EventArgs) Handles chkConvert_SharedColorPalette.CheckedChanged
+    Private Sub ChkConvert_SharedColorPalette_CheckedChanged(sender As Object, e As EventArgs) Handles chkConvert_SharedColorPalette.CheckedChanged
 
         If chkConvert_SharedColorPalette.IsHandleCreated = False Then Exit Sub
         cfg_convert_sharedPalette = CByte(CInt(chkConvert_SharedColorPalette.Checked) * -1)
 
     End Sub
 
-    Private Sub txtConvert_fileNameDelimiter_TextChanged(sender As Object, e As EventArgs) Handles txtConvert_fileNameDelimiter.TextChanged
+    Private Sub TxtConvert_fileNameDelimiter_TextChanged(sender As Object, e As EventArgs) Handles txtConvert_fileNameDelimiter.TextChanged
         cfg_convert_fileNameDelimiter = txtConvert_fileNameDelimiter.Text
     End Sub
 
-    Private Sub tpRenderingFrames_Click(sender As Object, e As EventArgs) Handles tpRenderingFrames.Click
+    Private Sub TpRenderingFrames_Click(sender As Object, e As EventArgs) Handles tpRenderingFrames.Click
 
     End Sub
 
-    Private Sub frmSettings_MaximizedBoundsChanged(sender As Object, e As EventArgs) Handles Me.MaximizedBoundsChanged
+    Private Sub FrmSettings_MaximizedBoundsChanged(sender As Object, e As EventArgs) Handles Me.MaximizedBoundsChanged
 
     End Sub
 
-    Private Sub txtFolderPal8_TextChanged(sender As Object, e As EventArgs) Handles txtFolderPal8.TextChanged
+    Private Sub TxtFolderPal8_TextChanged(sender As Object, e As EventArgs) Handles txtFolderPal8.TextChanged
 
     End Sub
 
-    Private Sub tpFolders_Click(sender As Object, e As EventArgs) Handles tpFolders.Click
+    Private Sub TpFolders_Click(sender As Object, e As EventArgs) Handles tpFolders.Click
 
     End Sub
 
-    Private Sub tpWritePNG_Click(sender As Object, e As EventArgs) Handles tpWritePNG.Click
+    Private Sub TpWritePNG_Click(sender As Object, e As EventArgs) Handles tpWritePNG.Click
 
     End Sub
 
-    Private Sub chkPNGTransparentBG_CheckedChanged(sender As Object, e As EventArgs) Handles chkPNGTransparentBG.CheckedChanged
+    Private Sub ChkPNGTransparentBG_CheckedChanged(sender As Object, e As EventArgs) Handles chkPNGTransparentBG.CheckedChanged
 
         If chkPNGTransparentBG.IsHandleCreated = False Then Exit Sub
         cfg_export_PNG_TransparentBG = CByte(CInt(chkPNGTransparentBG.Checked) * -1)
     End Sub
 
-    Private Sub numFrameAnimSpeed_ValueChanged(sender As Object, e As EventArgs) Handles numFrameAnimSpeed.ValueChanged
+    Private Sub NumFrameAnimSpeed_ValueChanged(sender As Object, e As EventArgs) Handles numFrameAnimSpeed.ValueChanged
 
         If numFrameAnimSpeed.IsHandleCreated = False Then Exit Sub
         cfg_frame_defaultAnimSpeed = numFrameAnimSpeed.Value
 
     End Sub
 
-    Private Sub numFrameAnimSpeed_VisibleChanged(sender As Object, e As EventArgs) Handles numFrameAnimSpeed.VisibleChanged
+    Private Sub NumFrameAnimSpeed_VisibleChanged(sender As Object, e As EventArgs) Handles numFrameAnimSpeed.VisibleChanged
 
     End Sub
 
-    Private Sub cboPNGExport_Crop_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cboPNGExport_Crop.SelectedIndexChanged
+    Private Sub CboPNGExport_Crop_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cboPNGExport_Crop.SelectedIndexChanged
 
     End Sub
 
@@ -253,9 +253,11 @@ Public Class frmSettings
 
     End Sub
 
-    Private Sub chkPalImportPNGForceAddAll_CheckedChanged(sender As Object, e As EventArgs) Handles chkPalImportPNGForceAddAll.CheckedChanged
+    Private Sub ChkPalImportPNGForceAddAll_CheckedChanged(sender As Object, e As EventArgs) Handles chkPalImportPNGForceAddAll.CheckedChanged
 
-        If chkPalImportPNGForceAddAll.IsHandleCreated = False Then Exit Sub
+        If chkPalImportPNGForceAddAll.IsHandleCreated = False Then
+            Exit Sub
+        End If
         cfg_palette_import_png_force_add_colors = CByte(CInt(chkPalImportPNGForceAddAll.Checked) * -1)
 
     End Sub

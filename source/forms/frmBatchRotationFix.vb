@@ -1,6 +1,6 @@
 ﻿Public Class frmBatchRotationFix
 
-    Private Sub frmBatchRotationFix_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+    Private Sub FrmBatchRotationFix_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
 
         ' up:
@@ -23,7 +23,7 @@
 
     End Sub
 
-    Private Sub btnSelect_Click(sender As Object, e As EventArgs) Handles btnSelect.Click
+    Private Sub BtnSelect_Click(sender As Object, e As EventArgs) Handles btnSelect.Click
 
         With dlgBrowseFolder
 

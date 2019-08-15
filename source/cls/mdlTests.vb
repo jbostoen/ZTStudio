@@ -6,7 +6,7 @@ Imports System.Security
 Module mdlTests
 
 
-    Function getHashesOfFilesInFolder(strPath As String)
+    Sub GetHashesOfFilesInFolder(strPath As String)
 
 
         ' First we will create a recursive list.
@@ -26,13 +26,13 @@ Module mdlTests
         Do While (stack.Count > 0)
             ' Get top directory string
 
-15: 
+15:
             Dim dir As String = stack.Pop
 
 20:
             For Each f As String In Directory.GetFiles(dir, "*")
                 Debug.Print(f)
-                iniWrite(strPath & "\hashes.cfg", Strings.Replace(Strings.Replace(Path.GetDirectoryName(f), strPath & "\", ""), "\", "/"), Path.GetFileName(f), hash_generator("sha256", f))
+                IniWrite(strPath & "\hashes.cfg", Strings.Replace(Strings.Replace(Path.GetDirectoryName(f), strPath & "\", ""), "\", "/"), Path.GetFileName(f), Hash_generator("sha256", f))
             Next
 
 25:
@@ -47,12 +47,12 @@ Module mdlTests
 
 
 
-    End Function
+    End Sub
 
     ' Function to obtain the desired hash of a file
-    Function hash_generator(ByVal hash_type As String, ByVal file_name As String)
+    Function Hash_generator(ByVal hash_type As String, ByVal file_name As String)
 
-        ' We declare the variable : hash
+        ' Declaring the variable : hash
         Dim hash
         If hash_type.ToLower = "md5" Then
             ' Initializes a md5 hash object
@@ -68,19 +68,19 @@ Module mdlTests
             Return False
         End If
 
-        ' We declare a variable to be an array of bytes
+        ' Declaring a variable to be an array of bytes
         Dim hashValue() As Byte
 
-        ' We create a FileStream for the file passed as a parameter
+        ' Creating e a FileStream for the file passed as a parameter
         Dim fileStream As FileStream = File.OpenRead(file_name)
-        ' We position the cursor at the beginning of stream
+        ' Positioning the cursor at the beginning of stream
         fileStream.Position = 0
-        ' We calculate the hash of the file
+        ' Calculating the hash of the file
         hashValue = hash.ComputeHash(fileStream)
         ' The array of bytes is converted into hexadecimal before it can be read easily
         Dim hash_hex = PrintByteArray(hashValue)
 
-        ' We close the open file
+        ' Closing the open file
         fileStream.Close()
 
         ' The hash is returned

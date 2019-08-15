@@ -5,14 +5,14 @@
     End Sub
 
 
-    Private Sub btnUseInMainPal_Click(sender As Object, e As EventArgs) Handles btnUseInMainPal.Click
+    Private Sub BtnUseInMainPal_Click(sender As Object, e As EventArgs) Handles btnUseInMainPal.Click
 
 
         'g2.colorPalette.colors().Length
-        If IsNothing(editorGraphic.frames) Then
+        If IsNothing(editorGraphic.Frames) Then
 
-            MsgBox("You will need to open a ZT1 graphic file first," & vbCrLf & "then you can use the recolor feature.", _
-                   vbOKOnly + vbCritical, _
+            MsgBox("You will need to open a ZT1 graphic file first," & vbCrLf & "then you can use the recolor feature.",
+                   vbOKOnly + vbCritical,
                    "No graphic available")
 
             Exit Sub
@@ -20,8 +20,8 @@
         End If
 
 
-        Dim input As String = InputBox("" & _
-                "Index of first color to replace (can not be 0 since we ignore transparent colors)." & vbCrLf & _
+        Dim input As String = InputBox("" &
+                "Index of first color to replace (can not be 0 since we ignore transparent colors)." & vbCrLf &
                 "For example, the index for the Restaurant would be 248 (roof 8 colors) or 232 (roof 16 colors)", "Index of the first color to replace", "1")
         If input = vbNullString Then Exit Sub 'user chickened out
 
@@ -49,37 +49,37 @@
 
             If drRow.Index <> 0 Then ' dummy color
 
-                If editorGraphic.colorPalette.colors.Count = (intStart + drRow.Index - 1) Then
+                If editorGraphic.ColorPalette.Colors.Count = (intStart + drRow.Index - 1) Then
                     ' Color index does not exist.
-                    editorGraphic.colorPalette.colors.Add(drRow.DefaultCellStyle.BackColor)
+                    editorGraphic.ColorPalette.Colors.Add(drRow.DefaultCellStyle.BackColor)
                 Else
                     ' Color index already existed. Overwrite.
-                    editorGraphic.colorPalette.colors(intStart + drRow.Index - 1) = drRow.DefaultCellStyle.BackColor
+                    editorGraphic.ColorPalette.Colors(intStart + drRow.Index - 1) = drRow.DefaultCellStyle.BackColor
                 End If
 
             End If
         Next
 
         ' Force redraw. In this case, we should ignore the rendered images and make them regenerate from HEX.
-        For Each ztFrame As clsFrame2 In editorGraphic.frames
-            ztFrame.coreImageBitmap = Nothing
+        For Each ztFrame As ClsFrame2 In editorGraphic.Frames
+            ztFrame.CoreImageBitmap = Nothing
         Next
 
 
-        editorGraphic.lastUpdated = Now.ToString("yyyyMMddHHmmss")
-        clsTasks.update_preview(frmMain.tbFrames.Value - 1)
+        editorGraphic.LastUpdated = Now.ToString("yyyyMMddHHmmss")
+        clsTasks.Update_preview(FrmMain.TbFrames.Value - 1)
 
         ' Show palette again?
-        editorGraphic.colorPalette.fillPaletteGrid(frmMain.dgvPaletteMain)
+        editorGraphic.ColorPalette.FillPaletteGrid(FrmMain.dgvPaletteMain)
 
 
     End Sub
 
-    Private Sub dgvPal_CellContentClick(sender As Object, e As DataGridViewCellEventArgs) Handles dgvPal.CellContentClick
+    Private Sub DgvPal_CellContentClick(sender As Object, e As DataGridViewCellEventArgs) Handles dgvPal.CellContentClick
 
     End Sub
 
-    Private Sub mnuExport_GIMP_TextFile_Click(sender As Object, e As EventArgs)
+    Private Sub MnuExport_GIMP_TextFile_Click(sender As Object, e As EventArgs)
 
 
 

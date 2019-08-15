@@ -1,6 +1,6 @@
 ﻿Imports System.IO
 
-Public Class clsAniFile
+Public Class ClsAniFile
 
     ' The .ani file is mostly used for icons in ZT1.
     ' Every graphic, with 1 or multiple views (N, NE, NW, SE, SW, S, E, ...) has one .ani-file.
@@ -23,7 +23,7 @@ Public Class clsAniFile
 
     Private ani_fileName As String = "" ' filename of .ani-file
 
-    Public Property x0 As Integer
+    Public Property X0 As Integer
         Get
             Return ani_x0
         End Get
@@ -32,7 +32,7 @@ Public Class clsAniFile
         End Set
     End Property
 
-    Public Property x1 As Integer
+    Public Property X1 As Integer
         Get
             Return ani_x1
 
@@ -42,7 +42,7 @@ Public Class clsAniFile
         End Set
     End Property
 
-    Public Property y0 As Integer
+    Public Property Y0 As Integer
         Get
             Return ani_y0
         End Get
@@ -50,7 +50,7 @@ Public Class clsAniFile
             ani_y0 = value
         End Set
     End Property
-    Public Property y1 As Integer
+    Public Property Y1 As Integer
         Get
             Return ani_y1
         End Get
@@ -60,7 +60,7 @@ Public Class clsAniFile
     End Property
 
 
-    Public Property dirs As List(Of String)
+    Public Property Dirs As List(Of String)
         Get
             Return ani_dirs
         End Get
@@ -69,7 +69,7 @@ Public Class clsAniFile
         End Set
     End Property
 
-    Public Property animations As List(Of String)
+    Public Property Animations As List(Of String)
         Get
             Return ani_animations
         End Get
@@ -78,7 +78,7 @@ Public Class clsAniFile
         End Set
     End Property
 
-    Public Property fileName As String
+    Public Property FileName As String
         Get
             Return ani_fileName
         End Get
@@ -89,10 +89,10 @@ Public Class clsAniFile
 
     ' Functions. 
 
-    Public Function write(Optional sFile As String = Nothing)
+    Public Function Write(Optional sFile As String = Nothing)
 
 
-        If IsNothing(sFile) = False Then Me.fileName = sFile
+        If IsNothing(sFile) = False Then Me.FileName = sFile
 
         ' This function will write out the .ani-file.
 
@@ -109,31 +109,31 @@ Public Class clsAniFile
 
 2:
         ' Write out dirs
-        For Each s As String In Me.dirs
-            strAni = strAni & "dir" & Me.dirs.IndexOf(s) & " = " & s & vbCrLf
+        For Each s As String In Me.Dirs
+            strAni = strAni & "dir" & Me.Dirs.IndexOf(s) & " = " & s & vbCrLf
         Next
 
 3:
         ' Write out animations
-        For Each s As String In Me.animations
+        For Each s As String In Me.Animations
             strAni = strAni & "animation = " & s & vbCrLf
         Next
 
 4:
         ' Now, the coordinates
-        strAni = strAni & _
-            "x0 = " & Me.x0 & vbCrLf & _
-            "y0 = " & Me.y0 & vbCrLf & _
-            "x1 = " & Me.x1 & vbCrLf & _
-            "y1 = " & Me.y1 & vbCrLf
+        strAni = strAni &
+            "x0 = " & Me.X0 & vbCrLf &
+            "y0 = " & Me.Y0 & vbCrLf &
+            "x1 = " & Me.X1 & vbCrLf &
+            "y1 = " & Me.Y1 & vbCrLf
 
 10:
         ' Write.
-        If Me.animations.Count > 0 And Me.dirs.Count > 0 Then
-            If File.Exists(Me.fileName) = True Then
-                File.Delete(Me.fileName)
+        If Me.Animations.Count > 0 And Me.Dirs.Count > 0 Then
+            If File.Exists(Me.FileName) = True Then
+                File.Delete(Me.FileName)
             End If
-            Using outfile As New StreamWriter(Me.fileName)
+            Using outfile As New StreamWriter(Me.FileName)
                 outfile.Write(strAni.ToString())
             End Using
         End If
@@ -145,7 +145,7 @@ Public Class clsAniFile
 
 dBug:
 
-        MsgBox("Error in clsAniFile:saveAni at line " & Erl() & vbCrLf & _
+        MsgBox("Error in clsAniFile:saveAni at line " & Erl() & vbCrLf &
             Err.Number & " - " & Err.Description, vbOKOnly + vbCritical, "Error while creating .ani-file")
     End Function
 
@@ -153,7 +153,7 @@ dBug:
 
     ' === special functions ===
 
-    Public Function createAniConfig(Optional sFileName As String = Nothing)
+    Public Sub CreateAniConfig(Optional sFileName As String = Nothing)
 
 
 
@@ -166,14 +166,14 @@ dBug:
         ' 1-20              paths
 
         If IsNothing(sFileName) = False Then
-            Me.fileName = sFileName.Replace("/", "\")
+            Me.FileName = sFileName.Replace("/", "\")
         End If
 
 
 1:
-        If Me.fileName = "" Then
+        If Me.FileName = "" Then
 
-            MsgBox("clsAniFile.createAniConfig() assumes you've set the filename for the .ani-file.", _
+            MsgBox("clsAniFile.createAniConfig() assumes you've set the filename for the .ani-file.",
                 vbOKOnly + vbCritical, "Error while guessing animations for .ani-file")
 
         Else
@@ -181,7 +181,7 @@ dBug:
 2:
 
             ' This is the full path and the relative path of the .ani file
-            Dim strPath As String = Path.GetDirectoryName(Me.fileName)
+            Dim strPath As String = Path.GetDirectoryName(Me.FileName)
             Dim strPathRel As String
             strPathRel = Strings.Replace(strPath, cfg_path_Root & "\", "")
             strPathRel = Strings.Replace(strPathRel, cfg_path_Root, "")
@@ -190,23 +190,23 @@ dBug:
             Debug.Print("Ani path: " & vbCrLf & "* " & strPath & vbCrLf & "* " & strPathRel)
 
             ' Set dirs. If this function is called multiple times, it won't do any harm.
-            Me.dirs.Clear(False)
-            Me.dirs.AddRange(Strings.Split(strPathRel, "\"), False)
+            Me.Dirs.Clear(False)
+            Me.Dirs.AddRange(Strings.Split(strPathRel, "\"), False)
 
 10:
             ' Set animations.
-            Me.animations.Clear(False)
+            Me.Animations.Clear(False)
 
 11:
-            If File.Exists(strPath & "\N") = True And _
-                File.Exists(strPath & "\NE") = True And _
-                File.Exists(strPath & "\E") = True And _
-                File.Exists(strPath & "\SE") = True And _
+            If File.Exists(strPath & "\N") = True And
+                File.Exists(strPath & "\NE") = True And
+                File.Exists(strPath & "\E") = True And
+                File.Exists(strPath & "\SE") = True And
                 File.Exists(strPath & "\S") = True Then
 
 
                 ' animal, guest, staff...
-                With Me.animations
+                With Me.Animations
                     .Add("N", False)
                     .Add("NE", False)
                     .Add("E", False)
@@ -217,13 +217,13 @@ dBug:
 
 
 12:
-            ElseIf File.Exists(strPath & "\NE") = True And _
-                File.Exists(strPath & "\SE") = True And _
-                File.Exists(strPath & "\SW") = True And _
+            ElseIf File.Exists(strPath & "\NE") = True And
+                File.Exists(strPath & "\SE") = True And
+                File.Exists(strPath & "\SW") = True And
                 File.Exists(strPath & "\NW") = True Then
 
                 ' object
-                With Me.animations
+                With Me.Animations
                     .Add("NE", False)
                     .Add("SE", False)
                     .Add("SW", False)
@@ -238,7 +238,7 @@ dBug:
             ElseIf File.Exists(strPath & "\N") = True Then
 
                 ' icon
-                With Me.animations
+                With Me.Animations
                     .Add("N", False)
                 End With
 
@@ -248,30 +248,30 @@ dBug:
 
 14:
 
-            ElseIf File.Exists(strPath & "\1") = True And _
-                File.Exists(strPath & "\2") = True And _
-                File.Exists(strPath & "\3") = True And _
-                File.Exists(strPath & "\4") = True And _
-                File.Exists(strPath & "\5") = True And _
-                File.Exists(strPath & "\6") = True And _
-                File.Exists(strPath & "\7") = True And _
-                File.Exists(strPath & "\8") = True And _
-                File.Exists(strPath & "\9") = True And _
-                File.Exists(strPath & "\10") = True And _
-                File.Exists(strPath & "\11") = True And _
-                File.Exists(strPath & "\12") = True And _
-                File.Exists(strPath & "\13") = True And _
-                File.Exists(strPath & "\14") = True And _
-                File.Exists(strPath & "\15") = True And _
-                File.Exists(strPath & "\16") = True And _
-                File.Exists(strPath & "\17") = True And _
-                File.Exists(strPath & "\18") = True And _
-                File.Exists(strPath & "\19") = True And _
+            ElseIf File.Exists(strPath & "\1") = True And
+                File.Exists(strPath & "\2") = True And
+                File.Exists(strPath & "\3") = True And
+                File.Exists(strPath & "\4") = True And
+                File.Exists(strPath & "\5") = True And
+                File.Exists(strPath & "\6") = True And
+                File.Exists(strPath & "\7") = True And
+                File.Exists(strPath & "\8") = True And
+                File.Exists(strPath & "\9") = True And
+                File.Exists(strPath & "\10") = True And
+                File.Exists(strPath & "\11") = True And
+                File.Exists(strPath & "\12") = True And
+                File.Exists(strPath & "\13") = True And
+                File.Exists(strPath & "\14") = True And
+                File.Exists(strPath & "\15") = True And
+                File.Exists(strPath & "\16") = True And
+                File.Exists(strPath & "\17") = True And
+                File.Exists(strPath & "\18") = True And
+                File.Exists(strPath & "\19") = True And
                 File.Exists(strPath & "\20") = True Then
 
                 ' paths
                 ' we could do this shorter
-                With Me.animations
+                With Me.Animations
                     Dim intX As Integer = 1
                     While intX <= 20
                         .Add(intX.ToString("0"), False)
@@ -283,8 +283,8 @@ dBug:
             End If
 
 100:
-            If Me.animations.Count > 0 Then
-                For Each sAni In Me.animations
+            If Me.Animations.Count > 0 Then
+                For Each sAni In Me.Animations
 
                     ' We need to read every view for this graphic in the folder.
                     g.read(strPath.Replace("\", "/") & "/" & sAni)
@@ -299,10 +299,10 @@ dBug:
 
 
                         ' Passes the bamboo.ani-test
-                        Me.x0 = Math.Min(Me.x0, -ztFrame.offsetX)
-                        Me.y0 = Math.Min(Me.y0, -ztFrame.offsetY)
-                        Me.x1 = Math.Max(Me.x1, -ztFrame.offsetX + ztFrame.coreImageBitmap.Width)
-                        Me.y1 = Math.Max(Me.y1, -ztFrame.offsetY + ztFrame.coreImageBitmap.Height)
+                        Me.X0 = Math.Min(Me.X0, -ztFrame.offsetX)
+                        Me.Y0 = Math.Min(Me.Y0, -ztFrame.offsetY)
+                        Me.X1 = Math.Max(Me.X1, -ztFrame.offsetX + ztFrame.coreImageBitmap.Width)
+                        Me.Y1 = Math.Max(Me.Y1, -ztFrame.offsetY + ztFrame.coreImageBitmap.Height)
 
                     Next
                 Next
@@ -316,18 +316,16 @@ dBug:
 
 50:
 
-        Me.write()
+        Me.Write()
 
 
-        Return 0
-
-        Exit Function
+        Exit Sub
 
 dBug:
-        MsgBox("Error in clsAniFile:createAniConfig at line " & Erl() & vbCrLf & _
+        MsgBox("Error in clsAniFile:createAniConfig at line " & Erl() & vbCrLf &
             Err.Number & " - " & Err.Description, vbOKOnly + vbCritical, "Error while guessing config for .ani-file")
 
-    End Function
+    End Sub
 
 
     Public Sub New(myFileName As String)

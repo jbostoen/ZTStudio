@@ -35,14 +35,14 @@ Partial Class frmPal
         '
         Me.sBar.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ssFileName})
         Me.sBar.Location = New System.Drawing.Point(0, 260)
-        Me.sBar.Name = "sBar"
+        Me.sBar.Name = "SBar"
         Me.sBar.Size = New System.Drawing.Size(264, 22)
         Me.sBar.TabIndex = 0
         Me.sBar.Text = "StatusStrip1"
         '
         'ssFileName
         '
-        Me.ssFileName.Name = "ssFileName"
+        Me.ssFileName.Name = "SsFileName"
         Me.ssFileName.Size = New System.Drawing.Size(58, 17)
         Me.ssFileName.Text = "Filename."
         '
@@ -56,7 +56,7 @@ Partial Class frmPal
         Me.dgvPal.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.colColor})
         Me.dgvPal.Dock = System.Windows.Forms.DockStyle.Fill
         Me.dgvPal.Location = New System.Drawing.Point(0, 0)
-        Me.dgvPal.Name = "dgvPal"
+        Me.dgvPal.Name = "DgvPal"
         Me.dgvPal.RowHeadersWidth = 75
         Me.dgvPal.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing
         Me.dgvPal.RowTemplate.Height = 20
@@ -66,13 +66,13 @@ Partial Class frmPal
         'colColor
         '
         Me.colColor.HeaderText = "Color"
-        Me.colColor.Name = "colColor"
+        Me.colColor.Name = "ColColor"
         '
         'btnUseInMainPal
         '
         Me.btnUseInMainPal.Dock = System.Windows.Forms.DockStyle.Bottom
         Me.btnUseInMainPal.Location = New System.Drawing.Point(0, 215)
-        Me.btnUseInMainPal.Name = "btnUseInMainPal"
+        Me.btnUseInMainPal.Name = "BtnUseInMainPal"
         Me.btnUseInMainPal.Size = New System.Drawing.Size(264, 45)
         Me.btnUseInMainPal.TabIndex = 22
         Me.btnUseInMainPal.Text = "Replace colors in main color palette" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "with the colors above (transparent is ignor" & _
@@ -90,7 +90,7 @@ Partial Class frmPal
         Me.Font = New System.Drawing.Font("Segoe UI", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow
         Me.MinimumSize = New System.Drawing.Size(280, 280)
-        Me.Name = "frmPal"
+        Me.Name = "FrmPal"
         Me.Text = "Color Palette"
         Me.TopMost = True
         Me.sBar.ResumeLayout(False)

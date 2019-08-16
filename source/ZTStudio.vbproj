@@ -93,16 +93,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApplicationEvents.vb" />
-    <Compile Include="cls\clsAniFile.vb" />
-    <Compile Include="cls\clsDrawingInstr.vb" />
-    <Compile Include="cls\clsFrame2.vb" />
-    <Compile Include="cls\clsGraphic2.vb" />
-    <Compile Include="cls\clsList.vb" />
-    <Compile Include="cls\clsString.vb" />
+    <Compile Include="cls\ClsAniFile.vb" />
+    <Compile Include="cls\ClsDrawingInstr.vb" />
+    <Compile Include="cls\ClsFrame.vb" />
+    <Compile Include="cls\ClsGraphic.vb" />
+    <Compile Include="cls\ClsList.vb" />
+    <Compile Include="cls\ClsString.vb" />
     <Compile Include="cls\ClsTasks.vb" />
-    <Compile Include="cls\clsPalette.vb" />
-    <Compile Include="cls\mdlSettings.vb" />
-    <Compile Include="cls\mdlTests.vb" />
+    <Compile Include="cls\ClsPalette.vb" />
+    <Compile Include="cls\MdlSettings.vb" />
+    <Compile Include="cls\MdlTests.vb" />
     <Compile Include="forms\FrmBatchConversion.Designer.vb">
       <DependentUpon>FrmBatchConversion.vb</DependentUpon>
     </Compile>

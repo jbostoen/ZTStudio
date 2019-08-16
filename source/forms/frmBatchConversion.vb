@@ -10,12 +10,12 @@
         If rbPNG_to_ZT1.Checked = True Then
 
             ' Convert entire folder containing PNG-files to ZT1-graphics
-            clsTasks.convert_folder_PNG_to_ZT1(cfg_path_Root, PB)
+            clsTasks.convert_folder_PNG_to_ZT1(Cfg_path_Root, PB)
 
         Else
 
             ' Convert entire folder containing ZT1-graphics to PNG-files
-            clsTasks.convert_folder_ZT1_to_PNG(cfg_path_Root, PB)
+            clsTasks.convert_folder_ZT1_to_PNG(Cfg_path_Root, PB)
 
 
         End If

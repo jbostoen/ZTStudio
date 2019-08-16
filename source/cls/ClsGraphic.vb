@@ -3,7 +3,7 @@ Imports System.ComponentModel
 
 
 
-Public Class ClsGraphic2
+Public Class ClsGraphic
 
     Implements INotifyPropertyChanged
 
@@ -11,61 +11,54 @@ Public Class ClsGraphic2
     ' All handling of palette files is done by a different class
 
 
-    Private clsGraphic_FileName As String = vbNullString                 ' File name of graphic
-    Private clsGraphic_Palette As New clsPalette(Me)         ' Main color palette
+    Private ClsGraphic_FileName As String = vbNullString                 ' File name of graphic
+    Private ClsGraphic_Palette As New ClsPalette(Me)         ' Main color palette
 
-    Private clsGraphic_animationSpeed As Integer = 125     ' Speed in milliseconds for this animation
+    Private ClsGraphic_animationSpeed As Integer = 125     ' Speed in milliseconds for this animation
 
+    Private ClsGraphic_Byte9 As Byte = 0                 ' Basic files, FATZ-files with byte 9 = 0: 0. Byte 9 = 1: 1. Extra byte.
 
-    ' Private clsGraphic_frames() As String
-    ' Strings containing HEX info about each frame.
-    ' Each HEX string contains info about height, width, X/Y offsets, 
-    ' and obviously how the image is rendered.
-
-
-    Private clsGraphic_Byte9 As Byte = 0                 ' Basic files, FATZ-files with byte 9 = 0: 0. Byte 9 = 1: 1. Extra byte.
-
-    Private clsGraphic_frames As New List(Of ClsFrame2)
-    Private clsGraphic_lastUpdated As String = Now.ToString("yyyyMMddHHmmss")            ' For caching purposes for larger frames.
+    Private ClsGraphic_frames As New List(Of ClsFrame)
+    Private ClsGraphic_lastUpdated As String = Now.ToString("yyyyMMddHHmmss")            ' For caching purposes for larger frames.
 
 
     Public Property FileName As String
         Get
-            Return clsGraphic_FileName
+            Return ClsGraphic_FileName
         End Get
         Set(value As String)
-            clsGraphic_FileName = value.ToLower()
+            ClsGraphic_FileName = value.ToLower()
 
             NotifyPropertyChanged("fileName")
         End Set
     End Property
 
-    Public Property ColorPalette As clsPalette
+    Public Property ColorPalette As ClsPalette
         Get
-            Return clsGraphic_Palette
+            Return ClsGraphic_Palette
         End Get
-        Set(value As clsPalette)
-            clsGraphic_Palette = value
+        Set(value As ClsPalette)
+            ClsGraphic_Palette = value
             NotifyPropertyChanged("colorPalette")
         End Set
     End Property
 
-    Public Property Frames As List(Of ClsFrame2)
+    Public Property Frames As List(Of ClsFrame)
         Get
-            Return clsGraphic_frames
+            Return ClsGraphic_frames
         End Get
-        Set(value As List(Of ClsFrame2))
-            clsGraphic_frames = value
+        Set(value As List(Of ClsFrame))
+            ClsGraphic_frames = value
             NotifyPropertyChanged("frames")
         End Set
     End Property
 
     Public Property AnimationSpeed As Integer
         Get
-            Return clsGraphic_animationSpeed
+            Return ClsGraphic_animationSpeed
         End Get
         Set(value As Integer)
-            clsGraphic_animationSpeed = value
+            ClsGraphic_animationSpeed = value
             NotifyPropertyChanged("animationSpeed")
         End Set
     End Property
@@ -73,20 +66,20 @@ Public Class ClsGraphic2
 
     Public Property ExtraFrame As Byte
         Get
-            Return clsGraphic_Byte9
+            Return ClsGraphic_Byte9
         End Get
         Set(value As Byte)
-            clsGraphic_Byte9 = value
+            ClsGraphic_Byte9 = value
             NotifyPropertyChanged("extraFrame")
         End Set
     End Property
 
     Public Property LastUpdated As String
         Get
-            Return clsGraphic_lastUpdated
+            Return ClsGraphic_lastUpdated
         End Get
         Set(value As String)
-            clsGraphic_lastUpdated = value
+            ClsGraphic_lastUpdated = value
             NotifyPropertyChanged("lastUpdated")
         End Set
     End Property
@@ -99,13 +92,15 @@ Public Class ClsGraphic2
 
 1:
         ' 20190815 Before this just set the filename; but not the (assumed) .pal file
-        If strFileName <> vbNullString Then Me.FileName = strFileName
+        If strFileName <> vbNullString Then
+            Me.FileName = strFileName
+        End If
 
         Dim X As Integer = 0
         Dim curByte As Integer = 0
         Dim intTemplength As Integer = 0
 
-        Dim clsGraphic_numFrames As Integer = 0          ' Number of frames for this animation (at least 1)
+        Dim ClsGraphic_numFrames As Integer = 0          ' Number of frames for this animation (at least 1)
 
 
         Debug.Print("Graphic: reset defaults.")
@@ -115,22 +110,22 @@ Public Class ClsGraphic2
         ' Resets all defaults.
 
         ' Reset palettes
-        Me.ColorPalette = New clsPalette(Me)
+        Me.ColorPalette = New ClsPalette(Me)
 
         ' Reset other info 
-        clsGraphic_animationSpeed = 0
-        clsGraphic_Byte9 = 0
+        ClsGraphic_animationSpeed = 0
+        ClsGraphic_Byte9 = 0
 
 
 5:
 
         ' === Read file contents ===
 
-        Debug.Print("   : file: " & clsGraphic_FileName)
+        Debug.Print("   : file: " & ClsGraphic_FileName)
         Debug.Print("   : read file contents...")
 
         ' Read full file.
-        Dim bytes As Byte() = IO.File.ReadAllBytes(clsGraphic_FileName)
+        Dim bytes As Byte() = IO.File.ReadAllBytes(ClsGraphic_FileName)
         Dim tHex As String() = Array.ConvertAll(bytes, Function(b) b.ToString("X2"))
         Dim hexBytes As New List(Of String)
         hexBytes.AddRange(tHex)
@@ -145,7 +140,7 @@ Public Class ClsGraphic2
             Debug.Print("   : confirmed a FATZ-file (ZT Anim File?).")
             ' 46 41 54 5a 00 00 00 00 01
             ' what's the 01?
-            clsGraphic_Byte9 = hexBytes(8)
+            ClsGraphic_Byte9 = hexBytes(8)
             hexBytes.Skip(9)
         Else
             Debug.Print("   : likely a basic ZT1 graphics file.")
@@ -156,8 +151,8 @@ Public Class ClsGraphic2
 
 15:
         ' === ANIMATION SPEED ===
-        clsGraphic_animationSpeed = CInt("&H" & hexBytes(3) & hexBytes(2) & hexBytes(1) & hexBytes(0))
-        Debug.Print("   : animation speed = " & clsGraphic_animationSpeed)
+        ClsGraphic_animationSpeed = CInt("&H" & hexBytes(3) & hexBytes(2) & hexBytes(1) & hexBytes(0))
+        Debug.Print("   : animation speed = " & ClsGraphic_animationSpeed)
 
 20:
         ' === FILENAME ===
@@ -169,10 +164,10 @@ Public Class ClsGraphic2
 
         X = 0
         While X < intTemplength
-            Me.ColorPalette.fileName &= Chr(CInt("&H" & hexBytes(8 + X)))
+            Me.ColorPalette.FileName &= Chr(CInt("&H" & hexBytes(8 + X)))
             X += 1
         End While
-        Debug.Print("   : palette name = '" & Me.ColorPalette.fileName & "' (length: " & intTemplength & ")")
+        Debug.Print("   : palette name = '" & Me.ColorPalette.FileName & "' (length: " & intTemplength & ")")
 
 
         ' remove all previous bytes.
@@ -181,8 +176,8 @@ Public Class ClsGraphic2
 
 40:
         ' === READ COLOR PALETTE ===
-        Debug.Print("Graphics: read palette: '" & cfg_path_Root & "/" & Me.ColorPalette.fileName & "'...")
-        If (Me.ColorPalette.readPal(cfg_path_Root & "/" & Me.ColorPalette.fileName) = 0) Then Exit Sub
+        Debug.Print("Graphics: read palette: '" & Cfg_path_Root & "/" & Me.ColorPalette.FileName & "'...")
+        If (Me.ColorPalette.ReadPal(Cfg_path_Root & "/" & Me.ColorPalette.FileName) = 0) Then Exit Sub
 
 
         'Debug.Print(Strings.Join(hex, " "))
@@ -192,8 +187,8 @@ Public Class ClsGraphic2
         ' === NUM OF FRAMES ===
         ' we might need more bytes for this.
         'Debug.Print("Graphics: Determining number of frames... ")
-        clsGraphic_numFrames = CInt("&H" & hexBytes(curByte + 3) & hexBytes(curByte + 2) & hexBytes(curByte + 1) & hexBytes(curByte))
-        Debug.Print("Graphics: number of frames = " & clsGraphic_numFrames)
+        ClsGraphic_numFrames = CInt("&H" & hexBytes(curByte + 3) & hexBytes(curByte + 2) & hexBytes(curByte + 1) & hexBytes(curByte))
+        Debug.Print("Graphics: number of frames = " & ClsGraphic_numFrames)
 
         ' remove all these bytes.
         hexBytes.Skip(4)
@@ -208,7 +203,7 @@ Public Class ClsGraphic2
         Dim intFrameBytes As Integer = 0
         Dim intFrameBytesCurrent As Integer = 0
 
-        Dim ztFrames As New List(Of ClsFrame2)  ' Strings of HEX will be stored here, for each frame
+        Dim ztFrames As New List(Of ClsFrame)  ' Strings of HEX will be stored here, for each frame
 
         While hexBytes.Count > 0
 
@@ -223,7 +218,7 @@ Public Class ClsGraphic2
             Debug.Print("   Bytes to follow for the entire frame: " & intFrameBytes)
 102:
 
-            Dim ztFrame As New ClsFrame2(Me)
+            Dim ztFrame As New ClsFrame(Me)
             Dim frameEntireHex As New List(Of String)
 
             ' Build our hex string first.
@@ -252,7 +247,7 @@ Public Class ClsGraphic2
             hexBytes.Skip(intFrameBytes)
 
 155:
-            'Debug.Print("Graphics: total bytes of frame " & (ztFrames.Count).ToString("00") & "/" & (clsGraphic_numFrames) & " = " & (Strings.Replace(ztFrame.hexString, " ", "").Length / 2) & vbTab & "Bytes left: " & hex.Length)
+            'Debug.Print("Graphics: total bytes of frame " & (ztFrames.Count).ToString("00") & "/" & (ClsGraphic_numFrames) & " = " & (Strings.Replace(ztFrame.hexString, " ", "").Length / 2) & vbTab & "Bytes left: " & hex.Length)
 
 
             intCurrentFrame += 1
@@ -261,8 +256,8 @@ Public Class ClsGraphic2
 
 
 200:
-        ' if clsGraphic_Byte9 = 1, then animated, last frame = still
-        clsGraphic_frames = ztFrames
+        ' if ClsGraphic_Byte9 = 1, then animated, last frame = still
+        ClsGraphic_frames = ztFrames
 
 201:
         ' pre-render last image.
@@ -278,7 +273,7 @@ Public Class ClsGraphic2
         Exit Sub
 
 dBg:
-        MsgBox("Error in class clsGraphic2, read(), at line " & Erl() & ": " & vbCrLf &
+        MsgBox("Error in class ClsGraphic, read(), at line " & Erl() & ": " & vbCrLf &
              Err.Number & " - " & Err.Description _
            & vbCrLf & "Line: " & Erl(), vbOKOnly + vbCritical, "Error")
 
@@ -305,8 +300,8 @@ dBg:
 
 2:
         ' 20190815: Set default .pal filename, even if it doesn't exist (for when 'write' occurs)
-        If Me.ColorPalette.fileName = vbNullString Then
-            Me.ColorPalette.fileName = Me.FileName & ".pal"
+        If Me.ColorPalette.FileName = vbNullString Then
+            Me.ColorPalette.FileName = Me.FileName & ".pal"
         End If
 
 
@@ -329,16 +324,16 @@ dBg:
         ' set path to use '/' instead of '\'
         Debug.Print("... Graphic: start writing.")
 
-        Dim palName As String = Me.ColorPalette.fileName
+        Dim palName As String = Me.ColorPalette.FileName
         palName = Strings.Replace(palName, "\", "/")
-        palName = Strings.Replace(palName, Strings.Replace(cfg_path_Root, "\", "/") & "/", "", , , CompareMethod.Text)
-        'Debug.Print(".... Palette: " & palName & vbCrLf & Strings.Replace(cfg_path_Root, "\", "/"))
+        palName = Strings.Replace(palName, Strings.Replace(Cfg_path_Root, "\", "/") & "/", "", , , CompareMethod.Text)
+        'Debug.Print(".... Palette: " & palName & vbCrLf & Strings.Replace(Cfg_path_Root, "\", "/"))
 
 
         With opHexGraphic
 
             ' === Always ZTAF? Or extra frame ===
-            If (Me.ExtraFrame = 1 Or cfg_export_ZT1_AlwaysAddZTAFBytes = 1) Then
+            If (Me.ExtraFrame = 1 Or Cfg_export_ZT1_AlwaysAddZTAFBytes = 1) Then
 
                 ' "FATZ" - reversed hex for Zoo  Tycoon Animation File.
                 .Add("46", False)
@@ -386,7 +381,7 @@ dBg:
 
             'Debug.Print("... Start writing frames at " & Now.ToString("HH:mm:ss"))
 
-            For Each ztFrame As ClsFrame2 In Me.Frames
+            For Each ztFrame As ClsFrame In Me.Frames
 
                 ' Here we get the HEX *inside* each frame.
                 ' However, the ZT1 Graphic format also wants us to tell how many bytes there are in the frame.
@@ -448,9 +443,9 @@ dBg:
 
         ' Let's not forget:
 1100:
-        If Me.ColorPalette.fileName = Me.FileName & ".pal" Then
+        If Me.ColorPalette.FileName = Me.FileName & ".pal" Then
             'Debug.Print("... Writing color palette (not shared).")
-            Me.ColorPalette.writePal(Me.ColorPalette.fileName, True)
+            Me.ColorPalette.WritePal(Me.ColorPalette.FileName, True)
         End If
 
 
@@ -477,10 +472,9 @@ dBug:
 
     Sub RenderFrames()
 
-        ' This   will render all frames
-        For Each ztFrame As ClsFrame2 In Me.Frames
+        ' This will render all frames
+        For Each ztFrame As ClsFrame In Me.Frames
             ztFrame.GetImage()
-
         Next
 
     End Sub
@@ -490,13 +484,13 @@ dBug:
 
         Dim rect As New Rectangle
 
-        Dim coordA As New Point(cfg_grid_numPixels * 2, cfg_grid_numPixels * 2)
-        Dim coordB As New Point(-cfg_grid_numPixels * 2, -cfg_grid_numPixels * 2)
+        Dim coordA As New Point(Cfg_grid_numPixels * 2, Cfg_grid_numPixels * 2)
+        Dim coordB As New Point(-Cfg_grid_numPixels * 2, -Cfg_grid_numPixels * 2)
 
         Me.RenderFrames()
 
 
-        For Each ztFrame As ClsFrame2 In Me.Frames
+        For Each ztFrame As ClsFrame In Me.Frames
 
             ' One way to do it, is to gather the offsets and width/height
             If ztFrame.OffsetX < coordA.X Then coordA.X = ztFrame.OffsetX
@@ -531,7 +525,7 @@ dBug:
 
 
         ' This will trigger a refresh.
-        clsTasks.update_info("Property of graphic changed: " & info)
+        clsTasks.Update_Info("Property of graphic changed: " & info)
 
         'RaiseEvent PropertyChanged(Me, New PropertyChangedEventArgs(info))
     End Sub
@@ -541,7 +535,7 @@ dBug:
 
     Public Sub New()
 
-        Me.colorPalette.parent = Me
+        Me.ColorPalette.Parent = Me
 
 
     End Sub

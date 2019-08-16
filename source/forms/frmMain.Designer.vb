@@ -23,7 +23,7 @@ Partial Class FrmMain
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container()
-        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(frmMain))
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(FrmMain))
         Me.picBox = New System.Windows.Forms.PictureBox()
         Me.tmrAnimation = New System.Windows.Forms.Timer(Me.components)
         Me.dlgColor = New System.Windows.Forms.ColorDialog()
@@ -50,7 +50,7 @@ Partial Class FrmMain
         Me.ChkPlayAnimation = New System.Windows.Forms.CheckBox()
         Me.TbFrames = New System.Windows.Forms.TrackBar()
         Me.dgvPaletteMain = New System.Windows.Forms.DataGridView()
-        Me.colColor = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.ColColor = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.dlgSave = New System.Windows.Forms.SaveFileDialog()
         Me.TsFrame = New System.Windows.Forms.ToolStrip()
         Me.tslFrame = New System.Windows.Forms.ToolStripLabel()
@@ -130,7 +130,7 @@ Partial Class FrmMain
         '
         'TsZT1Graphic
         '
-        Me.TsZT1Graphic.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.tslZT1Graphic, Me.tsbZT1New, Me.tsbZT1Open, Me.tsbZT1Write, Me.tsbZT1_OpenPal, Me.ToolStripSeparator6, Me.tslZT1_AnimSpeed, Me.tstZT1_AnimSpeed, Me.tsbGraphic_ExtraFrame})
+        Me.TsZT1Graphic.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.tslZT1Graphic, Me.tsbZT1New, Me.tsbZT1Open, Me.tsbZT1Write, Me.tsbZT1_OpenPal, Me.ToolStripSeparator6, Me.tsbGraphic_ExtraFrame, Me.tslZT1_AnimSpeed, Me.tstZT1_AnimSpeed})
         Me.TsZT1Graphic.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow
         Me.TsZT1Graphic.Location = New System.Drawing.Point(0, 0)
         Me.TsZT1Graphic.Name = "TsZT1Graphic"
@@ -235,7 +235,7 @@ Partial Class FrmMain
         '
         'lblColorDetails
         '
-        Me.lblColorDetails.Location = New System.Drawing.Point(108, 39)
+        Me.lblColorDetails.Location = New System.Drawing.Point(107, 52)
         Me.lblColorDetails.Name = "lblColorDetails"
         Me.lblColorDetails.Size = New System.Drawing.Size(224, 47)
         Me.lblColorDetails.TabIndex = 34
@@ -262,7 +262,7 @@ Partial Class FrmMain
         '
         'lblColor
         '
-        Me.lblColor.Location = New System.Drawing.Point(21, 40)
+        Me.lblColor.Location = New System.Drawing.Point(21, 52)
         Me.lblColor.Name = "lblColor"
         Me.lblColor.Size = New System.Drawing.Size(60, 46)
         Me.lblColor.TabIndex = 28
@@ -324,7 +324,7 @@ Partial Class FrmMain
         Me.dgvPaletteMain.AllowUserToResizeColumns = False
         Me.dgvPaletteMain.AllowUserToResizeRows = False
         Me.dgvPaletteMain.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.DisplayedCells
-        Me.dgvPaletteMain.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.colColor})
+        Me.dgvPaletteMain.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.ColColor})
         Me.dgvPaletteMain.Dock = System.Windows.Forms.DockStyle.Right
         Me.dgvPaletteMain.Location = New System.Drawing.Point(808, 117)
         Me.dgvPaletteMain.Name = "dgvPaletteMain"
@@ -334,10 +334,10 @@ Partial Class FrmMain
         Me.dgvPaletteMain.Size = New System.Drawing.Size(200, 663)
         Me.dgvPaletteMain.TabIndex = 20
         '
-        'colColor
+        'ColColor
         '
-        Me.colColor.HeaderText = "Color"
-        Me.colColor.Name = "colColor"
+        Me.ColColor.HeaderText = "Color"
+        Me.ColColor.Name = "ColColor"
         '
         'TsFrame
         '
@@ -365,7 +365,7 @@ Partial Class FrmMain
         Me.tsbFrame_ImportPNG.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.tsbFrame_ImportPNG.Name = "tsbFrame_ImportPNG"
         Me.tsbFrame_ImportPNG.Size = New System.Drawing.Size(36, 36)
-        Me.tsbFrame_ImportPNG.Text = "Open .PNG to use in this frame"
+        Me.tsbFrame_ImportPNG.Text = "Open .PNG to use in this frame. Right-click to import a .PNG as a new frame."
         '
         'tsbFrame_ExportPNG
         '
@@ -415,7 +415,7 @@ Partial Class FrmMain
         Me.tsbFrame_OffsetUp.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.tsbFrame_OffsetUp.Name = "tsbFrame_OffsetUp"
         Me.tsbFrame_OffsetUp.Size = New System.Drawing.Size(36, 36)
-        Me.tsbFrame_OffsetUp.Text = "Move up"
+        Me.tsbFrame_OffsetUp.Text = "Move up. Right-click to move up 16 pixels at a time."
         '
         'tsbFrame_OffsetDown
         '
@@ -425,7 +425,7 @@ Partial Class FrmMain
         Me.tsbFrame_OffsetDown.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.tsbFrame_OffsetDown.Name = "tsbFrame_OffsetDown"
         Me.tsbFrame_OffsetDown.Size = New System.Drawing.Size(36, 36)
-        Me.tsbFrame_OffsetDown.Text = "Move down"
+        Me.tsbFrame_OffsetDown.Text = "Move down. Right-click to move down 16 pixels at a time."
         '
         'tsbFrame_OffsetLeft
         '
@@ -435,7 +435,7 @@ Partial Class FrmMain
         Me.tsbFrame_OffsetLeft.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.tsbFrame_OffsetLeft.Name = "tsbFrame_OffsetLeft"
         Me.tsbFrame_OffsetLeft.Size = New System.Drawing.Size(36, 36)
-        Me.tsbFrame_OffsetLeft.Text = "Move left"
+        Me.tsbFrame_OffsetLeft.Text = "Move left. Right-click to move left 16 pixels at a time."
         '
         'tsbFrame_OffsetRight
         '
@@ -445,7 +445,7 @@ Partial Class FrmMain
         Me.tsbFrame_OffsetRight.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.tsbFrame_OffsetRight.Name = "tsbFrame_OffsetRight"
         Me.tsbFrame_OffsetRight.Size = New System.Drawing.Size(36, 36)
-        Me.tsbFrame_OffsetRight.Text = "Move right"
+        Me.tsbFrame_OffsetRight.Text = "Move right. Right-click to move right 16 pixels at a time."
         '
         'tslFrame_Offset
         '
@@ -648,7 +648,7 @@ Partial Class FrmMain
         'mnuPal
         '
         Me.mnuPal.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.mnuPal_MoveEnd, Me.mnuPal_MoveUp, Me.mnuPal_MoveDown, Me.mnuPal_Replace, Me.mnuPal_Add, Me.mnuPal_SavePAL, Me.mnuPal_ExportPNG, Me.mnuPal_ImportPNG, Me.mnuPal_ImportGimpPalette})
-        Me.mnuPal.Name = "mnuPal"
+        Me.mnuPal.Name = "MnuPal"
         Me.mnuPal.Size = New System.Drawing.Size(245, 202)
         '
         'mnuPal_MoveEnd
@@ -705,7 +705,7 @@ Partial Class FrmMain
         Me.mnuPal_ImportGimpPalette.Size = New System.Drawing.Size(244, 22)
         Me.mnuPal_ImportGimpPalette.Text = "Replace with GIMP Color palette"
         '
-        'frmMain
+        'FrmMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
@@ -717,7 +717,7 @@ Partial Class FrmMain
         Me.Controls.Add(Me.TsFrame)
         Me.Controls.Add(Me.TsZT1Graphic)
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
-        Me.Name = "frmMain"
+        Me.Name = "FrmMain"
         Me.Text = "ZT Studio"
         Me.WindowState = System.Windows.Forms.FormWindowState.Maximized
         CType(Me.picBox, System.ComponentModel.ISupportInitialize).EndInit()
@@ -749,7 +749,6 @@ Partial Class FrmMain
     Friend WithEvents ChkPlayAnimation As System.Windows.Forms.CheckBox
     Friend WithEvents TbFrames As System.Windows.Forms.TrackBar
     Friend WithEvents dgvPaletteMain As System.Windows.Forms.DataGridView
-    Friend WithEvents colColor As System.Windows.Forms.DataGridViewTextBoxColumn
     Friend WithEvents ssBar As System.Windows.Forms.StatusStrip
     Friend WithEvents ssFileName As System.Windows.Forms.ToolStripStatusLabel
     Friend WithEvents dlgSave As System.Windows.Forms.SaveFileDialog
@@ -812,5 +811,5 @@ Partial Class FrmMain
     Friend WithEvents mnuPal_ImportGimpPalette As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents tsbBatchRotFix As System.Windows.Forms.ToolStripButton
     Friend WithEvents tsbZT1New As System.Windows.Forms.ToolStripButton
-
+    Friend WithEvents ColColor As DataGridViewTextBoxColumn
 End Class

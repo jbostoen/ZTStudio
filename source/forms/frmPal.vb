@@ -61,7 +61,7 @@
         Next
 
         ' Force redraw. In this case, we should ignore the rendered images and make them regenerate from HEX.
-        For Each ztFrame As ClsFrame2 In editorGraphic.Frames
+        For Each ztFrame As ClsFrame In editorGraphic.Frames
             ztFrame.CoreImageBitmap = Nothing
         Next
 

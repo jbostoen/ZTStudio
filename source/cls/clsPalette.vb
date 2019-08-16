@@ -5,19 +5,19 @@ Public Class ClsPalette
 
     Dim pal_FileName As String = vbNullString
     Dim pal_colors As New List(Of System.Drawing.Color)
-    Dim pal_parent As ClsGraphic2 = Nothing
+    Dim pal_parent As ClsGraphic = Nothing
 
 
-    Public Sub New(myParent As ClsGraphic2)
+    Public Sub New(myParent As ClsGraphic)
         pal_parent = myParent
     End Sub
-    Public Property Parent As ClsGraphic2
-        ' What is the parent object (clsGraphic2) of our frame? 
+    Public Property Parent As ClsGraphic
+        ' What is the parent object (ClsGraphic) of our frame? 
         ' Or in other words: which ZT1 Graphic does this frame belong to?
         Get
             Return pal_parent
         End Get
-        Set(value As ClsGraphic2)
+        Set(value As ClsGraphic)
             pal_parent = value
         End Set
     End Property
@@ -181,7 +181,7 @@ Public Class ClsPalette
         If Me.Colors.Count = 0 Then
             ' This is a new color palette with no colors defined yet.
             ' Define the first color (transparent color) in this palette.
-            Me.Colors.Add(System.Drawing.Color.FromArgb(0, cfg_grid_BackGroundColor), False)
+            Me.Colors.Add(System.Drawing.Color.FromArgb(0, Cfg_grid_BackGroundColor), False)
         End If
 
         ' Store so we don't need to call both .contains() and .lastindexof()
@@ -194,18 +194,18 @@ Public Class ClsPalette
             ' it seems to rely on the last index.
             Return intColorIndex
 
-        ElseIf ccolor.A = 0 Then
+        ElseIf cColor.A = 0 Then
 
             ' This color palette uses a different transparent color.
             ' However, the .PNG contained a color with with alpha = 0 (transparent)
             Return 0
 
-        ElseIf ccolor = cfg_grid_BackGroundColor Then
+        ElseIf cColor = Cfg_grid_BackGroundColor Then
 
             ' The images being imported use a color which has been explicitly set as the background (or transparent) color in ZT Studio.
             Return 0
 
-        ElseIf ccolor.A = 255 And ccolor.R = Me.Colors(0).R And ccolor.G = Me.Colors(0).G And ccolor.B = Me.Colors(0).B Then
+        ElseIf cColor.A = 255 And cColor.R = Me.Colors(0).R And cColor.G = Me.Colors(0).G And cColor.B = Me.Colors(0).B Then
 
             ' Hotfix for opacity issue
             ' The specified color is opaque, but all color values are the same of the transparent color within this palette
@@ -225,7 +225,7 @@ Public Class ClsPalette
                 '  Next
 
                 ' No decision made yet
-                If cfg_palette_quantization = 0 Then
+                If Cfg_palette_quantization = 0 Then
                     If MsgBox("The current palette (" & Me.FileName & ") already contains " & Me.Colors.Count & " colors." & vbCrLf & vbCrLf &
                            "Color: " & cColor.ToString() & vbCrLf &
                            "Transparent color: " & Me.Colors(0).ToString & vbCrLf &
@@ -236,7 +236,7 @@ Public Class ClsPalette
                            "Press [Yes] to ignore all warnings until you close ZT Studio." & vbCrLf &
                            "Press [No] to quit ZT Studio and fix things first.",
                            vbYesNo + vbCritical + vbApplicationModal, "Too many colors!") = vbYes Then
-                        cfg_palette_quantization = 1
+                        Cfg_palette_quantization = 1
                     Else
                         ' Quit ZT Studio, we'll just get too many errors otherwise.
                         End
@@ -474,7 +474,7 @@ dBug:
                 ' The hex values still reference the original indexes of their colors. So changes there would screw things up and raise errors.
 
                 ' Because if a user is replacing an existing palette, the indexes to the colors might not have been changed in the actual graphic.
-                If Me.Colors.IndexOf(bmp.GetPixel(intX, intY)) < 0 Or cfg_palette_import_png_force_add_colors = 1 Then
+                If Me.Colors.IndexOf(bmp.GetPixel(intX, intY)) < 0 Or Cfg_palette_import_png_force_add_colors = 1 Then
                     Me.Colors.Add(bmp.GetPixel(intX, intY), False)
                 End If
 
@@ -496,7 +496,7 @@ dBug:
         ' Or we should regenerate the image, since it might just be a recolor. 
         If IsNothing(Me.Parent) = False Then
             ' TODO: do something
-            For Each ztFrame As ClsFrame2 In Me.Parent.Frames
+            For Each ztFrame As ClsFrame In Me.Parent.Frames
                 ztFrame.CoreImageBitmap = Nothing
                 ztFrame.GetCoreImageBitmap()
             Next
@@ -570,7 +570,7 @@ dBug:
         ' Or regenerate the image, since it might just be a recolor. 
         If IsNothing(Me.Parent) = False Then
             ' TODO: do something
-            For Each ztFrame As ClsFrame2 In Me.Parent.Frames
+            For Each ztFrame As ClsFrame In Me.Parent.Frames
                 ztFrame.CoreImageBitmap = Nothing
                 ztFrame.GetCoreImageBitmap()
             Next

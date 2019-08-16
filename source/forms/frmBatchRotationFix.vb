@@ -1,4 +1,4 @@
-﻿Public Class frmBatchRotationFix
+﻿Public Class FrmBatchRotationFix
 
     Private Sub FrmBatchRotationFix_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
@@ -8,17 +8,16 @@
         ' left: 
         '  editorFrame.updateOffsets(New Point(16, 0))
 
-        If txtFolder.Text = "" Then txtFolder.Text = cfg_path_Root
+        If txtFolder.Text = "" Then txtFolder.Text = Cfg_path_Root
 
 
 
     End Sub
 
-    Private Sub cmdBatchFix_Click(sender As Object, e As EventArgs) Handles cmdBatchFix.Click
-
+    Private Sub CmdBatchFix_Click(sender As Object, e As EventArgs) Handles cmdBatchFix.Click
 
         ' find all ZT1 Graphics in this folder
-        clsTasks.batch_rotationfix_folder_ZT1(txtFolder.Text, New Point(numLeftRight.Value, numUpDown.Value), PB)
+        clsTasks.Batch_RotationFix_Folder_ZT1(txtFolder.Text, New Point(numLeftRight.Value, numUpDown.Value), PB)
 
 
     End Sub

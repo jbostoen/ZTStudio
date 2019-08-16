@@ -38,7 +38,7 @@ Partial Class frmBatchConversion
         Me.gbType.Controls.Add(Me.rbPNG_to_ZT1)
         Me.gbType.Controls.Add(Me.rbZT1_to_PNG)
         Me.gbType.Location = New System.Drawing.Point(47, 47)
-        Me.gbType.Name = "gbType"
+        Me.gbType.Name = "GbType"
         Me.gbType.Size = New System.Drawing.Size(498, 78)
         Me.gbType.TabIndex = 11
         Me.gbType.TabStop = False
@@ -49,7 +49,7 @@ Partial Class frmBatchConversion
         Me.rbPNG_to_ZT1.AutoSize = True
         Me.rbPNG_to_ZT1.Checked = True
         Me.rbPNG_to_ZT1.Location = New System.Drawing.Point(6, 28)
-        Me.rbPNG_to_ZT1.Name = "rbPNG_to_ZT1"
+        Me.rbPNG_to_ZT1.Name = "RbPNG_to_ZT1"
         Me.rbPNG_to_ZT1.Size = New System.Drawing.Size(219, 17)
         Me.rbPNG_to_ZT1.TabIndex = 9
         Me.rbPNG_to_ZT1.TabStop = True
@@ -60,7 +60,7 @@ Partial Class frmBatchConversion
         '
         Me.rbZT1_to_PNG.AutoSize = True
         Me.rbZT1_to_PNG.Location = New System.Drawing.Point(6, 51)
-        Me.rbZT1_to_PNG.Name = "rbZT1_to_PNG"
+        Me.rbZT1_to_PNG.Name = "RbZT1_to_PNG"
         Me.rbZT1_to_PNG.Size = New System.Drawing.Size(232, 17)
         Me.rbZT1_to_PNG.TabIndex = 8
         Me.rbZT1_to_PNG.Text = "Convert all ZT1 graphic files to .PNG files"
@@ -70,7 +70,7 @@ Partial Class frmBatchConversion
         '
         Me.btnConvert.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.btnConvert.Location = New System.Drawing.Point(47, 294)
-        Me.btnConvert.Name = "btnConvert"
+        Me.btnConvert.Name = "BtnConvert"
         Me.btnConvert.Size = New System.Drawing.Size(498, 32)
         Me.btnConvert.TabIndex = 15
         Me.btnConvert.Text = "Convert"
@@ -80,7 +80,7 @@ Partial Class frmBatchConversion
         '
         Me.lblInfo.AutoSize = True
         Me.lblInfo.Location = New System.Drawing.Point(50, 156)
-        Me.lblInfo.Name = "lblInfo"
+        Me.lblInfo.Name = "LblInfo"
         Me.lblInfo.Size = New System.Drawing.Size(529, 78)
         Me.lblInfo.TabIndex = 19
         Me.lblInfo.Text = resources.GetString("lblInfo.Text")
@@ -88,7 +88,7 @@ Partial Class frmBatchConversion
         'cmdSettings
         '
         Me.cmdSettings.Location = New System.Drawing.Point(47, 258)
-        Me.cmdSettings.Name = "cmdSettings"
+        Me.cmdSettings.Name = "CmdSettings"
         Me.cmdSettings.Size = New System.Drawing.Size(498, 30)
         Me.cmdSettings.TabIndex = 22
         Me.cmdSettings.Text = "Change settings"
@@ -113,7 +113,7 @@ Partial Class frmBatchConversion
         Me.Controls.Add(Me.gbType)
         Me.Font = New System.Drawing.Font("Segoe UI", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow
-        Me.Name = "frmBatchConversion"
+        Me.Name = "FrmBatchConversion"
         Me.Text = "Batch conversion"
         Me.gbType.ResumeLayout(False)
         Me.gbType.PerformLayout()

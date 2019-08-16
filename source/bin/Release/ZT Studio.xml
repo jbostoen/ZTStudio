@@ -22,49 +22,198 @@ ZT Studio
   resource lookups using this strongly typed resource class.
 </summary>
 </member>
-<member name="M:ZTStudio.ClsFrame2.#ctor(ZTStudio.ClsGraphic2)">
+<member name="T:ZTStudio.ClsAniFile">
+ <summary>
+ ClsAniFile manages information about the .ani file.
+ This file contains info about offsets.
+ </summary>
+</member>
+<member name="P:ZTStudio.ClsAniFile.X0">
+ <summary>
+ Offset (X) of top left pixel
+ </summary>
+ <returns>Integer</returns>
+</member>
+<member name="P:ZTStudio.ClsAniFile.X1">
+ <summary>
+ Offset (X) of bottom right pixel
+ </summary>
+ <returns>Integer</returns>
+</member>
+<member name="P:ZTStudio.ClsAniFile.Y0">
+ <summary>
+ Offset (Y) of top left pixel
+ </summary>
+ <returns>Integer</returns>
+</member>
+<member name="P:ZTStudio.ClsAniFile.Y1">
+ <summary>
+ Offset (Y) of bottom right pixel
+ </summary>
+ <returns>Integer</returns>
+</member>
+<member name="P:ZTStudio.ClsAniFile.Dirs">
+ <summary>
+ List of directories (tree structure) relative to root
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:ZTStudio.ClsAniFile.Views">
+ <summary>
+ List of all views 
+ </summary>
+ <returns></returns>
+</member>
+<member name="P:ZTStudio.ClsAniFile.FileName">
+ <summary>
+ Filename of the .ani file
+ </summary>
+ <returns>String</returns>
+</member>
+<member name="M:ZTStudio.ClsAniFile.Write(System.String)">
+ <summary>
+ Writes a .ani file, based on the info in this object
+ </summary>
+ <param name="strFileName">Destination filename</param>
+ <returns></returns>
+</member>
+<member name="M:ZTStudio.ClsAniFile.CreateAniConfig(System.String)">
+ <summary>
+ This sub tries to create a .ani-file. It does so based on the offsets of graphics it detects.
+ This is experimental, but it should work for the majority of graphics.
+ </summary>
+ <param name="strFileName">Destination filename</param>
+</member>
+<member name="T:ZTStudio.ClsDrawingInstr">
+ <summary>
+ <para>ClsDrawingInstr is used to manage a drawing instruction.</para>
+ <para>The instruction specifies which colors to draw, from left to right.</para>
+ <para>This typically consists of an offset (how many transparent pixels are there before drawing starts? Could be 0) followed by one or more references to colors.</para>
+ <para>The references to colors are made using their index number in the color palette.</para>
+ </summary>
+</member>
+<member name="P:ZTStudio.ClsDrawingInstr.Offset">
+ <summary>
+ Offset. This determines how many pixels to skip horizontally (from left to right) before actually starting to draw colored pixels.
+ </summary>
+ <returns>Integer</returns>
+</member>
+<member name="P:ZTStudio.ClsDrawingInstr.PixelColors">
+ <summary>
+ A list of color references. These colors will be drawn horizontally (from left to right), after the offset has been applied.
+ The colors are referenced by their index number in the palette.
+ </summary>
+ <returns>List(Of Integer) - color references</returns>
+</member>
+<member name="M:ZTStudio.ClsDrawingInstr.GetHex">
+ <summary>
+ Returns the hex form of this drawing instruction.
+ It consist of the offset (X2), the number of colored pixels (X2) and finally the index numbers of each color (X2 per color).
+ </summary>
+ <returns>List(Of String)</returns>
+</member>
+<member name="T:ZTStudio.ClsFrame">
+ <summary>
+ <para>ClsFrame is an object to handle a ZT1 Frame.</para>
+ <para>A frame is one still picture of view of an animation.</para>
+ </summary>
+ <remarks>
+ It contains some properties such as width, height, offset; as well as a series of drawing instructions.
+ In 2019, there are still two "mystery bytes" of which the function is still unknown.
+ It's assumed the purpose of all other bytes has been discovered.
+ </remarks>
+</member>
+<member name="M:ZTStudio.ClsFrame.#ctor(ZTStudio.ClsGraphic)">
  <summary>
  New frame object has been created.
  </summary>
- <param name="myParent"></param>
+ <param name="myParent">ClsGraphic - the graphic (view) of which this frame is part</param>
 </member>
-<member name="P:ZTStudio.ClsFrame2.CoreImageHex">
+<member name="P:ZTStudio.ClsFrame.CoreImageHex">
  <summary>
  Hex values for this ZT1 frame (if set)
  </summary>
- <returns></returns>
+ <returns>List(Of String)</returns>
 </member>
-<member name="P:ZTStudio.ClsFrame2.CoreImageBitmap">
+<member name="P:ZTStudio.ClsFrame.CoreImageBitmap">
  <summary>
  Image bitmap (if set)
  </summary>
- <returns></returns>
+ <returns>Bitmap</returns>
 </member>
-<member name="P:ZTStudio.ClsFrame2.Parent">
+<member name="P:ZTStudio.ClsFrame.Parent">
  <summary>
  Parent graphic of this ZT1 frame
  </summary>
- <returns></returns>
+ <returns>ClsGraphic</returns>
 </member>
-<member name="P:ZTStudio.ClsFrame2.LastUpdated">
+<member name="P:ZTStudio.ClsFrame.OffsetX">
+ <summary>
+ Horizontal offset (X) of this frame.
+ How much should the image be moved to the left (+)/right (-), compared to the center of the square? (center is based on ZT1's cFootPrintX and cFootPrintY settings)
+ </summary>
+ <returns>Integer</returns>
+</member>
+<member name="P:ZTStudio.ClsFrame.OffsetY">
+ <summary>
+ Vertical offset (Y) of this frame.
+ How much should the image be moved to the top (+)/bottom (-), compared to the center of the square? (center is based on ZT1's cFootPrintX and cFootPrintY settings)
+ </summary>
+ <returns>Integer</returns>
+</member>
+<member name="P:ZTStudio.ClsFrame.LastUpdated">
  <summary>
  Timestamp of last update. Used to see if re-rendering the frame is needed.
  </summary>
  <returns>Timestamp</returns>
 </member>
-<member name="M:ZTStudio.ClsFrame2.GetCoreImageBitmap">
+<member name="P:ZTStudio.ClsFrame.MysteryHEX">
  <summary>
- Returns the core bitmap image. 
- If the ZT1 Graphic has been rendered (CoreImageBitmap is set), it returns this cached version.
- If the ZT1 Graphic hasn't been rendered yet, it renders the ZT1 Graphic from the hex values.
+ <para>Mystery bytes/hex is the term used in this project to refer to two bytes present in the hex values of each frame.</para>
+ <para>Until now (16th of August 2019), the purpose of these 2 bytes is unknown. It's not been discovered yet if they have any purpose in the game.</para>
  </summary>
- <returns></returns>
+ <remarks>
+ Are they:
+ - another counter?
+ - another integrity check?
+ - a signature?
+ - some value used in the program used by Blue Fang/Rapan Animation Studio (Rapan LLC. Sofia) to create the graphics?
+ - ...
+ 
+ If anyone ever finds out, please let me know!
+ </remarks>
+ <returns>List(Of String)</returns>
 </member>
-<member name="M:ZTStudio.ClsFrame2.GetImage(System.Boolean,System.Boolean)">
+<member name="M:ZTStudio.ClsFrame.NotifyPropertyChanged(System.String)">
  <summary>
- Returns a bitmap image for this frame.
- If a background frame within this graphic exists, it will also be rendered if enabled. (for example: Restaurant)
- If a background graphic has been set, it will also be rendered if enabled. (for example: Orang Utan toy)
+ This sub is used to inform the object that an important property has changed.
+ By calling this sub, the LastUpdated property will be set, unless it's triggered by "CachedFrame" (which no longer seems to exist? 20190816)
+ </summary>
+ <param name="strSource">Which property has changed</param>
+</member>
+<member name="M:ZTStudio.ClsFrame.GetCoreImageBitmap">
+ <summary>
+ <para>Returns the core bitmap image.</para>
+ <para>If the ZT1 Graphic has been rendered (CoreImageBitmap is set), it returns this cached version.</para>
+ <para>If the ZT1 Graphic hasn't been rendered yet, it renders the ZT1 Graphic from the hex values.</para>
+ </summary>
+ <returns>Bitmap</returns>
+</member>
+<member name="M:ZTStudio.ClsFrame.GetCoreImageBitmapOnTransparentCanvas(System.Boolean)">
+ <summary>
+ Returns the image bitmap, on a transparent canvas.
+ </summary>
+ <remarks>
+ Todo: this needs more documentation. Take the time again to see how blnDrawInCenter works.
+ </remarks>
+ <param name="blnDrawInCenter">Boolean</param>
+ <returns>Bitmap</returns>
+</member>
+<member name="M:ZTStudio.ClsFrame.GetImage(System.Boolean,System.Boolean)">
+ <summary>
+ <para>Returns a bitmap image for this frame.</para>
+ <para>If a background frame within this graphic exists, it will also be rendered if enabled. (for example: Restaurant)</para>
+ <para>If a background graphic has been set, it will also be rendered if enabled. (for example: Orang Utan toy)</para>
  </summary>
  <param name="blnDrawGrid">Add grid. Defaults to false.</param>
  <param name="blnCentered"></param>
@@ -92,13 +241,21 @@ ZT Studio
  <param name="bmInput">Bitmap image</param>
  <returns>Rectangle</returns>
 </member>
-<member name="M:ZTStudio.clsTasks.bitmap_getDefiningRectangle_old(System.Drawing.Bitmap)">
+<member name="M:ZTStudio.clsTasks.Bitmap_GetDefiningRectangle_old(System.Drawing.Bitmap)">
  <summary>
  Deprecated! Previous version of determining the relevant rectangle.
  Only left here in case a regression is spotted.
  </summary>
  <param name="bmInput">Bitmap image</param>
  <returns>Rectangle</returns>
+</member>
+<member name="M:ZTStudio.clsTasks.Images_Combine(System.Drawing.Image,System.Drawing.Image)">
+ <summary>
+ Combines two images into one
+ </summary>
+ <param name="imgBack">Image 1</param>
+ <param name="imgFront">Image 2</param>
+ <returns>Image</returns>
 </member>
 <member name="M:ZTStudio.clsTasks.Save_Graphic(System.String)">
  <summary>
@@ -152,6 +309,44 @@ ZT Studio
  </summary>
  <param name="intIndexNow">Index</param>
 </member>
+<member name="M:ZTStudio.clsTasks.Pal_Open(System.String)">
+ <summary>
+ Opens a color palette, displays it as a separate window.
+ </summary>
+ <param name="strFileName">Filename of the ZT1 color palette (.pal)</param>
+</member>
+<member name="M:ZTStudio.clsTasks.Batch_RotationFix_Folder_ZT1(System.String,System.Drawing.Point,System.Windows.Forms.ProgressBar)">
+ <summary>
+ Batch rotation fixes all animations in a selected folder.
+ This sub will find all ZT1 Graphics in the folder and adjust the offsets of each frame.
+  
+ It's especially useful when importing frames from another program, such as Blender, and the user sees the animal should just be a bit more central (up/down).
+ </summary>
+ <param name="strPath">Path to folder</param>
+ <param name="pntOffset">The offsets to apply</param>
+ <param name="PB">The bar which will indicate progress</param>
+</member>
+<member name="M:ZTStudio.clsTasks.Batch_Generate_Ani(System.String)">
+ <summary>
+ Attempts to create .ani file for each animation. Experimental.
+ </summary>
+ <param name="strPath">Path to folder</param>
+</member>
+<member name="M:ZTStudio.clsTasks.ZTStudio_StartUp">
+ <summary>
+ Loads settings
+ Processes command line parameters
+ </summary>
+</member>
+<member name="M:ZTStudio.clsTasks.ZTStudio_UnexpectedError(System.String,System.String,System.Int32,Microsoft.VisualBasic.ErrObject)">
+ <summary>
+ To make errors look more generic, most of them are now handled by this method.
+ </summary>
+ <param name="strClass">Class </param>
+ <param name="strMethod">Method</param>
+ <param name="intErrorLine">Error line</param>
+ <param name="errObject">Error object (contains number and message)</param>
+</member>
 <member name="M:ZTStudio.ClsPalette.GetColorIndex(System.Drawing.Color,System.Boolean)">
  <summary>
  Returns the index of a color within this palette.
@@ -160,7 +355,7 @@ ZT Studio
  <param name="blnAddToPalette">Add the color to the palette if it's not present</param>
  <returns></returns>
 </member>
-<member name="M:ZTStudio.frmMain.mnuPal_ImportGimpPalette_Click(System.Object,System.EventArgs)">
+<member name="M:ZTStudio.FrmMain.MnuPal_ImportGimpPalette_Click(System.Object,System.EventArgs)">
  <summary>
  Button triggers an action to import a GIMP Color Palette
  </summary>

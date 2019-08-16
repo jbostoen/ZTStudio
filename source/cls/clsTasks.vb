@@ -31,106 +31,112 @@ Module clsTasks
         Dim sFile As String = System.IO.Path.GetFullPath(Application.StartupPath) & "\settings.cfg"
 
         If File.Exists(sFile) = False Then
-            If MsgBox("ZT Studio is missing the settings.cfg file.", vbOKOnly + vbCritical + vbOK) = vbOK Then
+
+            Dim strMessage As String = "ZT Studio is missing the settings.cfg file." & vbCrLf &
+                      "It should be in the same folder as ZTStudio.exe" & vbCrLf & vbCrLf &
+                      "Get the file at:" & vbCrLf &
+                      Cfg_GitHub_URL
+
+            If MsgBox(strmessage, MsgBoxStyle.OkOnly + MsgBoxStyle.Critical + MsgBoxStyle.ApplicationModal) = MsgBoxResult.Ok Then
                 End
             End If
+
         End If
         'On Error Resume Next
 
 
-
 20:
         ' Preview
-        cfg_grid_BackGroundColor = System.Drawing.Color.FromArgb(CInt(iniRead(sFile, "preview", "bgColor", "")))
-        cfg_grid_ForeGroundColor = System.Drawing.Color.FromArgb(CInt(iniRead(sFile, "preview", "fgColor", "")))
-        cfg_grid_numPixels = CInt(iniRead(sFile, "preview", "numPixels", ""))
-        cfg_grid_zoom = CInt(iniRead(sFile, "preview", "zoom", ""))
-        cfg_grid_footPrintX = CByte(iniRead(sFile, "preview", "footPrintX", ""))
-        cfg_grid_footPrintY = CByte(iniRead(sFile, "preview", "footPrintY", ""))
+        Cfg_grid_BackGroundColor = System.Drawing.Color.FromArgb(CInt(IniRead(sFile, "preview", "bgColor", "")))
+        Cfg_grid_ForeGroundColor = System.Drawing.Color.FromArgb(CInt(IniRead(sFile, "preview", "fgColor", "")))
+        Cfg_grid_numPixels = CInt(IniRead(sFile, "preview", "numPixels", ""))
+        Cfg_grid_zoom = CInt(IniRead(sFile, "preview", "zoom", ""))
+        Cfg_grid_footPrintX = CByte(IniRead(sFile, "preview", "footPrintX", ""))
+        Cfg_grid_footPrintY = CByte(IniRead(sFile, "preview", "footPrintY", ""))
 
 30:
         ' Reads from ini and configures all.
-        cfg_path_Root = iniRead(sFile, "paths", "root", "")
-        cfg_path_recentPNG = iniRead(sFile, "paths", "recentPNG", "")
-        cfg_path_recentZT1 = iniRead(sFile, "paths", "recentZT1", "")
-        cfg_path_ColorPals8 = System.IO.Path.GetFullPath(Application.StartupPath) & "\pal8"
-        cfg_path_ColorPals16 = System.IO.Path.GetFullPath(Application.StartupPath) & "\pal16"
+        Cfg_path_Root = IniRead(sFile, "paths", "root", "")
+        Cfg_path_recentPNG = IniRead(sFile, "paths", "recentPNG", "")
+        Cfg_path_recentZT1 = IniRead(sFile, "paths", "recentZT1", "")
+        Cfg_path_ColorPals8 = System.IO.Path.GetFullPath(Application.StartupPath) & "\pal8"
+        Cfg_path_ColorPals16 = System.IO.Path.GetFullPath(Application.StartupPath) & "\pal16"
 
 40:
         ' Export (PNG)
-        cfg_export_PNG_CanvasSize = CInt(iniRead(sFile, "exportOptions", "pngCrop", ""))
-        cfg_export_PNG_RenderBGFrame = CByte(iniRead(sFile, "exportOptions", "pngRenderExtraFrame", ""))
-        cfg_export_PNG_RenderBGZT1 = CByte(iniRead(sFile, "exportOptions", "pngRenderExtraGraphic", ""))
-        cfg_export_PNG_TransparentBG = CByte(iniRead(sFile, "exportOptions", "pngRenderTransparentBG", ""))
+        Cfg_export_PNG_CanvasSize = CInt(IniRead(sFile, "exportOptions", "pngCrop", ""))
+        Cfg_export_PNG_RenderBGFrame = CByte(IniRead(sFile, "exportOptions", "pngRenderExtraFrame", ""))
+        Cfg_export_PNG_RenderBGZT1 = CByte(IniRead(sFile, "exportOptions", "pngRenderExtraGraphic", ""))
+        Cfg_export_PNG_TransparentBG = CByte(IniRead(sFile, "exportOptions", "pngRenderTransparentBG", ""))
 
         ' Export (ZT1)
-        cfg_export_ZT1_Ani = CByte(iniRead(sFile, "exportOptions", "zt1Ani", "1"))
-        cfg_export_ZT1_AlwaysAddZTAFBytes = CByte(iniRead(sFile, "exportOptions", "zt1AlwaysAddZTAFBytes", ""))
+        Cfg_export_ZT1_Ani = CByte(IniRead(sFile, "exportOptions", "zt1Ani", "1"))
+        Cfg_export_ZT1_AlwaysAddZTAFBytes = CByte(IniRead(sFile, "exportOptions", "zt1AlwaysAddZTAFBytes", ""))
 
 50:
         ' Convert ( ZT1 <=> PNG, other way around )
-        cfg_convert_startIndex = CInt(iniRead(sFile, "conversionOptions", "pngFilesIndex", ""))
-        cfg_convert_deleteOriginal = CByte(iniRead(sFile, "conversionOptions", "deleteOriginal", ""))
-        cfg_convert_overwrite = CByte(iniRead(sFile, "conversionOptions", "overwrite", ""))
-        cfg_convert_sharedPalette = CByte(iniRead(sFile, "conversionOptions", "sharedPalette", ""))
-        cfg_convert_fileNameDelimiter = CStr(iniRead(sFile, "conversionOptions", "fileNameDelimiter", ""))
+        Cfg_convert_startIndex = CInt(IniRead(sFile, "conversionOptions", "pngFilesIndex", ""))
+        Cfg_convert_deleteOriginal = CByte(IniRead(sFile, "conversionOptions", "deleteOriginal", ""))
+        Cfg_convert_overwrite = CByte(IniRead(sFile, "conversionOptions", "overwrite", ""))
+        Cfg_convert_sharedPalette = CByte(IniRead(sFile, "conversionOptions", "sharedPalette", ""))
+        Cfg_convert_fileNameDelimiter = CStr(IniRead(sFile, "conversionOptions", "fileNameDelimiter", ""))
 
 60:
         ' Frame editing
-        cfg_editor_rotFix_individualFrame = CByte(iniRead(sFile, "editing", "individualRotationFix", ""))
-        cfg_frame_defaultAnimSpeed = CInt(iniRead(sFile, "editing", "animationSpeed", ""))
+        Cfg_editor_rotFix_individualFrame = CByte(IniRead(sFile, "editing", "individualRotationFix", ""))
+        Cfg_frame_defaultAnimSpeed = CInt(IniRead(sFile, "editing", "animationSpeed", ""))
 
 70:
         ' Palette
-        cfg_palette_import_png_force_add_colors = CByte(iniRead(sFile, "palette", "importPNGForceAddColors", ""))
+        Cfg_palette_import_png_force_add_colors = CByte(IniRead(sFile, "palette", "importPNGForceAddColors", ""))
 
 
 100:
 
         ' Now, if our path is no longer valid, pop up 'Settings'-window automatically
-        If System.IO.Directory.Exists(cfg_path_Root) = False Then
+        If System.IO.Directory.Exists(Cfg_path_Root) = False Then
 
 
             ' But let's give some suggestions.
-            cfg_path_Root = System.IO.Path.GetFullPath(Application.StartupPath)
+            Cfg_path_Root = System.IO.Path.GetFullPath(Application.StartupPath)
 
             ' Also give suggestions for color palettes.
-            If System.IO.Directory.Exists(cfg_path_ColorPals8) = False And System.IO.Directory.Exists(Application.StartupPath & "\pal8") = True Then
-                cfg_path_ColorPals8 = cfg_path_Root & "\pal8"
+            If System.IO.Directory.Exists(Cfg_path_ColorPals8) = False And System.IO.Directory.Exists(Application.StartupPath & "\pal8") = True Then
+                Cfg_path_ColorPals8 = Cfg_path_Root & "\pal8"
             End If
-            If System.IO.Directory.Exists(cfg_path_ColorPals16) = False And System.IO.Directory.Exists(Application.StartupPath & "\pal16") = True Then
-                cfg_path_ColorPals8 = cfg_path_Root & "\pal16"
+            If System.IO.Directory.Exists(Cfg_path_ColorPals16) = False And System.IO.Directory.Exists(Application.StartupPath & "\pal16") = True Then
+                Cfg_path_ColorPals8 = Cfg_path_Root & "\pal16"
             End If
 
             ' Now show the settings dialog.
-            frmSettings.ShowDialog()
+            FrmSettings.ShowDialog()
 
         End If
 
 200:
 
         ' No recent paths yet?
-        If cfg_path_recentPNG = "" Then
-            cfg_path_recentPNG = cfg_path_Root
+        If Cfg_path_recentPNG = "" Then
+            Cfg_path_recentPNG = Cfg_path_Root
         End If
-        If cfg_path_recentZT1 = "" Then
-            cfg_path_recentZT1 = cfg_path_Root
+        If Cfg_path_recentZT1 = "" Then
+            Cfg_path_recentZT1 = Cfg_path_Root
         End If
 
         ' Paths invalid?
-        If System.IO.Directory.Exists(cfg_path_recentPNG) = False Then
-            cfg_path_recentPNG = cfg_path_Root
+        If System.IO.Directory.Exists(Cfg_path_recentPNG) = False Then
+            Cfg_path_recentPNG = Cfg_path_Root
         End If
-        If System.IO.Directory.Exists(cfg_path_recentZT1) = False Then
-            cfg_path_recentZT1 = cfg_path_Root
+        If System.IO.Directory.Exists(Cfg_path_recentZT1) = False Then
+            Cfg_path_recentZT1 = Cfg_path_Root
         End If
 
 
 
         ' Only now should we create our objects.
 
-        editorGraphic = New ClsGraphic2         ' The clsGraphic2 object we use.
-        editorBgGraphic = New ClsGraphic2       ' The background graphic, e.g. toy
+        editorGraphic = New ClsGraphic         ' The ClsGraphic object we use.
+        editorBgGraphic = New ClsGraphic       ' The background graphic, e.g. toy
 
 
 
@@ -154,43 +160,43 @@ dBug:
 
 
         ' Preview
-        iniWrite(sFile, "preview", "bgColor", cfg_grid_BackGroundColor.ToArgb())
-        iniWrite(sFile, "preview", "fgColor", cfg_grid_ForeGroundColor.ToArgb())
-        iniWrite(sFile, "preview", "numPixels", cfg_grid_numPixels.ToString())
-        iniWrite(sFile, "preview", "zoom", cfg_grid_zoom.ToString())
-        iniWrite(sFile, "preview", "footPrintX", cfg_grid_footPrintX.ToString())
-        iniWrite(sFile, "preview", "footPrintY", cfg_grid_footPrintY.ToString())
+        IniWrite(sFile, "preview", "bgColor", Cfg_grid_BackGroundColor.ToArgb())
+        IniWrite(sFile, "preview", "fgColor", Cfg_grid_ForeGroundColor.ToArgb())
+        IniWrite(sFile, "preview", "numPixels", Cfg_grid_numPixels.ToString())
+        IniWrite(sFile, "preview", "zoom", Cfg_grid_zoom.ToString())
+        IniWrite(sFile, "preview", "footPrintX", Cfg_grid_footPrintX.ToString())
+        IniWrite(sFile, "preview", "footPrintY", Cfg_grid_footPrintY.ToString())
 
 
         ' Reads from ini and configures all.
-        iniWrite(sFile, "paths", "root", cfg_path_Root)
-        iniWrite(sFile, "paths", "recentPNG", cfg_path_recentPNG)
-        iniWrite(sFile, "paths", "recentZT1", cfg_path_recentZT1)
+        IniWrite(sFile, "paths", "root", Cfg_path_Root)
+        IniWrite(sFile, "paths", "recentPNG", Cfg_path_recentPNG)
+        IniWrite(sFile, "paths", "recentZT1", Cfg_path_recentZT1)
 
 
         ' Export PNG (frames)
-        iniWrite(sFile, "exportOptions", "pngCrop", cfg_export_PNG_CanvasSize.ToString())
-        iniWrite(sFile, "exportOptions", "pngRenderExtraFrame", cfg_export_PNG_RenderBGFrame.ToString())
-        iniWrite(sFile, "exportOptions", "pngRenderExtraGraphic", cfg_export_PNG_RenderBGZT1.ToString())
-        iniWrite(sFile, "exportOptions", "pngRenderTransparentBG", cfg_export_PNG_TransparentBG.ToString())
+        IniWrite(sFile, "exportOptions", "pngCrop", Cfg_export_PNG_CanvasSize.ToString())
+        IniWrite(sFile, "exportOptions", "pngRenderExtraFrame", Cfg_export_PNG_RenderBGFrame.ToString())
+        IniWrite(sFile, "exportOptions", "pngRenderExtraGraphic", Cfg_export_PNG_RenderBGZT1.ToString())
+        IniWrite(sFile, "exportOptions", "pngRenderTransparentBG", Cfg_export_PNG_TransparentBG.ToString())
 
         ' Export ZT1 (entire graphic)
-        iniWrite(sFile, "exportOptions", "zt1Ani", cfg_export_ZT1_Ani.ToString())
-        iniWrite(sFile, "exportOptions", "zt1AlwaysAddZTAFBytes", cfg_export_ZT1_AlwaysAddZTAFBytes.ToString())
+        IniWrite(sFile, "exportOptions", "zt1Ani", Cfg_export_ZT1_Ani.ToString())
+        IniWrite(sFile, "exportOptions", "zt1AlwaysAddZTAFBytes", Cfg_export_ZT1_AlwaysAddZTAFBytes.ToString())
 
         ' Convert options ( ZT1 <=> PNG )
-        iniWrite(sFile, "conversionOptions", "pngFilesIndex", cfg_convert_startIndex.ToString())
-        iniWrite(sFile, "conversionOptions", "deleteOriginal", cfg_convert_deleteOriginal.ToString())
-        iniWrite(sFile, "conversionOptions", "overwrite", cfg_convert_overwrite.ToString())
-        iniWrite(sFile, "conversionOptions", "sharedPalette", cfg_convert_sharedPalette.ToString())
-        iniWrite(sFile, "conversionOptions", "fileNameDelimiter", cfg_convert_fileNameDelimiter)
+        IniWrite(sFile, "conversionOptions", "pngFilesIndex", Cfg_convert_startIndex.ToString())
+        IniWrite(sFile, "conversionOptions", "deleteOriginal", Cfg_convert_deleteOriginal.ToString())
+        IniWrite(sFile, "conversionOptions", "overwrite", Cfg_convert_overwrite.ToString())
+        IniWrite(sFile, "conversionOptions", "sharedPalette", Cfg_convert_sharedPalette.ToString())
+        IniWrite(sFile, "conversionOptions", "fileNameDelimiter", Cfg_convert_fileNameDelimiter)
 
         ' Frame editing
-        iniWrite(sFile, "editing", "individualRotationFix", cfg_editor_rotFix_individualFrame.ToString())
-        iniWrite(sFile, "editing", "animationSpeed", cfg_frame_defaultAnimSpeed.ToString())
+        IniWrite(sFile, "editing", "individualRotationFix", Cfg_editor_rotFix_individualFrame.ToString())
+        IniWrite(sFile, "editing", "animationSpeed", Cfg_frame_defaultAnimSpeed.ToString())
 
         ' Palette
-        iniWrite(sFile, "palette", "importPNGForceAddColors", cfg_palette_import_png_force_add_colors.ToString())
+        IniWrite(sFile, "palette", "importPNGForceAddColors", Cfg_palette_import_png_force_add_colors.ToString())
 
 
         Return 0
@@ -283,7 +289,7 @@ dBug:
 
 5:
         ' Create a new instance of a ZT1 Graphic object.
-        Dim g As New ClsGraphic2
+        Dim g As New ClsGraphic
 
         ' Read the ZT1 Graphic
         g.Read(strFile)
@@ -297,12 +303,12 @@ dBug:
 
 10:
         ' Loop over each frame of the ZT1 Graphic
-        For Each ztFrame As ClsFrame2 In g.Frames
+        For Each ztFrame As ClsFrame In g.Frames
 
 11:
 
             ' the bitmap's save function does not overwrite, nor warn 
-            System.IO.File.Delete(strFile & cfg_convert_fileNameDelimiter & (g.Frames.IndexOf(ztFrame) + cfg_convert_startIndex).ToString("0000") & ".png")
+            System.IO.File.Delete(strFile & Cfg_convert_fileNameDelimiter & (g.Frames.IndexOf(ztFrame) + Cfg_convert_startIndex).ToString("0000") & ".png")
 
             ' Save frames as PNG, just autonumber the frames.
             ' Exception: if we have an extra frame which should be rendered separately rather than as background. 
@@ -311,14 +317,14 @@ dBug:
             ' This might however make a nice addition :)
 
             ' RenderBGFrame: this is read as: 'render this as BG for every frame'
-            If cfg_export_PNG_RenderBGFrame = 0 And g.ExtraFrame = 1 Then
+            If Cfg_export_PNG_RenderBGFrame = 0 And g.ExtraFrame = 1 Then
                 If g.Frames.IndexOf(ztFrame) <> (g.Frames.Count - 1) Then
-                    ztFrame.SavePNG(strFile & cfg_convert_fileNameDelimiter & (g.Frames.IndexOf(ztFrame) + cfg_convert_startIndex).ToString("0000") & ".png")
+                    ztFrame.SavePNG(strFile & Cfg_convert_fileNameDelimiter & (g.Frames.IndexOf(ztFrame) + Cfg_convert_startIndex).ToString("0000") & ".png")
                 Else
-                    ztFrame.SavePNG(strFile & cfg_convert_fileNameDelimiter & "extra.png")
+                    ztFrame.SavePNG(strFile & Cfg_convert_fileNameDelimiter & "extra.png")
                 End If
             Else
-                ztFrame.SavePNG(strFile & cfg_convert_fileNameDelimiter & (g.Frames.IndexOf(ztFrame) + cfg_convert_startIndex).ToString("0000") & ".png")
+                ztFrame.SavePNG(strFile & Cfg_convert_fileNameDelimiter & (g.Frames.IndexOf(ztFrame) + Cfg_convert_startIndex).ToString("0000") & ".png")
 
             End If
 
@@ -359,8 +365,8 @@ dBg:
 
 
         Dim paths As New List(Of String)
-        Dim g As New ClsGraphic2
-        Dim ztFrame As ClsFrame2
+        Dim g As New ClsGraphic
+        Dim ztFrame As ClsFrame
         Dim graphicName As String = System.IO.Path.GetFileName(strPath)
         Dim frameGraphicPath As String = Strings.Left(strPath, strPath.Length - graphicName.Length)
 
@@ -375,11 +381,11 @@ dBg:
 
         ' Get the entire list of .PNG files matching the naming convention for this graphic.
         ' Anything else is irrelevant to process.
-        paths.AddRange(System.IO.Directory.GetFiles(frameGraphicPath, graphicName & cfg_convert_fileNameDelimiter & "????.png"))
+        paths.AddRange(System.IO.Directory.GetFiles(frameGraphicPath, graphicName & Cfg_convert_fileNameDelimiter & "????.png"))
 
         ' Fix for graphic_extra.PNG (legacy)
-        If File.Exists(frameGraphicPath & graphicName & cfg_convert_fileNameDelimiter & "extra.png") = True Then
-            paths.Add(frameGraphicPath & graphicName & cfg_convert_fileNameDelimiter & "extra.png")
+        If File.Exists(frameGraphicPath & graphicName & Cfg_convert_fileNameDelimiter & "extra.png") = True Then
+            paths.Add(frameGraphicPath & graphicName & Cfg_convert_fileNameDelimiter & "extra.png")
             g.ExtraFrame = 1
         End If
 
@@ -425,8 +431,8 @@ dBg:
                 ' This could occur if for some reason we have for instance a ne.png file instead of the expected ne[delimiter]0000.png file
                 MsgBox("A .PNG-file has been detected which does not match the pattern expected." & vbCrLf &
                     "The files should be named something similar to: " & vbCrLf &
-                    graphicName & cfg_convert_fileNameDelimiter & "000" & cfg_convert_startIndex & ".png (number increases)" & vbCrLf &
-                    "or " & graphicName & cfg_convert_fileNameDelimiter & "extra.png (for the extra frame in certain ZT1 Graphics." & vbCrLf & vbCrLf &
+                    graphicName & Cfg_convert_fileNameDelimiter & "000" & Cfg_convert_startIndex & ".png (number increases)" & vbCrLf &
+                    "or " & graphicName & Cfg_convert_fileNameDelimiter & "extra.png (for the extra frame in certain ZT1 Graphics." & vbCrLf & vbCrLf &
                     "File which caused this error: " & vbCrLf & "'" & s & "'" & vbCrLf &
                        "ZT Studio will close to prevent program or game crashes.",
                         vbOKOnly + vbCritical + vbApplicationModal,
@@ -450,13 +456,13 @@ dBg:
                     ' The specification is that - depending on a variable to see if we start counting from 0 or 1 - 
                     ' the user should have PNGs named <graphicName><delimiter>0000.png, <graphicName><delimiter>0001.png, ... 
                     ' This checks if no number is skipped or invalid.
-                    If (CInt(pngName) - cfg_convert_startIndex) <> g.Frames.Count Then
+                    If (CInt(pngName) - Cfg_convert_startIndex) <> g.Frames.Count Then
 
 135:
                         ' Check if file name pattern is okay
-                        MsgBox("The file name ('" & frameGraphicPath & graphicName & cfg_convert_fileNameDelimiter & (CInt(pngName)).ToString("0000") & ".png') does not match the expected name " &
-                               "('" & frameGraphicPath & graphicName & cfg_convert_fileNameDelimiter & (g.Frames.Count + cfg_convert_startIndex).ToString("0000") & ".png')" & vbCrLf & vbCrLf &
-                               "Your current starting index is: " & cfg_convert_startIndex & vbCrLf &
+                        MsgBox("The file name ('" & frameGraphicPath & graphicName & Cfg_convert_fileNameDelimiter & (CInt(pngName)).ToString("0000") & ".png') does not match the expected name " &
+                               "('" & frameGraphicPath & graphicName & Cfg_convert_fileNameDelimiter & (g.Frames.Count + Cfg_convert_startIndex).ToString("0000") & ".png')" & vbCrLf & vbCrLf &
+                               "Your current starting index is: " & Cfg_convert_startIndex & vbCrLf &
                                "Do not store other .png-files starting with '" & frameGraphicPath & graphicName & "' in that folder.", vbOKOnly + vbCritical, "Error")
 
                         Return -1
@@ -481,9 +487,9 @@ dBg:
 
 
                     ' Check if file name pattern is okay
-                    MsgBox("The file name ('" & frameGraphicPath & graphicName & cfg_convert_fileNameDelimiter & pngName & ".png') does not match the expected name " &
-                           "('" & frameGraphicPath & graphicName & cfg_convert_fileNameDelimiter & (g.Frames.Count + cfg_convert_startIndex).ToString("0000") & ".png')" & vbCrLf & vbCrLf &
-                           "Your current starting index is: " & cfg_convert_startIndex & vbCrLf &
+                    MsgBox("The file name ('" & frameGraphicPath & graphicName & Cfg_convert_fileNameDelimiter & pngName & ".png') does not match the expected name " &
+                           "('" & frameGraphicPath & graphicName & Cfg_convert_fileNameDelimiter & (g.Frames.Count + Cfg_convert_startIndex).ToString("0000") & ".png')" & vbCrLf & vbCrLf &
+                           "Your current starting index is: " & Cfg_convert_startIndex & vbCrLf &
                            "Do not store other .png-files starting with '" & frameGraphicPath & graphicName & "' in that folder.", vbOKOnly + vbCritical, "Error")
 
                     Return -1
@@ -491,7 +497,7 @@ dBg:
                 End If
 
 200:
-                ztFrame = New ClsFrame2(g)
+                ztFrame = New ClsFrame(g)
 
 
 201:
@@ -505,7 +511,7 @@ dBg:
 
 202:
 
-                If cfg_convert_sharedPalette = 1 And blnSingleConversion = False Then
+                If Cfg_convert_sharedPalette = 1 And blnSingleConversion = False Then
 
                     ' 20170513: changed behavior for even more flexibility. 
                     ' We try to get a shared palette:
@@ -627,7 +633,7 @@ paletteReady:
         'Debug.Print("After write: " & Now.ToString("HH:mm:ss"))
 
 1555:
-        If cfg_export_ZT1_Ani = 1 And blnSingleConversion = True Then
+        If Cfg_export_ZT1_Ani = 1 And blnSingleConversion = True Then
             Debug.Print(Now.ToString() & ": convert_file_PNG_to_ZT1: Generate .ani file (single conversion)")
 
             ' Only 1 graphic file is being generated. This is the case for icons, for example.
@@ -728,7 +734,7 @@ dBg:
 
 1050:
         ' Should we do a clean up?
-        If cfg_convert_deleteOriginal = 1 Then
+        If Cfg_convert_deleteOriginal = 1 Then
             ' Currently ZT1 Graphics and ZT1 Color palettes have their own sub in which the files get deleted.
             ' It might be possible to merge them at some point and you could even gain a small performance boost.
             clsTasks.CleanUp_files(strPath, "")
@@ -788,12 +794,12 @@ dBug:
                 If Strings.Right(Path.GetFileNameWithoutExtension(f).ToLower, 5) = "extra" Then
                     ' 5 (extra) + 4 (.png) = 9 chars.
                     ' eg objects/yourobj/NE_extra.png 
-                    strGraphicName = Strings.Left(f, Len(f) - 9 - Len(cfg_convert_fileNameDelimiter))
+                    strGraphicName = Strings.Left(f, Len(f) - 9 - Len(Cfg_convert_fileNameDelimiter))
                     ' Debug.Print("strgraphicname extra='" & strGraphicName & "'")
                 Else
                     ' 4 (0000) + 4 (.png) = 8 chars. 
                     ' eg objects/yourobj/NE_0001.png 
-                    strGraphicName = Strings.Left(f, Len(f) - 8 - Len(cfg_convert_fileNameDelimiter))
+                    strGraphicName = Strings.Left(f, Len(f) - 8 - Len(Cfg_convert_fileNameDelimiter))
                     ' Debug.Print("strgraphicname='" & strGraphicName & "'")
                 End If
 
@@ -854,12 +860,12 @@ dBug:
 1100:
         ' Generate a .ani-file in each directory. 
         ' Add the initial directory
-        batch_generate_Ani(strPath)
+        Batch_Generate_Ani(strPath)
 
 
 1150:
         ' Do a clean up of our .PNG files if we had a successful conversion.
-        If cfg_convert_deleteOriginal = 1 Then
+        If Cfg_convert_deleteOriginal = 1 Then
             clsTasks.CleanUp_files(strPath, ".png")
         End If
 
@@ -877,10 +883,10 @@ dBug:
 
 
     ''' <summary>
-    ''' 
+    ''' Updates all sort of info.
     ''' </summary>
     ''' <param name="intIndexFrameNumber"></param>
-    Public Sub Update_preview(Optional intIndexFrameNumber As Integer = -1)
+    Public Sub Update_Preview(Optional intIndexFrameNumber As Integer = -1)
 
 1:
         ' Can't update if there are no frames.
@@ -889,34 +895,38 @@ dBug:
         End If
 
 2:
-        ' SHortcut. If no index number for the frame was specified, assume the currently visible frame needs to be updated.
+        ' Shortcut. If no index number for the frame was specified, assume the currently visible frame needs to be updated.
         If intIndexFrameNumber = -1 Then
             intIndexFrameNumber = FrmMain.TbFrames.Value - 1
         End If
 
-3:
-        ' The sub gets triggered when a new frame has been added, but no .PNG has been loaded yet
-        If editorGraphic.Frames(intIndexFrameNumber).CoreImageHex.Count = 0 Then
-            Exit Sub
-        End If
 
-20:
-        FrmMain.picBox.Image = editorGraphic.Frames(intIndexFrameNumber).GetImage(True)
-
-
-21:
-        ' Frame index 
-        ' frmMain.tslFrame_Index.Text = intIndexFrameNumber & "/" & (editorGraphic.frames.Count - 1 - editorGraphic.extraFrame)
-        ' frmMain.tslFrame_Index.Text = IIf(editorGraphic.frames.Count = 0, "-", (intIndexFrameNumber + cfg_convert_startIndex) & " / " & (editorGraphic.frames.Count - cfg_convert_startIndex - editorGraphic.extraFrame))
-
-        'Debug.Print("updated preview") 
+25:
+        ' 20190816: some aspects weren't managed properly, for instance when toggling extra frame or adding/removing frames.
+        ' Previous/next frame; current And max value of progress bar, ...
+        ' Update preview is called from lots of places, so this may be a bit of an overkill, but better safe.
+        clsTasks.Update_Info("Update_Preview")
 
 30:
         editorFrame = editorGraphic.Frames(intIndexFrameNumber)
 
-35:
-        clsTasks.Update_Info("Preview updated.")
-        'Debug.Print("# Preview updated, now showing frame " & intIndexFrameNumber & ". Default: " & (frmMain.tbFrames.Value - 1))
+300:
+        ' The sub gets triggered when a new frame has been added, but no .PNG has been loaded yet, so frame contains no data.
+        If editorGraphic.Frames(intIndexFrameNumber).CoreImageHex.Count = 0 Then
+            Exit Sub
+        End If
+
+320:
+        FrmMain.picBox.Image = editorGraphic.Frames(intIndexFrameNumber).GetImage(True)
+
+
+321:
+        ' Frame index 
+        ' frmMain.tslFrame_Index.Text = intIndexFrameNumber & "/" & (editorGraphic.frames.Count - 1 - editorGraphic.extraFrame)
+        ' frmMain.tslFrame_Index.Text = IIf(editorGraphic.frames.Count = 0, "-", (intIndexFrameNumber + Cfg_convert_startIndex) & " / " & (editorGraphic.frames.Count - Cfg_convert_startIndex - editorGraphic.extraFrame))
+
+
+
 
     End Sub
 
@@ -927,7 +937,7 @@ dBug:
     ''' <param name="bmInput">Bitmap image</param>
     ''' <param name="rRectangle">Rectangle used to crop the bitmap</param>
     ''' <returns>Bitmap</returns>
-    Function Bitmap_getCropped(bmInput As Bitmap, rRectangle As Rectangle) As Bitmap
+    Function Bitmap_GetCropped(bmInput As Bitmap, rRectangle As Rectangle) As Bitmap
 
         ' Debug.Print("w,h=" & bmInput.Width & "," & bmInput.Height)
         Return bmInput.Clone(rRectangle, bmInput.PixelFormat)
@@ -940,7 +950,7 @@ dBug:
     ''' </summary>
     ''' <param name="bmInput">Bitmap image</param>
     ''' <returns>Rectangle</returns>
-    Function Bitmap_getDefiningRectangle(bmInput As Bitmap) As Rectangle
+    Function Bitmap_GetDefiningRectangle(bmInput As Bitmap) As Rectangle
 
         On Error GoTo dBug
 
@@ -1252,7 +1262,7 @@ dBug:
         End With
 
 50:
-        If cfg_export_ZT1_Ani = 1 Then
+        If Cfg_export_ZT1_Ani = 1 Then
             Debug.Print("Try .ani")
             ' Get the folder + name of the folder + .ani
             Dim cAni As New ClsAniFile(Path.GetDirectoryName(sFileName) & "\" & Path.GetFileName(Path.GetDirectoryName(sFileName)) & ".ani")
@@ -1274,13 +1284,18 @@ dBug:
     Sub Update_Info(strReason As String)
 
         ' Displays updated info.
+        ' 20190816: note: before today, it relied on .indexOf(), which might return incorrect results if there are similar frames. Now intFrameIndex is added and required.
+
+
+        Dim intFrameIndex As Integer = FrmMain.TbFrames.Value - 1
+
 
         With FrmMain
 
             .tstZT1_AnimSpeed.Text = editorGraphic.AnimationSpeed
-            .tslFrame_Index.Text = IIf(editorGraphic.Frames.Count = 0, "-", (editorGraphic.Frames.IndexOf(editorFrame) + cfg_convert_startIndex) & " / " & (editorGraphic.Frames.Count - 1 + cfg_convert_startIndex - editorGraphic.ExtraFrame))
+            .tslFrame_Index.Text = IIf(editorGraphic.Frames.Count = 0, "-", (intFrameIndex + Cfg_convert_startIndex) & " / " & (editorGraphic.Frames.Count - 1 + Cfg_convert_startIndex - editorGraphic.ExtraFrame))
 
-            Debug.Print("updated info. [" & strReason & "]. Total frames = " & (editorGraphic.Frames.Count - cfg_convert_startIndex - editorGraphic.ExtraFrame))
+            Debug.Print("updated info. [" & strReason & "]. Total frames = " & (editorGraphic.Frames.Count - Cfg_convert_startIndex - editorGraphic.ExtraFrame))
             'Debug.Print(editorGraphic.extraFrame)
 
             With .TbFrames
@@ -1298,8 +1313,8 @@ dBug:
             End With
 
             ' == Graphic
-            .tsbGraphic_ExtraFrame.Enabled = (editorGraphic.Frames.Count > 1)
-            .tsbGraphic_ExtraFrame.Checked = (editorGraphic.ExtraFrame = 1)
+            .tsbGraphic_ExtraFrame.Enabled = (editorGraphic.Frames.Count > 1) ' Background frame can only be enabled if there's more than one frame
+            .tsbGraphic_ExtraFrame.Checked = (editorGraphic.ExtraFrame = 1) ' Is background frame enabled for this graphic? Then toggle button.
 
             ' == Frame
             .tsbFrame_Delete.Enabled = (editorGraphic.Frames.Count > 1)
@@ -1321,10 +1336,10 @@ dBug:
             .tsbFrame_OffsetLeft.Enabled = (editorGraphic.Frames.Count > 0)
             .tsbFrame_OffsetRight.Enabled = (editorGraphic.Frames.Count > 0)
 
-            .tsbFrame_IndexIncrease.Enabled = (editorGraphic.Frames.Count > 1 And editorGraphic.Frames.IndexOf(editorFrame) <> (editorGraphic.Frames.Count - 1 - editorGraphic.ExtraFrame))
-            .tsbFrame_IndexDecrease.Enabled = (editorGraphic.Frames.Count > 1 And editorGraphic.Frames.IndexOf(editorFrame) <> 0)
+            .tsbFrame_IndexIncrease.Enabled = (editorGraphic.Frames.Count > 1 And intFrameIndex < (editorGraphic.Frames.Count - 1 - editorGraphic.ExtraFrame))
+            .tsbFrame_IndexDecrease.Enabled = (editorGraphic.Frames.Count > 1 And intFrameIndex > 0)
 
-            .picBox.BackColor = cfg_grid_BackGroundColor
+            .picBox.BackColor = Cfg_grid_BackGroundColor
 
             If IsNothing(editorFrame) Then
                 .tslFrame_Offset.Text = "0 , 0"
@@ -1427,7 +1442,7 @@ dBug:
     Function Grid_DrawSquare(coordTopLeft As Point, Optional bmInput As Bitmap = Nothing) As Bitmap
 
         If IsNothing(bmInput) = True Then
-            bmInput = mdlSettings.BM
+            bmInput = MdlSettings.BM
         End If
 
         Dim intX As Integer
@@ -1436,14 +1451,14 @@ dBug:
         ' === Top left
         For intX = -31 To 0
 
-            bmInput.SetPixel(coordTopLeft.X + intX, coordTopLeft.Y + intY, cfg_grid_ForeGroundColor)
+            bmInput.SetPixel(coordTopLeft.X + intX, coordTopLeft.Y + intY, Cfg_grid_ForeGroundColor)
 
             ' Mirror to the right
-            bmInput.SetPixel(coordTopLeft.X + 1 - intX, coordTopLeft.Y + intY, cfg_grid_ForeGroundColor)
+            bmInput.SetPixel(coordTopLeft.X + 1 - intX, coordTopLeft.Y + intY, Cfg_grid_ForeGroundColor)
 
             ' Same for bottom
-            bmInput.SetPixel(coordTopLeft.X + intX, coordTopLeft.Y - intY + 1, cfg_grid_ForeGroundColor)
-            bmInput.SetPixel(coordTopLeft.X + 1 - intX, coordTopLeft.Y - intY + 1, cfg_grid_ForeGroundColor)
+            bmInput.SetPixel(coordTopLeft.X + intX, coordTopLeft.Y - intY + 1, Cfg_grid_ForeGroundColor)
+            bmInput.SetPixel(coordTopLeft.X + 1 - intX, coordTopLeft.Y - intY + 1, Cfg_grid_ForeGroundColor)
 
             If intX Mod 2 = 0 Then
                 intY -= 1
@@ -1452,10 +1467,10 @@ dBug:
         Next
 
         ' === Center = 4px
-        bmInput.SetPixel(coordTopLeft.X, coordTopLeft.Y, cfg_grid_ForeGroundColor)
-        bmInput.SetPixel(coordTopLeft.X, coordTopLeft.Y + 1, cfg_grid_ForeGroundColor)
-        bmInput.SetPixel(coordTopLeft.X + 1, coordTopLeft.Y, cfg_grid_ForeGroundColor)
-        bmInput.SetPixel(coordTopLeft.X + 1, coordTopLeft.Y + 1, cfg_grid_ForeGroundColor)
+        bmInput.SetPixel(coordTopLeft.X, coordTopLeft.Y, Cfg_grid_ForeGroundColor)
+        bmInput.SetPixel(coordTopLeft.X, coordTopLeft.Y + 1, Cfg_grid_ForeGroundColor)
+        bmInput.SetPixel(coordTopLeft.X + 1, coordTopLeft.Y, Cfg_grid_ForeGroundColor)
+        bmInput.SetPixel(coordTopLeft.X + 1, coordTopLeft.Y + 1, Cfg_grid_ForeGroundColor)
 
         'picBox.Image = bmInput
 
@@ -1469,8 +1484,8 @@ dBug:
     ''' <param name="intIndex">Index of color to be replaced</param>
     Sub Pal_ReplaceColor(intIndex As Integer)
 
-        With frmMain.dlgColor
-            .Color = frmMain.dgvPaletteMain.Rows(intIndex).DefaultCellStyle.BackColor
+        With FrmMain.dlgColor
+            .Color = FrmMain.dgvPaletteMain.Rows(intIndex).DefaultCellStyle.BackColor
 
             .AllowFullOpen = True
             .FullOpen = True
@@ -1479,14 +1494,14 @@ dBug:
 
         End With
 
-        editorGraphic.ColorPalette.Colors(intIndex) = frmMain.dlgColor.Color
+        editorGraphic.ColorPalette.Colors(intIndex) = FrmMain.dlgColor.Color
 
         'frmMain.dgvPaletteMain.Rows(intIndex).DefaultCellStyle.BackColor = frmMain.dlgColor.Color
         'frmMain.dgvPaletteMain.Rows(intIndex).DefaultCellStyle.SelectionBackColor = frmMain.dlgColor.Color  ' prevent selection highlighting (blue)
 
         'On Error Resume Nex
 
-        editorGraphic.ColorPalette.FillPaletteGrid(frmMain.dgvPaletteMain)
+        editorGraphic.ColorPalette.FillPaletteGrid(FrmMain.dgvPaletteMain)
 
     End Sub
 
@@ -1508,14 +1523,13 @@ dBug:
         editorGraphic.ColorPalette.Colors.Insert(intIndexDest, cColorToMove)
 
         ' Refresh
-        editorGraphic.ColorPalette.FillPaletteGrid(frmMain.dgvPaletteMain)
+        editorGraphic.ColorPalette.FillPaletteGrid(FrmMain.dgvPaletteMain)
 
         ' Update coreImageHex for each frame. Color indexes have changed.
-        For Each ztFrame As ClsFrame2 In editorGraphic.Frames
+        For Each ztFrame As ClsFrame In editorGraphic.Frames
             ztFrame.CoreImageHex = Nothing
-            ztFrame.Bitmap_to_hex() ' 20170519 - is it necessary to update this already? It could be generated when called.
+            ztFrame.BitMapToHex() ' 20170519 - is it necessary to update this already? It could be generated when called.
         Next
-
 
     End Sub
 
@@ -1526,11 +1540,16 @@ dBug:
     ''' <param name="intIndexNow">Index</param>
     Sub Pal_AddColor(intIndexNow As Integer)
 
+        If editorGraphic.ColorPalette.Colors.Count = 256 Then
+            MsgBox("You can't add any more colors to this palette." & vbCrLf & "The maximum of 255 (+1 transparent) colors has been reached.", MsgBoxStyle.Critical + MsgBoxStyle.OkOnly, "Maximum amount of colors reached")
+        End If
+
+
         ' Get color
-        Dim cColor As System.Drawing.Color = cfg_grid_BackGroundColor
+        Dim cColor As System.Drawing.Color = Cfg_grid_BackGroundColor
 
 
-        With frmMain.dlgColor
+        With FrmMain.dlgColor
             .Color = cColor
 
             .AllowFullOpen = True
@@ -1540,13 +1559,13 @@ dBug:
 
         End With
 
-        cColor = frmMain.dlgColor.Color
+        cColor = FrmMain.dlgColor.Color
 
         ' Insert it at the position we want.
         editorGraphic.ColorPalette.Colors.Insert(intIndexNow + 1, cColor)
 
         ' Refresh
-        editorGraphic.ColorPalette.FillPaletteGrid(frmMain.dgvPaletteMain)
+        editorGraphic.ColorPalette.FillPaletteGrid(FrmMain.dgvPaletteMain)
 
 
     End Sub
@@ -1659,7 +1678,7 @@ dBug:
             Debug.Print("Processing: " & f)
 
             ' Read graphic, update offsets of frames, save.
-            Dim g As New ClsGraphic2
+            Dim g As New ClsGraphic
 
 1100:
             g.Read(f)
@@ -1678,7 +1697,7 @@ dBug:
 1200:
         ' Generate a .ani-file in each directory. 
         ' Add the initial directory
-        batch_generate_Ani(strPath)
+        Batch_Generate_Ani(strPath)
 
 1950:
         MsgBox("Finished batch rotation fixing.", vbOKOnly + vbInformation, "Finished job")
@@ -1709,7 +1728,7 @@ dBug:
 
             Dim strDirectoryName As String = stackDirectories.Pop
 
-            If cfg_export_ZT1_Ani = 1 Then
+            If Cfg_export_ZT1_Ani = 1 Then
                 Dim cAni As New ClsAniFile(strDirectoryName & "\" & Path.GetFileName(strDirectoryName) & ".ani")
                 Debug.Print(Now.ToString() & ": Generate .ani file (batch conversion)")
                 cAni.CreateAniConfig()
@@ -1776,39 +1795,39 @@ dBug:
                 ' If specified; they take priority over the values defined in settings.cfg
 
                 ' Preview
-                Case "/preview.bgcolor" : cfg_grid_BackGroundColor = System.Drawing.Color.FromArgb(CInt(argV))
-                Case "/preview.fgcolor" : cfg_grid_ForeGroundColor = System.Drawing.Color.FromArgb(CInt(argV))
-                Case "/preview.zoom" : cfg_grid_zoom = CInt(argV)
-                Case "/preview.footprintX" : cfg_grid_footPrintX = CByte(argV)
-                Case "/preview.footprinty" : cfg_grid_footPrintY = CByte(argV)
+                Case "/preview.bgcolor" : Cfg_grid_BackGroundColor = System.Drawing.Color.FromArgb(CInt(argV))
+                Case "/preview.fgcolor" : Cfg_grid_ForeGroundColor = System.Drawing.Color.FromArgb(CInt(argV))
+                Case "/preview.zoom" : Cfg_grid_zoom = CInt(argV)
+                Case "/preview.footprintX" : Cfg_grid_footPrintX = CByte(argV)
+                Case "/preview.footprinty" : Cfg_grid_footPrintY = CByte(argV)
 
                     ' Paths
-                Case "/paths.root" : cfg_path_Root = argV
+                Case "/paths.root" : Cfg_path_Root = argV
                     ' ignore recent paths
 
 
                     ' Export options
-                Case "/exportoptions.pngcrop" : cfg_export_PNG_CanvasSize = CByte(argV)
-                Case "/exportoptions.pngrenderextraframe" : cfg_export_PNG_RenderBGFrame = (CByte(argV) = 1)
-                Case "/exportoptions.pngrenderextragraphic" : cfg_export_PNG_RenderBGZT1 = (CByte(argV) = 1) ' this would require to supply the BG graphic. To implement.
-                Case "/exportoptions.pngrendertransparentbg" : cfg_export_PNG_TransparentBG = (CByte(argV) = 1)
+                Case "/exportoptions.pngcrop" : Cfg_export_PNG_CanvasSize = CByte(argV)
+                Case "/exportoptions.pngrenderextraframe" : Cfg_export_PNG_RenderBGFrame = (CByte(argV) = 1)
+                Case "/exportoptions.pngrenderextragraphic" : Cfg_export_PNG_RenderBGZT1 = (CByte(argV) = 1) ' this would require to supply the BG graphic. To implement.
+                Case "/exportoptions.pngrendertransparentbg" : Cfg_export_PNG_TransparentBG = (CByte(argV) = 1)
 
-                Case "/exportoptions.zt1alwaysaddztafbytes" : cfg_export_ZT1_AlwaysAddZTAFBytes = (CByte(argV) = 1)
-                Case "/exportoptions.zt1ani" : cfg_export_ZT1_Ani = (CByte(argV) = 1)
+                Case "/exportoptions.zt1alwaysaddztafbytes" : Cfg_export_ZT1_AlwaysAddZTAFBytes = (CByte(argV) = 1)
+                Case "/exportoptions.zt1ani" : Cfg_export_ZT1_Ani = (CByte(argV) = 1)
 
                     ' Conversion options
-                Case "/conversionoptions.deleteoriginal" : cfg_convert_deleteOriginal = (CByte(argV) = 1)
-                Case "/conversionoptions.filenamedelimiter" : cfg_convert_deleteOriginal = argV
-                Case "/conversionoptions.overwrite" : cfg_convert_overwrite = (CByte(argV) = 1)
-                Case "/conversionoptions.pngfilesindex" : cfg_convert_startIndex = CByte(argV)
-                Case "/conversionoptions.sharedpalette" : cfg_convert_sharedPalette = (CByte(argV) = 1)
+                Case "/conversionoptions.deleteoriginal" : Cfg_convert_deleteOriginal = (CByte(argV) = 1)
+                Case "/conversionoptions.filenamedelimiter" : Cfg_convert_deleteOriginal = argV
+                Case "/conversionoptions.overwrite" : Cfg_convert_overwrite = (CByte(argV) = 1)
+                Case "/conversionoptions.pngfilesindex" : Cfg_convert_startIndex = CByte(argV)
+                Case "/conversionoptions.sharedpalette" : Cfg_convert_sharedPalette = (CByte(argV) = 1)
 
                     ' Editing options
-                Case "/editing.individualrotationfix" : cfg_editor_rotFix_individualFrame = (CByte(argV) = 1)
-                Case "/editing.animationspeed" : cfg_frame_defaultAnimSpeed = CInt(argV)
+                Case "/editing.individualrotationfix" : Cfg_editor_rotFix_individualFrame = (CByte(argV) = 1)
+                Case "/editing.animationspeed" : Cfg_frame_defaultAnimSpeed = CInt(argV)
 
                     ' Not remembered but can be supplied:  
-                Case "/extra.colorquantization" : cfg_palette_quantization = CByte(argV)
+                Case "/extra.colorquantization" : Cfg_palette_quantization = CByte(argV)
 
                     ' These are actions. 
                     ' An action can be an automated process doing lots of stuff (e.g. convertfolder)
@@ -1903,6 +1922,41 @@ dBug:
 
 
 
+    End Sub
+
+    ''' <summary>
+    ''' To make errors look more generic, most of them are now handled by this method.
+    ''' </summary>
+    ''' <param name="strClass">Class </param>
+    ''' <param name="strMethod">Method</param>
+    ''' <param name="intErrorLine">Error line</param>
+    ''' <param name="objError">Error object (contains number and message)</param>
+    Sub ZTStudio_UnexpectedError(strClass As String, strMethod As String, intErrorLine As Integer, objError As ErrObject)
+
+        Dim strMessage As String = "" &
+            "Sorry, but an unexpected error occurred in " & strClass & "::" & strMethod & "() at line " & intErrorLine.ToString() & vbCrLf &
+            "Error code: " & objError.Number.ToString() & vbCrLf &
+            objError.Description & vbCrLf & vbCrLf &
+            "------------------------------------" & vbCrLf &
+            "As a precaution, " & Application.ProductName & " will close." & vbCrLf &
+            "If you can repeat this error, feel free to report it at " & Cfg_GitHub_URL & "." & vbCrLf &
+            "Add as many details (steps to reproduce) as possible, include relevant files in your report."
+
+        If MsgBox(strMessage, MsgBoxStyle.ApplicationModal + MsgBoxStyle.OkOnly + MsgBoxStyle.Critical) = MsgBoxResult.Ok Then
+            End
+
+        End If
+
+    End Sub
+
+    ''' <summary>
+    ''' To make tracing look more generic
+    ''' </summary>
+    ''' <param name="strClass">Class </param>
+    ''' <param name="strMethod">Method</param>
+    ''' <param name="strMessage">Message</param>
+    Sub ZTStudio_Trace(strClass As String, strMethod As String, strMessage As String)
+        Debug.Print(Now.ToString("yyyy-MM-dd HH:mm:ss") & ": " & strClass & "::" & strMethod & "(): " & strMessage)
     End Sub
 
 End Module

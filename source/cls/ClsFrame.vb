@@ -2,7 +2,16 @@
 
 Imports System.ComponentModel
 
-Public Class ClsFrame2
+''' <summary>
+''' <para>ClsFrame is an object to handle a ZT1 Frame.</para>
+''' <para>A frame is one still picture of view of an animation.</para>
+''' </summary>
+''' <remarks>
+''' It contains some properties such as width, height, offset; as well as a series of drawing instructions.
+''' In 2019, there are still two "mystery bytes" of which the function is still unknown.
+''' It's assumed the purpose of all other bytes has been discovered.
+''' </remarks>
+Public Class ClsFrame
 
     Implements INotifyPropertyChanged
 
@@ -20,7 +29,7 @@ Public Class ClsFrame2
     Private fr_offsetX As Integer = -9999
     Private fr_offsetY As Integer = -9999
 
-    Private fr_parent As New clsGraphic2
+    Private fr_parent As New ClsGraphic
 
     Private fr_MysteryHEX As New List(Of String)
 
@@ -34,8 +43,8 @@ Public Class ClsFrame2
     ''' <summary>
     ''' New frame object has been created.
     ''' </summary>
-    ''' <param name="myParent"></param>
-    Public Sub New(myParent As ClsGraphic2)
+    ''' <param name="myParent">ClsGraphic - the graphic (view) of which this frame is part</param>
+    Public Sub New(myParent As ClsGraphic)
 
         ' Set parent
         Me.Parent = myParent
@@ -47,14 +56,14 @@ Public Class ClsFrame2
     ''' <summary>
     ''' Hex values for this ZT1 frame (if set)
     ''' </summary>
-    ''' <returns></returns>
+    ''' <returns>List(Of String)</returns>
     Public Property CoreImageHex As List(Of String)
         Get
             Return fr_coreImageHex
         End Get
         Set(value As List(Of String))
             fr_coreImageHex = value
-            NotifyPropertyChanged("coreImageHex")
+            NotifyPropertyChanged("CoreImageHex")
         End Set
     End Property
 
@@ -62,7 +71,7 @@ Public Class ClsFrame2
     ''' <summary>
     ''' Image bitmap (if set)
     ''' </summary>
-    ''' <returns></returns>
+    ''' <returns>Bitmap</returns>
     Public Property CoreImageBitmap As Bitmap
         ' What is the core image bitmap?
         Get
@@ -70,45 +79,53 @@ Public Class ClsFrame2
         End Get
         Set(value As Bitmap)
             fr_coreImageBitmap = value
-            NotifyPropertyChanged("coreImageBitmap")
+            NotifyPropertyChanged("CoreImageBitmap")
         End Set
     End Property
 
     ''' <summary>
     ''' Parent graphic of this ZT1 frame
     ''' </summary>
-    ''' <returns></returns>
-    Public Property Parent As ClsGraphic2
-        ' What is the parent object (clsGraphic2) of our frame? 
+    ''' <returns>ClsGraphic</returns>
+    Public Property Parent As ClsGraphic
+        ' What is the parent object (ClsGraphic) of our frame? 
         ' Or in other words: which ZT1 Graphic does this frame belong to?
         Get
             Return fr_parent
         End Get
-        Set(value As ClsGraphic2)
+        Set(value As ClsGraphic)
             fr_parent = value
-            NotifyPropertyChanged("parent")
+            NotifyPropertyChanged("Parent")
         End Set
     End Property
 
-
+    ''' <summary>
+    ''' Horizontal offset (X) of this frame.
+    ''' How much should the image be moved to the left (+)/right (-), compared to the center of the square? (center is based on ZT1's cFootPrintX and cFootPrintY settings)
+    ''' </summary>
+    ''' <returns>Integer</returns>
     Public Property OffsetX As Integer
-        ' The horizontal offset. How much should the image be moved to the left compared to the center of the square (based on the ZT1 cFootPrintX) ?
         Get
             Return fr_offsetX
         End Get
         Set(value As Integer)
             fr_offsetX = value
-            NotifyPropertyChanged("offsetX")
+            NotifyPropertyChanged("OffsetX")
         End Set
     End Property
+
+    ''' <summary>
+    ''' Vertical offset (Y) of this frame.
+    ''' How much should the image be moved to the top (+)/bottom (-), compared to the center of the square? (center is based on ZT1's cFootPrintX and cFootPrintY settings)
+    ''' </summary>
+    ''' <returns>Integer</returns>
     Public Property OffsetY As Integer
-        ' The vertical offset. How much should the image be moved to the top compared to the center of the square (based on the ZT1 cFootPrintX) ?
         Get
             Return fr_offsetY
         End Get
         Set(value As Integer)
             fr_offsetY = value
-            NotifyPropertyChanged("offsetY")
+            NotifyPropertyChanged("OffsetY")
         End Set
     End Property
 
@@ -123,11 +140,25 @@ Public Class ClsFrame2
         End Get
         Set(value As String)
             fr_lastUpdated = value
-            'NotifyPropertyChanged("lastUpdated")
+            'NotifyPropertyChanged("LastUpdated") -> would cause a loop
         End Set
     End Property
 
-    ' For experiments, stats
+    ''' <summary>
+    ''' <para>Mystery bytes/hex is the term used in this project to refer to two bytes present in the hex values of each frame.</para>
+    ''' <para>Until now (16th of August 2019), the purpose of these 2 bytes is unknown. It's not been discovered yet if they have any purpose in the game.</para>
+    ''' </summary>
+    ''' <remarks>
+    ''' Are they:
+    ''' - another counter?
+    ''' - another integrity check?
+    ''' - a signature?
+    ''' - some value used in the program used by Blue Fang/Rapan Animation Studio (Rapan LLC. Sofia) to create the graphics?
+    ''' - ...
+    ''' 
+    ''' If anyone ever finds out, please let me know!
+    ''' </remarks>
+    ''' <returns>List(Of String)</returns>
     Public Property MysteryHEX As List(Of String)
         ' This is used to store our currently 2 unknown bytes. We call them our mystery bytes.
         Get
@@ -135,40 +166,53 @@ Public Class ClsFrame2
         End Get
         Set(value As List(Of String))
             fr_MysteryHEX = value
-            NotifyPropertyChanged("mysteryHEX")
+            NotifyPropertyChanged("MysteryHEX")
         End Set
     End Property
-    Public Event PropertyChanged(sender As Object, e As PropertyChangedEventArgs) Implements INotifyPropertyChanged.PropertyChanged
-    Private Sub NotifyPropertyChanged(ByVal info As String)
 
-        If info <> "cachedFrame" Then Me.LastUpdated = Me.Parent.lastUpdated '   Now.ToString("yyyyMMddHHmmss")
+
+    Public Event PropertyChanged(sender As Object, e As PropertyChangedEventArgs) Implements INotifyPropertyChanged.PropertyChanged
+
+    ''' <summary>
+    ''' This sub is used to inform the object that an important property has changed.
+    ''' By calling this sub, the LastUpdated property will be set, unless it's triggered by "CachedFrame" (which no longer seems to exist? 20190816)
+    ''' </summary>
+    ''' <param name="strSource">Which property has changed</param>
+    Private Sub NotifyPropertyChanged(ByVal strSource As String)
+
+        If strSource <> "CachedFrame" Then ' (which no longer seems to exist? 20190816)
+            Me.LastUpdated = Me.Parent.LastUpdated '   Now.ToString("yyyyMMddHHmmss")
+        End If
 
         'clsTasks.update_Info("Property clsFrame." & info & " changed.") -> for debugging
         'RaiseEvent PropertyChanged(Me, New PropertyChangedEventArgs(info))
 
         ' Important events to detect are:
-        ' if coreImageHex changed (which happens when a ZT1 Graphic is read), 
-        ' it should trigger an update of coreImageBitmap too - but without causing that one to trigger a new unwanted change.
-        ' if coreImageBitmap changed (after a .PNG is loaded), coreImageHex should be updated without triggering another property change.
+        ' - if CoreImageHex changed (which happens when a ZT1 Graphic is read), 
+        ' --->  it should trigger an update of CoreImageBitmap too - but without causing that one to trigger a new unwanted change.
+        ' - if CoreImageBitmap changed (after a .PNG is loaded), coreImageHex should be updated without triggering another property change.
 
 
     End Sub
 
     ''' <summary>
-    ''' Returns the core bitmap image. 
-    ''' If the ZT1 Graphic has been rendered (CoreImageBitmap is set), it returns this cached version.
-    ''' If the ZT1 Graphic hasn't been rendered yet, it renders the ZT1 Graphic from the hex values.
+    ''' <para>Returns the core bitmap image.</para>
+    ''' <para>If the ZT1 Graphic has been rendered (CoreImageBitmap is set), it returns this cached version.</para>
+    ''' <para>If the ZT1 Graphic hasn't been rendered yet, it renders the ZT1 Graphic from the hex values.</para>
     ''' </summary>
-    ''' <returns></returns>
+    ''' <returns>Bitmap</returns>
     Function GetCoreImageBitmap() As Bitmap
 
         On Error GoTo dBug
+
+
+        clsTasks.ZTStudio_Trace("ClsFrame", "GetCoreImageBitmap", "Fetching core image bitmap...")
 
 11:
         If IsNothing(Me.CoreImageBitmap) = True Then
 12:
             ' Rendering the frame from hex will store it in the coreImageBitmap.
-            Return Me.renderCoreImageFromHex()
+            Return Me.RenderCoreImageFromHex()
 
         Else
 13:
@@ -180,60 +224,75 @@ Public Class ClsFrame2
         Exit Function
 
 dBug:
-
-        MsgBox("Error in clsFrame2.getCoreImageBitmap()" & vbCrLf &
-               "Line " & Erl() & vbCrLf &
-            Err.Number & " - " & Err.Description,
-            vbOKOnly + vbCritical, "Error")
-
+        clsTasks.ZTStudio_UnexpectedError("ClsFrame", "GetCoreImageBitmap", Information.Erl(), Information.Err)
 
     End Function
 
-    Function GetCoreImageBitmapOnTransparentCanvas(Optional blnAroundOrigin As Boolean = False) As Bitmap
+    ''' <summary>
+    ''' Returns the image bitmap, on a transparent canvas.
+    ''' </summary>
+    ''' <remarks>
+    ''' Todo: this needs more documentation. Take the time again to see how blnDrawInCenter works.
+    ''' </remarks>
+    ''' <param name="blnDrawInCenter">Boolean</param>
+    ''' <returns>Bitmap</returns>
+    Function GetCoreImageBitmapOnTransparentCanvas(Optional blnDrawInCenter As Boolean = False) As Bitmap
 
         On Error GoTo dBug
 1:
-        Dim x_dim As Integer
-        Dim y_dim As Integer
-        Dim imgB = Me.GetCoreImageBitmap()
+        Dim intSpecifiedX As Integer
+        Dim intSpecifiedY As Integer
 
-        Select Case blnAroundOrigin
+        ' Retrieve the pure bitmap
+        Dim bmCoreImageBitMap = Me.GetCoreImageBitmap()
+
+        If IsNothing(Me.GetCoreImageBitmap) = True Then
+            Return Nothing
+        End If
+
+        Select Case blnDrawInCenter
             Case False
-                ' Draw on transparent canvas
-                x_dim = cfg_grid_numPixels
-                y_dim = cfg_grid_numPixels
+                ' Draw on transparent canvas (most common scenario)
+                ' It's important to keep in mind that the canvas is by default 2 * Cfg_grid_numPixels, both in width and in height.
+                ' So these variables will actually contain the top left pixel of the (four pixel) center.
+                intSpecifiedX = Cfg_grid_numPixels
+                intSpecifiedY = Cfg_grid_numPixels
             Case True
-                'convert everything relative to the center
-                'I don't know why, but the + and -1 are needed to avoid changing the image size
-                x_dim = Math.Max(Math.Abs(Me.OffsetX), Math.Abs(Me.OffsetX - imgB.Width)) + 1
-                y_dim = Math.Max(Math.Abs(Me.OffsetY), Math.Abs(Me.OffsetY - imgB.Height)) - 1
+                ' Convert everything relative to the center
+                ' It seems the + and -1 are needed to avoid changing the image size
+                ' Really can't remember the logic behind this one, it probably had to do with positive and negative offsets
+                ' Upon investigating, it seems this only happens when exporting to .PNG files.
+                intSpecifiedX = Math.Max(Math.Abs(Me.OffsetX), Math.Abs(Me.OffsetX - bmCoreImageBitMap.Width)) + 1
+                intSpecifiedY = Math.Max(Math.Abs(Me.OffsetY), Math.Abs(Me.OffsetY - bmCoreImageBitMap.Height)) - 1
         End Select
 
-        ' Draw on transparent canvas
-        Dim bmOutput As New Bitmap(x_dim * 2, y_dim * 2)
-        Dim g As Graphics = Graphics.FromImage(bmOutput)
+        ' Draw this retrieved bitmap on a transparent canvas
+        Dim bmOutput As New Bitmap(intSpecifiedX * 2, intSpecifiedY * 2) ' Creating the output canvas
+        Dim gGraphic As Graphics = Graphics.FromImage(bmOutput) ' Preparing to manipulate this empty canvas
 
-        g.InterpolationMode = Drawing2D.InterpolationMode.NearestNeighbor ' prevent softening 
-        g.DrawImage(imgB, x_dim - Me.OffsetX + 1, y_dim - Me.OffsetY + 1, imgB.Width, imgB.Height)
+25:
+        gGraphic.InterpolationMode = Drawing2D.InterpolationMode.NearestNeighbor ' Prevent softening: set InterpolationMode to NearestNeighbour
+
+30:
+        Dim intStartingPointX As Integer = intSpecifiedX - Me.OffsetX + 1
+        Dim intStartingPointY As Integer = intSpecifiedY - Me.OffsetY + 1
+        gGraphic.DrawImage(bmCoreImageBitMap, intStartingPointX, intStartingPointY, bmCoreImageBitMap.Width, bmCoreImageBitMap.Height)
 31:
-        g.Dispose()
+        gGraphic.Dispose() 'Dispose as recommended. Output has been stored in bmOutput anyway.
+
         Return bmOutput
 
         Exit Function
 
 dBug:
-
-        MsgBox("Error in clsFrame2.getCoreImageBitmapOnTransparentCanvas()" & vbCrLf &
-               "Line " & Erl() & vbCrLf &
-            Err.Number & " - " & Err.Description,
-            vbOKOnly + vbCritical, "Error")
+        clsTasks.ZTStudio_UnexpectedError("ClsFrame", "GetCoreImageBitmapOnTransparentCanvas", Information.Erl(), Information.Err)
 
     End Function
 
     ''' <summary>
-    ''' Returns a bitmap image for this frame.
-    ''' If a background frame within this graphic exists, it will also be rendered if enabled. (for example: Restaurant)
-    ''' If a background graphic has been set, it will also be rendered if enabled. (for example: Orang Utan toy)
+    ''' <para>Returns a bitmap image for this frame.</para>
+    ''' <para>If a background frame within this graphic exists, it will also be rendered if enabled. (for example: Restaurant)</para>
+    ''' <para>If a background graphic has been set, it will also be rendered if enabled. (for example: Orang Utan toy)</para>
     ''' </summary>
     ''' <param name="blnDrawGrid">Add grid. Defaults to false.</param>
     ''' <param name="blnCentered"></param>
@@ -252,20 +311,20 @@ dBug:
 
 11:
         ' Draw 'extra' background frame, e.g. restaurants?
-        If Me.Parent.extraFrame = 1 And cfg_export_PNG_RenderBGFrame = 1 Then
-            bmOutput = clsTasks.images_Combine(Me.Parent.frames(Me.Parent.frames.Count - 1).GetCoreImageBitmapOnTransparentCanvas(blnCentered), bmOutput)
+        If Me.Parent.ExtraFrame = 1 And Cfg_export_PNG_RenderBGFrame = 1 Then
+            bmOutput = clsTasks.Images_Combine(Me.Parent.Frames(Me.Parent.Frames.Count - 1).GetCoreImageBitmapOnTransparentCanvas(blnCentered), bmOutput)
         End If
 
 21:
         ' Optional background ZT1 Graphic frame, e.g. animal + toy?
-        If editorBgGraphic.frames.Count > 0 And cfg_export_PNG_RenderBGZT1 = 1 Then
-            bmOutput = clsTasks.images_Combine(editorBgGraphic.frames(0).GetCoreImageBitmapOnTransparentCanvas(blnCentered), bmOutput)
+        If editorBgGraphic.Frames.Count > 0 And Cfg_export_PNG_RenderBGZT1 = 1 Then
+            bmOutput = clsTasks.Images_Combine(editorBgGraphic.Frames(0).GetCoreImageBitmapOnTransparentCanvas(blnCentered), bmOutput)
         End If
 
 31:
         ' Draw grid?
         If blnDrawGrid = True Then
-            bmOutput = clsTasks.images_Combine(clsTasks.Grid_drawFootPrintXY(cfg_grid_footPrintX, cfg_grid_footPrintY), bmOutput)
+            bmOutput = clsTasks.Images_Combine(clsTasks.Grid_DrawFootPrintXY(Cfg_grid_footPrintX, Cfg_grid_footPrintY), bmOutput)
         End If
 
 41:
@@ -276,88 +335,76 @@ dBug:
 
 dBug:
 
-        MsgBox("Error in clsFrame2.getImage()" & vbCrLf &
-               "Line " & Erl() & vbCrLf &
+        MsgBox("Error in ClsFrame::GetImage() at line " & Erl() & vbCrLf &
             Err.Number & " - " & Err.Description,
             vbOKOnly + vbCritical, "Error")
 
 
     End Function
 
+
+    ''' <summary>
+    ''' <para>Renders the core image of this frame (without grid, offsets etc.) as a bitmap, based on the supplied hex (CoreImageHex).</para>
+    ''' <para>Warning: while processing the hex, this method (re)sets the offsets for this frame!</para>
+    ''' <para>For other renderings, use another render method.</para>
+    ''' </summary>
+    ''' <returns>Bitmap or Nothing</returns>
     Function RenderCoreImageFromHex() As Bitmap
 
-        ' This function will read the frame's bytes (hex).
-        ' It will only render the core image. For other purposes, you should use .getImage() (backgrounds, extra frame etc).
-        ' It will only return a height + width.
-        ' It will update our offset properties on this frame object
-
-
         On Error GoTo dBug2
-        Debug.Print(Now().ToString("yyyyMMdd HHmmss") & " clsFrame2.renderCoreImageFromHex: start")
 
-
-
+        clsTasks.ZTStudio_Trace("ClsFrame", "RenderCoreImageFromHex", "Start rendering from hex...")
 
 10:
         ' Only one thing matters: do we actually have HEX?
         If Me.CoreImageHex.Count = 0 Then
 
-            Debug.Print("No hex to create anything from!")
+            clsTasks.ZTStudio_Trace("ClsFrame", "RenderCoreImageFromHex", "There is no hex! Returning Nothing instead of Bitmap")
             Me.CoreImageBitmap = Nothing
             Return Nothing
 
         End If
-
-20:
-
-        ' Now, let's proceed.
-
 
 30:
         ' Create a copy of this frame's bytes.
         Dim frameHex As New List(Of String)
         frameHex.AddRange(Me.CoreImageHex)
 
-        Dim frameCoreImageBitmap As Bitmap                       ' Contains the core image we'll be drawing
+        Dim frameCoreImageBitmap As Bitmap                        ' Contains the core image that will be rendered
 
-        Dim ztPal As clsPalette = Me.Parent.colorPalette
-
+        Dim ztPal As ClsPalette = Me.Parent.ColorPalette
         Dim blnIsShadow As Boolean = False
 
-
-
         ' This case is really weird. It's for the Restaurant.
-        ' The idle animation's views (eg NE) contain 10 bytes: 00 00 00 00 00 00 00 00 D0 10
+        ' The idle animation's views (eg NE) contain 10 bytes: (00 00) (00 00) (00 00) (00 00) (D0 10)
         ' The idle view supposedly uses an extraFrame
-        ' Which means no height/width, no offsets, weird mystery bytes.
+        ' Which means no height/width, no offsets, and yet some weird mystery bytes.
         ' Perhaps it could be identified by mystery bytes?
         ' Did we have this issue before our rewrite? => apparently not.
         If frameHex.Count = 10 Then
-            Debug.Print("Weird hex: " & String.Join(" ", frameHex.ToArray()))
+
+            clsTasks.ZTStudio_Trace("ClsFrame", "RenderCoreImageFromHex", "Weird hex: " & String.Join(" ", frameHex.ToArray()))
 
             ' Basically height = width = 0.
             If frameHex(0) = 0 And frameHex(1) = 0 And frameHex(2) = 0 And frameHex(3) = 0 Then
 
-                ' it should actually be 0, 0; but this is a work around.
+                ' It should actually be 0, 0 (empty); but this is a work around.
                 Me.CoreImageBitmap = New Bitmap(1, 1)
                 Return Me.CoreImageBitmap
             End If
         End If
-
-
-
-
-
-31:
 
 32:
 
         ' Usually hex(1) = 00. But sometimes, it is "80". This seems to be an indicator introduced in Marine Mania.
         ' Example: dolphin's "ssurf"-animations. The frames are actually compressed. For shadows, it's only offsets and black.
         If frameHex(1) = "80" Then
+
+            clsTasks.ZTStudio_Trace("ClsFrame", "RenderCoreImageFromHex", "Byte index 1 = 80 -> assuming this is the compressed shadow format (Marine Mania)")
+
             blnIsShadow = True
 
-            ' Of course, our previous values don't make sense.
+            ' Of course, 80 doesn't make any sense here. Ignore it.
             frameCoreImageBitmap = New Bitmap(
                 CInt("&H" & frameHex(2)),
                 CInt("&H" & frameHex(0))
@@ -365,14 +412,13 @@ dBug:
 
         Else
 
+            clsTasks.ZTStudio_Trace("ClsFrame", "RenderCoreImageFromHex", "Dealing with a regular sized graphic")
             ' All normal cases
-            ' Our core image bitmap's canvas. Height and width are determined in the first few bytes (reversed).
+            ' Canvas size determined: height and width are specified in the first few bytes (reversed).
             frameCoreImageBitmap = New Bitmap(
                  CInt("&H" & frameHex(3) & frameHex(2)),
                  CInt("&H" & frameHex(1) & frameHex(0))
                  )
-
-
 
         End If
 
@@ -380,34 +426,33 @@ dBug:
 41:
         ' Offsets. 
         ' In case of unknown offsets 
-        'If Me.offsetY = -9999 Then
+        ' If Me.offsetY = -9999 Then
         If frameHex(5) = "FF" Then
             ' Large size images. Needs some adjustment.
+            ' Todo: add an example image here.
+            clsTasks.ZTStudio_Trace("ClsFrame", "RenderCoreImageFromHex", "Byte index 5 = FF -> This graphic should be large in size (offset Y). Add this as an example in the code!")
             Me.OffsetY = ((256 * 256) - CInt("&H" & frameHex(5) & frameHex(4))) * -1
         Else
             ' Normal offsets
             Me.OffsetY = CInt("&H" & frameHex(5) & frameHex(4))
         End If
 
-        'End If
-
 42:
         ' In case of unknown offsets and HEX = FF (large size image)
         'If Me.offsetX = -9999 Then
         If frameHex(7) = "FF" Then
             ' Large size images. Needs some adjustment.
+            clsTasks.ZTStudio_Trace("ClsFrame", "RenderCoreImageFromHex", "Byte index 7 = FF -> This graphic should be large in size (offset X). Add this as an example in the code!")
             Me.OffsetX = ((256 * 256) - CInt("&H" & frameHex(7) & frameHex(6))) * -1
         Else
             ' Normal offsets
             Me.OffsetX = CInt("&H" & frameHex(7) & frameHex(6))
         End If
 
-        'End If
-
 
 45:
-        ' We figured out the entire ZT1 Graphic format, EXCEPT for these 2 bytes.
-        ' APE usually sets them to 00 00 (or was it 00 01? I always forget, needs verification).
+        ' Entire ZT1 Graphic format is documented, EXCEPT for these 2 bytes.
+        ' APE usually sets them to 00 00 (or was it 00 01? Needs verification).
         ' Anyhow, in ZT1 you will see that these mysterious bytes may vary.
         With Me.MysteryHEX
             .Clear(False)
@@ -415,76 +460,61 @@ dBug:
             .Add(frameHex(9), False)
         End With
 
-
-        ' Debug.Print("Mystery hex: " & Me.parent.frames.IndexOf(Me).ToString() & vbCrLf & _
-        '           Strings.Join(Me.mysteryHEX.ToArray(), " ") & " - " & vbCrLf & _
-        '          CInt("&H" & Me.mysteryHEX(1) & Me.mysteryHEX(0)) & vbCrLf & vbCrLf & _
-        '         CInt("&H" & Me.mysteryHEX(0) & Me.mysteryHEX(1)) & vbCrLf & vbCrLf & _
-        '        "w=" & frameCoreImageBitmap.Width & ", h=" & frameCoreImageBitmap.Height & vbCrLf & _
-        '        Me.coreImageHex.Count, vbApplicationModal)
-
+        clsTasks.ZTStudio_Trace("ClsFrame", "RenderCoreImageFromHex", "Byte index 8, 9 -> the mystery bytes are " & frameHex(8) & ", " & frameHex(9))
 
 
 46:
-        ' We covered the first 10 bytes (height, width, offset Y, offset X, mystery bytes). 
-        ' Remove them now to speed up further processing. We'll repeat this a few more times.
-        ' It's why we made a copy of the core image's hex.
+        ' Above covered the first 10 bytes (height, width, offset Y, offset X, mystery bytes). 
+        ' Remove them now to speed up further processing. 
+        ' This is something which will be done a couple of times later.
+        ' No worries, this is on a copy of the bytes.
         frameHex.Skip(10)
-
-
-
 
 
 1000:
         ' === Color instructions ===
-        ' We get to the most exciting part. 
-        ' We will have some variables here. It would have been better to declare these in the top of this function, 
-        ' but for easier explanation/understanding, we're only declaring them here.
+        ' For clarity, declarations only happen here.
+        ' Keep in mind that an image is rendered from left to right, from top to bottom.
 
         Dim intX As Integer = 0 ' which 'row' of pixels is being drawn?
         Dim intY As Integer = 0 ' which 'column' of pixels is being drawn?
         Dim intNumDrawingInstructions As Integer ' How many drawing instructions are there for this 'row' of pixels?
-        Dim intNumDrawingInstructions_current As Integer ' which drawing instruction is being processed?
-        Dim intNumDrawingInstructions_colors As Integer ' How many pixels will we color?
-        Dim intNumDrawingInstructions_colors_current As Integer ' which is the current pixel we're processing/going to color?
+        Dim intNumDrawingInstructions_current As Integer ' Which drawing instruction is being processed?
+        Dim intNumDrawingInstructions_colors As Integer ' How many pixels to color?
+        Dim intNumDrawingInstructions_colors_current As Integer ' which is the current pixel being processed/colored?
         Dim c As System.Drawing.Color ' this is the color we'll draw. 
 
 1005:
-        ' This 'while'-loop should spare us from APE junk bytes.
+        ' This 'while'-loop should prevent any side-effects from APE junk bytes.
         ' Often, when analyzing graphics generated by APE, you'll notice some unneccessary bytes at the very end.
-
-        ' Zoo Tycoon draws from left to right, row by row.
 
 
         While frameHex.Count > 0 And intY < frameCoreImageBitmap.Height
 
             ' First byte for each row contains the number of pixel sets.
-            ' That's at least 1 block (a transparent line would give [offset] [0 colors] -
-            ' Otherwise, it's what we've called a 'drawing instruction': 
+            ' That's at least 1 block (a transparent line would give [offset][0 colors] -
+            ' Otherwise, it's a 'drawing instruction': 
             ' [offset/number of pixels to remain transparent][numColorPixels][pixels]
 
 1100:
-            ' Number of drawing instructions are there for this 'row' of pixels?
+            ' Number of drawing instructions. How many are there for this 'row' of pixels?
+            ' Limitation: theoretically: 0 to 255 drawing instructions per row
             intNumDrawingInstructions = CInt("&H" & frameHex(0))
             frameHex.Skip(1)
 
 1120:
-
-            ' We know how many drawing instructions we have for this row.
-            ' Let's process those instructions.
+            ' Process this set of drawing instructions.
             For intNumDrawingInstructions_current = 0 To (intNumDrawingInstructions - 1)
-
-
 
 1300:
                 ' Starting with color byte( [offset] ). 
-                ' If this is 00, we start all the way to the left. 
-                ' If this is 01, we skip 1 pixel and leave it transparent.
-                ' If this is 02, we'll skip 2 pixels and leave them transparent
+                ' If this is 00, starting all the way to the left. 
+                ' If this is 01, skipping 1 pixel and leave it transparent.
+                ' If this is 02, skipping 2 pixels and leave them transparent
                 ' And so on.
                 intX += CInt("&H" & frameHex(0))
 1301:
-                ' Number of pixels we'll give a color ( [num of pixels to draw] )
+                ' Number of pixels to color ([num of pixels to draw])
                 intNumDrawingInstructions_colors = CInt("&H" & frameHex(1))
 
 1309:
@@ -492,24 +522,21 @@ dBug:
                 frameHex.Skip(2)
 
 1400:
-
-
-                ' We know how many colors are expected. 
+                ' The hex code mentioned how many colors there will be
                 For intNumDrawingInstructions_colors_current = 0 To (intNumDrawingInstructions_colors - 1)
-
 
 1410:
                     If blnIsShadow = True Then
                         ' Marine Mania's underwater shadow format (compressed ZT1 Graphic)
+                        ' It does not rely on the palette.
                         c = Color.Black
                     Else
-                        ' In the traditional format, we fetch it from a color palette, by its index number.
-                        c = ztPal.colors(CInt("&H" & frameHex(intNumDrawingInstructions_colors_current)))
+                        ' In the traditional format, the color is referenced by it's index number in the color palette. Get it.
+                        c = ztPal.Colors(CInt("&H" & frameHex(intNumDrawingInstructions_colors_current)))
                     End If
 
 1413:
                     ' Color the pixel.
-                    'Debug.Print("Drawing: x=" & intX & ", y=" & intY & " = " & c.ToString() & " / w=" & frameCoreImageBitmap.Width & ", h=" & frameCoreImageBitmap.Height)
                     frameCoreImageBitmap.SetPixel(intX, intY, c)
 
 1450:
@@ -519,37 +546,28 @@ dBug:
 
                 Next intNumDrawingInstructions_colors_current
 1455:
-                ' Rather than individually deleting those colors one by one from the bytes we (still) need to process, 
-                ' we'll do it at once now.
+                ' Rather than individually deleting those colors one by one from the bytes that still need to be processed, do it at once now.
                 If blnIsShadow = False Then
                     frameHex.Skip(intNumDrawingInstructions_colors_current)
                 End If
 
-
-1500:
-
-
 2040:
             Next intNumDrawingInstructions_current
 
-
-            'Debug.Print("Last pixel in line was X " & intX & ". Y was " & intY)
-
 2050:
-            intX = 0 ' Start all the way on the left again.
+            intX = 0 ' Start all the way on the left of the canvas again.
             intY += 1 ' Ready to process next line.
 
         End While
-
-
-        'Debug.Print("Check height/width: " & intX & " - " & intY & " - " & frameCoreImageBitmap.Width & " - " & frameCoreImageBitmap.Height)
 
 
 2100:
 
         ' Implemented a check for APE junk bytes and remove if any are left.
         ' Theoretically, there shouldn't be. But APE has the tendency to generate crap.
+        ' 20190816 - this code seems to be redundant, why was it left in?
         If frameHex.Count > 0 Then
+            clsTasks.ZTStudio_Trace("ClsFrame", "RenderCoreImageFromHex", "Detected APE junk bytes!")
             'Debug.Print("   : APE Junk bytes: junk bytes: " & frameHex.Count)
             'Me.coreImageHex.RemoveRange(Me.coreImageHex.Count - frameHex.Count - 1, frameHex.Count)
         Else
@@ -559,15 +577,10 @@ dBug:
 
 2110:
         ' This should come in very handy. The actual bitmap won't be changed unless a .PNG is loaded.
-        ' If that's the case, this frame's coreImageHex should be updated as well
+        ' If that's the case, this frame's CoreImageHex should be updated as well
         Me.CoreImageBitmap = frameCoreImageBitmap
 
-
-
-
-
-        Debug.Print("Frame rendered.")
-
+        clsTasks.ZTStudio_Trace("ClsFrame", "RenderCoreImageFromHex", "Finished frame rendering.")
 
 9999:
         Return frameCoreImageBitmap
@@ -576,20 +589,20 @@ dBug:
 
 dBug2:
 
-        frmMain.picBox.Image = bm
+        FrmMain.picBox.Image = BM
 
-        Debug.Print("Debugging info:")
+        ' Debug.Print("Debugging info:")
         ' Debug.Print("What's left of HEX() ? " & Strings.Join(hex.ToArray(), " "))
         ' Debug.Print("My index: " & Me.parent.frames.IndexOf(Me) & " - frame Length: " & Me.hexString.Length.ToString("X4"))
 
-        MsgBox("Error in clsFrame2.renderCoreImageFromHex()" & vbCrLf &
+        MsgBox("Error in ClsFrame.renderCoreImageFromHex()" & vbCrLf &
                "Line " & Erl() & vbCrLf &
                "Width, height: " & frameCoreImageBitmap.Width & ", " & frameCoreImageBitmap.Height & vbCrLf &
             "Offset x, y: " & Me.OffsetX & ", " & Me.OffsetY & vbCrLf &
             "Colors: Currently at drawing instruction " & intNumDrawingInstructions_current & "/" & intNumDrawingInstructions & ", color " & intNumDrawingInstructions_colors_current & "/" & intNumDrawingInstructions_colors & vbCrLf &
             "Last referenced x, y: " & intX & ", " & intY & vbCrLf &
             "Current length of framehex: " & frameHex.Count & vbCrLf &
-            "Current length of colors: " & ztPal.colors.Count & vbCrLf &
+            "Current length of colors: " & ztPal.Colors.Count & vbCrLf &
              vbCrLf & Err.Number & " - " & Err.Description &
             vbCrLf & "Line: " & Erl(), vbOKOnly + vbCritical, "Error")
 
@@ -597,34 +610,20 @@ dBug2:
 
     End Function
 
-
-
-
-
-
-
-    Public Function UpdateOffsets(coordOffsetChanges As Point, Optional blnBatchRotFix As Boolean = False) As Integer
-
-        ' This function is for the so called "rotation fixing", positioning fixing, correcting offsets.
-        ' By default, changes are applied to all frames in the graphic rather than just this frame.
-        ' In this rewritten version, we don't have to re-render the entire HEX. 
-        ' This should be quite a performance boost.
-
-
+    ''' <summary>
+    ''' Sets the offsets for this frame. By default, changes are applied to all frames in the graphic rather than just this frame.
+    ''' </summary>
+    ''' <param name="coordOffsetChanges"></param>
+    ''' <param name="blnBatchRotFix"></param>
+    Public Sub UpdateOffsets(coordOffsetChanges As Point, Optional blnBatchRotFix As Boolean = False)
 
         On Error GoTo dBug
-
-10:
-
-
-12:
 200:
-        ' By default, this applies to all frames
-        If cfg_editor_rotFix_individualFrame <> 1 Or blnBatchRotFix = True Then
+        ' By default, this applies to all frames (config setting)
+        If Cfg_editor_rotFix_individualFrame <> 1 Or blnBatchRotFix = True Then
 
             ' Just go for every frame
-            For Each ztFrame As ClsFrame2 In Me.Parent.frames
-
+            For Each ztFrame As ClsFrame In Me.Parent.Frames
 
                 ' Update hex
                 If CoreImageHex.Count > 0 Then
@@ -639,7 +638,6 @@ dBug2:
 
                     'ztFrame.renderCoreImageFromHex()
                     'End If
-
 
                     ztFrame.OffsetY += coordOffsetChanges.Y
                     ztFrame.OffsetX += coordOffsetChanges.X
@@ -712,16 +710,11 @@ dBug2:
 
             End If
 
-
-
         End If
-
 
 21:
 
-        Return 0
-
-        Exit Function
+        Exit Sub
 
 
 dBug:
@@ -729,29 +722,37 @@ dBug:
             Err.Number & " - " & Err.Description, vbOKOnly + vbCritical + vbApplicationModal, "Error while settings offsets")
 
 
-    End Function
+    End Sub
 
-    Public Function UpdateIndex(intNewIndex As Integer, Optional ztFrame As ClsFrame2 = Nothing, Optional ztGraphic As clsGraphic2 = Nothing) As Integer
-
+    ''' <summary>
+    ''' Moves frame to a different position
+    ''' </summary>
+    ''' <param name="intNewIndex">Integer</param>
+    ''' <param name="ztFrame">ClsFrame. Defaults to editorFrame</param>
+    ''' <param name="ztGraphic">ClsGraphic. Defaults to editorGraphic</param>
+    Public Sub UpdateIndex(intNewIndex As Integer, Optional ztFrame As ClsFrame = Nothing, Optional ztGraphic As ClsGraphic = Nothing)
 
         On Error GoTo dBug
 
 1:
-        If IsNothing(ztFrame) Then ztFrame = editorFrame
+        If IsNothing(ztFrame) Then
+            ztFrame = editorFrame
+        End If
 
 2:
-        If IsNothing(ztGraphic) Then ztGraphic = editorGraphic
-
+        If IsNothing(ztGraphic) Then
+            ztGraphic = editorGraphic
+        End If
 
 5:
         ' Get current list, remove item, add to new
-        ztGraphic.frames.Remove(ztFrame)
+        ztGraphic.Frames.Remove(ztFrame)
 
 6:
         ' Add to wanted place
-        ztGraphic.frames.Insert(intNewIndex, ztFrame)
+        ztGraphic.Frames.Insert(intNewIndex, ztFrame)
 
-        Return 0
+        Exit Sub
 
 
 dBug:
@@ -759,26 +760,23 @@ dBug:
             Err.Number & " - " & Err.Description, vbOKOnly + vbCritical, "Error while settings offsets")
 
 
-    End Function
+    End Sub
 
-
-
-
-
-
-    Public Function LoadPNG(sFile As String) As Integer
+    ''' <summary>
+    ''' Loads a .PNG file and converts it to HEX.
+    ''' </summary>
+    ''' <param name="strFileName"></param>
+    Public Sub LoadPNG(strFileName As String)
 
         On Error GoTo dBug
 
-
 5:
-        Dim bmpDrawTemp As Bitmap = Bitmap.FromFile(sFile)
+        Dim bmpDrawTemp As Bitmap = Bitmap.FromFile(strFileName)
         Dim bmpDraw As Bitmap
-
 
 10:
         ' Prevent a file lock on .PNG files.
-        ' If we don't use this, they can't be automatically deleted after batch conversion.
+        ' If files are locked, the files can't be automatically deleted after batch conversion.
         Using bmpDrawTemp
             bmpDraw = New Bitmap(bmpDrawTemp)
             bmpDrawTemp = Nothing
@@ -788,84 +786,71 @@ dBug:
         'Dim bmpCropped As Bitmap = clsTasks.bitmap_getCropped(bmpDraw, clsTasks.bitmap_getDefiningRectangle(bmpDraw))
         'bmpDraw = clsTasks.bitmap_getCropped(bmpDraw, clsTasks.bitmap_getDefiningRectangle(bmpDraw))
 
-
 20:
-        ' Our offsets should be set here first!
-        ' They should NOT be changed in getHexFromBitmap(), since they might overwrite/change updated offsets!
+        ' The offsets should be set here first!
+        ' They should NOT be changed in GetHexFromBitmap(), since they might overwrite/change updated offsets!
 
-        ' Easy to start with: define our new offsets
-        ' height, width is another easy one. We can calculate it by our top/left and bottom/right pixel
-        ' The offset is difficult. Zoot *seemed* to handle it by setting the offset to half the height/width. 
+        ' Easy to start with: define the new offsets
+        ' height, width is another easy one. Calculate it by top/left and bottom/right pixel
+        ' The offset is difficult. "Zoot" (program by MadScientist) *seemed* to handle it by setting the offset to half the height/width. 
         ' That approach at least centers your image, but it might not be what's wanted.
-        ' We will follow the same approach though, as the program can't know the right offsets.
+        ' Following the same approach though, as the program can't know the right offsets at this point.
         Me.OffsetX = Math.Ceiling(bmpDraw.Width / 2) + 1
         Me.OffsetY = Math.Ceiling(bmpDraw.Height / 2) + 1
 
 21:
-
-        'Debug.Print("Normally our offsets are: " & Me.offsetX & " - " & Me.offsetY & " / w=" & bmpDraw.Width & ", h=" & bmpDraw.Height)
-
-        Dim rectCrop As Rectangle = clsTasks.bitmap_getDefiningRectangle(bmpDraw)
+        Dim rectCrop As Rectangle = clsTasks.Bitmap_getDefiningRectangle(bmpDraw)
 
 22:
-        Dim bmpCropped As Bitmap = clsTasks.bitmap_getCropped(bmpDraw, rectCrop)
+        Dim bmpCropped As Bitmap = clsTasks.Bitmap_getCropped(bmpDraw, rectCrop)
 
 23:
-        ' Improvement by cropping!
-        Me.OffsetX -= rectCrop.X
-        Me.OffsetY -= rectCrop.Y
-
+        ' Improvement: by cropping to the relevant area, the offset should in most cases be better.
+        Me.OffsetX -= rectCrop.X ' Above the image was centered based on width. The offset was to the left (positive). Substract to move it right a bit (closer to center)
+        Me.OffsetY -= rectCrop.Y ' Above the image was centered based on height. The offset was to the top (positive). Substract to move it down a bit (closer to center)
 
 25:
-        ' Basically, this is (mostly) meant for plaques. Say we're importing a plaque, centered on a transparent background.
-        ' Our cropped version will simply have the plaque. Which means: the top left pixel of the cropped area is relevant 
-        ' and should NOT be transparent. So we need to add the color from the original image and add that as transparent color. 
+        ' Basically, this is (mostly) meant for plaques. Say the user is importing a plaque, centered on a transparent background.
+        ' The cropped version will be the plaque (rectangle). Which means: the top left pixel of the cropped area is relevant (gray/black) and should NOT be transparent. 
+        ' So it is necessary to add the color from the original image and add that as transparent color. 
         ' This should've been avoided by setting the background color properly, but it's easily overlooked.  
-        ' Furthermore, it also requires our color palette to contain NO colors yet.
-        If rectCrop.X <> 0 And rectCrop.Y <> 0 And Me.Parent.colorPalette.colors.Count = 0 Then
-            Me.Parent.colorPalette.colors.Add(bmpDraw.GetPixel(0, 0))
+        ' Furthermore, it also requires the color palette to contain NO colors yet.
+        If rectCrop.X <> 0 And rectCrop.Y <> 0 And Me.Parent.ColorPalette.Colors.Count = 0 Then
+            clsTasks.ZTStudio_Trace("ClsFrame", "LoadPng", "Defining rectangle is not starting at (0,0), color palette is empty. Add top left pixel of bitmap as transparent color.")
+            Me.Parent.ColorPalette.Colors.Add(bmpDraw.GetPixel(0, 0))
         End If
 
 30:
         ' ZT Studio has cropped the image.
         ' Let's generate hex.
-        Me.bitmap_to_hex(bmpCropped)
-
+        Me.BitMapToHex(bmpCropped)
 
         'Debug.Print(Strings.Join(Me.coreImageHex.ToArray(), " "))
 
 31:
-        ' 20170513 loadPNG is called only from frmMain and from clsTasks.
-        ' It doesn't make sense to call it when not working with the interface; so do it separately now in frmMain
+        ' 20170513 ClsFrame::LoadPNG() is called only from FrmMain and from ClsTasks.
+        ' It doesn't make sense to call it when not working with the interface; so do it separately now in FrmMain
         ' -> turns out this was already the case?!
-        ' clsTasks.update_preview()
+        ' ClsTasks.Update_Preview()
 
-
-
-
-        Return 0
-
+        Exit Sub
 
 dBug:
-        MsgBox("Error occurred in clsFrame2.loadPNG()" & vbCrLf &
-               "Line: " & Erl() & vbCrLf &
-            Err.Number & " - " & Err.Description, vbOKOnly + vbCritical, "Error while settings offsets")
+        clsTasks.ZTStudio_UnexpectedError("ClsFrame", "LoadPNG", Information.Erl(), Information.Err)
 
 
+    End Sub
 
-
-    End Function
-
-    Public Function Bitmap_to_Hex(Optional bmImage As Bitmap = Nothing) As List(Of String)
+    ''' <summary>
+    ''' Converts a bitmap to hex values. Important: offsets should have been set already!
+    ''' </summary>
+    ''' <param name="bmImage">Bitmap</param>
+    ''' <returns></returns>
+    Public Function BitMapToHex(Optional bmImage As Bitmap = Nothing) As List(Of String)
 
         On Error GoTo dBug
-
-        ' This function takes an optional bitmap or falls back to what is set in .coreImageBitmap.
+        ' This function takes an optional bitmap or falls back to what is set in .CoreImageBitmap.
         ' It generates the hex code for this image.
-
-        ' Important note: 
-        ' Our offsets should have been set already. 
-        ' They should NOT be changed in bitmap_to_hex(), since they might overwrite/change updated offsets!
 1:
         Dim generatedHex As New List(Of String)
 
@@ -873,9 +858,10 @@ dBug:
 
         If IsNothing(bmImage) = True Then
 
-            ' Fall back to coreImageBitmap, if available.
+            ' Fall back to CoreImageBitmap, if available.
             If IsNothing(Me.CoreImageBitmap) = True Then
-                MsgBox("clsFrame2.getHexFromBitmap(): no bitmap was given as input, nor could we fall back to the coreImageBitmap.",
+                ' Can this happen?
+                MsgBox("ClsFrame::GetHexFromBitmap(): no bitmap was given as input. A fallback to ClsFrame::CoreImageBitmap was impossible.",
                     vbOKOnly + vbCritical + vbApplicationModal,
                     "Error while generating HEX for this frame")
                 Return generatedHex ' exits further processing
@@ -886,10 +872,10 @@ dBug:
 
         Else
 
-            ' APE / Zoot: top left color = transparent.
-            ' Only if no colors are known in our palette, we rely on that method.
+            ' APE / ZOOT: top left color = transparent.
+            ' Rely only on that method if no colors are known in the color palette yet.
             ' Reason: it works differently in batch conversions. 
-            ' 20170519: this might not work properly for (cropped) plaques!
+            ' 20170519: beware: this might not work properly for (cropped) plaques!
             If Me.Parent.ColorPalette.Colors.Count = 0 Then
                 Me.Parent.ColorPalette.Colors.Add(bmImage.GetPixel(0, 0))
             End If
@@ -907,17 +893,16 @@ dBug:
 
 100:
 200:
-        ' We have our bitmap now. 'coreImageBitmap'. We won't store this right away.
+
         ' Reason: instead of the top left pixel, transparency could already have been determined in some (batch) processes
 
-        'Dim opHex As New List(Of String)                            ' Main output
-        Dim opHexRows As New List(Of String)                        ' Store bytes as strings for now. Actual drawing instructions.
+        Dim opHexRows As New List(Of String) ' Store bytes as strings for now. Actual drawing instructions.
 
-        ' We will need this to move over every pixel.
+        ' Use intX, intY to move over every pixel.
         Dim intX As Integer = 0
         Dim intY As Integer = 0
 
-        Dim c As System.Drawing.Color                               ' to go over every color
+        Dim cColor As System.Drawing.Color ' Will be used to go over each pixel and determine the color
 
         ' Take the palette from the parent
         Dim ztPal As ClsPalette = Me.Parent.ColorPalette
@@ -925,23 +910,17 @@ dBug:
         Dim lstDrawingInstructions As New List(Of ClsDrawingInstr)
         Dim tmpDrawingInstr As New ClsDrawingInstr
 
-
 1000:
-
-
-        ' Here it gets a bit more tricky. There's some information we will process, 
-        ' but we will have to switch a few things in our output.
-        ' - we need to remember how many instruction blocks (offset + num colors + [colors] );
-        ' - we need to remember the offset;
-        ' - we need to count the colors;
-        ' - we need to keep track of the color indexes (either find them in a palette, or add them. Max 255 colors, warn!)
+        ' Here it gets a bit more tricky. There's some information to process, 
+        ' but some information needs to be switched around in the final output.
+        ' - remember how many instruction blocks (offset + num colors + [colors] );
+        ' - remember the offset;
+        ' - count the colors;
+        ' - keep track of the color indexes (either find them in a palette, or add them. Max 255 colors, warn!)
         ' --> this will only have been changed if the color palette has been altered in some way.
         ' Output per line: #numBlocks, blocks
 
-
-3000:
-        'bv: coord pixel [0,0] --- w,h [1,1]
-
+        ' Keep in mind: a one pixel image would be pixel [0,0] but width = height = 1.
 
 3005:
 
@@ -957,68 +936,64 @@ dBug:
 
 3010:
                 ' Read the color.
-                c = bmImage.GetPixel(intX, intY)
+                cColor = bmImage.GetPixel(intX, intY)
 
-                ' If the color is considered to be transparent:
-                If Me.Parent.ColorPalette.GetColorIndex(c) = 0 Then
-
-                    'Debug.Print("   : " & intX & "," & intY & " - Transparent pixel: " & c.ToString())
+                ' If the index of the color is 0, assume it's a transparent pixel.
+                If Me.Parent.ColorPalette.GetColorIndex(cColor) = 0 Then
 
 3100:
-                    ' We have a transparent pixel.
-                    ' We can have this at the very start of the row;
-                    ' We can have this after a series of color indexes.
+                    ' Assuming transparent pixel.
+                    ' This can happen at the very start of the row;
+                    ' This can happen after a series of colored pixels.
                     If tmpDrawingInstr.Offset = 0 And tmpDrawingInstr.PixelColors.Count = 0 Then
 3101:
-                        ' We are most likely getting this at the very start of the row. 
+                        ' Most likely getting this at the very start of the row. 
                         ' No action required.
 
                     ElseIf tmpDrawingInstr.PixelColors.Count > 0 Then
 3102:
-                        ' We have had stuff in this line. So we had colors, and now it's transparent.
-                        ' Push the drawing instruction, then start over.
+                        ' Colors were detected before.
+                        ' Now processing a transparent pixel again.
+                        ' Close the previous drawing instruction, start a new one.
                         lstDrawingInstructions.Add(tmpDrawingInstr, False)
                         tmpDrawingInstr = New ClsDrawingInstr
 
                     Else
 
 3108:
-                        ' In this case, our offset is bigger than 0 and our color count is 0.
+                        ' In this case, the offset is bigger than 0 (previous pixel was also transparent) and the color count is 0.
                         ' Don't do anything.
+                        ' 20190816: shouldn't this case be merged with the first one?
 
                     End If
 
                     ' The current pixel is transparent.
-                    ' This means we have to increase our offset by 1.
+                    ' Increase offset by 1.
 3110:
                     tmpDrawingInstr.Offset += 1
 
 3115:
-                    ' Exception: if our offset is now 255, we will need to push this block and create a new one.
+                    ' Rare exception: if the offset is now 255 (limit), end this drawing instruction and start a new one.
                     If tmpDrawingInstr.Offset = 255 Then
+                        clsTasks.ZTStudio_Trace("ClsFrame", "BitMapToHex", "This graphic has an example of a drawing instruction with a large offset (255). Add in documentation.")
                         lstDrawingInstructions.Add(tmpDrawingInstr, False)
                         tmpDrawingInstr = New ClsDrawingInstr
                     End If
 
                 Else
 3200:
-                    ' We have detected a colored pixel.
-                    ' Get its index and add it to our collection.
-                    'Debug.Print("   : " & intX & "," & intY & " - Colored pixel: " & c.ToString())
-
-
-                    Dim tmpColorIndex = Me.Parent.ColorPalette.GetColorIndex(c, True)
-                    'If tmpColorIndex = -1 Then Exit Function - can't remember the point of this
-
+                    ' Detected a colored pixel.
+                    ' Get the index of this color from the palette and add it to the drawing instruction.
+                    Dim tmpColorIndex = Me.Parent.ColorPalette.GetColorIndex(cColor, True)
                     tmpDrawingInstr.PixelColors.Add(tmpColorIndex, False)
 
 3399:
-                    ' Exception: if our number of colored pixels is now 255, we will need to push this block.
+                    ' Rare exception: if the number of colored pixels is now 255 (limit), end this drawing instruction and start a new one.
                     If tmpDrawingInstr.PixelColors.Count = 255 Then
+                        clsTasks.ZTStudio_Trace("ClsFrame", "BitMapToHex", "This graphic is an example has an example of a drawing instruction with a color offset (255). Add in documentation.")
                         lstDrawingInstructions.Add(tmpDrawingInstr, False)
                         tmpDrawingInstr = New ClsDrawingInstr
                     End If
-
 
                 End If
 
@@ -1029,23 +1004,24 @@ dBug:
             ' === END OF LINE ===
 
 3400:
-            ' We processed all blocks. We should finish this too by adding the last block, 
-            ' if it never got closed (most likely case, unless we had 255 pixels)
+            ' All pixels have been processed.
+            ' This means the last drawing instruction is likely still open (unless it was just ended after hitting one of the above limits).
+            ' Check if this drawing instruction contains an offset or color.
             If tmpDrawingInstr.Offset <> 0 Or tmpDrawingInstr.PixelColors.Count > 0 Then
                 lstDrawingInstructions.Add(tmpDrawingInstr, False)
             End If
 
 3405:
-            ' We have all our pixel sets for this line.
-            ' So to opHexRows, we can add:
+            ' All drawing instructions for this line are prepared.
+            ' So to opHexRows, add:
             ' Number of instruction blocks [between 0 - 255]
             opHexRows.Add(lstDrawingInstructions.Count.ToString("X2"), False)
 
 3406:
-            For Each d As ClsDrawingInstr In lstDrawingInstructions
+            For Each diInstruction As ClsDrawingInstr In lstDrawingInstructions
                 ' For each block: 
-                ' - get HEX of offset, num colors, color indexes of pixels
-                opHexRows.AddRange(d.GetHex(), False)
+                ' - get hex: [offset][num colors][color indexes of pixels]
+                opHexRows.AddRange(diInstruction.GetHex(), False)
             Next
 
 3450:
@@ -1053,7 +1029,6 @@ dBug:
             intY += 1
         End While
 
-        'Debug.Print("   : Processed " & intY & " rows of pixels.")
 
 9000:
 
@@ -1079,20 +1054,20 @@ dBug:
             End If
 
 9003:
-            ' Issue: two unknown bytes. We refer to them as 'mystery bytes'.
+            ' Issue: two unknown bytes. ('mystery bytes')
             ' For bamboo, frame 1 = 1. 
             ' Always seems to be 1 in APE.
             .Add("01", False)
             .Add("00", False)
 
 9020:
-            ' Now add our drawing instructions for the frame.
+            ' Now add the drawing instructions for the frame.
             .AddRange(opHexRows, False)
 
         End With
 
 9502:
-        ' Reset. Should be regenerated from our hex.
+        ' Reset. Should be regenerated from the hex.
         ' Me.coreImageBitmap = Nothing - 20170519 - what was the point again in doing this?
         Me.CoreImageHex = generatedHex
 
@@ -1101,17 +1076,19 @@ dBug:
         Exit Function
 
 dBug:
-        MsgBox("Error occurred in clsFrame2.getHexFromBitmap()" & vbCrLf &
-               "Line: " & Erl() & vbCrLf &
-            Err.Number & " - " & Err.Description, vbOKOnly + vbCritical, "Error while generating HEX for this frame")
+        clsTasks.ZTStudio_UnexpectedError("ClsFrame", "BitMapToHex", Information.Erl(), Information.Err)
+
 
     End Function
 
-    Public Function SavePNG(strFileName As String) As Integer
+    ''' <summary>
+    ''' Saves the frame of a ZT1 Graphic to a .PNG file
+    ''' </summary>
+    ''' <param name="strFileName"></param>
+    Public Sub SavePNG(strFileName As String)
 
         On Error GoTo dBug
 10:
-
         ' 0 = canvas size
         ' 1 = relevant pixel area of graphic
         ' 2 = relevant pixel area of frame
@@ -1121,7 +1098,7 @@ dBug:
         Dim bmCropped As Bitmap
 
 
-        Select Case cfg_export_PNG_CanvasSize
+        Select Case Cfg_export_PNG_CanvasSize
 
 
             Case 0
@@ -1129,19 +1106,18 @@ dBug:
 21:
 
                 Dim imgComb As Image
-                imgComb = New Bitmap(cfg_grid_numPixels * 2, cfg_grid_numPixels * 2)
+                imgComb = New Bitmap(Cfg_grid_numPixels * 2, Cfg_grid_numPixels * 2)
 
 32:
 
                 ' Use ZT Studio's main window background color (transparent)
                 Using g As Graphics = Graphics.FromImage(imgComb)
-                    'g.Clear(cfg_grid_BackGroundColor)
-                    g.Clear(IIf(cfg_export_PNG_TransparentBG = 0, cfg_grid_BackGroundColor, Color.Transparent))
+                    'g.Clear(Cfg_grid_BackGroundColor)
+                    g.Clear(IIf(Cfg_export_PNG_TransparentBG = 0, Cfg_grid_BackGroundColor, Color.Transparent))
                 End Using
 
-
 35:
-                imgComb = clsTasks.images_Combine(imgComb, Me.GetImage())
+                imgComb = clsTasks.Images_Combine(imgComb, Me.GetImage())
                 imgComb.Save(strFileName, System.Drawing.Imaging.ImageFormat.Png)
 
             Case 1
@@ -1152,53 +1128,47 @@ dBug:
                 ' Some caching might be in order in the future :)
 
                 Dim imgComb As Image
-                imgComb = New Bitmap(cfg_grid_numPixels * 2, cfg_grid_numPixels * 2)
-
+                imgComb = New Bitmap(Cfg_grid_numPixels * 2, Cfg_grid_numPixels * 2)
 
 132:
                 ' Use ZT Studio's main window background color (transparent)
                 Using g As Graphics = Graphics.FromImage(imgComb)
-                    g.Clear(IIf(cfg_export_PNG_TransparentBG = 0, cfg_grid_BackGroundColor, Color.Transparent))
+                    g.Clear(IIf(Cfg_export_PNG_TransparentBG = 0, Cfg_grid_BackGroundColor, Color.Transparent))
                 End Using
 135:
 
                 ' Combine all images. Basically put them all on top of each other.
                 ' That way, it's easy to determine the most relevant pixel top/left and bottom/right
-                For Each ztFrame As ClsFrame2 In Me.Parent.frames
-                    imgComb = clsTasks.images_Combine(imgComb, ztFrame.GetImage())
+                For Each ztFrame As ClsFrame In Me.Parent.Frames
+                    imgComb = clsTasks.Images_Combine(imgComb, ztFrame.GetImage())
                 Next
 
                 ' Apply to this particular frame.
-                bmRect = bitmap_getDefiningRectangle(imgComb)
-                bmCropped = clsTasks.bitmap_getCropped(Me.GetImage(), bmRect)
+                bmRect = Bitmap_GetDefiningRectangle(imgComb)
+                bmCropped = clsTasks.Bitmap_GetCropped(Me.GetImage(), bmRect)
                 bmCropped.Save(strFileName, System.Drawing.Imaging.ImageFormat.Png)
 
             Case 2
                 ' Only save relevant area of frame
 
 141:
-
-                bmRect = bitmap_getDefiningRectangle(Me.GetImage())
-                bmCropped = clsTasks.bitmap_getCropped(Me.GetImage(), bmRect)
+                bmRect = Bitmap_GetDefiningRectangle(Me.GetImage())
+                bmCropped = clsTasks.Bitmap_GetCropped(Me.GetImage(), bmRect)
                 bmCropped.Save(strFileName, System.Drawing.Imaging.ImageFormat.Png)
+
             Case 3
-                'center around the origin
-                'this is much faster and avoids all cropping, but preserves the offset
-                Me.GetImage(, True).Save(strFileName, System.Drawing.Imaging.ImageFormat.Png)
+                ' Center around the origin
+                ' This is much faster and avoids all cropping, but preserves the offset
+                Me.GetImage(False, True).Save(strFileName, System.Drawing.Imaging.ImageFormat.Png)
+
         End Select
 
-
-
-        Return 0
+        Exit Sub
 
 dBug:
-
-        MsgBox("Error in clsFrame:savePNG" & vbCrLf &
-               "Line " & Erl() & vbCrLf &
-            Err.Number & " - " & Err.Description,
-            vbApplicationModal + vbOKOnly + vbCritical, "Error while saving frame as .PNG")
+        clsTasks.ZTStudio_UnexpectedError("ClsFrame", "SavePNG", Information.Erl(), Information.Err)
 
 
-    End Function
+    End Sub
 
 End Class

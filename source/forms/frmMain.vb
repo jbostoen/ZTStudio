@@ -20,31 +20,29 @@ Public Class FrmMain
 
 
         ' Always start with one frame
-        editorFrame = New ClsFrame2(editorGraphic)
+        editorFrame = New ClsFrame(editorGraphic)
         editorGraphic.Frames.Add(editorFrame)
 
 
         ' Output
-        BM = New Bitmap(cfg_grid_numPixels * 2, cfg_grid_numPixels * 2)
+        BM = New Bitmap(Cfg_grid_numPixels * 2, Cfg_grid_numPixels * 2)
         With picBox
-            .Width = cfg_grid_numPixels * 2
-            .Height = cfg_grid_numPixels * 2
+            .Width = Cfg_grid_numPixels * 2
+            .Height = Cfg_grid_numPixels * 2
         End With
 
         ' Background color
-        picBox.BackColor = cfg_grid_BackGroundColor
+        picBox.BackColor = Cfg_grid_BackGroundColor
 
 
         ' Grid
-        tsbFrame_fpX.Text = CStr(cfg_grid_footPrintX)
-        tsbFrame_fpY.Text = CStr(cfg_grid_footPrintY)
-
-        'clsTasks.update_Info()
+        tsbFrame_fpX.Text = CStr(Cfg_grid_footPrintX)
+        tsbFrame_fpY.Text = CStr(Cfg_grid_footPrintY)
 
         ' ZT1 Default color palettes
         ' strPathBuildingColorPals
 
-        Dim di As New IO.DirectoryInfo(cfg_path_ColorPals8)
+        Dim di As New IO.DirectoryInfo(Cfg_path_ColorPals8)
         Dim diar1 As IO.FileInfo() = di.GetFiles()
         Dim dra As IO.FileInfo
 
@@ -53,7 +51,7 @@ Public Class FrmMain
             tsbOpenPalBldg8.DropDownItems.Add(dra.Name)
         Next
 
-        di = New IO.DirectoryInfo(cfg_path_ColorPals16)
+        di = New IO.DirectoryInfo(Cfg_path_ColorPals16)
         diar1 = di.GetFiles()
 
         'list the names of all files in the specified directory
@@ -189,10 +187,10 @@ dBug:
     Private Sub TsbGridBG_Click(sender As Object, e As EventArgs) Handles tsbGridBG.Click
 
         With dlgColor
-            .Color = cfg_grid_BackGroundColor
+            .Color = Cfg_grid_BackGroundColor
             .ShowDialog()
 
-            cfg_grid_BackGroundColor = .Color
+            Cfg_grid_BackGroundColor = .Color
 
 
         End With
@@ -206,24 +204,19 @@ dBug:
 
     Private Sub TsbZT1Open_Click(sender As Object, e As EventArgs) Handles tsbZT1Open.Click
 
-
-
-
         With dlgOpen
             .Title = "Pick a ZT1 Graphic"
             .DefaultExt = ""
             .Filter = "All files|*.*"
-            .InitialDirectory = System.IO.Path.GetDirectoryName(cfg_path_recentZT1)
-
+            .InitialDirectory = System.IO.Path.GetDirectoryName(Cfg_path_recentZT1)
 
             If dlgOpen.InitialDirectory = vbNullString Or System.IO.Directory.Exists(dlgOpen.InitialDirectory) = False Then
-                If System.IO.Directory.Exists(cfg_path_Root) Then
-                    .InitialDirectory = cfg_path_Root
+                If System.IO.Directory.Exists(Cfg_path_Root) Then
+                    .InitialDirectory = Cfg_path_Root
                 ElseIf System.IO.Directory.Exists("C:\Program Files\Microsoft Games\Zoo Tycoon") Then
                     .InitialDirectory = "C:\Program Files\Microsoft Games\Zoo Tycoon"
                 ElseIf System.IO.Directory.Exists("C:\Program Files (x86)\Microsoft Games\Zoo Tycoon") Then
                     .InitialDirectory = "C:\Program Files (x86)\Microsoft Games\Zoo Tycoon"
-
                 End If
             End If
 
@@ -233,23 +226,31 @@ dBug:
 
                     If Path.GetExtension(dlgOpen.FileName) <> vbNullString Then
                         MsgBox("You selected a file with the extension '" & Path.GetExtension(dlgOpen.FileName) & "'." & vbCrLf &
-                               "With ZT1 graphic, we mean a ZT1 Graphic file without extension.",
-                               vbOKOnly + vbCritical, "Invalid file")
+                               "ZT Studio expects you to select a ZT1 Graphic file, which shouldn't have a file extension.",
+                               MsgBoxStyle.OkOnly + MsgBoxStyle.Critical + MsgBoxStyle.ApplicationModal, "Invalid file")
 
                         Exit Sub
 
 
-                    ElseIf dlgOpen.FileName.ToLower().Contains(cfg_path_Root.ToLower()) = False Then
+                    ElseIf dlgOpen.FileName.ToLower().Contains(Cfg_path_Root.ToLower()) = False Then
 
-                        MsgBox("Only select a file in the root directory, which you can change in Settings:" & vbCrLf &
-                               cfg_path_Root, vbOKOnly + vbCritical, "Invalid path")
+                        If MsgBox("Only select a file in the root directory, which is currently:" & vbCrLf &
+                               Cfg_path_Root & vbCrLf & vbCrLf &
+                               "Would you like to change the root directory?",
+                               MsgBoxStyle.YesNo + MsgBoxStyle.Critical + MsgBoxStyle.ApplicationModal, "ZT1 Graphic not within root folder") = MsgBoxResult.Yes Then
+
+                            ' Allow user to quickly change settings -> root directory
+                            FrmSettings.Show()
+
+                        End If
+
                         Exit Sub
 
 
                     Else
 
                         ' Reset any previous info.
-                        editorGraphic = New ClsGraphic2
+                        editorGraphic = New ClsGraphic
 
                         ' OK
                         editorGraphic.Read(dlgOpen.FileName)
@@ -279,7 +280,7 @@ dBug:
                 End If
 
                 ' Remember
-                cfg_path_recentZT1 = System.IO.Path.GetFullPath(dlgOpen.FileName)
+                Cfg_path_recentZT1 = System.IO.Path.GetFullPath(dlgOpen.FileName)
                 clsTasks.Config_write()
 
                 ' What has been opened, might need to be saved.
@@ -347,7 +348,7 @@ dBug:
             .Title = "Save single frame as .PNG"
             .DefaultExt = ".png"
             .AddExtension = True
-            .InitialDirectory = System.IO.Path.GetDirectoryName(cfg_path_recentPNG)
+            .InitialDirectory = System.IO.Path.GetDirectoryName(Cfg_path_recentPNG)
             .Filter = "PNG files (*.png)|*.png|All files|*.*"
 
 
@@ -363,7 +364,7 @@ dBug:
 
 
                 ' Remember
-                cfg_path_recentPNG = System.IO.Path.GetFullPath(dlgSave.FileName)
+                Cfg_path_recentPNG = System.IO.Path.GetFullPath(dlgSave.FileName)
                 clsTasks.Config_write()
 
 
@@ -384,7 +385,7 @@ dBug:
             .Title = "Pick a ZT1 Color Palette"
             .DefaultExt = ".pal"
             .Filter = "ZT1 Color Palette files (*.pal)|*.pal|All files|*.*"
-            .InitialDirectory = System.IO.Path.GetDirectoryName(cfg_path_recentZT1)
+            .InitialDirectory = System.IO.Path.GetDirectoryName(Cfg_path_recentZT1)
 
 
             If .ShowDialog() <> Windows.Forms.DialogResult.Cancel Then
@@ -404,7 +405,7 @@ dBug:
 
     Private Sub TsbSettings_Click(sender As Object, e As EventArgs) Handles tsbSettings.Click
 
-        frmSettings.ShowDialog()
+        FrmSettings.ShowDialog()
 
     End Sub
 
@@ -414,12 +415,12 @@ dBug:
 
     Private Sub TsbOpenPalBldg8_DropDownItemClicked(sender As Object, e As ToolStripItemClickedEventArgs) Handles tsbOpenPalBldg8.DropDownItemClicked
 
-        Pal_Open(cfg_path_ColorPals8 & "\" & e.ClickedItem.Text)
+        Pal_Open(Cfg_path_ColorPals8 & "\" & e.ClickedItem.Text)
 
     End Sub
     Private Sub TsbOpenPalBldg16_DropDownItemClicked(sender As Object, e As ToolStripItemClickedEventArgs) Handles tsbOpenPalBldg16.DropDownItemClicked
 
-        Pal_Open(cfg_path_ColorPals16 & "\" & e.ClickedItem.Text)
+        Pal_Open(Cfg_path_ColorPals16 & "\" & e.ClickedItem.Text)
 
     End Sub
 
@@ -435,7 +436,7 @@ dBug:
         With dlgOpen
             .Title = "Pick a ZT1 Graphic"
             .DefaultExt = ""
-            .InitialDirectory = System.IO.Path.GetDirectoryName(cfg_path_recentZT1)
+            .InitialDirectory = System.IO.Path.GetDirectoryName(Cfg_path_recentZT1)
             .Filter = "All files|*.*"
 
             If dlgOpen.InitialDirectory = vbNullString Then
@@ -468,7 +469,7 @@ dBug:
                         'editorBgGraphic.colorPalette.fillPaletteGrid(dgvPaletteMain)
 
                         ' Remember
-                        cfg_path_recentZT1 = System.IO.Path.GetFullPath(dlgOpen.FileName)
+                        Cfg_path_recentZT1 = System.IO.Path.GetFullPath(dlgOpen.FileName)
                         clsTasks.Config_write()
 
                     End If
@@ -532,7 +533,7 @@ dBug:
 
 
 0:
-        Dim ztFrame As New ClsFrame2(editorGraphic)
+        Dim ztFrame As New ClsFrame(editorGraphic)
 2:
 
 10:
@@ -640,10 +641,16 @@ dBug:
 
 
         ' Quick fix: on change, revert to frame 1.
-        clsTasks.Update_preview(0)
+        Dim intFrameNumber As Integer = editorGraphic.Frames.IndexOf(editorFrame)
 
-
-
+        ' Was displaying last frame?
+        If (intFrameNumber = editorGraphic.Frames.Count - 1) Then
+            ' Show first one instead
+            clsTasks.Update_Preview(0)
+        Else
+            ' Update current frame
+            clsTasks.Update_Preview()
+        End If
 
 
 
@@ -665,7 +672,7 @@ dBug:
 
     Private Sub TsbDelete_PNG_Click(sender As Object, e As EventArgs) Handles tsbDelete_PNG.Click
 
-        clsTasks.CleanUp_files(cfg_path_Root, ".png")
+        clsTasks.CleanUp_files(Cfg_path_Root, ".png")
         MsgBox("Finished clean up.", vbOKOnly + vbInformation, "Finished clean up.")
 
     End Sub
@@ -673,8 +680,8 @@ dBug:
     Private Sub TsbDelete_ZT1Files_Click(sender As Object, e As EventArgs) Handles tsbDelete_ZT1Files.Click
 
         ' Cleanup ZT1 Graphics and color palettes
-        clsTasks.CleanUp_files(cfg_path_Root, "")
-        clsTasks.CleanUp_files(cfg_path_Root, ".pal")
+        clsTasks.CleanUp_files(Cfg_path_Root, "")
+        clsTasks.CleanUp_files(Cfg_path_Root, ".pal")
         MsgBox("Finished clean up.", vbOKOnly + vbInformation, "Finished clean up.")
 
     End Sub
@@ -683,7 +690,7 @@ dBug:
 
     Private Sub TsbFrame_fpX_SelectedIndexChanged(sender As Object, e As EventArgs) Handles tsbFrame_fpX.SelectedIndexChanged
 
-        cfg_grid_footPrintX = tsbFrame_fpX.Text
+        Cfg_grid_footPrintX = tsbFrame_fpX.Text
         clsTasks.Config_write()
         clsTasks.Update_preview()
 
@@ -695,7 +702,7 @@ dBug:
     Private Sub TsbFrame_fpY_SelectedIndexChanged(sender As Object, e As EventArgs) Handles tsbFrame_fpY.SelectedIndexChanged
 
 
-        cfg_grid_footPrintY = tsbFrame_fpY.Text
+        Cfg_grid_footPrintY = tsbFrame_fpY.Text
         clsTasks.Config_write()
         clsTasks.Update_preview()
 
@@ -780,7 +787,7 @@ dBug:
 
 
 0:
-            Dim ztFrame As New ClsFrame2(editorGraphic)
+            Dim ztFrame As New ClsFrame(editorGraphic)
 2:
 
 10:
@@ -806,11 +813,11 @@ dBug:
             .Title = "Pick a .PNG file"
             .DefaultExt = ""
             .Filter = "PNG files|*.png"
-            .InitialDirectory = System.IO.Path.GetDirectoryName(cfg_path_recentPNG)
+            .InitialDirectory = System.IO.Path.GetDirectoryName(Cfg_path_recentPNG)
 
             ' If most recent directory does not exist anymore:
             If dlgOpen.InitialDirectory = vbNullString Or System.IO.Directory.Exists(dlgOpen.InitialDirectory) = False Then
-                .InitialDirectory = cfg_path_Root
+                .InitialDirectory = Cfg_path_Root
 
             End If
 
@@ -839,7 +846,7 @@ dBug:
                         'editorBgGraphic.colorPalette.fillPaletteGrid(dgvPaletteMain)
 
                         ' Remember
-                        cfg_path_recentPNG = System.IO.Path.GetFullPath(dlgOpen.FileName)
+                        Cfg_path_recentPNG = System.IO.Path.GetFullPath(dlgOpen.FileName)
                         clsTasks.Config_write()
 
 
@@ -865,7 +872,7 @@ dBug:
             .Title = "Save as a PNG Color Palette"
             .DefaultExt = ".png"
             .Filter = "PNG Color Palette files (*.png)|*.png|All files|*.*"
-            .InitialDirectory = System.IO.Path.GetDirectoryName(cfg_path_recentZT1)
+            .InitialDirectory = System.IO.Path.GetDirectoryName(Cfg_path_recentZT1)
 
 
             If .ShowDialog() <> Windows.Forms.DialogResult.Cancel Then
@@ -890,7 +897,7 @@ dBug:
             .Title = "Pick a PNG Color Palette"
             .DefaultExt = ".png"
             .Filter = "PNG Color Palette files (*.png)|*.png|All files|*.*"
-            .InitialDirectory = System.IO.Path.GetDirectoryName(cfg_path_recentZT1)
+            .InitialDirectory = System.IO.Path.GetDirectoryName(Cfg_path_recentZT1)
 
 
             If .ShowDialog() <> Windows.Forms.DialogResult.Cancel Then
@@ -925,7 +932,7 @@ dBug:
             .Title = "Save as a ZT1 Color Palette"
             .DefaultExt = ".pal"
             .Filter = "ZT1 Color Palette files (*.pal)|*.pal|All files|*.*"
-            .InitialDirectory = System.IO.Path.GetDirectoryName(cfg_path_recentZT1)
+            .InitialDirectory = System.IO.Path.GetDirectoryName(Cfg_path_recentZT1)
 
 
             If .ShowDialog() <> Windows.Forms.DialogResult.Cancel Then
@@ -951,7 +958,7 @@ dBug:
             .Title = "Pick a GIMP Color Palette"
             .DefaultExt = ".gpl"
             .Filter = "GIMP Color Palette (*.gpl)|*.gpl|All files|*.*"
-            .InitialDirectory = System.IO.Path.GetDirectoryName(cfg_path_recentZT1)
+            .InitialDirectory = System.IO.Path.GetDirectoryName(Cfg_path_recentZT1)
 
             If .ShowDialog() <> Windows.Forms.DialogResult.Cancel Then
 
@@ -973,7 +980,7 @@ dBug:
     End Sub
 
     Private Sub TsbBatchRotFix_Click(sender As Object, e As EventArgs) Handles tsbBatchRotFix.Click
-        frmBatchRotationFix.ShowDialog(Me)
+        FrmBatchRotationFix.ShowDialog(Me)
 
     End Sub
 
@@ -999,11 +1006,11 @@ dBug:
     Private Sub TsbZT1New_Click(sender As Object, e As EventArgs) Handles tsbZT1New.Click
 
 
-        editorGraphic = New ClsGraphic2
+        editorGraphic = New ClsGraphic
 
 
         ' Always start with one frame
-        editorFrame = New ClsFrame2(editorGraphic)
+        editorFrame = New ClsFrame(editorGraphic)
         editorGraphic.Frames.Add(editorFrame)
 
         ' Update/reset color palette
@@ -1046,7 +1053,7 @@ dBug:
             .Title = "Save ZT1 Graphic"
             .DefaultExt = ""
             .AddExtension = True
-            .InitialDirectory = System.IO.Path.GetDirectoryName(cfg_path_recentZT1)
+            .InitialDirectory = System.IO.Path.GetDirectoryName(Cfg_path_recentZT1)
             .Filter = "ZT1 Graphics|*"
 
 
@@ -1064,7 +1071,7 @@ dBug:
 
 60:
                 ' Remember
-                cfg_path_recentZT1 = System.IO.Path.GetFullPath(dlgSave.FileName)
+                Cfg_path_recentZT1 = System.IO.Path.GetFullPath(dlgSave.FileName)
                 clsTasks.Config_write()
 
                 ' What has been opened, might need to be saved.

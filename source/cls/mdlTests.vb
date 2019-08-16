@@ -3,10 +3,10 @@ Imports System.IO
 Imports System.Security
 
 
-Module mdlTests
+Module MdlTests
 
 
-    Sub GetHashesOfFilesInFolder(strPath As String)
+    Sub Get_HashesOfFilesInFolder(strPath As String)
 
 
         ' First we will create a recursive list.
@@ -32,10 +32,16 @@ Module mdlTests
 20:
             For Each f As String In Directory.GetFiles(dir, "*")
                 Debug.Print(f)
-                IniWrite(strPath & "\hashes.cfg", Strings.Replace(Strings.Replace(Path.GetDirectoryName(f), strPath & "\", ""), "\", "/"), Path.GetFileName(f), Hash_generator("sha256", f))
+                Dim objHash As Object = MdlTests.Generate_Hash("sha256", f)
+                IniWrite(strPath & "\hashes.cfg", Strings.Replace(Strings.Replace(Path.GetDirectoryName(f), strPath & "\", ""), "\", "/"), Path.GetFileName(f), objhash)
+
+                objHash.dispose()
+
             Next
 
 25:
+
+30:
 
             ' Loop through all subdirectories and add them to the stack.
             Dim directoryName As String
@@ -50,41 +56,43 @@ Module mdlTests
     End Sub
 
     ' Function to obtain the desired hash of a file
-    Function Hash_generator(ByVal hash_type As String, ByVal file_name As String)
+    Function Generate_Hash(ByVal StrHashType As String, ByVal StrFileName As String)
 
         ' Declaring the variable : hash
-        Dim hash
-        If hash_type.ToLower = "md5" Then
-            ' Initializes a md5 hash object
-            hash = MD5.Create
-        ElseIf hash_type.ToLower = "sha1" Then
-            ' Initializes a SHA-1 hash object
-            hash = SHA1.Create()
-        ElseIf hash_type.ToLower = "sha256" Then
-            ' Initializes a SHA-256 hash object
-            hash = SHA256.Create()
-        Else
-            MsgBox("Unknown type of hash : " & hash_type, MsgBoxStyle.Critical)
-            Return False
-        End If
+        Dim HashGenerator As Object
+        Select Case StrHashType
+            Case "md5"
+                HashGenerator = MD5.Create()
+
+            Case "sha1"
+                HashGenerator = SHA1.Create()
+
+            Case "sha256"
+                HashGenerator = SHA256.Create()
+
+            Case Else
+                MsgBox("Unknown type of hash: " & StrHashType, MsgBoxStyle.Critical, "Unknown hash type")
+                Return Nothing
+
+        End Select
 
         ' Declaring a variable to be an array of bytes
-        Dim hashValue() As Byte
+        Dim HashValue() As Byte
 
         ' Creating e a FileStream for the file passed as a parameter
-        Dim fileStream As FileStream = File.OpenRead(file_name)
+        Dim FileStream As FileStream = File.OpenRead(StrFileName)
         ' Positioning the cursor at the beginning of stream
-        fileStream.Position = 0
+        FileStream.Position = 0
         ' Calculating the hash of the file
-        hashValue = hash.ComputeHash(fileStream)
+        HashValue = HashGenerator.ComputeHash(FileStream)
         ' The array of bytes is converted into hexadecimal before it can be read easily
-        Dim hash_hex = PrintByteArray(hashValue)
+        Dim ObjHash = PrintByteArray(HashValue)
 
         ' Closing the open file
-        fileStream.Close()
+        FileStream.Close()
 
         ' The hash is returned
-        Return hash_hex
+        Return ObjHash
 
     End Function
 

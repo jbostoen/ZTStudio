@@ -120,4 +120,9 @@
   <metadata name="dlgBrowseFolder.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
   </metadata>
+  <data name="lblHint.Text" xml:space="preserve">
+    <value>Batch rotation fixing applies the same offsets to all views found in the specified folder.
+Hint: adjust one frame manually first, to know which offsets you need below. 
+Don't save that ZT1 Graphic though!</value>
+  </data>
 </root>

@@ -1,5 +1,9 @@
 ﻿Imports System.IO
 
+''' <summary>
+''' ClsAniFile manages information about the .ani file.
+''' This file contains info about offsets.
+''' </summary>
 Public Class ClsAniFile
 
     ' The .ani file is mostly used for icons in ZT1.
@@ -13,16 +17,20 @@ Public Class ClsAniFile
     ' for all graphics belonging to this 'object' (consider anything: guests, staff, animals, objects, paths ... )
 
 
-    Private ani_x0 As Integer = 0 ' canvas: top left
-    Private ani_y0 As Integer = 0 ' canvas: top left
-    Private ani_x1 As Integer = 0 ' canvas: bottom right
-    Private ani_y1 As Integer = 0 ' canvas: bottom right
+    Private Ani_X0 As Integer = 0 ' canvas: top left
+    Private Ani_Y0 As Integer = 0 ' canvas: top left
+    Private Ani_X1 As Integer = 0 ' canvas: bottom right
+    Private Ani_Y1 As Integer = 0 ' canvas: bottom right
 
-    Private ani_dirs As New List(Of String) ' lists the dirs in the relative location to this file
-    Private ani_animations As New List(Of String) ' lists the animations in this file
+    Private Ani_Dirs As New List(Of String) ' lists the dirs in the relative location to this file
+    Private Ani_Views As New List(Of String) ' lists the Views in this file
 
     Private ani_fileName As String = "" ' filename of .ani-file
 
+    ''' <summary>
+    ''' Offset (X) of top left pixel
+    ''' </summary>
+    ''' <returns>Integer</returns>
     Public Property X0 As Integer
         Get
             Return ani_x0
@@ -32,6 +40,10 @@ Public Class ClsAniFile
         End Set
     End Property
 
+    ''' <summary>
+    ''' Offset (X) of bottom right pixel
+    ''' </summary>
+    ''' <returns>Integer</returns>
     Public Property X1 As Integer
         Get
             Return ani_x1
@@ -42,6 +54,10 @@ Public Class ClsAniFile
         End Set
     End Property
 
+    ''' <summary>
+    ''' Offset (Y) of top left pixel
+    ''' </summary>
+    ''' <returns>Integer</returns>
     Public Property Y0 As Integer
         Get
             Return ani_y0
@@ -50,6 +66,11 @@ Public Class ClsAniFile
             ani_y0 = value
         End Set
     End Property
+
+    ''' <summary>
+    ''' Offset (Y) of bottom right pixel
+    ''' </summary>
+    ''' <returns>Integer</returns>
     Public Property Y1 As Integer
         Get
             Return ani_y1
@@ -59,7 +80,10 @@ Public Class ClsAniFile
         End Set
     End Property
 
-
+    ''' <summary>
+    ''' List of directories (tree structure) relative to root
+    ''' </summary>
+    ''' <returns></returns>
     Public Property Dirs As List(Of String)
         Get
             Return ani_dirs
@@ -69,15 +93,23 @@ Public Class ClsAniFile
         End Set
     End Property
 
-    Public Property Animations As List(Of String)
+    ''' <summary>
+    ''' List of all views 
+    ''' </summary>
+    ''' <returns></returns>
+    Public Property Views As List(Of String)
         Get
-            Return ani_animations
+            Return ani_views
         End Get
         Set(value As List(Of String))
-            ani_animations = value
+            ani_views = value
         End Set
     End Property
 
+    ''' <summary>
+    ''' Filename of the .ani file
+    ''' </summary>
+    ''' <returns>String</returns>
     Public Property FileName As String
         Get
             Return ani_fileName
@@ -89,10 +121,17 @@ Public Class ClsAniFile
 
     ' Functions. 
 
-    Public Function Write(Optional sFile As String = Nothing)
+    ''' <summary>
+    ''' Writes a .ani file, based on the info in this object
+    ''' </summary>
+    ''' <param name="strFileName">Destination filename</param>
+    ''' <returns></returns>
+    Public Function Write(Optional strFileName As String = Nothing)
 
 
-        If IsNothing(sFile) = False Then Me.FileName = sFile
+        If IsNothing(strFileName) = False Then
+            Me.FileName = strFileName
+        End If
 
         ' This function will write out the .ani-file.
 
@@ -103,8 +142,8 @@ Public Class ClsAniFile
 
 1:
         ' If there's a .ani-file present, delete it first.
-        If File.Exists(sFile) = True Then
-            File.Delete(sFile)
+        If File.Exists(Me.FileName) = True Then
+            File.Delete(Me.FileName)
         End If
 
 2:
@@ -114,8 +153,8 @@ Public Class ClsAniFile
         Next
 
 3:
-        ' Write out animations
-        For Each s As String In Me.Animations
+        ' Write out views
+        For Each s As String In Me.Views
             strAni = strAni & "animation = " & s & vbCrLf
         Next
 
@@ -129,7 +168,7 @@ Public Class ClsAniFile
 
 10:
         ' Write.
-        If Me.Animations.Count > 0 And Me.Dirs.Count > 0 Then
+        If Me.Views.Count > 0 And Me.Dirs.Count > 0 Then
             If File.Exists(Me.FileName) = True Then
                 File.Delete(Me.FileName)
             End If
@@ -144,37 +183,39 @@ Public Class ClsAniFile
         Exit Function
 
 dBug:
+        clsTasks.ZTStudio_UnexpectedError("ClsTasks", "Write", Information.Erl(), Information.Err())
 
-        MsgBox("Error in clsAniFile:saveAni at line " & Erl() & vbCrLf &
-            Err.Number & " - " & Err.Description, vbOKOnly + vbCritical, "Error while creating .ani-file")
+
     End Function
 
 
+    ''' <summary>
+    ''' This sub tries to create a .ani-file. It does so based on the offsets of graphics it detects.
+    ''' This is experimental, but it should work for the majority of graphics.
+    ''' </summary>
+    ''' <param name="strFileName">Destination filename</param>
+    Public Sub CreateAniConfig(Optional strFileName As String = Nothing)
 
-    ' === special functions ===
-
-    Public Sub CreateAniConfig(Optional sFileName As String = Nothing)
-
-
-
-        ' This function needs a filename for the .ani-file, since it derives its directory from it
-        ' This function will take note of the 'dirs'
-        ' This function will try to find out whether we're dealing with one of these 4 path types:
+        ' This function needs a filename for the .ani-file, since it derives its directory from it.
+        ' It will take note of the 'dirs'
+        ' It will try to find out whether it is dealing with one of these 4 types:
+        '
         ' N                 icons
         ' NE/NW/SE/SW       objects
         ' N/NE/E/SE/S       animals, guests, staff...
         ' 1-20              paths
 
-        If IsNothing(sFileName) = False Then
-            Me.FileName = sFileName.Replace("/", "\")
+        If IsNothing(strFileName) = False Then
+            Me.FileName = strFileName.Replace("/", "\")
         End If
 
 
 1:
         If Me.FileName = "" Then
 
-            MsgBox("clsAniFile.createAniConfig() assumes you've set the filename for the .ani-file.",
-                vbOKOnly + vbCritical, "Error while guessing animations for .ani-file")
+            ' Is there any path which leads up to this error?
+            MsgBox("ClsAniFile::createAniConfig() assumes you've set the filename for the .ani-file.",
+                vbOKOnly + vbCritical, "Error while guessing views for .ani-file")
 
         Else
 
@@ -183,19 +224,19 @@ dBug:
             ' This is the full path and the relative path of the .ani file
             Dim strPath As String = Path.GetDirectoryName(Me.FileName)
             Dim strPathRel As String
-            strPathRel = Strings.Replace(strPath, cfg_path_Root & "\", "")
-            strPathRel = Strings.Replace(strPathRel, cfg_path_Root, "")
-            Dim g As New clsGraphic2
+            strPathRel = Strings.Replace(strPath, Cfg_path_Root & "\", "")
+            strPathRel = Strings.Replace(strPathRel, Cfg_path_Root, "")
+            Dim Graphic As New ClsGraphic
 
-            Debug.Print("Ani path: " & vbCrLf & "* " & strPath & vbCrLf & "* " & strPathRel)
+            clsTasks.ZTStudio_Trace("ClsAniFile", "CreateAniConfig", "Ani path: * " & strPath & " -> " & strPathRel)
 
             ' Set dirs. If this function is called multiple times, it won't do any harm.
             Me.Dirs.Clear(False)
             Me.Dirs.AddRange(Strings.Split(strPathRel, "\"), False)
 
 10:
-            ' Set animations.
-            Me.Animations.Clear(False)
+            ' Set views.
+            Me.Views.Clear(False)
 
 11:
             If File.Exists(strPath & "\N") = True And
@@ -205,8 +246,8 @@ dBug:
                 File.Exists(strPath & "\S") = True Then
 
 
-                ' animal, guest, staff...
-                With Me.Animations
+                ' This is typical for animals, guests, staff...
+                With Me.Views
                     .Add("N", False)
                     .Add("NE", False)
                     .Add("E", False)
@@ -214,7 +255,7 @@ dBug:
                     .Add("S", False)
                 End With
 
-
+                clsTasks.ZTStudio_Trace("ClsAniFile", "CreateAniConfig", "Determination: 'animals', 'guests', 'staff', ...")
 
 12:
             ElseIf File.Exists(strPath & "\NE") = True And
@@ -222,28 +263,27 @@ dBug:
                 File.Exists(strPath & "\SW") = True And
                 File.Exists(strPath & "\NW") = True Then
 
-                ' object
-                With Me.Animations
+                ' This is typical for objects
+                With Me.Views
                     .Add("NE", False)
                     .Add("SE", False)
                     .Add("SW", False)
                     .Add("NW", False)
                 End With
 
-                Debug.Print("... Detected: object")
+                clsTasks.ZTStudio_Trace("ClsAniFile", "CreateAniConfig", "Determination: 'object'")
 
 
 13:
 
             ElseIf File.Exists(strPath & "\N") = True Then
 
-                ' icon
-                With Me.Animations
+                ' This is typical for icons
+                With Me.Views
                     .Add("N", False)
                 End With
 
-
-
+                clsTasks.ZTStudio_Trace("ClsAniFile", "CreateAniConfig", "Determination: 'icon'")
 
 
 14:
@@ -269,9 +309,8 @@ dBug:
                 File.Exists(strPath & "\19") = True And
                 File.Exists(strPath & "\20") = True Then
 
-                ' paths
-                ' we could do this shorter
-                With Me.Animations
+                ' This is typical for paths
+                With Me.Views
                     Dim intX As Integer = 1
                     While intX <= 20
                         .Add(intX.ToString("0"), False)
@@ -279,35 +318,37 @@ dBug:
                     End While
                 End With
 
+                clsTasks.ZTStudio_Trace("ClsAniFile", "CreateAniConfig", "Determination: 'path'")
+
+15:
+            Else
+
+                clsTasks.ZTStudio_Trace("ClsAniFile", "CreateAniConfig", "Determination: unable to determine type of graphic in " & Path.GetDirectoryName(Me.FileName))
 
             End If
 
 100:
-            If Me.Animations.Count > 0 Then
-                For Each sAni In Me.Animations
+            ' Will only do something if views were detected, in a similar fashion to what's known.
+            ' For instance, if one graphic (SE) is used for 4 sides, ZTStudio will NOT recognize it and do nothing.
+            If Me.Views.Count > 0 Then
+                For Each sAni In Me.Views
 
                     ' We need to read every view for this graphic in the folder.
-                    g.read(strPath.Replace("\", "/") & "/" & sAni)
+                    Graphic.Read(strPath.Replace("\", "/") & "/" & sAni)
 
-                    For Each ztFrame As clsFrame2 In g.frames
+                    For Each ztFrame As ClsFrame In Graphic.Frames
 
                         ' Get original hex
-                        ztFrame.renderCoreImageFromHex()
-
-                        '  Debug.Print("ztFrame offsetX = " & ztFrame.offsetX & "," & ztFrame.offsetY & "," & _
-                        '              ztFrame.height & "," & ztFrame.width)
-
+                        ztFrame.RenderCoreImageFromHex()
 
                         ' Passes the bamboo.ani-test
-                        Me.X0 = Math.Min(Me.X0, -ztFrame.offsetX)
-                        Me.Y0 = Math.Min(Me.Y0, -ztFrame.offsetY)
-                        Me.X1 = Math.Max(Me.X1, -ztFrame.offsetX + ztFrame.coreImageBitmap.Width)
-                        Me.Y1 = Math.Max(Me.Y1, -ztFrame.offsetY + ztFrame.coreImageBitmap.Height)
+                        Me.X0 = Math.Min(Me.X0, -ztFrame.OffsetX)
+                        Me.Y0 = Math.Min(Me.Y0, -ztFrame.OffsetY)
+                        Me.X1 = Math.Max(Me.X1, -ztFrame.OffsetX + ztFrame.CoreImageBitmap.Width)
+                        Me.Y1 = Math.Max(Me.Y1, -ztFrame.OffsetY + ztFrame.CoreImageBitmap.Height)
 
                     Next
                 Next
-            Else
-                Debug.Print("createAniConfig: type not recognized.")
             End If
 
 
@@ -322,8 +363,7 @@ dBug:
         Exit Sub
 
 dBug:
-        MsgBox("Error in clsAniFile:createAniConfig at line " & Erl() & vbCrLf &
-            Err.Number & " - " & Err.Description, vbOKOnly + vbCritical, "Error while guessing config for .ani-file")
+        clsTasks.ZTStudio_UnexpectedError("ClsAniFile", "CreateAniConfig", Information.Erl(), Information.Err())
 
     End Sub
 

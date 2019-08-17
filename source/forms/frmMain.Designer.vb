@@ -1,9 +1,9 @@
-﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
+﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()>
 Partial Class FrmMain
     Inherits System.Windows.Forms.Form
 
     'Form overrides dispose to clean up the component list.
-    <System.Diagnostics.DebuggerNonUserCode()> _
+    <System.Diagnostics.DebuggerNonUserCode()>
     Protected Overrides Sub Dispose(ByVal disposing As Boolean)
         Try
             If disposing AndAlso components IsNot Nothing Then
@@ -20,13 +20,13 @@ Partial Class FrmMain
     'NOTE: The following procedure is required by the Windows Form Designer
     'It can be modified using the Windows Form Designer.  
     'Do not modify it using the code editor.
-    <System.Diagnostics.DebuggerStepThrough()> _
+    <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(FrmMain))
         Me.picBox = New System.Windows.Forms.PictureBox()
-        Me.tmrAnimation = New System.Windows.Forms.Timer(Me.components)
-        Me.dlgColor = New System.Windows.Forms.ColorDialog()
+        Me.TmrAnimation = New System.Windows.Forms.Timer(Me.components)
+        Me.DlgColor = New System.Windows.Forms.ColorDialog()
         Me.TsZT1Graphic = New System.Windows.Forms.ToolStrip()
         Me.tslZT1Graphic = New System.Windows.Forms.ToolStripLabel()
         Me.tsbZT1New = New System.Windows.Forms.ToolStripButton()
@@ -34,24 +34,18 @@ Partial Class FrmMain
         Me.tsbZT1Write = New System.Windows.Forms.ToolStripButton()
         Me.tsbZT1_OpenPal = New System.Windows.Forms.ToolStripButton()
         Me.ToolStripSeparator6 = New System.Windows.Forms.ToolStripSeparator()
+        Me.tsbGraphic_ExtraFrame = New System.Windows.Forms.ToolStripButton()
         Me.tslZT1_AnimSpeed = New System.Windows.Forms.ToolStripLabel()
         Me.tstZT1_AnimSpeed = New System.Windows.Forms.ToolStripTextBox()
-        Me.tsbGraphic_ExtraFrame = New System.Windows.Forms.ToolStripButton()
-        Me.dlgOpen = New System.Windows.Forms.OpenFileDialog()
+        Me.DlgOpen = New System.Windows.Forms.OpenFileDialog()
         Me.Panel1 = New System.Windows.Forms.Panel()
-        Me.lblColorDetails = New System.Windows.Forms.Label()
-        Me.LblFrames = New System.Windows.Forms.Label()
-        Me.LblAnimTime = New System.Windows.Forms.Label()
-        Me.lblColor = New System.Windows.Forms.Label()
-        Me.ssBar = New System.Windows.Forms.StatusStrip()
+        Me.SsBar = New System.Windows.Forms.StatusStrip()
         Me.ssFileName = New System.Windows.Forms.ToolStripStatusLabel()
         Me.ssColor = New System.Windows.Forms.ToolStripStatusLabel()
-        Me.LblAnimSpeed = New System.Windows.Forms.Label()
-        Me.ChkPlayAnimation = New System.Windows.Forms.CheckBox()
         Me.TbFrames = New System.Windows.Forms.TrackBar()
         Me.dgvPaletteMain = New System.Windows.Forms.DataGridView()
         Me.ColColor = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.dlgSave = New System.Windows.Forms.SaveFileDialog()
+        Me.DlgSave = New System.Windows.Forms.SaveFileDialog()
         Me.TsFrame = New System.Windows.Forms.ToolStrip()
         Me.tslFrame = New System.Windows.Forms.ToolStripLabel()
         Me.tsbFrame_ImportPNG = New System.Windows.Forms.ToolStripButton()
@@ -73,7 +67,7 @@ Partial Class FrmMain
         Me.tsbFrame_IndexDecrease = New System.Windows.Forms.ToolStripButton()
         Me.tsbFrame_IndexIncrease = New System.Windows.Forms.ToolStripButton()
         Me.tslFrame_Index = New System.Windows.Forms.ToolStripLabel()
-        Me.tsTools = New System.Windows.Forms.ToolStrip()
+        Me.TsTools = New System.Windows.Forms.ToolStrip()
         Me.tsMisc = New System.Windows.Forms.ToolStripLabel()
         Me.tsbOpenPalBldg8 = New System.Windows.Forms.ToolStripDropDownButton()
         Me.tsbOpenPalBldg16 = New System.Windows.Forms.ToolStripDropDownButton()
@@ -88,7 +82,7 @@ Partial Class FrmMain
         Me.ToolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator()
         Me.tsbSettings = New System.Windows.Forms.ToolStripButton()
         Me.tsbAbout = New System.Windows.Forms.ToolStripButton()
-        Me.mnuPal = New System.Windows.Forms.ContextMenuStrip(Me.components)
+        Me.MnuPal = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.mnuPal_MoveEnd = New System.Windows.Forms.ToolStripMenuItem()
         Me.mnuPal_MoveUp = New System.Windows.Forms.ToolStripMenuItem()
         Me.mnuPal_MoveDown = New System.Windows.Forms.ToolStripMenuItem()
@@ -98,16 +92,27 @@ Partial Class FrmMain
         Me.mnuPal_ExportPNG = New System.Windows.Forms.ToolStripMenuItem()
         Me.mnuPal_ImportPNG = New System.Windows.Forms.ToolStripMenuItem()
         Me.mnuPal_ImportGimpPalette = New System.Windows.Forms.ToolStripMenuItem()
-        CType(Me.picBox, System.ComponentModel.ISupportInitialize).BeginInit()
-        Me.TsZT1Graphic.SuspendLayout()
-        Me.Panel1.SuspendLayout()
-        Me.ssBar.SuspendLayout()
-        CType(Me.TbFrames, System.ComponentModel.ISupportInitialize).BeginInit()
-        CType(Me.dgvPaletteMain, System.ComponentModel.ISupportInitialize).BeginInit()
-        Me.TsFrame.SuspendLayout()
-        Me.tsTools.SuspendLayout()
-        Me.mnuPal.SuspendLayout()
-        Me.SuspendLayout()
+        Me.GBColors = New System.Windows.Forms.GroupBox()
+        Me.lblColorDetails = New System.Windows.Forms.Label()
+        Me.lblColor = New System.Windows.Forms.Label()
+        Me.LblColorTool = New System.Windows.Forms.Label()
+        Me.GBAnimation = New System.Windows.Forms.GroupBox()
+        Me.LblFrames = New System.Windows.Forms.Label()
+        Me.LblAnimTime = New System.Windows.Forms.Label()
+        Me.LblAnimSpeed = New System.Windows.Forms.Label()
+        Me.ChkPlayAnimation = New System.Windows.Forms.CheckBox()
+        CType(Me.picBox, System.ComponentModel.ISupportInitialize).BeginInit
+        Me.TsZT1Graphic.SuspendLayout
+        Me.Panel1.SuspendLayout
+        Me.SsBar.SuspendLayout
+        CType(Me.TbFrames, System.ComponentModel.ISupportInitialize).BeginInit
+        CType(Me.dgvPaletteMain, System.ComponentModel.ISupportInitialize).BeginInit
+        Me.TsFrame.SuspendLayout
+        Me.TsTools.SuspendLayout
+        Me.MnuPal.SuspendLayout
+        Me.GBColors.SuspendLayout
+        Me.GBAnimation.SuspendLayout
+        Me.SuspendLayout
         '
         'picBox
         '
@@ -120,13 +125,13 @@ Partial Class FrmMain
         Me.picBox.TabIndex = 6
         Me.picBox.TabStop = False
         '
-        'tmrAnimation
+        'TmrAnimation
         '
         '
-        'dlgColor
+        'DlgColor
         '
-        Me.dlgColor.AnyColor = True
-        Me.dlgColor.SolidColorOnly = True
+        Me.DlgColor.AnyColor = True
+        Me.DlgColor.SolidColorOnly = True
         '
         'TsZT1Graphic
         '
@@ -194,6 +199,16 @@ Partial Class FrmMain
         Me.ToolStripSeparator6.Name = "ToolStripSeparator6"
         Me.ToolStripSeparator6.Size = New System.Drawing.Size(6, 39)
         '
+        'tsbGraphic_ExtraFrame
+        '
+        Me.tsbGraphic_ExtraFrame.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.tsbGraphic_ExtraFrame.Image = CType(resources.GetObject("tsbGraphic_ExtraFrame.Image"), System.Drawing.Image)
+        Me.tsbGraphic_ExtraFrame.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None
+        Me.tsbGraphic_ExtraFrame.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.tsbGraphic_ExtraFrame.Name = "tsbGraphic_ExtraFrame"
+        Me.tsbGraphic_ExtraFrame.Size = New System.Drawing.Size(36, 36)
+        Me.tsbGraphic_ExtraFrame.Text = "Use last frame as background frame"
+        '
         'tslZT1_AnimSpeed
         '
         Me.tslZT1_AnimSpeed.Name = "tslZT1_AnimSpeed"
@@ -206,25 +221,11 @@ Partial Class FrmMain
         Me.tstZT1_AnimSpeed.Name = "tstZT1_AnimSpeed"
         Me.tstZT1_AnimSpeed.Size = New System.Drawing.Size(50, 39)
         '
-        'tsbGraphic_ExtraFrame
-        '
-        Me.tsbGraphic_ExtraFrame.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
-        Me.tsbGraphic_ExtraFrame.Image = CType(resources.GetObject("tsbGraphic_ExtraFrame.Image"), System.Drawing.Image)
-        Me.tsbGraphic_ExtraFrame.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None
-        Me.tsbGraphic_ExtraFrame.ImageTransparentColor = System.Drawing.Color.Magenta
-        Me.tsbGraphic_ExtraFrame.Name = "tsbGraphic_ExtraFrame"
-        Me.tsbGraphic_ExtraFrame.Size = New System.Drawing.Size(36, 36)
-        Me.tsbGraphic_ExtraFrame.Text = "Use last frame as background frame"
-        '
         'Panel1
         '
-        Me.Panel1.Controls.Add(Me.lblColorDetails)
-        Me.Panel1.Controls.Add(Me.LblFrames)
-        Me.Panel1.Controls.Add(Me.LblAnimTime)
-        Me.Panel1.Controls.Add(Me.lblColor)
-        Me.Panel1.Controls.Add(Me.ssBar)
-        Me.Panel1.Controls.Add(Me.LblAnimSpeed)
-        Me.Panel1.Controls.Add(Me.ChkPlayAnimation)
+        Me.Panel1.Controls.Add(Me.GBAnimation)
+        Me.Panel1.Controls.Add(Me.GBColors)
+        Me.Panel1.Controls.Add(Me.SsBar)
         Me.Panel1.Controls.Add(Me.TbFrames)
         Me.Panel1.Dock = System.Windows.Forms.DockStyle.Fill
         Me.Panel1.Font = New System.Drawing.Font("Segoe UI", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
@@ -233,49 +234,13 @@ Partial Class FrmMain
         Me.Panel1.Size = New System.Drawing.Size(808, 151)
         Me.Panel1.TabIndex = 19
         '
-        'lblColorDetails
+        'SsBar
         '
-        Me.lblColorDetails.Location = New System.Drawing.Point(107, 52)
-        Me.lblColorDetails.Name = "lblColorDetails"
-        Me.lblColorDetails.Size = New System.Drawing.Size(224, 47)
-        Me.lblColorDetails.TabIndex = 34
-        Me.lblColorDetails.Text = "Color details"
-        Me.lblColorDetails.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
-        '
-        'LblFrames
-        '
-        Me.LblFrames.AutoSize = True
-        Me.LblFrames.Location = New System.Drawing.Point(540, 39)
-        Me.LblFrames.Name = "LblFrames"
-        Me.LblFrames.Size = New System.Drawing.Size(50, 13)
-        Me.LblFrames.TabIndex = 31
-        Me.LblFrames.Text = "0 frames"
-        '
-        'LblAnimTime
-        '
-        Me.LblAnimTime.AutoSize = True
-        Me.LblAnimTime.Location = New System.Drawing.Point(540, 52)
-        Me.LblAnimTime.Name = "LblAnimTime"
-        Me.LblAnimTime.Size = New System.Drawing.Size(30, 13)
-        Me.LblAnimTime.TabIndex = 29
-        Me.LblAnimTime.Text = "0 ms"
-        '
-        'lblColor
-        '
-        Me.lblColor.Location = New System.Drawing.Point(21, 52)
-        Me.lblColor.Name = "lblColor"
-        Me.lblColor.Size = New System.Drawing.Size(60, 46)
-        Me.lblColor.TabIndex = 28
-        Me.lblColor.Text = "Move over a color."
-        Me.lblColor.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
-        '
-        'ssBar
-        '
-        Me.ssBar.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ssFileName, Me.ssColor})
-        Me.ssBar.Location = New System.Drawing.Point(0, 129)
-        Me.ssBar.Name = "ssBar"
-        Me.ssBar.Size = New System.Drawing.Size(808, 22)
-        Me.ssBar.TabIndex = 27
+        Me.SsBar.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ssFileName, Me.ssColor})
+        Me.SsBar.Location = New System.Drawing.Point(0, 129)
+        Me.SsBar.Name = "SsBar"
+        Me.SsBar.Size = New System.Drawing.Size(808, 22)
+        Me.SsBar.TabIndex = 27
         '
         'ssFileName
         '
@@ -288,32 +253,14 @@ Partial Class FrmMain
         Me.ssColor.Name = "ssColor"
         Me.ssColor.Size = New System.Drawing.Size(0, 17)
         '
-        'LblAnimSpeed
-        '
-        Me.LblAnimSpeed.AutoSize = True
-        Me.LblAnimSpeed.Location = New System.Drawing.Point(540, 26)
-        Me.LblAnimSpeed.Name = "LblAnimSpeed"
-        Me.LblAnimSpeed.Size = New System.Drawing.Size(94, 13)
-        Me.LblAnimSpeed.TabIndex = 24
-        Me.LblAnimSpeed.Text = "Animation speed"
-        '
-        'ChkPlayAnimation
-        '
-        Me.ChkPlayAnimation.AutoSize = True
-        Me.ChkPlayAnimation.Location = New System.Drawing.Point(543, 6)
-        Me.ChkPlayAnimation.Name = "ChkPlayAnimation"
-        Me.ChkPlayAnimation.Size = New System.Drawing.Size(101, 17)
-        Me.ChkPlayAnimation.TabIndex = 20
-        Me.ChkPlayAnimation.Text = "Play animation"
-        Me.ChkPlayAnimation.UseVisualStyleBackColor = True
-        '
         'TbFrames
         '
-        Me.TbFrames.Location = New System.Drawing.Point(24, 3)
+        Me.TbFrames.Dock = System.Windows.Forms.DockStyle.Top
+        Me.TbFrames.Location = New System.Drawing.Point(0, 0)
         Me.TbFrames.Maximum = 1
         Me.TbFrames.Minimum = 1
         Me.TbFrames.Name = "TbFrames"
-        Me.TbFrames.Size = New System.Drawing.Size(488, 45)
+        Me.TbFrames.Size = New System.Drawing.Size(808, 45)
         Me.TbFrames.TabIndex = 19
         Me.TbFrames.Value = 1
         '
@@ -511,14 +458,14 @@ Partial Class FrmMain
         Me.tslFrame_Index.Size = New System.Drawing.Size(65, 36)
         Me.tslFrame_Index.Text = "Index: 0 / 0"
         '
-        'tsTools
+        'TsTools
         '
-        Me.tsTools.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.tsMisc, Me.tsbOpenPalBldg8, Me.tsbOpenPalBldg16, Me.ToolStripSeparator2, Me.tsbGridBG, Me.tsbPreview_BGGraphic, Me.ToolStripSeparator3, Me.tsbBatchConversion, Me.tsbBatchRotFix, Me.tsbDelete_ZT1Files, Me.tsbDelete_PNG, Me.ToolStripSeparator1, Me.tsbSettings, Me.tsbAbout})
-        Me.tsTools.Location = New System.Drawing.Point(0, 78)
-        Me.tsTools.Name = "tsTools"
-        Me.tsTools.Size = New System.Drawing.Size(1008, 39)
-        Me.tsTools.TabIndex = 22
-        Me.tsTools.Text = "Misc"
+        Me.TsTools.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.tsMisc, Me.tsbOpenPalBldg8, Me.tsbOpenPalBldg16, Me.ToolStripSeparator2, Me.tsbGridBG, Me.tsbPreview_BGGraphic, Me.ToolStripSeparator3, Me.tsbBatchConversion, Me.tsbBatchRotFix, Me.tsbDelete_ZT1Files, Me.tsbDelete_PNG, Me.ToolStripSeparator1, Me.tsbSettings, Me.tsbAbout})
+        Me.TsTools.Location = New System.Drawing.Point(0, 78)
+        Me.TsTools.Name = "TsTools"
+        Me.TsTools.Size = New System.Drawing.Size(1008, 39)
+        Me.TsTools.TabIndex = 22
+        Me.TsTools.Text = "Misc"
         '
         'tsMisc
         '
@@ -645,11 +592,11 @@ Partial Class FrmMain
         Me.tsbAbout.Size = New System.Drawing.Size(36, 36)
         Me.tsbAbout.Text = "About"
         '
-        'mnuPal
+        'MnuPal
         '
-        Me.mnuPal.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.mnuPal_MoveEnd, Me.mnuPal_MoveUp, Me.mnuPal_MoveDown, Me.mnuPal_Replace, Me.mnuPal_Add, Me.mnuPal_SavePAL, Me.mnuPal_ExportPNG, Me.mnuPal_ImportPNG, Me.mnuPal_ImportGimpPalette})
-        Me.mnuPal.Name = "MnuPal"
-        Me.mnuPal.Size = New System.Drawing.Size(245, 202)
+        Me.MnuPal.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.mnuPal_MoveEnd, Me.mnuPal_MoveUp, Me.mnuPal_MoveDown, Me.mnuPal_Replace, Me.mnuPal_Add, Me.mnuPal_SavePAL, Me.mnuPal_ExportPNG, Me.mnuPal_ImportPNG, Me.mnuPal_ImportGimpPalette})
+        Me.MnuPal.Name = "MnuPal"
+        Me.MnuPal.Size = New System.Drawing.Size(245, 224)
         '
         'mnuPal_MoveEnd
         '
@@ -705,6 +652,104 @@ Partial Class FrmMain
         Me.mnuPal_ImportGimpPalette.Size = New System.Drawing.Size(244, 22)
         Me.mnuPal_ImportGimpPalette.Text = "Replace with GIMP Color palette"
         '
+        'GBColors
+        '
+        Me.GBColors.Controls.Add(Me.LblColorTool)
+        Me.GBColors.Controls.Add(Me.lblColorDetails)
+        Me.GBColors.Controls.Add(Me.lblColor)
+        Me.GBColors.Dock = System.Windows.Forms.DockStyle.Left
+        Me.GBColors.Font = New System.Drawing.Font("Segoe UI", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.GBColors.Location = New System.Drawing.Point(0, 45)
+        Me.GBColors.Name = "GBColors"
+        Me.GBColors.Size = New System.Drawing.Size(240, 84)
+        Me.GBColors.TabIndex = 36
+        Me.GBColors.TabStop = False
+        Me.GBColors.Text = "Color details"
+        '
+        'lblColorDetails
+        '
+        Me.lblColorDetails.Font = New System.Drawing.Font("Segoe UI", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.lblColorDetails.Location = New System.Drawing.Point(80, 33)
+        Me.lblColorDetails.Name = "lblColorDetails"
+        Me.lblColorDetails.Size = New System.Drawing.Size(139, 47)
+        Me.lblColorDetails.TabIndex = 36
+        Me.lblColorDetails.Text = "Color details"
+        Me.lblColorDetails.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        '
+        'lblColor
+        '
+        Me.lblColor.Location = New System.Drawing.Point(15, 36)
+        Me.lblColor.Name = "lblColor"
+        Me.lblColor.Size = New System.Drawing.Size(59, 43)
+        Me.lblColor.TabIndex = 35
+        Me.lblColor.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+        '
+        'LblColorTool
+        '
+        Me.LblColorTool.AutoSize = True
+        Me.LblColorTool.Font = New System.Drawing.Font("Segoe UI", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.LblColorTool.Location = New System.Drawing.Point(18, 18)
+        Me.LblColorTool.Name = "LblColorTool"
+        Me.LblColorTool.Size = New System.Drawing.Size(101, 13)
+        Me.LblColorTool.TabIndex = 37
+        Me.LblColorTool.Text = "Move over a color."
+        '
+        'GBAnimation
+        '
+        Me.GBAnimation.Controls.Add(Me.LblFrames)
+        Me.GBAnimation.Controls.Add(Me.LblAnimTime)
+        Me.GBAnimation.Controls.Add(Me.LblAnimSpeed)
+        Me.GBAnimation.Controls.Add(Me.ChkPlayAnimation)
+        Me.GBAnimation.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.GBAnimation.Font = New System.Drawing.Font("Segoe UI", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.GBAnimation.Location = New System.Drawing.Point(240, 45)
+        Me.GBAnimation.Name = "GBAnimation"
+        Me.GBAnimation.Size = New System.Drawing.Size(568, 84)
+        Me.GBAnimation.TabIndex = 37
+        Me.GBAnimation.TabStop = False
+        Me.GBAnimation.Text = "Animation"
+        '
+        'LblFrames
+        '
+        Me.LblFrames.AutoSize = True
+        Me.LblFrames.Font = New System.Drawing.Font("Segoe UI", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.LblFrames.Location = New System.Drawing.Point(15, 63)
+        Me.LblFrames.Name = "LblFrames"
+        Me.LblFrames.Size = New System.Drawing.Size(50, 13)
+        Me.LblFrames.TabIndex = 35
+        Me.LblFrames.Text = "0 frames"
+        '
+        'LblAnimTime
+        '
+        Me.LblAnimTime.AutoSize = True
+        Me.LblAnimTime.Font = New System.Drawing.Font("Segoe UI", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.LblAnimTime.Location = New System.Drawing.Point(15, 76)
+        Me.LblAnimTime.Name = "LblAnimTime"
+        Me.LblAnimTime.Size = New System.Drawing.Size(30, 13)
+        Me.LblAnimTime.TabIndex = 34
+        Me.LblAnimTime.Text = "0 ms"
+        '
+        'LblAnimSpeed
+        '
+        Me.LblAnimSpeed.AutoSize = True
+        Me.LblAnimSpeed.Font = New System.Drawing.Font("Segoe UI", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.LblAnimSpeed.Location = New System.Drawing.Point(15, 50)
+        Me.LblAnimSpeed.Name = "LblAnimSpeed"
+        Me.LblAnimSpeed.Size = New System.Drawing.Size(94, 13)
+        Me.LblAnimSpeed.TabIndex = 33
+        Me.LblAnimSpeed.Text = "Animation speed"
+        '
+        'ChkPlayAnimation
+        '
+        Me.ChkPlayAnimation.AutoSize = True
+        Me.ChkPlayAnimation.Font = New System.Drawing.Font("Segoe UI", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.ChkPlayAnimation.Location = New System.Drawing.Point(18, 30)
+        Me.ChkPlayAnimation.Name = "ChkPlayAnimation"
+        Me.ChkPlayAnimation.Size = New System.Drawing.Size(101, 17)
+        Me.ChkPlayAnimation.TabIndex = 32
+        Me.ChkPlayAnimation.Text = "Play animation"
+        Me.ChkPlayAnimation.UseVisualStyleBackColor = True
+        '
         'FrmMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -713,56 +758,55 @@ Partial Class FrmMain
         Me.Controls.Add(Me.Panel1)
         Me.Controls.Add(Me.picBox)
         Me.Controls.Add(Me.dgvPaletteMain)
-        Me.Controls.Add(Me.tsTools)
+        Me.Controls.Add(Me.TsTools)
         Me.Controls.Add(Me.TsFrame)
         Me.Controls.Add(Me.TsZT1Graphic)
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.Name = "FrmMain"
         Me.Text = "ZT Studio"
         Me.WindowState = System.Windows.Forms.FormWindowState.Maximized
-        CType(Me.picBox, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.picBox, System.ComponentModel.ISupportInitialize).EndInit
         Me.TsZT1Graphic.ResumeLayout(False)
-        Me.TsZT1Graphic.PerformLayout()
+        Me.TsZT1Graphic.PerformLayout
         Me.Panel1.ResumeLayout(False)
-        Me.Panel1.PerformLayout()
-        Me.ssBar.ResumeLayout(False)
-        Me.ssBar.PerformLayout()
-        CType(Me.TbFrames, System.ComponentModel.ISupportInitialize).EndInit()
-        CType(Me.dgvPaletteMain, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.Panel1.PerformLayout
+        Me.SsBar.ResumeLayout(False)
+        Me.SsBar.PerformLayout
+        CType(Me.TbFrames, System.ComponentModel.ISupportInitialize).EndInit
+        CType(Me.dgvPaletteMain, System.ComponentModel.ISupportInitialize).EndInit
         Me.TsFrame.ResumeLayout(False)
-        Me.TsFrame.PerformLayout()
-        Me.tsTools.ResumeLayout(False)
-        Me.tsTools.PerformLayout()
-        Me.mnuPal.ResumeLayout(False)
+        Me.TsFrame.PerformLayout
+        Me.TsTools.ResumeLayout(False)
+        Me.TsTools.PerformLayout
+        Me.MnuPal.ResumeLayout(False)
+        Me.GBColors.ResumeLayout(False)
+        Me.GBColors.PerformLayout
+        Me.GBAnimation.ResumeLayout(False)
+        Me.GBAnimation.PerformLayout
         Me.ResumeLayout(False)
-        Me.PerformLayout()
+        Me.PerformLayout
 
     End Sub
     Friend WithEvents picBox As System.Windows.Forms.PictureBox
-    Friend WithEvents tmrAnimation As System.Windows.Forms.Timer
-    Friend WithEvents dlgColor As System.Windows.Forms.ColorDialog
+    Friend WithEvents TmrAnimation As System.Windows.Forms.Timer
+    Friend WithEvents DlgColor As System.Windows.Forms.ColorDialog
     Friend WithEvents TsZT1Graphic As System.Windows.Forms.ToolStrip
     Friend WithEvents tsbZT1Open As System.Windows.Forms.ToolStripButton
-    Friend WithEvents dlgOpen As System.Windows.Forms.OpenFileDialog
+    Friend WithEvents DlgOpen As System.Windows.Forms.OpenFileDialog
     Friend WithEvents Panel1 As System.Windows.Forms.Panel
-    Friend WithEvents LblAnimSpeed As System.Windows.Forms.Label
-    Friend WithEvents ChkPlayAnimation As System.Windows.Forms.CheckBox
     Friend WithEvents TbFrames As System.Windows.Forms.TrackBar
     Friend WithEvents dgvPaletteMain As System.Windows.Forms.DataGridView
-    Friend WithEvents ssBar As System.Windows.Forms.StatusStrip
+    Friend WithEvents SsBar As System.Windows.Forms.StatusStrip
     Friend WithEvents ssFileName As System.Windows.Forms.ToolStripStatusLabel
-    Friend WithEvents dlgSave As System.Windows.Forms.SaveFileDialog
+    Friend WithEvents DlgSave As System.Windows.Forms.SaveFileDialog
     Friend WithEvents ssColor As System.Windows.Forms.ToolStripStatusLabel
-    Friend WithEvents lblColor As System.Windows.Forms.Label
     Friend WithEvents tsbZT1_OpenPal As System.Windows.Forms.ToolStripButton
-    Friend WithEvents LblAnimTime As System.Windows.Forms.Label
-    Friend WithEvents LblFrames As System.Windows.Forms.Label
     Friend WithEvents tsbZT1Write As System.Windows.Forms.ToolStripButton
     Friend WithEvents tslZT1Graphic As System.Windows.Forms.ToolStripLabel
     Friend WithEvents TsFrame As System.Windows.Forms.ToolStrip
     Friend WithEvents tslFrame As System.Windows.Forms.ToolStripLabel
     Friend WithEvents tsbFrame_ExportPNG As System.Windows.Forms.ToolStripButton
-    Friend WithEvents tsTools As System.Windows.Forms.ToolStrip
+    Friend WithEvents TsTools As System.Windows.Forms.ToolStrip
     Friend WithEvents tsMisc As System.Windows.Forms.ToolStripLabel
     Friend WithEvents tsbFrame_ImportPNG As System.Windows.Forms.ToolStripButton
     Friend WithEvents ToolStripSeparator4 As System.Windows.Forms.ToolStripSeparator
@@ -798,13 +842,12 @@ Partial Class FrmMain
     Friend WithEvents tsbFrame_fpX As System.Windows.Forms.ToolStripComboBox
     Friend WithEvents tsbFrame_fpY As System.Windows.Forms.ToolStripComboBox
     Friend WithEvents ToolStripSeparator8 As System.Windows.Forms.ToolStripSeparator
-    Friend WithEvents mnuPal As System.Windows.Forms.ContextMenuStrip
+    Friend WithEvents MnuPal As System.Windows.Forms.ContextMenuStrip
     Friend WithEvents mnuPal_MoveEnd As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents mnuPal_MoveUp As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents mnuPal_MoveDown As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents mnuPal_Replace As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents mnuPal_Add As System.Windows.Forms.ToolStripMenuItem
-    Friend WithEvents lblColorDetails As System.Windows.Forms.Label
     Friend WithEvents mnuPal_ImportPNG As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents mnuPal_ExportPNG As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents mnuPal_SavePAL As System.Windows.Forms.ToolStripMenuItem
@@ -812,4 +855,13 @@ Partial Class FrmMain
     Friend WithEvents tsbBatchRotFix As System.Windows.Forms.ToolStripButton
     Friend WithEvents tsbZT1New As System.Windows.Forms.ToolStripButton
     Friend WithEvents ColColor As DataGridViewTextBoxColumn
+    Friend WithEvents GBAnimation As GroupBox
+    Friend WithEvents LblFrames As Label
+    Friend WithEvents LblAnimTime As Label
+    Friend WithEvents LblAnimSpeed As Label
+    Friend WithEvents ChkPlayAnimation As CheckBox
+    Friend WithEvents GBColors As GroupBox
+    Friend WithEvents LblColorTool As Label
+    Friend WithEvents lblColorDetails As Label
+    Friend WithEvents lblColor As Label
 End Class

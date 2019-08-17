@@ -482,7 +482,7 @@ dBug:
         Dim intNumDrawingInstructions_current As Integer ' Which drawing instruction is being processed?
         Dim intNumDrawingInstructions_colors As Integer ' How many pixels to color?
         Dim intNumDrawingInstructions_colors_current As Integer ' which is the current pixel being processed/colored?
-        Dim c As System.Drawing.Color ' this is the color we'll draw. 
+        Dim cColor As System.Drawing.Color ' this is the color we'll draw. 
 
 1005:
         ' This 'while'-loop should prevent any side-effects from APE junk bytes.
@@ -529,15 +529,16 @@ dBug:
                     If blnIsShadow = True Then
                         ' Marine Mania's underwater shadow format (compressed ZT1 Graphic)
                         ' It does not rely on the palette.
-                        c = Color.Black
+                        cColor = Color.Black
                     Else
                         ' In the traditional format, the color is referenced by it's index number in the color palette. Get it.
-                        c = ztPal.Colors(CInt("&H" & frameHex(intNumDrawingInstructions_colors_current)))
+                        Dim intColorIndex As Byte = CInt("&H" & frameHex(intNumDrawingInstructions_colors_current))
+                        cColor = ztPal.Colors(intColorIndex)
                     End If
 
 1413:
                     ' Color the pixel.
-                    frameCoreImageBitmap.SetPixel(intX, intY, c)
+                    frameCoreImageBitmap.SetPixel(intX, intY, cColor)
 
 1450:
                     ' Be ready to draw next pixel.
@@ -816,7 +817,7 @@ dBug:
         ' This should've been avoided by setting the background color properly, but it's easily overlooked.  
         ' Furthermore, it also requires the color palette to contain NO colors yet.
         If rectCrop.X <> 0 And rectCrop.Y <> 0 And Me.Parent.ColorPalette.Colors.Count = 0 Then
-            clsTasks.ZTStudio_Trace("ClsFrame", "LoadPng", "Defining rectangle is not starting at (0,0), color palette is empty. Add top left pixel of bitmap as transparent color.")
+            ClsTasks.ZTStudio_Trace("ClsFrame", "LoadPng", "Defining rectangle is not starting at (0,0), color palette is empty. Add top left pixel of bitmap (input PNG) as transparent color.")
             Me.Parent.ColorPalette.Colors.Add(bmpDraw.GetPixel(0, 0))
         End If
 
@@ -844,6 +845,11 @@ dBug:
     ''' <summary>
     ''' Converts a bitmap to hex values. Important: offsets should have been set already!
     ''' </summary>
+    ''' <remarks>
+    ''' In the past, an alternative method using LockBits was implemented to find the defining rectangle.
+    ''' According to the comments, it was much faster than the old method.
+    ''' Could this also be applied here?
+    ''' </remarks>
     ''' <param name="bmImage">Bitmap</param>
     ''' <returns></returns>
     Public Function BitMapToHex(Optional bmImage As Bitmap = Nothing) As List(Of String)
@@ -852,7 +858,7 @@ dBug:
         ' This function takes an optional bitmap or falls back to what is set in .CoreImageBitmap.
         ' It generates the hex code for this image.
 1:
-        Dim generatedHex As New List(Of String)
+        Dim lstGeneratedHex As New List(Of String)
 
 2:
 
@@ -864,7 +870,7 @@ dBug:
                 MsgBox("ClsFrame::GetHexFromBitmap(): no bitmap was given as input. A fallback to ClsFrame::CoreImageBitmap was impossible.",
                     vbOKOnly + vbCritical + vbApplicationModal,
                     "Error while generating HEX for this frame")
-                Return generatedHex ' exits further processing
+                Return lstGeneratedHex ' exits further processing
 
             Else
                 bmImage = Me.CoreImageBitmap
@@ -881,7 +887,11 @@ dBug:
             End If
 
             ' 20170519. Store bmImage. After all, we'll be storing our hex as well.
-            Me.CoreImageBitmap = bmImage
+            ' 20190817:
+            ' * Do Not store bmImage. It may cache a bitmap with the transparent color, such as blue.
+            ' * However, on changing ZT Studio's background color to green, the blue will still be shown.
+            ' * Already setting the core image bitmap here may result in unwanted side-effects!
+            ' Me.CoreImageBitmap = bmImage
 
         End If
 
@@ -1032,7 +1042,7 @@ dBug:
 
 9000:
 
-        With generatedHex
+        With lstGeneratedHex
 
 9001:
             ' Easier to build it this way. Start by writing the dimensions: height, width.
@@ -1069,7 +1079,7 @@ dBug:
 9502:
         ' Reset. Should be regenerated from the hex.
         ' Me.coreImageBitmap = Nothing - 20170519 - what was the point again in doing this?
-        Me.CoreImageHex = generatedHex
+        Me.CoreImageHex = lstGeneratedHex
 
         Return Me.CoreImageHex
 
@@ -1157,7 +1167,7 @@ dBug:
                 bmCropped.Save(strFileName, System.Drawing.Imaging.ImageFormat.Png)
 
             Case 3
-                ' Center around the origin
+                ' Center around the origin. This method has been contributed by HENDRIX
                 ' This is much faster and avoids all cropping, but preserves the offset
                 Me.GetImage(False, True).Save(strFileName, System.Drawing.Imaging.ImageFormat.Png)
 

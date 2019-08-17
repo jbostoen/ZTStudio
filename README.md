@@ -16,7 +16,13 @@ In Windows 10, this is usually installed by default if you're on the 1903 build.
 In Windows 7 Service Pack 1 and 8, you'll most likely need to download and install this from Microsoft.
 Older Windows versions are not supported.
 
-**Using this code?**
+## Sponsoring features
+If you're still interested in a feature/enhancement listed under "Issues" or a specific feature, you can also sponsor a feature. Contact me to discuss the details.
+
+
+## For developers
+
+* You currently need [.NET Framework 4.7.2 Developer Pack](https://dotnet.microsoft.com/download/visual-studio-sdks)
 
 Please credit in this order:
 * **MadScientist** for figuring out most of the common ZT1 graphic format
@@ -33,11 +39,6 @@ When forking or using code or ideas explained in the documentation: please publi
 See Wiki pages on GitHub.
 They also contain a few power tips and how-to's. 
 
-**Sponsoring features**
-If you're still interested in a feature/enhancement listed under "Issues" or a specific feature, you can also sponsor a feature. Contact me to discuss the details.
-
-## Note for developers
-* You currently need [.NET Framework 4.7.2 Developer Pack](https://dotnet.microsoft.com/download/visual-studio-sdks)
 
 ## License
 https://www.gnu.org/licenses/gpl-3.0.en.html

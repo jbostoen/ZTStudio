@@ -5,24 +5,18 @@ Imports System.IO
 Imports System.Drawing.Imaging
 Imports System.Runtime.InteropServices
 
-' This module just combines a few of the functions we've created.
+' This module contains several methods.
+
+Module ClsTasks
 
 
+    ''' <summary>
+    ''' Initializes the configuration settings, read from the .INI file
+    ''' </summary>
+    Sub Config_Load()
 
-Module clsTasks
-
-
-
-    ' The graphic writer will need to take care of the following things:
-
-    ' (1) Write frames properly.
-
-
-
-    Public Function Config_load() As Integer
-
-        ' This tasks reads all settings from the .ini-file.
-        ' For an explanation of these parameters: check mdlSettings.vb
+        ' This tasks reads all settings from the .INI-file.
+        ' For an explanation of these parameters: check mMlSettings.vb
 
         On Error GoTo dBug
 
@@ -37,7 +31,7 @@ Module clsTasks
                       "Get the file at:" & vbCrLf &
                       Cfg_GitHub_URL
 
-            If MsgBox(strmessage, MsgBoxStyle.OkOnly + MsgBoxStyle.Critical + MsgBoxStyle.ApplicationModal) = MsgBoxResult.Ok Then
+            If MsgBox(strMessage, MsgBoxStyle.OkOnly + MsgBoxStyle.Critical + MsgBoxStyle.ApplicationModal) = MsgBoxResult.Ok Then
                 End
             End If
 
@@ -133,31 +127,33 @@ Module clsTasks
 
 
 
-        ' Only now should we create our objects.
+        ' Only now should the objects be created, if they don't exist yet
+        ' 20190817: wait, there were no conditions here. So on saving settings, editorGraphic and editorBgGraphic were reset?
+        If IsNothing(editorGraphic) = True Then
+            editorGraphic = New ClsGraphic ' The ClsGraphic object
+        End If
+        If IsNothing(editorBgGraphic) = True Then
+            editorBgGraphic = New ClsGraphic ' The background graphic, e.g. toy
+        End If
 
-        editorGraphic = New ClsGraphic         ' The ClsGraphic object we use.
-        editorBgGraphic = New ClsGraphic       ' The background graphic, e.g. toy
-
-
-
-
-        Return 0
+        Exit Sub
 
 dBug:
         If MsgBox("Error occurred when loading ZT Studio settings at line " & Erl() & vbCrLf & Err.Number & " - " & Err.Description, vbOKOnly + vbCritical, "Failed to load settings") = vbOK Then End
 
 
-    End Function
+    End Sub
 
-
-    Public Function Config_write() As Integer
+    ''' <summary>
+    ''' Saves configuration to .INI file
+    ''' </summary>
+    ''' <returns></returns>
+    Public Function Config_Write()
 
         ' This tasks writes all settings to the .ini-file.
-        ' For an explanation of these parameters: check mdlSettings.vb
-
+        ' For an explanation of these parameters: check MdlSettings.vb
 
         Dim sFile As String = System.IO.Path.GetFullPath(Application.StartupPath) & "\settings.cfg"
-
 
         ' Preview
         IniWrite(sFile, "preview", "bgColor", Cfg_grid_BackGroundColor.ToArgb())
@@ -298,7 +294,6 @@ dBug:
         ' However, there are two main options:
         ' - keep canvas size / to relevant frame area / to relevant graphic area
         ' - render extra frame or not
-
 
 
 10:
@@ -725,7 +720,7 @@ dBg:
         ' For each file that is a ZT1 Graphic:
         For Each f As String In result
             Debug.Print(f)
-            clsTasks.Convert_file_ZT1_to_PNG(f)
+            ClsTasks.Convert_file_ZT1_to_PNG(f)
             If IsNothing(PB) = False Then
                 PB.Value += 1
             End If
@@ -737,8 +732,8 @@ dBg:
         If Cfg_convert_deleteOriginal = 1 Then
             ' Currently ZT1 Graphics and ZT1 Color palettes have their own sub in which the files get deleted.
             ' It might be possible to merge them at some point and you could even gain a small performance boost.
-            clsTasks.CleanUp_files(strPath, "")
-            clsTasks.CleanUp_files(strPath, ".pal")
+            ClsTasks.CleanUp_files(strPath, "")
+            ClsTasks.CleanUp_files(strPath, ".pal")
         End If
 
         Exit Sub
@@ -847,7 +842,7 @@ dBug:
         For Each f As String In result
 
             'Debug.Print("Convert file PNG to ZT1: " & f)
-            clsTasks.Convert_file_PNG_to_ZT1(f, False)
+            ClsTasks.Convert_file_PNG_to_ZT1(f, False)
             If IsNothing(PB) = False Then
                 PB.Value += 1
             End If
@@ -866,7 +861,7 @@ dBug:
 1150:
         ' Do a clean up of our .PNG files if we had a successful conversion.
         If Cfg_convert_deleteOriginal = 1 Then
-            clsTasks.CleanUp_files(strPath, ".png")
+            ClsTasks.CleanUp_files(strPath, ".png")
         End If
 
         Exit Sub
@@ -885,7 +880,7 @@ dBug:
     ''' <summary>
     ''' Updates all sort of info.
     ''' </summary>
-    ''' <param name="intIndexFrameNumber"></param>
+    ''' <param name="intIndexFrameNumber">Optional frame index number. Defaults to value of slider in main window.</param>
     Public Sub Update_Preview(Optional intIndexFrameNumber As Integer = -1)
 
 1:
@@ -905,26 +900,21 @@ dBug:
         ' 20190816: some aspects weren't managed properly, for instance when toggling extra frame or adding/removing frames.
         ' Previous/next frame; current And max value of progress bar, ...
         ' Update preview is called from lots of places, so this may be a bit of an overkill, but better safe.
-        clsTasks.Update_Info("Update_Preview")
+        ClsTasks.Update_Info("Update Preview")
 
 30:
         editorFrame = editorGraphic.Frames(intIndexFrameNumber)
 
 300:
         ' The sub gets triggered when a new frame has been added, but no .PNG has been loaded yet, so frame contains no data.
+        ' However, the picbox may need to be cleared (previous frame would still be shown otherwise)
         If editorGraphic.Frames(intIndexFrameNumber).CoreImageHex.Count = 0 Then
+            FrmMain.picBox.Image = ClsTasks.Grid_DrawFootPrintXY(Cfg_grid_footPrintX, Cfg_grid_footPrintY)
             Exit Sub
         End If
 
 320:
         FrmMain.picBox.Image = editorGraphic.Frames(intIndexFrameNumber).GetImage(True)
-
-
-321:
-        ' Frame index 
-        ' frmMain.tslFrame_Index.Text = intIndexFrameNumber & "/" & (editorGraphic.frames.Count - 1 - editorGraphic.extraFrame)
-        ' frmMain.tslFrame_Index.Text = IIf(editorGraphic.frames.Count = 0, "-", (intIndexFrameNumber + Cfg_convert_startIndex) & " / " & (editorGraphic.frames.Count - Cfg_convert_startIndex - editorGraphic.extraFrame))
-
 
 
 
@@ -1002,7 +992,8 @@ dBug:
 251:
         For FirstOffsetInEachLine As Integer = StartOffset To EndOffset Step bmData.Stride
             X = 0
-            For PixelOffset As Integer = RectLeftOffset To RectRightOffset Step 4
+            For PixelOffset As Integer = RectLeftOffset To RectRightOffset Step 4 ' 4 because there are 4 bytes for the color: Blue, Green, Red, Alpha
+
                 pixelLocation = New Point(X, y)
                 'bitmapBytes(FirstOffsetInEachLine + PixelOffset) = FillColor.B
                 'bitmapBytes(FirstOffsetInEachLine + PixelOffset + 1) = FillColor.G
@@ -1019,7 +1010,7 @@ dBug:
                     bitmapBytes(FirstOffsetInEachLine + PixelOffset + 1) <> curTransparentColor.G And
                     bitmapBytes(FirstOffsetInEachLine + PixelOffset + 2) <> curTransparentColor.R Then
 
-                    ' We found a non transparent color
+                    ' Detected a non-transparent color
                     If X < coordA.X Then coordA.X = X ' Topleft: move to left
                     If y < coordA.Y Then coordA.Y = y ' Topleft: move to top
 
@@ -1033,18 +1024,12 @@ dBug:
             y += 1
         Next
 
-        'Debug.Print("Last read pixel x=" & X & ",y=" & y)
-        'Debug.Print(coordA.ToString() & " --- " & coordB.ToString())
-
-
         ' Unlock
         System.Runtime.InteropServices.Marshal.Copy(bitmapBytes, 0, offsetToFirstPixel, byteCount)
         bmClone.UnlockBits(bmData)
 
-
 901:
-        'MsgBox("w,h=" & coordA.X & "," & coordA.Y & " --- " & coordB.X & "," & coordB.Y)
-        ' enabled for cropping of frames, 20150619
+        ' The width/height are +1.
         coordB.X += 1
         coordB.Y += 1
 
@@ -1057,18 +1042,13 @@ dBug:
             coordB = New Point(1, 1)
         End If
 
-        ' Test to compare with the older, slower method
-        'Debug.Print("New defining x1,y1=" & coordA.X & "," & coordA.Y & " --- x2,y2 " & coordB.X & "," & coordB.Y)
-        'Dim rectOld = bitmap_getDefiningRectangle_old(bmInput)
-        'Debug.Print("Old defining x1,y1=" & rectOld.X & "," & rectOld.Y & " --- x2,y2 " & rectOld.Width + rectOld.X & "," & rectOld.Height + rectOld.Y)
-
         Return New Rectangle(coordA.X, coordA.Y, coordB.X - coordA.X, coordB.Y - coordA.Y)
 
         Exit Function
 
 dBug:
-        MsgBox("Error while obtaining the 'defining rectangle' of this graphic." & vbCrLf &
-            "Erl " & Erl() & " - " & Err.Number & " - " & Err.Description & vbCrLf &
+        MsgBox("Unexpected error occurred in ClsTasks:Bitmap_GetDefiningRectangle() at line " & Information.Erl() & vbCrLf &
+               Err.Number & " - " & Err.Description & vbCrLf &
             "Last processed: " & pixelLocation.X & " - " & pixelLocation.Y,
             vbOKOnly + vbCritical, "Critical error")
 
@@ -1293,10 +1273,11 @@ dBug:
         With FrmMain
 
             .tstZT1_AnimSpeed.Text = editorGraphic.AnimationSpeed
-            .tslFrame_Index.Text = IIf(editorGraphic.Frames.Count = 0, "-", (intFrameIndex + Cfg_convert_startIndex) & " / " & (editorGraphic.Frames.Count - 1 + Cfg_convert_startIndex - editorGraphic.ExtraFrame))
 
-            Debug.Print("updated info. [" & strReason & "]. Total frames = " & (editorGraphic.Frames.Count - Cfg_convert_startIndex - editorGraphic.ExtraFrame))
-            'Debug.Print(editorGraphic.extraFrame)
+            ' NOT using a 0-based frame index visual indication, to avoid confusing
+            .tslFrame_Index.Text = IIf(editorGraphic.Frames.Count = 0, "-", (intFrameIndex + 1) & " / " & (editorGraphic.Frames.Count - editorGraphic.ExtraFrame))
+
+            ClsTasks.ZTStudio_Trace("ClsTasks", "Update_Info", "Reason: " & strReason & ". # non-background frames = " & (editorGraphic.Frames.Count - editorGraphic.ExtraFrame) & " - background frame: " & editorGraphic.ExtraFrame.ToString())
 
             With .TbFrames
                 .Minimum = 1
@@ -1323,7 +1304,7 @@ dBug:
             '(IsNothing(editorGraphic.frames(0).cachedFrame) = False)
 
             If IsNothing(editorFrame) = False Then
-                If IsNothing(editorFrame.CoreImageBitmap) = False Then
+                If editorFrame.CoreImageHex.Count > 0 Then
                     .tsbFrame_ExportPNG.Enabled = True
                 End If
             End If
@@ -1484,7 +1465,7 @@ dBug:
     ''' <param name="intIndex">Index of color to be replaced</param>
     Sub Pal_ReplaceColor(intIndex As Integer)
 
-        With FrmMain.dlgColor
+        With FrmMain.DlgColor
             .Color = FrmMain.dgvPaletteMain.Rows(intIndex).DefaultCellStyle.BackColor
 
             .AllowFullOpen = True
@@ -1494,7 +1475,7 @@ dBug:
 
         End With
 
-        editorGraphic.ColorPalette.Colors(intIndex) = FrmMain.dlgColor.Color
+        editorGraphic.ColorPalette.Colors(intIndex) = FrmMain.DlgColor.Color
 
         'frmMain.dgvPaletteMain.Rows(intIndex).DefaultCellStyle.BackColor = frmMain.dlgColor.Color
         'frmMain.dgvPaletteMain.Rows(intIndex).DefaultCellStyle.SelectionBackColor = frmMain.dlgColor.Color  ' prevent selection highlighting (blue)
@@ -1549,7 +1530,7 @@ dBug:
         Dim cColor As System.Drawing.Color = Cfg_grid_BackGroundColor
 
 
-        With FrmMain.dlgColor
+        With FrmMain.DlgColor
             .Color = cColor
 
             .AllowFullOpen = True
@@ -1559,7 +1540,7 @@ dBug:
 
         End With
 
-        cColor = FrmMain.dlgColor.Color
+        cColor = FrmMain.DlgColor.Color
 
         ' Insert it at the position we want.
         editorGraphic.ColorPalette.Colors.Insert(intIndexNow + 1, cColor)
@@ -1768,7 +1749,7 @@ dBug:
         ' Load the initial config. 
         ' settings.cfg contains the default values.
         ' Some parameters can be overwritten by the command line parameters; but they are not stored permanently.
-        clsTasks.Config_load()
+        ClsTasks.Config_load()
 
 20:
 
@@ -1865,26 +1846,26 @@ dBug:
             Case "convertfile.topng"
                 ' Do conversion.
                 ' Then exit.
-                clsTasks.Convert_file_ZT1_to_PNG(strArgActionValue)
+                ClsTasks.Convert_file_ZT1_to_PNG(strArgActionValue)
                 End
 
             Case "convertfile.tozt1"
                 ' Do conversion.
                 ' Then exit.
-                clsTasks.Convert_file_PNG_to_ZT1(strArgActionValue)
+                ClsTasks.Convert_file_PNG_to_ZT1(strArgActionValue)
                 End
 
             Case "convertfolder.topng"
                 ' Do conversion.
                 ' Then exit.
-                clsTasks.Convert_folder_ZT1_to_PNG(strArgActionValue)
+                ClsTasks.Convert_folder_ZT1_to_PNG(strArgActionValue)
                 End
 
             Case "convertfolder.tozt1"
 
                 ' Do conversion.
                 ' Then exit.
-                clsTasks.Convert_folder_PNG_to_ZT1(strArgActionValue)
+                ClsTasks.Convert_folder_PNG_to_ZT1(strArgActionValue)
                 End
 
 
@@ -1903,7 +1884,7 @@ dBug:
             vbCrLf &
             "Example:" & vbCrLf &
             "ZTStudio.exe /convertFolder:path-to-folder /ZTAF:1" & vbCrLf & vbCrLf &
-            "Details: error in ztStudio_StartUp() at line " & Erl() & vbCrLf & Err.Number & " - " & Err.Description, vbOKOnly + vbCritical, "Invalid value for command line argument") = vbOK Then
+            "Details: error in ClsTasks::ZTStudio_StartUp() at line " & Erl() & vbCrLf & Err.Number & " - " & Err.Description, vbOKOnly + vbCritical, "Invalid value for command line argument") = vbOK Then
             End
         End If
 

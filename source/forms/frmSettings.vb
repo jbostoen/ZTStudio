@@ -5,9 +5,9 @@ Public Class FrmSettings
     Private Sub FrmSettings_FormClosing(sender As Object, e As FormClosingEventArgs) Handles Me.FormClosing
 
         ' Just re-load the settings here to apply them.
-        clsTasks.Config_write()
+        MdlConfig.write()
 
-        clsTasks.Config_load()
+        MdlConfig.load()
 
 
     End Sub

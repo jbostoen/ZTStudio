@@ -11,10 +11,8 @@
 
         Private Sub MyApplication_Startup(sender As Object, e As ApplicationServices.StartupEventArgs) Handles Me.Startup
 
-           
 
-
-            ztStudio_StartUp()
+            MdlZTStudio.StartUp()
 
 
         End Sub

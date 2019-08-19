@@ -67,7 +67,7 @@
 
 
         editorGraphic.LastUpdated = Now.ToString("yyyyMMddHHmmss")
-        clsTasks.Update_preview(FrmMain.TbFrames.Value - 1)
+        MdlTasks.Update_preview(FrmMain.TbFrames.Value - 1)
 
         ' Show palette again?
         editorGraphic.ColorPalette.FillPaletteGrid(FrmMain.dgvPaletteMain)

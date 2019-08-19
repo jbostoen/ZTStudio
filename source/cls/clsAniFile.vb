@@ -183,7 +183,7 @@ Public Class ClsAniFile
         Exit Function
 
 dBug:
-        clsTasks.ZTStudio_UnexpectedError("ClsTasks", "Write", Information.Erl(), Information.Err())
+        MdlZTStudio.UnexpectedError("ClsTasks", "Write", Information.Erl(), Information.Err())
 
 
     End Function
@@ -228,7 +228,7 @@ dBug:
             strPathRel = Strings.Replace(strPathRel, Cfg_path_Root, "")
             Dim Graphic As New ClsGraphic
 
-            clsTasks.ZTStudio_Trace("ClsAniFile", "CreateAniConfig", "Ani path: * " & strPath & " -> " & strPathRel)
+            MdlZTStudio.Trace("ClsAniFile", "CreateAniConfig", "Ani path: * " & strPath & " -> " & strPathRel)
 
             ' Set dirs. If this function is called multiple times, it won't do any harm.
             Me.Dirs.Clear(False)
@@ -255,7 +255,7 @@ dBug:
                     .Add("S", False)
                 End With
 
-                clsTasks.ZTStudio_Trace("ClsAniFile", "CreateAniConfig", "Determination: 'animals', 'guests', 'staff', ...")
+                MdlZTStudio.Trace("ClsAniFile", "CreateAniConfig", "Determination: 'animals', 'guests', 'staff', ...")
 
 12:
             ElseIf File.Exists(strPath & "\NE") = True And
@@ -271,7 +271,7 @@ dBug:
                     .Add("NW", False)
                 End With
 
-                clsTasks.ZTStudio_Trace("ClsAniFile", "CreateAniConfig", "Determination: 'object'")
+                MdlZTStudio.Trace("ClsAniFile", "CreateAniConfig", "Determination: 'object'")
 
 
 13:
@@ -283,7 +283,7 @@ dBug:
                     .Add("N", False)
                 End With
 
-                clsTasks.ZTStudio_Trace("ClsAniFile", "CreateAniConfig", "Determination: 'icon'")
+                MdlZTStudio.Trace("ClsAniFile", "CreateAniConfig", "Determination: 'icon'")
 
 
 14:
@@ -318,12 +318,12 @@ dBug:
                     End While
                 End With
 
-                clsTasks.ZTStudio_Trace("ClsAniFile", "CreateAniConfig", "Determination: 'path'")
+                MdlZTStudio.Trace("ClsAniFile", "CreateAniConfig", "Determination: 'path'")
 
 15:
             Else
 
-                clsTasks.ZTStudio_Trace("ClsAniFile", "CreateAniConfig", "Determination: unable to determine type of graphic in " & Path.GetDirectoryName(Me.FileName))
+                MdlZTStudio.Trace("ClsAniFile", "CreateAniConfig", "Determination: unable to determine type of graphic in " & Path.GetDirectoryName(Me.FileName))
 
             End If
 
@@ -363,7 +363,7 @@ dBug:
         Exit Sub
 
 dBug:
-        clsTasks.ZTStudio_UnexpectedError("ClsAniFile", "CreateAniConfig", Information.Erl(), Information.Err())
+        MdlZTStudio.UnexpectedError("ClsAniFile", "CreateAniConfig", Information.Erl(), Information.Err())
 
     End Sub
 

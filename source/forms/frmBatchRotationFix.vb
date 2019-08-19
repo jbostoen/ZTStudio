@@ -17,7 +17,7 @@
     Private Sub CmdBatchFix_Click(sender As Object, e As EventArgs) Handles cmdBatchFix.Click
 
         ' find all ZT1 Graphics in this folder
-        clsTasks.Batch_RotationFix_Folder_ZT1(txtFolder.Text, New Point(numLeftRight.Value, numUpDown.Value), PB)
+        MdlTasks.Batch_RotationFix_Folder_ZT1(txtFolder.Text, New Point(numLeftRight.Value, numUpDown.Value), PB)
 
 
     End Sub

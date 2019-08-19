@@ -39,10 +39,19 @@ Partial Class FrmMain
         Me.tstZT1_AnimSpeed = New System.Windows.Forms.ToolStripTextBox()
         Me.DlgOpen = New System.Windows.Forms.OpenFileDialog()
         Me.Panel1 = New System.Windows.Forms.Panel()
+        Me.GBAnimation = New System.Windows.Forms.GroupBox()
+        Me.TbFrames = New System.Windows.Forms.TrackBar()
+        Me.LblFrames = New System.Windows.Forms.Label()
+        Me.LblAnimTime = New System.Windows.Forms.Label()
+        Me.LblAnimSpeed = New System.Windows.Forms.Label()
+        Me.ChkPlayAnimation = New System.Windows.Forms.CheckBox()
+        Me.GBColors = New System.Windows.Forms.GroupBox()
+        Me.LblColorTool = New System.Windows.Forms.Label()
+        Me.lblColorDetails = New System.Windows.Forms.Label()
+        Me.lblColor = New System.Windows.Forms.Label()
         Me.SsBar = New System.Windows.Forms.StatusStrip()
         Me.ssFileName = New System.Windows.Forms.ToolStripStatusLabel()
         Me.ssColor = New System.Windows.Forms.ToolStripStatusLabel()
-        Me.TbFrames = New System.Windows.Forms.TrackBar()
         Me.dgvPaletteMain = New System.Windows.Forms.DataGridView()
         Me.ColColor = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.DlgSave = New System.Windows.Forms.SaveFileDialog()
@@ -92,26 +101,17 @@ Partial Class FrmMain
         Me.mnuPal_ExportPNG = New System.Windows.Forms.ToolStripMenuItem()
         Me.mnuPal_ImportPNG = New System.Windows.Forms.ToolStripMenuItem()
         Me.mnuPal_ImportGimpPalette = New System.Windows.Forms.ToolStripMenuItem()
-        Me.GBColors = New System.Windows.Forms.GroupBox()
-        Me.lblColorDetails = New System.Windows.Forms.Label()
-        Me.lblColor = New System.Windows.Forms.Label()
-        Me.LblColorTool = New System.Windows.Forms.Label()
-        Me.GBAnimation = New System.Windows.Forms.GroupBox()
-        Me.LblFrames = New System.Windows.Forms.Label()
-        Me.LblAnimTime = New System.Windows.Forms.Label()
-        Me.LblAnimSpeed = New System.Windows.Forms.Label()
-        Me.ChkPlayAnimation = New System.Windows.Forms.CheckBox()
         CType(Me.picBox, System.ComponentModel.ISupportInitialize).BeginInit
         Me.TsZT1Graphic.SuspendLayout
         Me.Panel1.SuspendLayout
-        Me.SsBar.SuspendLayout
+        Me.GBAnimation.SuspendLayout
         CType(Me.TbFrames, System.ComponentModel.ISupportInitialize).BeginInit
+        Me.GBColors.SuspendLayout
+        Me.SsBar.SuspendLayout
         CType(Me.dgvPaletteMain, System.ComponentModel.ISupportInitialize).BeginInit
         Me.TsFrame.SuspendLayout
         Me.TsTools.SuspendLayout
         Me.MnuPal.SuspendLayout
-        Me.GBColors.SuspendLayout
-        Me.GBAnimation.SuspendLayout
         Me.SuspendLayout
         '
         'picBox
@@ -226,13 +226,122 @@ Partial Class FrmMain
         Me.Panel1.Controls.Add(Me.GBAnimation)
         Me.Panel1.Controls.Add(Me.GBColors)
         Me.Panel1.Controls.Add(Me.SsBar)
-        Me.Panel1.Controls.Add(Me.TbFrames)
         Me.Panel1.Dock = System.Windows.Forms.DockStyle.Fill
         Me.Panel1.Font = New System.Drawing.Font("Segoe UI", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Panel1.Location = New System.Drawing.Point(0, 629)
         Me.Panel1.Name = "Panel1"
         Me.Panel1.Size = New System.Drawing.Size(808, 151)
         Me.Panel1.TabIndex = 19
+        '
+        'GBAnimation
+        '
+        Me.GBAnimation.Controls.Add(Me.LblFrames)
+        Me.GBAnimation.Controls.Add(Me.LblAnimTime)
+        Me.GBAnimation.Controls.Add(Me.LblAnimSpeed)
+        Me.GBAnimation.Controls.Add(Me.ChkPlayAnimation)
+        Me.GBAnimation.Controls.Add(Me.TbFrames)
+        Me.GBAnimation.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.GBAnimation.Font = New System.Drawing.Font("Segoe UI", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.GBAnimation.Location = New System.Drawing.Point(240, 0)
+        Me.GBAnimation.Name = "GBAnimation"
+        Me.GBAnimation.Size = New System.Drawing.Size(568, 129)
+        Me.GBAnimation.TabIndex = 37
+        Me.GBAnimation.TabStop = False
+        Me.GBAnimation.Text = "Animation"
+        '
+        'TbFrames
+        '
+        Me.TbFrames.Dock = System.Windows.Forms.DockStyle.Top
+        Me.TbFrames.Location = New System.Drawing.Point(3, 18)
+        Me.TbFrames.Maximum = 1
+        Me.TbFrames.Minimum = 1
+        Me.TbFrames.Name = "TbFrames"
+        Me.TbFrames.Size = New System.Drawing.Size(562, 45)
+        Me.TbFrames.TabIndex = 36
+        Me.TbFrames.Value = 1
+        '
+        'LblFrames
+        '
+        Me.LblFrames.AutoSize = True
+        Me.LblFrames.Font = New System.Drawing.Font("Segoe UI", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.LblFrames.Location = New System.Drawing.Point(15, 80)
+        Me.LblFrames.Name = "LblFrames"
+        Me.LblFrames.Size = New System.Drawing.Size(50, 13)
+        Me.LblFrames.TabIndex = 35
+        Me.LblFrames.Text = "0 frames"
+        '
+        'LblAnimTime
+        '
+        Me.LblAnimTime.AutoSize = True
+        Me.LblAnimTime.Font = New System.Drawing.Font("Segoe UI", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.LblAnimTime.Location = New System.Drawing.Point(15, 93)
+        Me.LblAnimTime.Name = "LblAnimTime"
+        Me.LblAnimTime.Size = New System.Drawing.Size(30, 13)
+        Me.LblAnimTime.TabIndex = 34
+        Me.LblAnimTime.Text = "0 ms"
+        '
+        'LblAnimSpeed
+        '
+        Me.LblAnimSpeed.AutoSize = True
+        Me.LblAnimSpeed.Font = New System.Drawing.Font("Segoe UI", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.LblAnimSpeed.Location = New System.Drawing.Point(15, 66)
+        Me.LblAnimSpeed.Name = "LblAnimSpeed"
+        Me.LblAnimSpeed.Size = New System.Drawing.Size(94, 13)
+        Me.LblAnimSpeed.TabIndex = 33
+        Me.LblAnimSpeed.Text = "Animation speed"
+        '
+        'ChkPlayAnimation
+        '
+        Me.ChkPlayAnimation.AutoSize = True
+        Me.ChkPlayAnimation.Font = New System.Drawing.Font("Segoe UI", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.ChkPlayAnimation.Location = New System.Drawing.Point(213, 69)
+        Me.ChkPlayAnimation.Name = "ChkPlayAnimation"
+        Me.ChkPlayAnimation.Size = New System.Drawing.Size(101, 17)
+        Me.ChkPlayAnimation.TabIndex = 32
+        Me.ChkPlayAnimation.Text = "Play animation"
+        Me.ChkPlayAnimation.UseVisualStyleBackColor = True
+        '
+        'GBColors
+        '
+        Me.GBColors.Controls.Add(Me.LblColorTool)
+        Me.GBColors.Controls.Add(Me.lblColorDetails)
+        Me.GBColors.Controls.Add(Me.lblColor)
+        Me.GBColors.Dock = System.Windows.Forms.DockStyle.Left
+        Me.GBColors.Font = New System.Drawing.Font("Segoe UI", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.GBColors.Location = New System.Drawing.Point(0, 0)
+        Me.GBColors.Name = "GBColors"
+        Me.GBColors.Size = New System.Drawing.Size(240, 129)
+        Me.GBColors.TabIndex = 36
+        Me.GBColors.TabStop = False
+        Me.GBColors.Text = "Color details"
+        '
+        'LblColorTool
+        '
+        Me.LblColorTool.AutoSize = True
+        Me.LblColorTool.Font = New System.Drawing.Font("Segoe UI", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.LblColorTool.Location = New System.Drawing.Point(18, 18)
+        Me.LblColorTool.Name = "LblColorTool"
+        Me.LblColorTool.Size = New System.Drawing.Size(101, 13)
+        Me.LblColorTool.TabIndex = 37
+        Me.LblColorTool.Text = "Move over a color."
+        '
+        'lblColorDetails
+        '
+        Me.lblColorDetails.Font = New System.Drawing.Font("Segoe UI", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.lblColorDetails.Location = New System.Drawing.Point(80, 33)
+        Me.lblColorDetails.Name = "lblColorDetails"
+        Me.lblColorDetails.Size = New System.Drawing.Size(139, 47)
+        Me.lblColorDetails.TabIndex = 36
+        Me.lblColorDetails.Text = "Color details"
+        Me.lblColorDetails.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        '
+        'lblColor
+        '
+        Me.lblColor.Location = New System.Drawing.Point(15, 36)
+        Me.lblColor.Name = "lblColor"
+        Me.lblColor.Size = New System.Drawing.Size(59, 43)
+        Me.lblColor.TabIndex = 35
+        Me.lblColor.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
         '
         'SsBar
         '
@@ -252,17 +361,6 @@ Partial Class FrmMain
         '
         Me.ssColor.Name = "ssColor"
         Me.ssColor.Size = New System.Drawing.Size(0, 17)
-        '
-        'TbFrames
-        '
-        Me.TbFrames.Dock = System.Windows.Forms.DockStyle.Top
-        Me.TbFrames.Location = New System.Drawing.Point(0, 0)
-        Me.TbFrames.Maximum = 1
-        Me.TbFrames.Minimum = 1
-        Me.TbFrames.Name = "TbFrames"
-        Me.TbFrames.Size = New System.Drawing.Size(808, 45)
-        Me.TbFrames.TabIndex = 19
-        Me.TbFrames.Value = 1
         '
         'dgvPaletteMain
         '
@@ -596,7 +694,7 @@ Partial Class FrmMain
         '
         Me.MnuPal.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.mnuPal_MoveEnd, Me.mnuPal_MoveUp, Me.mnuPal_MoveDown, Me.mnuPal_Replace, Me.mnuPal_Add, Me.mnuPal_SavePAL, Me.mnuPal_ExportPNG, Me.mnuPal_ImportPNG, Me.mnuPal_ImportGimpPalette})
         Me.MnuPal.Name = "MnuPal"
-        Me.MnuPal.Size = New System.Drawing.Size(245, 224)
+        Me.MnuPal.Size = New System.Drawing.Size(245, 202)
         '
         'mnuPal_MoveEnd
         '
@@ -652,104 +750,6 @@ Partial Class FrmMain
         Me.mnuPal_ImportGimpPalette.Size = New System.Drawing.Size(244, 22)
         Me.mnuPal_ImportGimpPalette.Text = "Replace with GIMP Color palette"
         '
-        'GBColors
-        '
-        Me.GBColors.Controls.Add(Me.LblColorTool)
-        Me.GBColors.Controls.Add(Me.lblColorDetails)
-        Me.GBColors.Controls.Add(Me.lblColor)
-        Me.GBColors.Dock = System.Windows.Forms.DockStyle.Left
-        Me.GBColors.Font = New System.Drawing.Font("Segoe UI", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.GBColors.Location = New System.Drawing.Point(0, 45)
-        Me.GBColors.Name = "GBColors"
-        Me.GBColors.Size = New System.Drawing.Size(240, 84)
-        Me.GBColors.TabIndex = 36
-        Me.GBColors.TabStop = False
-        Me.GBColors.Text = "Color details"
-        '
-        'lblColorDetails
-        '
-        Me.lblColorDetails.Font = New System.Drawing.Font("Segoe UI", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblColorDetails.Location = New System.Drawing.Point(80, 33)
-        Me.lblColorDetails.Name = "lblColorDetails"
-        Me.lblColorDetails.Size = New System.Drawing.Size(139, 47)
-        Me.lblColorDetails.TabIndex = 36
-        Me.lblColorDetails.Text = "Color details"
-        Me.lblColorDetails.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
-        '
-        'lblColor
-        '
-        Me.lblColor.Location = New System.Drawing.Point(15, 36)
-        Me.lblColor.Name = "lblColor"
-        Me.lblColor.Size = New System.Drawing.Size(59, 43)
-        Me.lblColor.TabIndex = 35
-        Me.lblColor.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
-        '
-        'LblColorTool
-        '
-        Me.LblColorTool.AutoSize = True
-        Me.LblColorTool.Font = New System.Drawing.Font("Segoe UI", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.LblColorTool.Location = New System.Drawing.Point(18, 18)
-        Me.LblColorTool.Name = "LblColorTool"
-        Me.LblColorTool.Size = New System.Drawing.Size(101, 13)
-        Me.LblColorTool.TabIndex = 37
-        Me.LblColorTool.Text = "Move over a color."
-        '
-        'GBAnimation
-        '
-        Me.GBAnimation.Controls.Add(Me.LblFrames)
-        Me.GBAnimation.Controls.Add(Me.LblAnimTime)
-        Me.GBAnimation.Controls.Add(Me.LblAnimSpeed)
-        Me.GBAnimation.Controls.Add(Me.ChkPlayAnimation)
-        Me.GBAnimation.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.GBAnimation.Font = New System.Drawing.Font("Segoe UI", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.GBAnimation.Location = New System.Drawing.Point(240, 45)
-        Me.GBAnimation.Name = "GBAnimation"
-        Me.GBAnimation.Size = New System.Drawing.Size(568, 84)
-        Me.GBAnimation.TabIndex = 37
-        Me.GBAnimation.TabStop = False
-        Me.GBAnimation.Text = "Animation"
-        '
-        'LblFrames
-        '
-        Me.LblFrames.AutoSize = True
-        Me.LblFrames.Font = New System.Drawing.Font("Segoe UI", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.LblFrames.Location = New System.Drawing.Point(15, 63)
-        Me.LblFrames.Name = "LblFrames"
-        Me.LblFrames.Size = New System.Drawing.Size(50, 13)
-        Me.LblFrames.TabIndex = 35
-        Me.LblFrames.Text = "0 frames"
-        '
-        'LblAnimTime
-        '
-        Me.LblAnimTime.AutoSize = True
-        Me.LblAnimTime.Font = New System.Drawing.Font("Segoe UI", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.LblAnimTime.Location = New System.Drawing.Point(15, 76)
-        Me.LblAnimTime.Name = "LblAnimTime"
-        Me.LblAnimTime.Size = New System.Drawing.Size(30, 13)
-        Me.LblAnimTime.TabIndex = 34
-        Me.LblAnimTime.Text = "0 ms"
-        '
-        'LblAnimSpeed
-        '
-        Me.LblAnimSpeed.AutoSize = True
-        Me.LblAnimSpeed.Font = New System.Drawing.Font("Segoe UI", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.LblAnimSpeed.Location = New System.Drawing.Point(15, 50)
-        Me.LblAnimSpeed.Name = "LblAnimSpeed"
-        Me.LblAnimSpeed.Size = New System.Drawing.Size(94, 13)
-        Me.LblAnimSpeed.TabIndex = 33
-        Me.LblAnimSpeed.Text = "Animation speed"
-        '
-        'ChkPlayAnimation
-        '
-        Me.ChkPlayAnimation.AutoSize = True
-        Me.ChkPlayAnimation.Font = New System.Drawing.Font("Segoe UI", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.ChkPlayAnimation.Location = New System.Drawing.Point(18, 30)
-        Me.ChkPlayAnimation.Name = "ChkPlayAnimation"
-        Me.ChkPlayAnimation.Size = New System.Drawing.Size(101, 17)
-        Me.ChkPlayAnimation.TabIndex = 32
-        Me.ChkPlayAnimation.Text = "Play animation"
-        Me.ChkPlayAnimation.UseVisualStyleBackColor = True
-        '
         'FrmMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -770,19 +770,19 @@ Partial Class FrmMain
         Me.TsZT1Graphic.PerformLayout
         Me.Panel1.ResumeLayout(False)
         Me.Panel1.PerformLayout
+        Me.GBAnimation.ResumeLayout(False)
+        Me.GBAnimation.PerformLayout
+        CType(Me.TbFrames, System.ComponentModel.ISupportInitialize).EndInit
+        Me.GBColors.ResumeLayout(False)
+        Me.GBColors.PerformLayout
         Me.SsBar.ResumeLayout(False)
         Me.SsBar.PerformLayout
-        CType(Me.TbFrames, System.ComponentModel.ISupportInitialize).EndInit
         CType(Me.dgvPaletteMain, System.ComponentModel.ISupportInitialize).EndInit
         Me.TsFrame.ResumeLayout(False)
         Me.TsFrame.PerformLayout
         Me.TsTools.ResumeLayout(False)
         Me.TsTools.PerformLayout
         Me.MnuPal.ResumeLayout(False)
-        Me.GBColors.ResumeLayout(False)
-        Me.GBColors.PerformLayout
-        Me.GBAnimation.ResumeLayout(False)
-        Me.GBAnimation.PerformLayout
         Me.ResumeLayout(False)
         Me.PerformLayout
 
@@ -794,7 +794,6 @@ Partial Class FrmMain
     Friend WithEvents tsbZT1Open As System.Windows.Forms.ToolStripButton
     Friend WithEvents DlgOpen As System.Windows.Forms.OpenFileDialog
     Friend WithEvents Panel1 As System.Windows.Forms.Panel
-    Friend WithEvents TbFrames As System.Windows.Forms.TrackBar
     Friend WithEvents dgvPaletteMain As System.Windows.Forms.DataGridView
     Friend WithEvents SsBar As System.Windows.Forms.StatusStrip
     Friend WithEvents ssFileName As System.Windows.Forms.ToolStripStatusLabel
@@ -864,4 +863,5 @@ Partial Class FrmMain
     Friend WithEvents LblColorTool As Label
     Friend WithEvents lblColorDetails As Label
     Friend WithEvents lblColor As Label
+    Friend WithEvents TbFrames As TrackBar
 End Class

@@ -75,7 +75,7 @@ Public Class ClsDrawingInstr
         Exit Function
 
 dBg:
-        clsTasks.ZTStudio_UnexpectedError("ClsDrawingInstr", "GetHex", Information.Erl(), Information.Err)
+        MdlZTStudio.UnexpectedError("ClsDrawingInstr", "GetHex", Information.Erl(), Information.Err)
 
     End Function
 

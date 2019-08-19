@@ -206,7 +206,7 @@ Public Class ClsFrame
         On Error GoTo dBug
 
 
-        clsTasks.ZTStudio_Trace("ClsFrame", "GetCoreImageBitmap", "Fetching core image bitmap...")
+        MdlZTStudio.Trace("ClsFrame", "GetCoreImageBitmap", "Fetching core image bitmap...")
 
 11:
         If IsNothing(Me.CoreImageBitmap) = True Then
@@ -224,7 +224,7 @@ Public Class ClsFrame
         Exit Function
 
 dBug:
-        clsTasks.ZTStudio_UnexpectedError("ClsFrame", "GetCoreImageBitmap", Information.Erl(), Information.Err)
+        MdlZTStudio.UnexpectedError("ClsFrame", "GetCoreImageBitmap", Information.Erl(), Information.Err)
 
     End Function
 
@@ -285,7 +285,7 @@ dBug:
         Exit Function
 
 dBug:
-        clsTasks.ZTStudio_UnexpectedError("ClsFrame", "GetCoreImageBitmapOnTransparentCanvas", Information.Erl(), Information.Err)
+        MdlZTStudio.UnexpectedError("ClsFrame", "GetCoreImageBitmapOnTransparentCanvas", Information.Erl(), Information.Err)
 
     End Function
 
@@ -312,19 +312,19 @@ dBug:
 11:
         ' Draw 'extra' background frame, e.g. restaurants?
         If Me.Parent.ExtraFrame = 1 And Cfg_export_PNG_RenderBGFrame = 1 Then
-            bmOutput = clsTasks.Images_Combine(Me.Parent.Frames(Me.Parent.Frames.Count - 1).GetCoreImageBitmapOnTransparentCanvas(blnCentered), bmOutput)
+            bmOutput = MdlTasks.Images_Combine(Me.Parent.Frames(Me.Parent.Frames.Count - 1).GetCoreImageBitmapOnTransparentCanvas(blnCentered), bmOutput)
         End If
 
 21:
         ' Optional background ZT1 Graphic frame, e.g. animal + toy?
         If editorBgGraphic.Frames.Count > 0 And Cfg_export_PNG_RenderBGZT1 = 1 Then
-            bmOutput = clsTasks.Images_Combine(editorBgGraphic.Frames(0).GetCoreImageBitmapOnTransparentCanvas(blnCentered), bmOutput)
+            bmOutput = MdlTasks.Images_Combine(editorBgGraphic.Frames(0).GetCoreImageBitmapOnTransparentCanvas(blnCentered), bmOutput)
         End If
 
 31:
         ' Draw grid?
         If blnDrawGrid = True Then
-            bmOutput = clsTasks.Images_Combine(clsTasks.Grid_DrawFootPrintXY(Cfg_grid_footPrintX, Cfg_grid_footPrintY), bmOutput)
+            bmOutput = MdlTasks.Images_Combine(MdlTasks.Grid_DrawFootPrintXY(Cfg_grid_footPrintX, Cfg_grid_footPrintY), bmOutput)
         End If
 
 41:
@@ -353,13 +353,13 @@ dBug:
 
         On Error GoTo dBug2
 
-        clsTasks.ZTStudio_Trace("ClsFrame", "RenderCoreImageFromHex", "Start rendering from hex...")
+        MdlZTStudio.Trace("ClsFrame", "RenderCoreImageFromHex", "Start rendering from hex...")
 
 10:
         ' Only one thing matters: do we actually have HEX?
         If Me.CoreImageHex.Count = 0 Then
 
-            clsTasks.ZTStudio_Trace("ClsFrame", "RenderCoreImageFromHex", "There is no hex! Returning Nothing instead of Bitmap")
+            MdlZTStudio.Trace("ClsFrame", "RenderCoreImageFromHex", "There is no hex! Returning Nothing instead of Bitmap")
             Me.CoreImageBitmap = Nothing
             Return Nothing
 
@@ -383,7 +383,7 @@ dBug:
         ' Did we have this issue before our rewrite? => apparently not.
         If frameHex.Count = 10 Then
 
-            clsTasks.ZTStudio_Trace("ClsFrame", "RenderCoreImageFromHex", "Weird hex: " & String.Join(" ", frameHex.ToArray()))
+            MdlZTStudio.Trace("ClsFrame", "RenderCoreImageFromHex", "Weird hex: " & String.Join(" ", frameHex.ToArray()))
 
             ' Basically height = width = 0.
             If frameHex(0) = 0 And frameHex(1) = 0 And frameHex(2) = 0 And frameHex(3) = 0 Then
@@ -400,7 +400,7 @@ dBug:
         ' Example: dolphin's "ssurf"-animations. The frames are actually compressed. For shadows, it's only offsets and black.
         If frameHex(1) = "80" Then
 
-            clsTasks.ZTStudio_Trace("ClsFrame", "RenderCoreImageFromHex", "Byte index 1 = 80 -> assuming this is the compressed shadow format (Marine Mania)")
+            MdlZTStudio.Trace("ClsFrame", "RenderCoreImageFromHex", "Byte index 1 = 80 -> assuming this is the compressed shadow format (Marine Mania)")
 
             blnIsShadow = True
 
@@ -412,7 +412,7 @@ dBug:
 
         Else
 
-            clsTasks.ZTStudio_Trace("ClsFrame", "RenderCoreImageFromHex", "Dealing with a regular sized graphic")
+            MdlZTStudio.Trace("ClsFrame", "RenderCoreImageFromHex", "Dealing with a regular sized graphic")
             ' All normal cases
             ' Canvas size determined: height and width are specified in the first few bytes (reversed).
             frameCoreImageBitmap = New Bitmap(
@@ -430,7 +430,7 @@ dBug:
         If frameHex(5) = "FF" Then
             ' Large size images. Needs some adjustment.
             ' Todo: add an example image here.
-            clsTasks.ZTStudio_Trace("ClsFrame", "RenderCoreImageFromHex", "Byte index 5 = FF -> This graphic should be large in size (offset Y). Add this as an example in the code!")
+            MdlZTStudio.Trace("ClsFrame", "RenderCoreImageFromHex", "Byte index 5 = FF -> This graphic should be large in size (offset Y). Add this as an example in the code!")
             Me.OffsetY = ((256 * 256) - CInt("&H" & frameHex(5) & frameHex(4))) * -1
         Else
             ' Normal offsets
@@ -442,7 +442,7 @@ dBug:
         'If Me.offsetX = -9999 Then
         If frameHex(7) = "FF" Then
             ' Large size images. Needs some adjustment.
-            clsTasks.ZTStudio_Trace("ClsFrame", "RenderCoreImageFromHex", "Byte index 7 = FF -> This graphic should be large in size (offset X). Add this as an example in the code!")
+            MdlZTStudio.Trace("ClsFrame", "RenderCoreImageFromHex", "Byte index 7 = FF -> This graphic should be large in size (offset X). Add this as an example in the code!")
             Me.OffsetX = ((256 * 256) - CInt("&H" & frameHex(7) & frameHex(6))) * -1
         Else
             ' Normal offsets
@@ -460,7 +460,7 @@ dBug:
             .Add(frameHex(9), False)
         End With
 
-        clsTasks.ZTStudio_Trace("ClsFrame", "RenderCoreImageFromHex", "Byte index 8, 9 -> the mystery bytes are " & frameHex(8) & ", " & frameHex(9))
+        MdlZTStudio.Trace("ClsFrame", "RenderCoreImageFromHex", "Byte index 8, 9 -> the mystery bytes are " & frameHex(8) & ", " & frameHex(9))
 
 
 46:
@@ -568,7 +568,7 @@ dBug:
         ' Theoretically, there shouldn't be. But APE has the tendency to generate crap.
         ' 20190816 - this code seems to be redundant, why was it left in?
         If frameHex.Count > 0 Then
-            clsTasks.ZTStudio_Trace("ClsFrame", "RenderCoreImageFromHex", "Detected APE junk bytes!")
+            MdlZTStudio.Trace("ClsFrame", "RenderCoreImageFromHex", "Detected APE junk bytes!")
             'Debug.Print("   : APE Junk bytes: junk bytes: " & frameHex.Count)
             'Me.coreImageHex.RemoveRange(Me.coreImageHex.Count - frameHex.Count - 1, frameHex.Count)
         Else
@@ -581,7 +581,7 @@ dBug:
         ' If that's the case, this frame's CoreImageHex should be updated as well
         Me.CoreImageBitmap = frameCoreImageBitmap
 
-        clsTasks.ZTStudio_Trace("ClsFrame", "RenderCoreImageFromHex", "Finished frame rendering.")
+        MdlZTStudio.Trace("ClsFrame", "RenderCoreImageFromHex", "Finished frame rendering.")
 
 9999:
         Return frameCoreImageBitmap
@@ -800,10 +800,10 @@ dBug:
         Me.OffsetY = Math.Ceiling(bmpDraw.Height / 2) + 1
 
 21:
-        Dim rectCrop As Rectangle = clsTasks.Bitmap_getDefiningRectangle(bmpDraw)
+        Dim rectCrop As Rectangle = MdlTasks.Bitmap_GetDefiningRectangle(bmpDraw)
 
 22:
-        Dim bmpCropped As Bitmap = clsTasks.Bitmap_getCropped(bmpDraw, rectCrop)
+        Dim bmpCropped As Bitmap = MdlTasks.Bitmap_GetCropped(bmpDraw, rectCrop)
 
 23:
         ' Improvement: by cropping to the relevant area, the offset should in most cases be better.
@@ -817,7 +817,7 @@ dBug:
         ' This should've been avoided by setting the background color properly, but it's easily overlooked.  
         ' Furthermore, it also requires the color palette to contain NO colors yet.
         If rectCrop.X <> 0 And rectCrop.Y <> 0 And Me.Parent.ColorPalette.Colors.Count = 0 Then
-            ClsTasks.ZTStudio_Trace("ClsFrame", "LoadPng", "Defining rectangle is not starting at (0,0), color palette is empty. Add top left pixel of bitmap (input PNG) as transparent color.")
+            MdlZTStudio.Trace("ClsFrame", "LoadPng", "Defining rectangle is not starting at (0,0), color palette is empty. Add top left pixel of bitmap (input PNG) as transparent color.")
             Me.Parent.ColorPalette.Colors.Add(bmpDraw.GetPixel(0, 0))
         End If
 
@@ -837,7 +837,7 @@ dBug:
         Exit Sub
 
 dBug:
-        clsTasks.ZTStudio_UnexpectedError("ClsFrame", "LoadPNG", Information.Erl(), Information.Err)
+        MdlZTStudio.UnexpectedError("ClsFrame", "LoadPNG", Information.Erl(), Information.Err)
 
 
     End Sub
@@ -985,7 +985,7 @@ dBug:
 3115:
                     ' Rare exception: if the offset is now 255 (limit), end this drawing instruction and start a new one.
                     If tmpDrawingInstr.Offset = 255 Then
-                        clsTasks.ZTStudio_Trace("ClsFrame", "BitMapToHex", "This graphic has an example of a drawing instruction with a large offset (255). Add in documentation.")
+                        MdlZTStudio.Trace("ClsFrame", "BitMapToHex", "This graphic has an example of a drawing instruction with a large offset (255). Add in documentation.")
                         lstDrawingInstructions.Add(tmpDrawingInstr, False)
                         tmpDrawingInstr = New ClsDrawingInstr
                     End If
@@ -1000,7 +1000,7 @@ dBug:
 3399:
                     ' Rare exception: if the number of colored pixels is now 255 (limit), end this drawing instruction and start a new one.
                     If tmpDrawingInstr.PixelColors.Count = 255 Then
-                        clsTasks.ZTStudio_Trace("ClsFrame", "BitMapToHex", "This graphic is an example has an example of a drawing instruction with a color offset (255). Add in documentation.")
+                        MdlZTStudio.Trace("ClsFrame", "BitMapToHex", "This graphic is an example has an example of a drawing instruction with a color offset (255). Add in documentation.")
                         lstDrawingInstructions.Add(tmpDrawingInstr, False)
                         tmpDrawingInstr = New ClsDrawingInstr
                     End If
@@ -1086,7 +1086,7 @@ dBug:
         Exit Function
 
 dBug:
-        clsTasks.ZTStudio_UnexpectedError("ClsFrame", "BitMapToHex", Information.Erl(), Information.Err)
+        MdlZTStudio.UnexpectedError("ClsFrame", "BitMapToHex", Information.Erl(), Information.Err)
 
 
     End Function
@@ -1127,7 +1127,7 @@ dBug:
                 End Using
 
 35:
-                imgComb = clsTasks.Images_Combine(imgComb, Me.GetImage())
+                imgComb = MdlTasks.Images_Combine(imgComb, Me.GetImage())
                 imgComb.Save(strFileName, System.Drawing.Imaging.ImageFormat.Png)
 
             Case 1
@@ -1150,12 +1150,12 @@ dBug:
                 ' Combine all images. Basically put them all on top of each other.
                 ' That way, it's easy to determine the most relevant pixel top/left and bottom/right
                 For Each ztFrame As ClsFrame In Me.Parent.Frames
-                    imgComb = clsTasks.Images_Combine(imgComb, ztFrame.GetImage())
+                    imgComb = MdlTasks.Images_Combine(imgComb, ztFrame.GetImage())
                 Next
 
                 ' Apply to this particular frame.
                 bmRect = Bitmap_GetDefiningRectangle(imgComb)
-                bmCropped = clsTasks.Bitmap_GetCropped(Me.GetImage(), bmRect)
+                bmCropped = MdlTasks.Bitmap_GetCropped(Me.GetImage(), bmRect)
                 bmCropped.Save(strFileName, System.Drawing.Imaging.ImageFormat.Png)
 
             Case 2
@@ -1163,7 +1163,7 @@ dBug:
 
 141:
                 bmRect = Bitmap_GetDefiningRectangle(Me.GetImage())
-                bmCropped = clsTasks.Bitmap_GetCropped(Me.GetImage(), bmRect)
+                bmCropped = MdlTasks.Bitmap_GetCropped(Me.GetImage(), bmRect)
                 bmCropped.Save(strFileName, System.Drawing.Imaging.ImageFormat.Png)
 
             Case 3
@@ -1176,7 +1176,7 @@ dBug:
         Exit Sub
 
 dBug:
-        clsTasks.ZTStudio_UnexpectedError("ClsFrame", "SavePNG", Information.Erl(), Information.Err)
+        MdlZTStudio.UnexpectedError("ClsFrame", "SavePNG", Information.Erl(), Information.Err)
 
 
     End Sub

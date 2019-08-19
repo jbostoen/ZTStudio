@@ -99,10 +99,12 @@
     <Compile Include="cls\ClsGraphic.vb" />
     <Compile Include="cls\ClsList.vb" />
     <Compile Include="cls\ClsString.vb" />
-    <Compile Include="cls\ClsTasks.vb" />
+    <Compile Include="modules\MdlConfig.vb" />
+    <Compile Include="modules\MdlTasks.vb" />
     <Compile Include="cls\ClsPalette.vb" />
-    <Compile Include="cls\MdlSettings.vb" />
-    <Compile Include="cls\MdlTests.vb" />
+    <Compile Include="modules\MdlSettings.vb" />
+    <Compile Include="modules\MdlZTStudio.vb" />
+    <Compile Include="modules\MdlTests.vb" />
     <Compile Include="forms\FrmBatchConversion.Designer.vb">
       <DependentUpon>FrmBatchConversion.vb</DependentUpon>
     </Compile>

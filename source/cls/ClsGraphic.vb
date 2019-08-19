@@ -525,7 +525,7 @@ dBug:
 
 
         ' This will trigger a refresh.
-        clsTasks.Update_Info("Property of graphic changed: " & info)
+        MdlTasks.Update_Info("Property of graphic changed: " & info)
 
         'RaiseEvent PropertyChanged(Me, New PropertyChangedEventArgs(info))
     End Sub

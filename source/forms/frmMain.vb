@@ -74,21 +74,32 @@ Public Class FrmMain
         ' If we have something in our canvas / if we have a cached frame rendered, 
         ' we will show color info on mouseover.
 1:
-        If IsNothing(picBox.Image) Then Exit Sub
+        If IsNothing(picBox.Image) Then
+            Exit Sub
+        End If
 
 2:
         ' frame might have been just initiated
-        If IsNothing(editorFrame.CoreImageBitmap) And IsNothing(editorFrame.CoreImageHex) Then Exit Sub
+        If IsNothing(editorFrame.CoreImageBitmap) And IsNothing(editorFrame.CoreImageHex) Then
+            Exit Sub
+        End If
 
 
 
 3:
+        ' This is a bit of a dilemma. 
+        ' If using picBox.image, it also shows the grid color on hovering.
+        ' If just usting editorFrame.GetImage(), it won't show colors of background graphic.
+        ' Todo: ombining them makes more sense but is more intensive. Should be cached somewhere.
+        ' Images_Combine(editorFrame.GetImage(), editorBgGraphic.getimage())
         Dim bmTmp As Bitmap
         bmTmp = picBox.Image ' editorFrame.getImage()
         Application.DoEvents()
 
 4:
-        If IsNothing(bmTmp) Then Exit Sub
+        If IsNothing(bmTmp) Then
+            Exit Sub
+        End If
 
 
 20:
@@ -108,7 +119,8 @@ Public Class FrmMain
                 lblColor.BackColor = c '.ToString()
                 lblColorDetails.Text = "Coordinates: x: " & e.X - eX & " , y: " & e.Y - eY & vbCrLf &
                     "RGB: " & c.R & "," & c.G & "," & c.B & vbCrLf &
-                    "Index in .pal file: # " & editorGraphic.ColorPalette.Colors.IndexOf(c)
+                    "Index in .pal file: # " & editorGraphic.ColorPalette.Colors.IndexOf(c) & vbCrLf &
+                    "VB.Net: " & c.ToArgb()
 
 
 
@@ -160,16 +172,16 @@ dBug:
     End Sub
 
 
-    Private Sub TTbFrames_ValueChanged(sender As Object, e As EventArgs) Handles TbFrames.ValueChanged
+    Private Sub TTbFrames_ValueChanged(sender As Object, e As EventArgs)
 
-        clsTasks.Update_preview(TbFrames.Value - 1)
+        MdlTasks.Update_Preview(TbFrames.Value - 1)
 
     End Sub
 
     Private Sub TmrAnimation_Tick(sender As Object, e As EventArgs) Handles TmrAnimation.Tick
 
 
-        ClsTasks.ZTStudio_Trace("TmrAnimation", "Tick", "Interval = " & TmrAnimation.Interval.ToString())
+        MdlZTStudio.Trace("TmrAnimation", "Tick", "Interval = " & TmrAnimation.Interval.ToString())
 
 
         If (TbFrames.Value = TbFrames.Maximum) Then
@@ -178,7 +190,7 @@ dBug:
             TbFrames.Value += 1
         End If
 
-        ClsTasks.Update_Preview(TbFrames.Value - 1)
+        MdlTasks.Update_Preview(TbFrames.Value - 1)
 
     End Sub
 
@@ -196,8 +208,8 @@ dBug:
         End With
 
 
-        ClsTasks.Config_Write()
-        ClsTasks.Update_Info("Background color changed.")
+        MdlConfig.Write()
+        MdlTasks.Update_Info("Background color changed.")
 
 
     End Sub
@@ -259,7 +271,7 @@ dBug:
                         ssFileName.Text = Now.ToString("yyyy-MM-dd HH:mm:ss") & ": opened " & DlgOpen.FileName
 
                         ' Draw first frame 
-                        ClsTasks.Update_Preview(0)
+                        MdlTasks.Update_Preview(0)
 
                         ' Add time indication
                         LblAnimTime.Text = ((editorGraphic.Frames.Count - editorGraphic.ExtraFrame) * editorGraphic.AnimationSpeed) & " ms "
@@ -281,7 +293,7 @@ dBug:
 
                 ' Remember
                 Cfg_path_recentZT1 = System.IO.Path.GetFullPath(DlgOpen.FileName)
-                ClsTasks.Config_Write()
+                MdlConfig.Write()
 
                 ' What has been opened, might need to be saved.
                 DlgSave.FileName = DlgOpen.FileName
@@ -294,7 +306,7 @@ dBug:
 
     Private Sub TbFrames_ValueChanged1(sender As Object, e As EventArgs) Handles TbFrames.ValueChanged
 
-        ClsTasks.Update_Preview(TbFrames.Value - 1)
+        MdlTasks.Update_Preview(TbFrames.Value - 1)
 
         Debug.Print("Value changed.")
 
@@ -352,7 +364,7 @@ dBug:
 
                 ' Remember
                 Cfg_path_recentPNG = System.IO.Path.GetFullPath(DlgSave.FileName)
-                ClsTasks.Config_Write()
+                MdlConfig.Write()
 
 
             End If
@@ -450,14 +462,14 @@ dBug:
                         editorBgGraphic.Read(DlgOpen.FileName)
 
                         ' reDraw current frame 
-                        ClsTasks.Update_Preview()
+                        MdlTasks.Update_Preview()
 
                         ' Show default palette
                         'editorBgGraphic.colorPalette.fillPaletteGrid(dgvPaletteMain)
 
                         ' Remember
                         Cfg_path_recentZT1 = System.IO.Path.GetFullPath(DlgOpen.FileName)
-                        ClsTasks.Config_Write()
+                        MdlConfig.Write()
 
                     End If
                 Else
@@ -533,7 +545,7 @@ dBug:
 16:
         TbFrames.Value += 1
 
-        ClsTasks.Update_Preview(TbFrames.Value - 1)
+        MdlTasks.Update_Preview(TbFrames.Value - 1)
 
         Exit Sub
 
@@ -546,7 +558,7 @@ dBug:
 
         editorGraphic.Frames.RemoveAt(TbFrames.Value - 1)
 
-        ClsTasks.Update_Preview(TbFrames.Value - 1)
+        MdlTasks.Update_Preview(TbFrames.Value - 1)
 
 
     End Sub
@@ -572,7 +584,7 @@ dBug:
             editorFrame.UpdateOffsets(New Point(0, 1))
         End If
 
-        ClsTasks.Update_Preview()
+        MdlTasks.Update_Preview()
 
     End Sub
 
@@ -585,7 +597,7 @@ dBug:
             editorFrame.UpdateOffsets(New Point(0, -1))
         End If
 
-        ClsTasks.Update_Preview()
+        MdlTasks.Update_Preview()
 
     End Sub
 
@@ -599,7 +611,7 @@ dBug:
             editorFrame.UpdateOffsets(New Point(1, 0))
         End If
 
-        ClsTasks.Update_Preview()
+        MdlTasks.Update_Preview()
 
     End Sub
 
@@ -612,7 +624,7 @@ dBug:
             editorFrame.UpdateOffsets(New Point(-1, 0))
         End If
 
-        ClsTasks.Update_Preview()
+        MdlTasks.Update_Preview()
 
 
 
@@ -633,10 +645,10 @@ dBug:
         ' Was displaying last frame?
         If (intFrameNumber = editorGraphic.Frames.Count - 1) Then
             ' Show first one instead
-            ClsTasks.Update_Preview(0)
+            MdlTasks.Update_Preview(0)
         Else
             ' Update current frame
-            ClsTasks.Update_Preview()
+            MdlTasks.Update_Preview()
         End If
 
 
@@ -659,7 +671,7 @@ dBug:
 
     Private Sub TsbDelete_PNG_Click(sender As Object, e As EventArgs) Handles tsbDelete_PNG.Click
 
-        ClsTasks.CleanUp_files(Cfg_path_Root, ".png")
+        MdlTasks.CleanUp_files(Cfg_path_Root, ".png")
         MsgBox("Finished clean up.", vbOKOnly + vbInformation, "Finished clean up.")
 
     End Sub
@@ -667,8 +679,8 @@ dBug:
     Private Sub TsbDelete_ZT1Files_Click(sender As Object, e As EventArgs) Handles tsbDelete_ZT1Files.Click
 
         ' Cleanup ZT1 Graphics and color palettes
-        ClsTasks.CleanUp_files(Cfg_path_Root, "")
-        ClsTasks.CleanUp_files(Cfg_path_Root, ".pal")
+        MdlTasks.CleanUp_files(Cfg_path_Root, "")
+        MdlTasks.CleanUp_files(Cfg_path_Root, ".pal")
         MsgBox("Finished clean up.", vbOKOnly + vbInformation, "Finished clean up.")
 
     End Sub
@@ -678,8 +690,8 @@ dBug:
     Private Sub TsbFrame_fpX_SelectedIndexChanged(sender As Object, e As EventArgs) Handles tsbFrame_fpX.SelectedIndexChanged
 
         Cfg_grid_footPrintX = tsbFrame_fpX.Text
-        ClsTasks.Config_Write()
-        ClsTasks.Update_Preview()
+        MdlConfig.Write()
+        MdlTasks.Update_Preview()
 
     End Sub
 
@@ -690,8 +702,8 @@ dBug:
 
 
         Cfg_grid_footPrintY = tsbFrame_fpY.Text
-        ClsTasks.Config_Write()
-        ClsTasks.Update_Preview()
+        MdlConfig.Write()
+        MdlTasks.Update_Preview()
 
     End Sub
 
@@ -702,7 +714,7 @@ dBug:
         If e.RowIndex > -1 Then
 
             ' Replace colors
-            ClsTasks.Pal_ReplaceColor(e.RowIndex)
+            MdlTasks.Pal_ReplaceColor(e.RowIndex)
 
         End If
 
@@ -733,26 +745,26 @@ dBug:
 
     Private Sub MnuPal_MoveUp_Click(sender As Object, e As EventArgs) Handles mnuPal_MoveUp.Click
 
-        ClsTasks.Pal_MoveColor(dgvPaletteMain.SelectedRows(0).Index, dgvPaletteMain.SelectedRows(0).Index - 1)
+        MdlTasks.Pal_MoveColor(dgvPaletteMain.SelectedRows(0).Index, dgvPaletteMain.SelectedRows(0).Index - 1)
 
     End Sub
     Private Sub MnuPal_MoveDown_Click(sender As Object, e As EventArgs) Handles mnuPal_MoveDown.Click
 
-        ClsTasks.Pal_MoveColor(dgvPaletteMain.SelectedRows(0).Index, dgvPaletteMain.SelectedRows(0).Index + 1)
+        MdlTasks.Pal_MoveColor(dgvPaletteMain.SelectedRows(0).Index, dgvPaletteMain.SelectedRows(0).Index + 1)
 
     End Sub
 
 
     Private Sub MnuPal_Replace_Click(sender As Object, e As EventArgs) Handles mnuPal_Replace.Click
 
-        ClsTasks.Pal_ReplaceColor(dgvPaletteMain.SelectedRows(0).Index)
+        MdlTasks.Pal_ReplaceColor(dgvPaletteMain.SelectedRows(0).Index)
 
 
     End Sub
 
     Private Sub MnuPal_MoveEnd_Click(sender As Object, e As EventArgs) Handles mnuPal_MoveEnd.Click
 
-        ClsTasks.Pal_MoveColor(dgvPaletteMain.SelectedRows(0).Index, editorGraphic.ColorPalette.Colors.Count - 1)
+        MdlTasks.Pal_MoveColor(dgvPaletteMain.SelectedRows(0).Index, editorGraphic.ColorPalette.Colors.Count - 1)
 
 
     End Sub
@@ -788,7 +800,7 @@ dBug:
 16:
             TbFrames.Value += 1
 
-            ClsTasks.Update_Preview(TbFrames.Value - 1)
+            MdlTasks.Update_Preview(TbFrames.Value - 1)
 
         End If
 
@@ -823,7 +835,7 @@ dBug:
                         editorFrame.LoadPNG(DlgOpen.FileName)
 
                         ' Draw first frame 
-                        ClsTasks.Update_Preview()
+                        MdlTasks.Update_Preview()
 
                         ' Show main color palette
                         editorFrame.Parent.ColorPalette.FillPaletteGrid(dgvPaletteMain)
@@ -833,7 +845,7 @@ dBug:
 
                         ' Remember
                         Cfg_path_recentPNG = System.IO.Path.GetFullPath(DlgOpen.FileName)
-                        ClsTasks.Config_Write()
+                        MdlConfig.Write()
 
 
                     End If
@@ -897,7 +909,7 @@ dBug:
 
 
                 ' Now after the color palette has been replaced, our preview must be updated
-                ClsTasks.Update_Preview()
+                MdlTasks.Update_Preview()
 
             End If ' cancel check
 
@@ -994,9 +1006,9 @@ dBug:
         editorGraphic.ColorPalette.FillPaletteGrid(dgvPaletteMain)
 
         ' Update frame 
-        picBox.Image = ClsTasks.Grid_DrawFootPrintXY(Cfg_grid_footPrintX, Cfg_grid_footPrintY)
+        picBox.Image = MdlTasks.Grid_DrawFootPrintXY(Cfg_grid_footPrintX, Cfg_grid_footPrintY)
 
-        ClsTasks.Update_Info("New empty ZT1 Graphic")
+        MdlTasks.Update_Info("New empty ZT1 Graphic")
 
 
 
@@ -1015,8 +1027,8 @@ dBug:
             ' Shortcut to saving directly
             If File.Exists(editorGraphic.FileName) = True Then
 
-                ClsTasks.Save_Graphic(editorGraphic.FileName)
-                ClsTasks.Config_Write()
+                MdlTasks.Save_Graphic(editorGraphic.FileName)
+                MdlConfig.Write()
 
                 'No need to continue
                 Exit Sub
@@ -1045,13 +1057,13 @@ dBug:
                 End If
 
 51:
-                ClsTasks.Save_Graphic(DlgSave.FileName)
+                MdlTasks.Save_Graphic(DlgSave.FileName)
 
 
 60:
                 ' Remember
                 Cfg_path_recentZT1 = System.IO.Path.GetFullPath(DlgSave.FileName)
-                ClsTasks.Config_Write()
+                MdlConfig.Write()
 
                 ' What has been opened, might need to be saved.
                 DlgOpen.FileName = DlgSave.FileName
@@ -1082,6 +1094,14 @@ dBug:
         TmrAnimation.Interval = editorGraphic.AnimationSpeed
         TmrAnimation.Enabled = ChkPlayAnimation.Checked
 
+
+    End Sub
+
+    Private Sub LblColorDetails_Click(sender As Object, e As EventArgs) Handles lblColorDetails.Click
+
+    End Sub
+
+    Private Sub TbFrames_Scroll(sender As Object, e As EventArgs) Handles TbFrames.Scroll
 
     End Sub
 End Class

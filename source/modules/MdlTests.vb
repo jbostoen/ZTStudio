@@ -6,7 +6,7 @@ Imports System.Security
 Module MdlTests
 
 
-    Sub Get_HashesOfFilesInFolder(strPath As String)
+    Sub GetHashesOfFilesInFolder(strPath As String)
 
 
         ' First we will create a recursive list.
@@ -15,38 +15,38 @@ Module MdlTests
         Dim result As New List(Of String)
 
         ' This stack stores the directories to process.
-        Dim stack As New Stack(Of String)
+        Dim StackDirectories As New Stack(Of String)
 
         ' Add the initial directory
-        stack.Push(strPath)
+        StackDirectories.Push(strPath)
 
 10:
 
         ' Continue processing for each stacked directory
-        Do While (stack.Count > 0)
+        Do While (StackDirectories.Count > 0)
             ' Get top directory string
 
 15:
-            Dim dir As String = stack.Pop
+            Dim StrCurrentDirectory As String = StackDirectories.Pop
 
 20:
-            For Each f As String In Directory.GetFiles(dir, "*")
-                Debug.Print(f)
-                Dim objHash As Object = MdlTests.Generate_Hash("sha256", f)
-                IniWrite(strPath & "\hashes.cfg", Strings.Replace(Strings.Replace(Path.GetDirectoryName(f), strPath & "\", ""), "\", "/"), Path.GetFileName(f), objhash)
+            For Each StrCurrentFile As String In Directory.GetFiles(StrCurrentDirectory, "*")
 
-                objHash.dispose()
+
+                Dim ObjHash As Object = MdlTests.GenerateHash("sha256", StrCurrentFile)
+                StrCurrentFile = Strings.Replace(Strings.Replace(Path.GetDirectoryName(StrCurrentFile), strPath & "\", ""), "\", "/")
+                IniWrite(strPath & "\hashes.cfg", StrCurrentFile, Path.GetFileName(StrCurrentFile), ObjHash)
+
+                ObjHash.dispose()
 
             Next
-
-25:
 
 30:
 
             ' Loop through all subdirectories and add them to the stack.
-            Dim directoryName As String
-            For Each directoryName In Directory.GetDirectories(dir)
-                stack.Push(directoryName)
+            Dim StrSubDirectoryName As String
+            For Each StrSubDirectoryName In Directory.GetDirectories(Dir)
+                StackDirectories.Push(StrSubDirectoryName)
             Next
 
         Loop
@@ -56,7 +56,7 @@ Module MdlTests
     End Sub
 
     ' Function to obtain the desired hash of a file
-    Function Generate_Hash(ByVal StrHashType As String, ByVal StrFileName As String)
+    Function GenerateHash(ByVal StrHashType As String, ByVal StrFileName As String)
 
         ' Declaring the variable : hash
         Dim HashGenerator As Object
@@ -102,7 +102,7 @@ Module MdlTests
         Dim hex_value As String = ""
 
         ' We traverse the array of bytes
-        Dim i As Integer
+        Dim I As Integer
         For i = 0 To array.Length - 1
 
             ' We convert each byte in hexadecimal

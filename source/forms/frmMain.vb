@@ -25,7 +25,7 @@ Public Class FrmMain
 
 
         ' Output
-        BM = New Bitmap(Cfg_grid_numPixels * 2, Cfg_grid_numPixels * 2)
+        MdlSettings.bmEmpty = New Bitmap(Cfg_grid_numPixels * 2, Cfg_grid_numPixels * 2)
         With picBox
             .Width = Cfg_grid_numPixels * 2
             .Height = Cfg_grid_numPixels * 2
@@ -92,35 +92,35 @@ Public Class FrmMain
         ' If just usting editorFrame.GetImage(), it won't show colors of background graphic.
         ' Todo: ombining them makes more sense but is more intensive. Should be cached somewhere.
         ' Images_Combine(editorFrame.GetImage(), editorBgGraphic.getimage())
-        Dim bmTmp As Bitmap
-        bmTmp = picBox.Image ' editorFrame.getImage()
+        Dim BmTmp As Bitmap
+        BmTmp = picBox.Image ' editorFrame.getImage()
         Application.DoEvents()
 
 4:
-        If IsNothing(bmTmp) Then
+        If IsNothing(BmTmp) Then
             Exit Sub
         End If
 
 
 20:
-        Dim eX As Integer = (picBox.Width - bmTmp.Width) / 2
-        Dim eY As Integer = (picBox.Height - bmTmp.Height) / 2
+        Dim eX As Integer = (picBox.Width - BmTmp.Width) / 2
+        Dim eY As Integer = (picBox.Height - BmTmp.Height) / 2
 
 100:
-        If e.X - eX >= 0 And e.X - eX < bmTmp.Width And e.Y - eY >= 0 And e.Y - eY < bmTmp.Height Then
+        If e.X - eX >= 0 And e.X - eX < BmTmp.Width And e.Y - eY >= 0 And e.Y - eY < BmTmp.Height Then
 
 101:
-            Dim c As System.Drawing.Color = bmTmp.GetPixel(e.X - eX, e.Y - eY)
+            Dim C As System.Drawing.Color = BmTmp.GetPixel(e.X - eX, e.Y - eY)
 
 
-            If c.A <> 0 Then
+            If C.A <> 0 Then
 
 102:
-                lblColor.BackColor = c '.ToString()
+                lblColor.BackColor = C '.ToString()
                 lblColorDetails.Text = "Coordinates: x: " & e.X - eX & " , y: " & e.Y - eY & vbCrLf &
-                    "RGB: " & c.R & "," & c.G & "," & c.B & vbCrLf &
-                    "Index in .pal file: # " & editorGraphic.ColorPalette.Colors.IndexOf(c) & vbCrLf &
-                    "VB.Net: " & c.ToArgb()
+                    "RGB: " & C.R & "," & C.G & "," & C.B & vbCrLf &
+                    "Index in .pal file: # " & EditorGraphic.ColorPalette.Colors.IndexOf(C) & vbCrLf &
+                    "VB.Net: " & C.ToArgb()
 
 
 
@@ -174,7 +174,7 @@ dBug:
 
     Private Sub TTbFrames_ValueChanged(sender As Object, e As EventArgs)
 
-        MdlTasks.Update_Preview(TbFrames.Value - 1)
+        MdlZTStudioUI.UpdatePreview(TbFrames.Value - 1)
 
     End Sub
 
@@ -190,7 +190,7 @@ dBug:
             TbFrames.Value += 1
         End If
 
-        MdlTasks.Update_Preview(TbFrames.Value - 1)
+        MdlZTStudioUI.UpdatePreview(TbFrames.Value - 1)
 
     End Sub
 
@@ -209,7 +209,7 @@ dBug:
 
 
         MdlConfig.Write()
-        MdlTasks.Update_Info("Background color changed.")
+        MdlZTStudioUI.UpdateInfo("Background color changed.")
 
 
     End Sub
@@ -262,26 +262,26 @@ dBug:
                     Else
 
                         ' Reset any previous info.
-                        editorGraphic = New ClsGraphic
+                        EditorGraphic = New ClsGraphic
 
                         ' OK
-                        editorGraphic.Read(DlgOpen.FileName)
+                        EditorGraphic.Read(DlgOpen.FileName)
 
                         ' Keep filename
                         ssFileName.Text = Now.ToString("yyyy-MM-dd HH:mm:ss") & ": opened " & DlgOpen.FileName
 
                         ' Draw first frame 
-                        MdlTasks.Update_Preview(0)
+                        MdlZTStudioUI.UpdatePreview(0)
 
                         ' Add time indication
-                        LblAnimTime.Text = ((editorGraphic.Frames.Count - editorGraphic.ExtraFrame) * editorGraphic.AnimationSpeed) & " ms "
-                        LblFrames.Text = (editorGraphic.Frames.Count - editorGraphic.ExtraFrame) & " frames. "
+                        LblAnimTime.Text = ((EditorGraphic.Frames.Count - EditorGraphic.ExtraFrame) * EditorGraphic.AnimationSpeed) & " ms "
+                        LblFrames.Text = (EditorGraphic.Frames.Count - EditorGraphic.ExtraFrame) & " frames. "
 
                         ' Show default palette
-                        editorGraphic.ColorPalette.FillPaletteGrid(dgvPaletteMain)
+                        EditorGraphic.ColorPalette.FillPaletteGrid(dgvPaletteMain)
 
                         ' Set editorframe
-                        editorFrame = editorGraphic.Frames(0)
+                        EditorFrame = EditorGraphic.Frames(0)
                         TbFrames.Value = 1
 
 
@@ -306,11 +306,11 @@ dBug:
 
     Private Sub TbFrames_ValueChanged1(sender As Object, e As EventArgs) Handles TbFrames.ValueChanged
 
-        MdlTasks.Update_Preview(TbFrames.Value - 1)
+        MdlZTStudioUI.UpdatePreview(TbFrames.Value - 1)
 
         Debug.Print("Value changed.")
 
-        editorFrame = editorGraphic.Frames(TbFrames.Value - 1)
+        EditorFrame = EditorGraphic.Frames(TbFrames.Value - 1)
 
     End Sub
 
@@ -359,7 +359,7 @@ dBug:
 
                 ' bminput.cachedFrame.Save(dlgSave.FileName, System.Drawing.Imaging.ImageFormat.Png)
 
-                editorFrame.SavePNG(DlgSave.FileName)
+                EditorFrame.SavePNG(DlgSave.FileName)
 
 
                 ' Remember
@@ -459,10 +459,10 @@ dBug:
                     Else
 
                         ' OK
-                        editorBgGraphic.Read(DlgOpen.FileName)
+                        EditorBgGraphic.Read(DlgOpen.FileName)
 
                         ' reDraw current frame 
-                        MdlTasks.Update_Preview()
+                        MdlZTStudioUI.UpdatePreview()
 
                         ' Show default palette
                         'editorBgGraphic.colorPalette.fillPaletteGrid(dgvPaletteMain)
@@ -515,7 +515,7 @@ dBug:
 
             Else
 
-                editorGraphic.AnimationSpeed = CInt(tstZT1_AnimSpeed.Text)
+                EditorGraphic.AnimationSpeed = CInt(tstZT1_AnimSpeed.Text)
 
 
             End If
@@ -532,20 +532,20 @@ dBug:
 
 
 0:
-        Dim ztFrame As New ClsFrame(editorGraphic)
+        Dim ZtFrame As New ClsFrame(EditorGraphic)
 2:
 
 10:
-        editorGraphic.Frames.Insert(TbFrames.Value, ztFrame) ' add after
+        EditorGraphic.Frames.Insert(TbFrames.Value, ZtFrame) ' add after
 
 15:
         ' not sure if this is right if an extra frame is applied?
-        TbFrames.Maximum = editorGraphic.Frames.Count - editorGraphic.ExtraFrame
+        TbFrames.Maximum = EditorGraphic.Frames.Count - EditorGraphic.ExtraFrame
 
 16:
         TbFrames.Value += 1
 
-        MdlTasks.Update_Preview(TbFrames.Value - 1)
+        MdlZTStudioUI.UpdatePreview(TbFrames.Value - 1)
 
         Exit Sub
 
@@ -556,9 +556,9 @@ dBug:
 
     Private Sub TsbFrame_Delete_Click(sender As Object, e As EventArgs) Handles tsbFrame_Delete.Click
 
-        editorGraphic.Frames.RemoveAt(TbFrames.Value - 1)
+        EditorGraphic.Frames.RemoveAt(TbFrames.Value - 1)
 
-        MdlTasks.Update_Preview(TbFrames.Value - 1)
+        MdlZTStudioUI.UpdatePreview(TbFrames.Value - 1)
 
 
     End Sub
@@ -579,12 +579,12 @@ dBug:
     Private Sub TsbFrame_OffsetUp_MouseDown(sender As Object, e As MouseEventArgs) Handles tsbFrame_OffsetUp.MouseDown
 
         If (e.Button = Windows.Forms.MouseButtons.Right) Then
-            editorFrame.UpdateOffsets(New Point(0, 16))
+            EditorFrame.UpdateOffsets(New Point(0, 16))
         Else
-            editorFrame.UpdateOffsets(New Point(0, 1))
+            EditorFrame.UpdateOffsets(New Point(0, 1))
         End If
 
-        MdlTasks.Update_Preview()
+        MdlZTStudioUI.UpdatePreview()
 
     End Sub
 
@@ -592,12 +592,12 @@ dBug:
 
 
         If (e.Button = Windows.Forms.MouseButtons.Right) Then
-            editorFrame.UpdateOffsets(New Point(0, -16))
+            EditorFrame.UpdateOffsets(New Point(0, -16))
         Else
-            editorFrame.UpdateOffsets(New Point(0, -1))
+            EditorFrame.UpdateOffsets(New Point(0, -1))
         End If
 
-        MdlTasks.Update_Preview()
+        MdlZTStudioUI.UpdatePreview()
 
     End Sub
 
@@ -606,12 +606,12 @@ dBug:
 
 
         If (e.Button = Windows.Forms.MouseButtons.Right) Then
-            editorFrame.UpdateOffsets(New Point(16, 0))
+            EditorFrame.UpdateOffsets(New Point(16, 0))
         Else
-            editorFrame.UpdateOffsets(New Point(1, 0))
+            EditorFrame.UpdateOffsets(New Point(1, 0))
         End If
 
-        MdlTasks.Update_Preview()
+        MdlZTStudioUI.UpdatePreview()
 
     End Sub
 
@@ -619,12 +619,12 @@ dBug:
 
 
         If (e.Button = Windows.Forms.MouseButtons.Right) Then
-            editorFrame.UpdateOffsets(New Point(-16, 0))
+            EditorFrame.UpdateOffsets(New Point(-16, 0))
         Else
-            editorFrame.UpdateOffsets(New Point(-1, 0))
+            EditorFrame.UpdateOffsets(New Point(-1, 0))
         End If
 
-        MdlTasks.Update_Preview()
+        MdlZTStudioUI.UpdatePreview()
 
 
 
@@ -632,23 +632,23 @@ dBug:
 
     Private Sub TsbGraphic_ExtraFrame_Click(sender As Object, e As EventArgs) Handles tsbGraphic_ExtraFrame.Click
 
-        If editorGraphic.ExtraFrame = 0 Then
-            editorGraphic.ExtraFrame = 1
+        If EditorGraphic.ExtraFrame = 0 Then
+            EditorGraphic.ExtraFrame = 1
         Else
-            editorGraphic.ExtraFrame = 0
+            EditorGraphic.ExtraFrame = 0
         End If
 
 
         ' Quick fix: on change, revert to frame 1.
-        Dim intFrameNumber As Integer = editorGraphic.Frames.IndexOf(editorFrame)
+        Dim IntFrameNumber As Integer = EditorGraphic.Frames.IndexOf(EditorFrame)
 
         ' Was displaying last frame?
-        If (intFrameNumber = editorGraphic.Frames.Count - 1) Then
+        If (IntFrameNumber = EditorGraphic.Frames.Count - 1) Then
             ' Show first one instead
-            MdlTasks.Update_Preview(0)
+            MdlZTStudioUI.UpdatePreview(0)
         Else
             ' Update current frame
-            MdlTasks.Update_Preview()
+            MdlZTStudioUI.UpdatePreview()
         End If
 
 
@@ -691,7 +691,7 @@ dBug:
 
         Cfg_grid_footPrintX = tsbFrame_fpX.Text
         MdlConfig.Write()
-        MdlTasks.Update_Preview()
+        MdlZTStudioUI.UpdatePreview()
 
     End Sub
 
@@ -703,7 +703,7 @@ dBug:
 
         Cfg_grid_footPrintY = tsbFrame_fpY.Text
         MdlConfig.Write()
-        MdlTasks.Update_Preview()
+        MdlZTStudioUI.UpdatePreview()
 
     End Sub
 
@@ -764,7 +764,7 @@ dBug:
 
     Private Sub MnuPal_MoveEnd_Click(sender As Object, e As EventArgs) Handles mnuPal_MoveEnd.Click
 
-        MdlTasks.Pal_MoveColor(dgvPaletteMain.SelectedRows(0).Index, editorGraphic.ColorPalette.Colors.Count - 1)
+        MdlTasks.Pal_MoveColor(dgvPaletteMain.SelectedRows(0).Index, EditorGraphic.ColorPalette.Colors.Count - 1)
 
 
     End Sub
@@ -786,7 +786,7 @@ dBug:
 
 
 0:
-            Dim ztFrame As New ClsFrame(editorGraphic)
+            Dim ZtFrame As New ClsFrame(EditorGraphic)
 2:
 
 10:
@@ -800,7 +800,7 @@ dBug:
 16:
             TbFrames.Value += 1
 
-            MdlTasks.Update_Preview(TbFrames.Value - 1)
+            MdlZTStudioUI.UpdatePreview(TbFrames.Value - 1)
 
         End If
 
@@ -835,7 +835,7 @@ dBug:
                         editorFrame.LoadPNG(DlgOpen.FileName)
 
                         ' Draw first frame 
-                        MdlTasks.Update_Preview()
+                        MdlZTStudioUI.UpdatePreview()
 
                         ' Show main color palette
                         editorFrame.Parent.ColorPalette.FillPaletteGrid(dgvPaletteMain)
@@ -909,7 +909,7 @@ dBug:
 
 
                 ' Now after the color palette has been replaced, our preview must be updated
-                MdlTasks.Update_Preview()
+                MdlZTStudioUI.UpdatePreview()
 
             End If ' cancel check
 
@@ -1008,7 +1008,7 @@ dBug:
         ' Update frame 
         picBox.Image = MdlTasks.Grid_DrawFootPrintXY(Cfg_grid_footPrintX, Cfg_grid_footPrintY)
 
-        MdlTasks.Update_Info("New empty ZT1 Graphic")
+        MdlZTStudioUI.UpdateInfo("New empty ZT1 Graphic")
 
 
 

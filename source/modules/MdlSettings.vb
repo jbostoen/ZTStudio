@@ -16,17 +16,14 @@ Module MdlSettings
     ByVal lpReturnedString As String, ByVal nSize As Int32,
     ByVal lpFileName As String) As Int32
 
+    Public BMEmpty As Bitmap ' Empty bitmap on initializing. PictureBox's image sometimes gets reset to this. Todo: review if actually needed...
 
+    Public EditorGraphic As ClsGraphic             ' The ClsGraphic object we use.
+    Public EditorBgGraphic As ClsGraphic           ' The background graphic, e.g. toy
+    Public EditorFrame As ClsFrame                 ' The clsFrame we are currently viewing/editing
 
-    Public editorGraphic As ClsGraphic             ' The ClsGraphic object we use.
-    Public editorBgGraphic As ClsGraphic           ' The background graphic, e.g. toy
-    Public editorFrame As ClsFrame                 ' The clsFrame we are currently viewing/editing
-
-    Public BM As Bitmap
-
-
-    Public Cfg_grid_BackGroundColor As Color = Color.White ' What is the default background color?
-    Public Cfg_grid_ForeGroundColor As Color = Color.Black ' What is the default foreground color for the grid lines?
+    Public Cfg_grid_BackGroundColor As Color = Color.White ' The default background color?
+    Public Cfg_grid_ForeGroundColor As Color = Color.Black ' The default foreground color for the grid lines?
 
     Public Cfg_grid_numPixels As Integer = 256 ' 256 - The maximum number of pixels
     Public Cfg_grid_zoom As Integer = 1 ' Default zoom level
@@ -43,7 +40,7 @@ Module MdlSettings
 
 
     ' Write ZT1
-    Public Cfg_export_ZT1_Ani As Byte = 1
+    Public Cfg_export_ZT1_Ani As Byte = 1 ' Try to generate an .ani file
     Public Cfg_export_ZT1_AlwaysAddZTAFBytes As Byte = 0 ' Should we add ZTAF-bytes even for a simple object? 
 
 

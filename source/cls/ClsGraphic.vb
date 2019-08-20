@@ -97,8 +97,8 @@ Public Class ClsGraphic
         End If
 
         Dim X As Integer = 0
-        Dim curByte As Integer = 0
-        Dim intTemplength As Integer = 0
+        Dim CurByte As Integer = 0
+        Dim IntTemplength As Integer = 0
 
         Dim ClsGraphic_numFrames As Integer = 0          ' Number of frames for this animation (at least 1)
 
@@ -125,8 +125,8 @@ Public Class ClsGraphic
         Debug.Print("   : read file contents...")
 
         ' Read full file.
-        Dim bytes As Byte() = IO.File.ReadAllBytes(ClsGraphic_FileName)
-        Dim tHex As String() = Array.ConvertAll(bytes, Function(b) b.ToString("X2"))
+        Dim Bytes As Byte() = IO.File.ReadAllBytes(ClsGraphic_FileName)
+        Dim tHex As String() = Array.ConvertAll(Bytes, Function(b) b.ToString("X2"))
         Dim hexBytes As New List(Of String)
         hexBytes.AddRange(tHex)
 
@@ -158,20 +158,20 @@ Public Class ClsGraphic
         ' === FILENAME ===
         ' How many bytes is the palette file name?
         Debug.Print("&H" & hexBytes(7) & hexBytes(6) & hexBytes(5) & hexBytes(4))
-        intTemplength = CInt("&H" & hexBytes(7) & hexBytes(6) & hexBytes(5) & hexBytes(4)) - 1
+        IntTemplength = CInt("&H" & hexBytes(7) & hexBytes(6) & hexBytes(5) & hexBytes(4)) - 1
 
 30:
 
         X = 0
-        While X < intTemplength
+        While X < IntTemplength
             Me.ColorPalette.FileName &= Chr(CInt("&H" & hexBytes(8 + X)))
             X += 1
         End While
-        Debug.Print("   : palette name = '" & Me.ColorPalette.FileName & "' (length: " & intTemplength & ")")
+        Debug.Print("   : palette name = '" & Me.ColorPalette.FileName & "' (length: " & IntTemplength & ")")
 
 
         ' remove all previous bytes.
-        hexBytes.Skip(8 + intTemplength + 1)
+        hexBytes.Skip(8 + IntTemplength + 1)
 
 
 40:
@@ -187,7 +187,7 @@ Public Class ClsGraphic
         ' === NUM OF FRAMES ===
         ' we might need more bytes for this.
         'Debug.Print("Graphics: Determining number of frames... ")
-        ClsGraphic_numFrames = CInt("&H" & hexBytes(curByte + 3) & hexBytes(curByte + 2) & hexBytes(curByte + 1) & hexBytes(curByte))
+        ClsGraphic_numFrames = CInt("&H" & hexBytes(CurByte + 3) & hexBytes(CurByte + 2) & hexBytes(CurByte + 1) & hexBytes(CurByte))
         Debug.Print("Graphics: number of frames = " & ClsGraphic_numFrames)
 
         ' remove all these bytes.
@@ -199,31 +199,31 @@ Public Class ClsGraphic
 
 100:
         ' ==================================== FOR EACH FRAME... ===================================
-        Dim intCurrentFrame As Integer = 0
-        Dim intFrameBytes As Integer = 0
-        Dim intFrameBytesCurrent As Integer = 0
+        Dim IntCurrentFrame As Integer = 0
+        Dim IntFrameBytes As Integer = 0
+        Dim IntFrameBytesCurrent As Integer = 0
 
-        Dim ztFrames As New List(Of ClsFrame)  ' Strings of HEX will be stored here, for each frame
+        Dim ZtFrames As New List(Of ClsFrame)  ' Strings of HEX will be stored here, for each frame
 
         While hexBytes.Count > 0
 
 101:
 
             ' Now, the next 4 bytes determine the length of bytes to follow for this particular animation
-            intFrameBytes = CInt("&H" & hexBytes(curByte + 3) & hexBytes(curByte + 2) & hexBytes(curByte + 1) & hexBytes(curByte))
+            IntFrameBytes = CInt("&H" & hexBytes(CurByte + 3) & hexBytes(CurByte + 2) & hexBytes(CurByte + 1) & hexBytes(CurByte))
 
             ' remove all these bytes.
             hexBytes.Skip(4)
 
-            Debug.Print("   Bytes to follow for the entire frame: " & intFrameBytes)
+            Debug.Print("   Bytes to follow for the entire frame: " & IntFrameBytes)
 102:
 
-            Dim ztFrame As New ClsFrame(Me)
+            Dim ZtFrame As New ClsFrame(Me)
             Dim frameEntireHex As New List(Of String)
 
             ' Build our hex string first.
-            For intFrameBytesCurrent = 0 To (intFrameBytes - 1)
-                frameEntireHex.Add(hexBytes(intFrameBytesCurrent))
+            For IntFrameBytesCurrent = 0 To (IntFrameBytes - 1)
+                frameEntireHex.Add(hexBytes(IntFrameBytesCurrent))
             Next
 
 103:
@@ -231,33 +231,33 @@ Public Class ClsGraphic
 
 
             ' Write our hex string to our frame
-            ztFrame.CoreImageHex = frameEntireHex
+            ZtFrame.CoreImageHex = frameEntireHex
 
 104:
             ' It's best to render the bitmap. This also sets offsets etc.
-            ztFrame.RenderCoreImageFromHex()
+            ZtFrame.RenderCoreImageFromHex()
 
 
-            ztFrames.Add(ztFrame, False)
+            ZtFrames.Add(ZtFrame, False)
 
 
 
 110:
             ' Remove those frame bytes
-            hexBytes.Skip(intFrameBytes)
+            hexBytes.Skip(IntFrameBytes)
 
 155:
             'Debug.Print("Graphics: total bytes of frame " & (ztFrames.Count).ToString("00") & "/" & (ClsGraphic_numFrames) & " = " & (Strings.Replace(ztFrame.hexString, " ", "").Length / 2) & vbTab & "Bytes left: " & hex.Length)
 
 
-            intCurrentFrame += 1
+            IntCurrentFrame += 1
 
         End While
 
 
 200:
         ' if ClsGraphic_Byte9 = 1, then animated, last frame = still
-        ClsGraphic_frames = ztFrames
+        ClsGraphic_frames = ZtFrames
 
 201:
         ' pre-render last image.
@@ -364,7 +364,7 @@ dBg:
             .AddRange(Strings.Split((palName.Length + 1).ToString("X8").ReverseHEX(), " "), False)
 
             ' === Palette file name ===
-            Dim sb As New System.Text.StringBuilder
+            Dim Sb As New System.Text.StringBuilder
             For Each c As Char In palName
                 .Add(Convert.ToString(Convert.ToInt32(c), 16), False)
             Next c
@@ -484,8 +484,8 @@ dBug:
 
         Dim rect As New Rectangle
 
-        Dim coordA As New Point(Cfg_grid_numPixels * 2, Cfg_grid_numPixels * 2)
-        Dim coordB As New Point(-Cfg_grid_numPixels * 2, -Cfg_grid_numPixels * 2)
+        Dim CoordA As New Point(Cfg_grid_numPixels * 2, Cfg_grid_numPixels * 2)
+        Dim CoordB As New Point(-Cfg_grid_numPixels * 2, -Cfg_grid_numPixels * 2)
 
         Me.RenderFrames()
 
@@ -525,7 +525,7 @@ dBug:
 
 
         ' This will trigger a refresh.
-        MdlTasks.Update_Info("Property of graphic changed: " & info)
+        MdlZTStudioUI.UpdateInfo("Property of graphic changed: " & info)
 
         'RaiseEvent PropertyChanged(Me, New PropertyChangedEventArgs(info))
     End Sub

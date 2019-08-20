@@ -21,8 +21,8 @@ Module MdlZTStudio
 20:
 
         ' We will configure our parameters.
-        Dim strArgAction = vbNullString
-        Dim strArgActionValue = vbNullString
+        Dim StrArgAction = vbNullString
+        Dim StrArgActionValue = vbNullString
         Dim argK As String
         Dim argV As String
 
@@ -80,17 +80,17 @@ Module MdlZTStudio
                     ' These are actions. 
                     ' An action can be an automated process doing lots of stuff (e.g. convertfolder)
                 Case "/action.convertfolder.topng"
-                    strArgAction = "convertfolder.topng"
-                    strArgActionValue = argV
+                    StrArgAction = "convertfolder.topng"
+                    StrArgActionValue = argV
                 Case "/action.convertfolder.tozt1"
-                    strArgAction = "convertfolder.tozt1"
-                    strArgActionValue = argV
+                    StrArgAction = "convertfolder.tozt1"
+                    StrArgActionValue = argV
                 Case "/action.convertfile.topng"
-                    strArgAction = "convertfile.topng"
-                    strArgActionValue = argV
+                    StrArgAction = "convertfile.topng"
+                    StrArgActionValue = argV
                 Case "/action.convertfile.tozt1"
-                    strArgAction = "convertfile"
-                    strArgActionValue = argV
+                    StrArgAction = "convertfile"
+                    StrArgActionValue = argV
 
             End Select
             ' Parameters?
@@ -108,31 +108,31 @@ Module MdlZTStudio
         ' ZTStudio.exe /ZTAF:1 /convertFolder:<path> -> would correctly apply the configuration option.
         ' Assume users are unaware and make it easy for them not to get frustrated, so only convert at the en:
 
-        Select Case strArgAction
+        Select Case StrArgAction
 
             Case "convertfile.topng"
                 ' Do conversion.
                 ' Then exit.
-                MdlTasks.Convert_file_ZT1_to_PNG(strArgActionValue)
+                MdlTasks.Convert_file_ZT1_to_PNG(StrArgActionValue)
                 End
 
             Case "convertfile.tozt1"
                 ' Do conversion.
                 ' Then exit.
-                MdlTasks.Convert_file_PNG_to_ZT1(strArgActionValue)
+                MdlTasks.Convert_file_PNG_to_ZT1(StrArgActionValue)
                 End
 
             Case "convertfolder.topng"
                 ' Do conversion.
                 ' Then exit.
-                MdlTasks.Convert_folder_ZT1_to_PNG(strArgActionValue)
+                MdlTasks.Convert_folder_ZT1_to_PNG(StrArgActionValue)
                 End
 
             Case "convertfolder.tozt1"
 
                 ' Do conversion.
                 ' Then exit.
-                MdlTasks.Convert_folder_PNG_to_ZT1(strArgActionValue)
+                MdlTasks.Convert_folder_PNG_to_ZT1(StrArgActionValue)
                 End
 
 
@@ -169,7 +169,7 @@ dBug:
     ''' <param name="objError">Error object (contains number and message)</param>
     Sub UnexpectedError(strClass As String, strMethod As String, intErrorLine As Integer, objError As ErrObject)
 
-        Dim strMessage As String = "" &
+        Dim StrMessage As String = "" &
             "Sorry, but an unexpected error occurred in " & strClass & "::" & strMethod & "() at line " & intErrorLine.ToString() & vbCrLf &
             "Error code: " & objError.Number.ToString() & vbCrLf &
             objError.Description & vbCrLf & vbCrLf &

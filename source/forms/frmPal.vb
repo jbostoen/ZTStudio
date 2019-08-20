@@ -20,12 +20,12 @@
         End If
 
 
-        Dim input As String = InputBox("" &
+        Dim Input As String = InputBox("" &
                 "Index of first color to replace (can not be 0 since we ignore transparent colors)." & vbCrLf &
                 "For example, the index for the Restaurant would be 248 (roof 8 colors) or 232 (roof 16 colors)", "Index of the first color to replace", "1")
-        If input = vbNullString Then Exit Sub 'user chickened out
+        If Input = vbNullString Then Exit Sub 'user chickened out
 
-        Dim intStart As Integer = CInt(input)
+        Dim IntStart As Integer = CInt(Input)
 
         'If intStart > (editorGraphic.colorPalette.colors.Count - dgvPal.Rows.Count + 1) Then
         'MsgBox("The index is too high. The max index for this image is " & (editorGraphic.colorPalette.colors.Count - dgvPal.Rows.Count + 1))
@@ -67,7 +67,7 @@
 
 
         editorGraphic.LastUpdated = Now.ToString("yyyyMMddHHmmss")
-        MdlTasks.Update_preview(FrmMain.TbFrames.Value - 1)
+        MdlZTStudioUI.Updatepreview(FrmMain.TbFrames.Value - 1)
 
         ' Show palette again?
         editorGraphic.ColorPalette.FillPaletteGrid(FrmMain.dgvPaletteMain)

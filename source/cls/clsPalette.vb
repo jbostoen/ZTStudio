@@ -56,8 +56,8 @@ Public Class ClsPalette
         End If
 
         ' Read full file.
-        Dim bytes As Byte() = IO.File.ReadAllBytes(pal_FileName)
-        Dim hex As String() = Array.ConvertAll(bytes, Function(b) b.ToString("X2"))
+        Dim Bytes As Byte() = IO.File.ReadAllBytes(pal_FileName)
+        Dim hex As String() = Array.ConvertAll(Bytes, Function(b) b.ToString("X2"))
 
         Dim pal_numColors As Integer = 0
 
@@ -185,14 +185,14 @@ Public Class ClsPalette
         End If
 
         ' Store so we don't need to call both .contains() and .lastindexof()
-        Dim intColorIndex As Integer = Me.Colors.LastIndexOf(cColor)
+        Dim IntColorIndex As Integer = Me.Colors.LastIndexOf(cColor)
 
-        If intColorIndex >= 0 Then
+        If IntColorIndex >= 0 Then
 
             ' Color has been found, return the index
             ' restrant.pal has a color listed twice.
             ' it seems to rely on the last index.
-            Return intColorIndex
+            Return IntColorIndex
 
         ElseIf cColor.A = 0 Then
 
@@ -246,21 +246,21 @@ Public Class ClsPalette
                 ' Color quantization method by HENDRIX 
                 'now checking in HSV space to find the closest color in the full palette - pretty good!'
                 Dim h1 As Single
-                Dim s1 As Single
+                Dim S1 As Single
                 Dim v1 As Single
                 Dim h2 As Single
-                Dim s2 As Single
+                Dim S2 As Single
                 Dim v2 As Single
                 Dim dists As New List(Of Short)
                 h1 = cColor.GetHue()
-                s1 = cColor.GetSaturation()
+                S1 = cColor.GetSaturation()
                 v1 = cColor.GetBrightness()
                 For Each col As System.Drawing.Color In Me.Colors
                     h2 = h1 - col.GetHue()
-                    s2 = s1 - col.GetSaturation()
+                    S2 = S1 - col.GetSaturation()
                     v2 = v1 - col.GetBrightness()
                     'in HSV we can use simple euclidean distance and it is reasonably good
-                    dists.Add(Math.Sqrt(h2 * h2 + s2 * s2 + v2 * v2))
+                    dists.Add(Math.Sqrt(h2 * h2 + S2 * S2 + v2 * v2))
                 Next
                 'see at which index in the existing color palette the least distance occured
                 Return dists.LastIndexOf(dists.Min())
@@ -372,15 +372,15 @@ dBug:
         Debug.Print("Combine color palettes.")
 
 
-        Dim comPal As New ClsPalette(Nothing)
+        Dim ComPal As New ClsPalette(Nothing)
 
         ' for each color palette: check if color exists in our new palette.
         For Each pal As ClsPalette In lstPals
             For Each col As System.Drawing.Color In pal.Colors
 
                 ' add color if it's not in our list
-                If comPal.Colors.IndexOf(col) < 0 Then
-                    comPal.Colors.Add(col, False)
+                If ComPal.Colors.IndexOf(col) < 0 Then
+                    ComPal.Colors.Add(col, False)
                 End If
 
 
@@ -389,10 +389,10 @@ dBug:
 
 
         ' also:
-        Me.Colors = comPal.Colors
+        Me.Colors = ComPal.Colors
 
 
-        Return comPal
+        Return ComPal
 
 
     End Function
@@ -407,29 +407,29 @@ dBug:
         ' This way, the entire palette of an existing animal can be recolored at once. (recoloring was a well known method to create 'new' animals)
         ' Next, we reimport this. We'd only need to fix the shadow.
 
-        Dim bmp As New Bitmap(16, 16)
+        Dim Bmp As New Bitmap(16, 16)
 
         ''Perform Drawing here
 
-        Dim intX As Integer = 0
-        Dim intY As Integer = 0
-        Dim intColor As Integer
+        Dim IntX As Integer = 0
+        Dim IntY As Integer = 0
+        Dim IntColor As Integer
 
 
         ' for each row
-        While intY < 16
+        While IntY < 16
 
             ' for each col
-            While intX < 16 And intColor < Me.Colors.Count
+            While IntX < 16 And IntColor < Me.Colors.Count
 
-                bmp.SetPixel(intX, intY, Me.Colors(intColor))
-                intColor += 1
-                intX += 1
+                Bmp.SetPixel(IntX, IntY, Me.Colors(IntColor))
+                IntColor += 1
+                IntX += 1
             End While
 
             ' reset, next line
-            intX = 0
-            intY += 1
+            IntX = 0
+            IntY += 1
 
         End While
 
@@ -438,9 +438,9 @@ dBug:
             File.Delete(strExportFileName)
         End If
 
-        bmp.Save(strExportFileName, System.Drawing.Imaging.ImageFormat.Png)
+        Bmp.Save(strExportFileName, System.Drawing.Imaging.ImageFormat.Png)
 
-        bmp.Dispose()
+        Bmp.Dispose()
 
 
     End Sub
@@ -455,18 +455,18 @@ dBug:
         ' We do not rely on native GIMP Palettes (.gpl) because some people might prefer Paint.NET or other programs.
         ' By importing from .PNG, we have a general approach.
 
-        Dim bmp As Bitmap = Image.FromFile(sFileName)
+        Dim Bmp As Bitmap = Image.FromFile(sFileName)
 
-        Dim intX As Integer = 0
-        Dim intY As Integer = 0
+        Dim IntX As Integer = 0
+        Dim IntY As Integer = 0
 
         ' Clear current palette (please prevent redraws at this point)
         Me.Colors.Clear(False)
 
         ' Row by row
-        While intY < bmp.Height
+        While IntY < Bmp.Height
 
-            While intX < bmp.Width
+            While IntX < Bmp.Width
 
                 ' Do not add duplicate colors, e.g. transparent stuff etc; UNLESS it's forced.
                 ' Use case: After recoloring, some colors are suddenly identical (especially after they're made brighter or darker). 
@@ -474,17 +474,17 @@ dBug:
                 ' The hex values still reference the original indexes of their colors. So changes there would screw things up and raise errors.
 
                 ' Because if a user is replacing an existing palette, the indexes to the colors might not have been changed in the actual graphic.
-                If Me.Colors.IndexOf(bmp.GetPixel(intX, intY)) < 0 Or Cfg_palette_import_png_force_add_colors = 1 Then
-                    Me.Colors.Add(bmp.GetPixel(intX, intY), False)
+                If Me.Colors.IndexOf(Bmp.GetPixel(IntX, IntY)) < 0 Or Cfg_palette_import_png_force_add_colors = 1 Then
+                    Me.Colors.Add(Bmp.GetPixel(IntX, IntY), False)
                 End If
 
-                intX += 1
+                IntX += 1
 
             End While
 
             ' reset & next line
-            intX = 0
-            intY += 1
+            IntX = 0
+            IntY += 1
 
         End While
 
@@ -529,7 +529,7 @@ dBug:
         Dim objReader As New System.IO.StreamReader(sFileName)
 
         Dim textLine As String = ""
-        Dim intLine As Integer = 1
+        Dim IntLine As Integer = 1
 
         ' Clear current palette (please prevent redraws at this point)
         Me.Colors.Clear(False)

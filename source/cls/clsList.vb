@@ -29,7 +29,7 @@ Public Class List(Of T)
         MyBase.Insert(index, item)
 
         If ForceUpdate = True Then
-            MdlTasks.update_info("List - item inserted. Overload.")
+            MdlZTStudioUI.Updateinfo("List - item inserted. Overload.")
         End If
 
     End Sub
@@ -39,7 +39,7 @@ Public Class List(Of T)
         MyBase.Remove(item)
 
         If ForceUpdate = True Then
-            MdlTasks.update_info("List - item added. Removed.")
+            MdlZTStudioUI.Updateinfo("List - item added. Removed.")
         End If
 
     End Sub
@@ -48,7 +48,7 @@ Public Class List(Of T)
         MyBase.RemoveAt(index)
 
         If ForceUpdate = True Then
-            MdlTasks.update_info("List - item added. Removed at.")
+            MdlZTStudioUI.Updateinfo("List - item added. Removed at.")
         End If
     End Sub
 
@@ -57,7 +57,7 @@ Public Class List(Of T)
         MyBase.Clear()
 
         If ForceUpdate = True Then
-            MdlTasks.update_info("List - item added. Cleared.")
+            MdlZTStudioUI.Updateinfo("List - item added. Cleared.")
         End If
 
     End Sub

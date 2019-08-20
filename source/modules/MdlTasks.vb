@@ -30,21 +30,21 @@ Module MdlTasks
 
         ' This stack stores the directories within our <root> folder to process.
         ' We'll go through each subdirectory.
-        Dim stack As New Stack(Of String)
+        Dim Stack As New Stack(Of String)
 
         ' Add the initial directory
-        stack.Push(strPath)
+        Stack.Push(strPath)
 
 10:
 
         ' Continue processing for each stacked directory
-        Do While (stack.Count > 0)
+        Do While (Stack.Count > 0)
             ' Get top directory string
 
 15:
 
 
-            Dim dir As String = stack.Pop
+            Dim dir As String = Stack.Pop
 
 20:
             ' Get all files and check if they match the extension (.pal, .png) or have no extension (ZT1 graphic)
@@ -58,7 +58,7 @@ Module MdlTasks
             ' Loop through all subdirectories and add them to the stack, so they're processed as well.
             Dim directoryName As String
             For Each directoryName In Directory.GetDirectories(dir)
-                stack.Push(directoryName)
+                Stack.Push(directoryName)
             Next
 
         Loop
@@ -167,12 +167,12 @@ dBg:
 
         strPath = Strings.LCase(strPath)
 
-        Dim strPathDir As String = Path.GetDirectoryName(strPath)
+        Dim StrPathDir As String = Path.GetDirectoryName(strPath)
 
 
         Dim paths As New List(Of String)
         Dim g As New ClsGraphic
-        Dim ztFrame As ClsFrame
+        Dim ZtFrame As ClsFrame
         Dim graphicName As String = System.IO.Path.GetFileName(strPath)
         Dim frameGraphicPath As String = Strings.Left(strPath, strPath.Length - graphicName.Length)
 
@@ -277,7 +277,7 @@ dBg:
 
 140:
 
-                ElseIf pngName = Path.GetFileName(strPathDir) Then
+                ElseIf pngName = Path.GetFileName(StrPathDir) Then
 
                     ' This checks the last part of the directory path of this graphic.
                     ' One exception which we could accept, is an extremely uncommon one.
@@ -303,7 +303,7 @@ dBg:
                 End If
 
 200:
-                ztFrame = New ClsFrame(g)
+                ZtFrame = New ClsFrame(g)
 
 
 201:
@@ -326,34 +326,34 @@ dBg:
                     ' - in the folder two levels up (animals/redpanda - redpanda.pal) - in case a palette is shared for (most of) the animal
                     ' This method should also work just fine for objects.
 
-                    Dim sPath0 As String
-                    Dim sPath1 As String
-                    Dim sPath2 As String
+                    Dim SPath0 As String
+                    Dim SPath1 As String
+                    Dim SPath2 As String
 
 
-                    sPath0 = Path.GetDirectoryName(strPathDir)
-                    sPath1 = Path.GetDirectoryName(sPath0)
-                    sPath2 = Path.GetDirectoryName(sPath1)
+                    SPath0 = Path.GetDirectoryName(StrPathDir)
+                    SPath1 = Path.GetDirectoryName(SPath0)
+                    SPath2 = Path.GetDirectoryName(SPath1)
 
-                    sPath0 = sPath0 & "\" & Path.GetFileName(sPath0)
-                    sPath1 = sPath1 & "\" & Path.GetFileName(sPath1)
-                    sPath2 = sPath2 & "\" & Path.GetFileName(sPath2)
+                    SPath0 = SPath0 & "\" & Path.GetFileName(SPath0)
+                    SPath1 = SPath1 & "\" & Path.GetFileName(SPath1)
+                    SPath2 = SPath2 & "\" & Path.GetFileName(SPath2)
 
                     ' N should not be the only view (icon etc) in this folder.
                     ' If it does seem to be the only view, we should NOT fall back on higher level.
                     ' An icon is NOT animated and often contains very different colors (plaque, icon in menu). 
                     ' An exception to this rule could be the list icon, but it's not worth making an exception for it.
 
-                    If Directory.GetFiles(strPathDir, graphicName & "*.png").Length <>
-                            Directory.GetFiles(strPathDir, "*.png").Length Then
+                    If Directory.GetFiles(StrPathDir, graphicName & "*.png").Length <>
+                            Directory.GetFiles(StrPathDir, "*.png").Length Then
 
 
                         ' 20170502 Optimized by Hendrix.
-                        Dim inPaths() As String = {sPath0, sPath1, sPath2}
+                        Dim InPaths() As String = {SPath0, SPath1, SPath2}
                         Dim exts() As String = {".pal", ".gpl", ".png"}
 
                         ' No palette has been saved/set yet for this graphic.
-                        If ztFrame.Parent.ColorPalette.FileName = vbNullString Then
+                        If ZtFrame.Parent.ColorPalette.FileName = vbNullString Then
 
                             ' Figure out if there is a preferred palette (perhaps already prepared by the user) to be used.
                             ' Two ideas come to mind here:
@@ -365,11 +365,11 @@ dBg:
 
                             MdlZTStudio.Trace("MdlTasks", "Convert_file_PNG_to_ZT1", "Batch conversion and shared palette = 1. Trying to find proper palette.")
 
-                            For Each inPath As String In inPaths
+                            For Each inPath As String In InPaths
                                 For Each ext As String In exts
 
                                     If File.Exists(inPath & ext) = True Then
-                                        With ztFrame.Parent.ColorPalette
+                                        With ZtFrame.Parent.ColorPalette
                                             ' Read a new palette once
                                             ' Ignore different extensions, so reloading within the loop is skipped
 
@@ -398,12 +398,12 @@ dBg:
                             Next inPath
 
                             ' Todo: does this lead to issues?
-                            MdlZTStudio.Trace("MdlTasks", "Convert_file_PNG_to_ZT1", "Warning: no shared palette found for " & ztFrame.Parent.FileName)
+                            MdlZTStudio.Trace("MdlTasks", "Convert_file_PNG_to_ZT1", "Warning: no shared palette found for " & ZtFrame.Parent.FileName)
 
                         Else
                             ' Color palette has already been set for this graphic.
                             ' No further action needed.
-                            MdlZTStudio.Trace("MdlTasks", "Convert_file_PNG_to_ZT1", "Skip. Specific color palette defined for " & ztFrame.Parent.FileName)
+                            MdlZTStudio.Trace("MdlTasks", "Convert_file_PNG_to_ZT1", "Skip. Specific color palette defined for " & ZtFrame.Parent.FileName)
                         End If
 
                     End If
@@ -417,11 +417,11 @@ paletteReady:
 
 245:
                 ' Add this frame to our parent graphic's frame collection 
-                g.Frames.Add(ztFrame)
+                g.Frames.Add(ZtFrame)
 
 250:
                 ' Create a frame from the .PNG-file
-                ztFrame.LoadPNG(s)
+                ZtFrame.LoadPNG(s)
 
             End If
         Next
@@ -443,8 +443,8 @@ paletteReady:
             ' Only 1 graphic file is being generated. This is the case for icons, for example.
             ' A .ani-file can be generated automatically.       
             ' [folder path] + \ + [folder name] + .ani
-            Dim cAni As New ClsAniFile(strPathDir & "\" & Path.GetFileName(strPathDir) & ".ani")
-            cAni.CreateAniConfig()
+            Dim CAni As New ClsAniFile(StrPathDir & "\" & Path.GetFileName(StrPathDir) & ".ani")
+            CAni.CreateAniConfig()
 
         End If
 
@@ -484,21 +484,21 @@ dBg:
         Dim result As New List(Of String)
 
         ' This stack stores the directories to process.
-        Dim stack As New Stack(Of String)
+        Dim Stack As New Stack(Of String)
 
         ' Add the initial directory
-        stack.Push(strPath)
+        Stack.Push(strPath)
 
 10:
 
         ' Continue processing for each stacked directory
-        Do While (stack.Count > 0)
+        Do While (Stack.Count > 0)
             ' Get top directory string
 
 15:
 
 
-            Dim dir As String = stack.Pop
+            Dim dir As String = Stack.Pop
 
 20:
             For Each f As String In Directory.GetFiles(dir, "*")
@@ -512,7 +512,7 @@ dBg:
             ' Loop through all subdirectories and add them to the stack.
             Dim directoryName As String
             For Each directoryName In Directory.GetDirectories(dir)
-                stack.Push(directoryName)
+                Stack.Push(directoryName)
             Next
 
         Loop
@@ -572,22 +572,22 @@ dBug:
         Dim result As New List(Of String)
 
         ' This stack stores the directories to process.
-        Dim stack As New Stack(Of String)
+        Dim Stack As New Stack(Of String)
 
         ' Add the initial directory
-        stack.Push(strPath)
+        Stack.Push(strPath)
 
 10:
 
         ' Continue processing for each stacked directory
-        Do While (stack.Count > 0)
+        Do While (Stack.Count > 0)
             ' Get top directory string
 
 15:
 
 
-            Dim dir As String = stack.Pop
-            Dim strGraphicName As String
+            Dim dir As String = Stack.Pop
+            Dim StrGraphicName As String
 
             ' Add all immediate file paths 
 
@@ -598,17 +598,17 @@ dBug:
                 If Strings.Right(Path.GetFileNameWithoutExtension(f).ToLower, 5) = "extra" Then
                     ' 5 (extra) + 4 (.png) = 9 chars.
                     ' eg objects/yourobj/NE_extra.png 
-                    strGraphicName = Strings.Left(f, Len(f) - 9 - Len(Cfg_convert_fileNameDelimiter))
+                    StrGraphicName = Strings.Left(f, Len(f) - 9 - Len(Cfg_convert_fileNameDelimiter))
                     ' Debug.Print("strgraphicname extra='" & strGraphicName & "'")
                 Else
                     ' 4 (0000) + 4 (.png) = 8 chars. 
                     ' eg objects/yourobj/NE_0001.png 
-                    strGraphicName = Strings.Left(f, Len(f) - 8 - Len(Cfg_convert_fileNameDelimiter))
+                    StrGraphicName = Strings.Left(f, Len(f) - 8 - Len(Cfg_convert_fileNameDelimiter))
                     ' Debug.Print("strgraphicname='" & strGraphicName & "'")
                 End If
 
-                If result.Contains(strGraphicName) = False Then
-                    result.Add(strGraphicName)
+                If result.Contains(StrGraphicName) = False Then
+                    result.Add(StrGraphicName)
                 End If
 
             Next
@@ -633,7 +633,7 @@ dBug:
 
                 End If
 
-                stack.Push(directoryName)
+                Stack.Push(directoryName)
             Next
 
         Loop
@@ -686,48 +686,6 @@ dBug:
 
 
 
-    ''' <summary>
-    ''' Updates all sort of info.
-    ''' </summary>
-    ''' <param name="intIndexFrameNumber">Optional frame index number. Defaults to value of slider in main window.</param>
-    Public Sub Update_Preview(Optional intIndexFrameNumber As Integer = -1)
-
-1:
-        ' Can't update if there are no frames.
-        If editorGraphic.Frames.Count = 0 Then
-            Exit Sub
-        End If
-
-2:
-        ' Shortcut. If no index number for the frame was specified, assume the currently visible frame needs to be updated.
-        If intIndexFrameNumber = -1 Then
-            intIndexFrameNumber = FrmMain.TbFrames.Value - 1
-        End If
-
-
-25:
-        ' 20190816: some aspects weren't managed properly, for instance when toggling extra frame or adding/removing frames.
-        ' Previous/next frame; current And max value of progress bar, ...
-        ' Update preview is called from lots of places, so this may be a bit of an overkill, but better safe.
-        MdlTasks.Update_Info("Update Preview")
-
-30:
-        editorFrame = editorGraphic.Frames(intIndexFrameNumber)
-
-300:
-        ' The sub gets triggered when a new frame has been added, but no .PNG has been loaded yet, so frame contains no data.
-        ' However, the picbox may need to be cleared (previous frame would still be shown otherwise)
-        If editorGraphic.Frames(intIndexFrameNumber).CoreImageHex.Count = 0 Then
-            FrmMain.picBox.Image = MdlTasks.Grid_DrawFootPrintXY(Cfg_grid_footPrintX, Cfg_grid_footPrintY)
-            Exit Sub
-        End If
-
-320:
-        FrmMain.picBox.Image = editorGraphic.Frames(intIndexFrameNumber).GetImage(True)
-
-
-
-    End Sub
 
 
     ''' <summary>
@@ -763,43 +721,43 @@ dBug:
         ' Find most right
         ' Find most bottom
 
-        Dim coordX As Integer = 0
-        Dim coordY As Integer = 0
+        Dim CoordX As Integer = 0
+        Dim CoordY As Integer = 0
 
-        Dim coordA As New Point(bmInput.Width, bmInput.Height)
-        Dim coordB As New Point(0, 0)
-        Dim curColor As System.Drawing.Color
-        Dim curTransparentColor As System.Drawing.Color = bmInput.GetPixel(0, 0)
+        Dim CoordA As New Point(bmInput.Width, bmInput.Height)
+        Dim CoordB As New Point(0, 0)
+        Dim CurColor As System.Drawing.Color
+        Dim CurTransparentColor As System.Drawing.Color = bmInput.GetPixel(0, 0)
 
 
 102:
         Const px As System.Drawing.GraphicsUnit = GraphicsUnit.Pixel
         Const fmtArgb As Imaging.PixelFormat = Imaging.PixelFormat.Format32bppArgb
-        Dim boundsF As RectangleF = bmInput.GetBounds(px)
-        Dim bounds As New Rectangle(New Point(CInt(boundsF.X), CInt(boundsF.Y)), New Size(CInt(boundsF.Width), CInt(boundsF.Height)))
-        Dim bmClone As Bitmap = bmInput.Clone(bounds, fmtArgb)
-        Dim bmData As System.Drawing.Imaging.BitmapData = bmClone.LockBits(bounds, Imaging.ImageLockMode.ReadWrite, bmClone.PixelFormat)
-        Dim offsetToFirstPixel As IntPtr = bmData.Scan0
-        Dim byteCount As Integer = Math.Abs(bmData.Stride) * bmClone.Height
-        Dim bitmapBytes(byteCount - 1) As Byte
-        System.Runtime.InteropServices.Marshal.Copy(offsetToFirstPixel, bitmapBytes, 0, byteCount)
+        Dim BoundsF As RectangleF = bmInput.GetBounds(px)
+        Dim Bounds As New Rectangle(New Point(CInt(BoundsF.X), CInt(BoundsF.Y)), New Size(CInt(BoundsF.Width), CInt(BoundsF.Height)))
+        Dim BmClone As Bitmap = bmInput.Clone(Bounds, fmtArgb)
+        Dim BmData As System.Drawing.Imaging.BitmapData = BmClone.LockBits(Bounds, Imaging.ImageLockMode.ReadWrite, BmClone.PixelFormat)
+        Dim offsetToFirstPixel As IntPtr = BmData.Scan0
+        Dim ByteCount As Integer = Math.Abs(BmData.Stride) * BmClone.Height
+        Dim BitmapBytes(ByteCount - 1) As Byte
+        System.Runtime.InteropServices.Marshal.Copy(offsetToFirstPixel, BitmapBytes, 0, ByteCount)
 
 110:
         ' rectangle = bounds ?
-        Dim StartOffset As Integer = (0 * bmData.Stride)
-        Dim EndOffset As Integer = StartOffset + ((bmInput.Height) * bmData.Stride) - 1
+        Dim StartOffset As Integer = (0 * BmData.Stride)
+        Dim EndOffset As Integer = StartOffset + ((bmInput.Height) * BmData.Stride) - 1
         Dim RectLeftOffset As Integer = (0 * 4)
         Dim RectRightOffset As Integer = (0 + (bmInput.Width) * 4) - 1
         Dim X As Integer = 0
         Dim y As Integer = 0
 
-        Debug.Print("from " & StartOffset & " to " & EndOffset & " (total bytes: " & bitmapBytes.Length & ")")
+        Debug.Print("from " & StartOffset & " to " & EndOffset & " (total bytes: " & BitmapBytes.Length & ")")
         Debug.Print("offset left from " & RectLeftOffset & " to " & RectRightOffset)
 
         Dim pixelLocation As Point
 
 251:
-        For FirstOffsetInEachLine As Integer = StartOffset To EndOffset Step bmData.Stride
+        For FirstOffsetInEachLine As Integer = StartOffset To EndOffset Step BmData.Stride
             X = 0
             For PixelOffset As Integer = RectLeftOffset To RectRightOffset Step 4 ' 4 because there are 4 bytes for the color: Blue, Green, Red, Alpha
 
@@ -814,17 +772,17 @@ dBug:
                 'End If
 
                 ' Non-transparent
-                If bitmapBytes(FirstOffsetInEachLine + PixelOffset + 3) = 255 And
-                    bitmapBytes(FirstOffsetInEachLine + PixelOffset) <> curTransparentColor.B And
-                    bitmapBytes(FirstOffsetInEachLine + PixelOffset + 1) <> curTransparentColor.G And
-                    bitmapBytes(FirstOffsetInEachLine + PixelOffset + 2) <> curTransparentColor.R Then
+                If BitmapBytes(FirstOffsetInEachLine + PixelOffset + 3) = 255 And
+                    BitmapBytes(FirstOffsetInEachLine + PixelOffset) <> CurTransparentColor.B And
+                    BitmapBytes(FirstOffsetInEachLine + PixelOffset + 1) <> CurTransparentColor.G And
+                    BitmapBytes(FirstOffsetInEachLine + PixelOffset + 2) <> CurTransparentColor.R Then
 
                     ' Detected a non-transparent color
-                    If X < coordA.X Then coordA.X = X ' Topleft: move to left
-                    If y < coordA.Y Then coordA.Y = y ' Topleft: move to top
+                    If X < CoordA.X Then CoordA.X = X ' Topleft: move to left
+                    If y < CoordA.Y Then CoordA.Y = y ' Topleft: move to top
 
-                    If y > coordB.Y Then coordB.Y = y ' Bottomright: move to bottom 
-                    If X > coordB.X Then coordB.X = X ' Bottomright: move to right
+                    If y > CoordB.Y Then CoordB.Y = y ' Bottomright: move to bottom 
+                    If X > CoordB.X Then CoordB.X = X ' Bottomright: move to right
 
                 End If
 
@@ -834,24 +792,24 @@ dBug:
         Next
 
         ' Unlock
-        System.Runtime.InteropServices.Marshal.Copy(bitmapBytes, 0, offsetToFirstPixel, byteCount)
-        bmClone.UnlockBits(bmData)
+        System.Runtime.InteropServices.Marshal.Copy(BitmapBytes, 0, offsetToFirstPixel, ByteCount)
+        BmClone.UnlockBits(BmData)
 
 901:
         ' The width/height are +1.
-        coordB.X += 1
-        coordB.Y += 1
+        CoordB.X += 1
+        CoordB.Y += 1
 
 999:
         ' 20170512 
         ' HENDRIX found out that completely transparent frames can cause issues.
         ' This is a simple fix, since it seems that a 1x1 frame is valid in ZT1, even if it's transparent.
-        If coordA.X = bmInput.Width And coordA.Y = bmInput.Height Then
-            coordA = New Point(0, 0)
-            coordB = New Point(1, 1)
+        If CoordA.X = bmInput.Width And CoordA.Y = bmInput.Height Then
+            CoordA = New Point(0, 0)
+            CoordB = New Point(1, 1)
         End If
 
-        Return New Rectangle(coordA.X, coordA.Y, coordB.X - coordA.X, coordB.Y - coordA.Y)
+        Return New Rectangle(CoordA.X, CoordA.Y, CoordB.X - CoordA.X, CoordB.Y - CoordA.Y)
 
         Exit Function
 
@@ -884,13 +842,13 @@ dBug:
         ' Find most right
         ' Find most bottom
 
-        Dim coordX As Integer = 0
-        Dim coordY As Integer = 0
+        Dim CoordX As Integer = 0
+        Dim CoordY As Integer = 0
 
-        Dim coordA As New Point(bmInput.Width, bmInput.Height)
-        Dim coordB As New Point(0, 0)
-        Dim curColor As System.Drawing.Color
-        Dim curTransparentColor As System.Drawing.Color = bmInput.GetPixel(0, 0)
+        Dim CoordA As New Point(bmInput.Width, bmInput.Height)
+        Dim CoordB As New Point(0, 0)
+        Dim CurColor As System.Drawing.Color
+        Dim CurTransparentColor As System.Drawing.Color = bmInput.GetPixel(0, 0)
 
         ' Optimized by HENDRIX
         ' I like the new rectangle code, seems to be a good speedup!
@@ -912,40 +870,40 @@ dBug:
 
         'first, crop away stuff from top and bottom
         ' Left to right 
-        While coordX <= (bmInput.Width - 1)
+        While CoordX <= (bmInput.Width - 1)
 
             ' Top to bottom
-            coordY = 0
-            While coordY <= (bmInput.Height - 1)
+            CoordY = 0
+            While CoordY <= (bmInput.Height - 1)
 
                 ' Get color
-                curColor = bmInput.GetPixel(coordX, coordY)
+                CurColor = bmInput.GetPixel(CoordX, CoordY)
 
-                If curColor <> curTransparentColor And curColor.A = 255 Then
+                If CurColor <> CurTransparentColor And CurColor.A = 255 Then
                     ' Color pixel
 
                     'in this iteration it makes sense to check the other three
-                    If coordX < coordA.X Then coordA.X = coordX ' Topleft: move to left
-                    If coordY < coordA.Y Then coordA.Y = coordY ' Topleft: move to top
+                    If CoordX < CoordA.X Then CoordA.X = CoordX ' Topleft: move to left
+                    If CoordY < CoordA.Y Then CoordA.Y = CoordY ' Topleft: move to top
 
                     'test is pointless, because coordX is always at least coordB.X+1
-                    coordB.X = coordX ' Bottomright: move to right
-                    If coordY > coordB.Y Then coordB.Y = coordY ' Bottomright: move to bottom
+                    CoordB.X = CoordX ' Bottomright: move to right
+                    If CoordY > CoordB.Y Then CoordB.Y = CoordY ' Bottomright: move to bottom
 
                 End If
 
                 ' If the current pixel is larger than a.Y and smaller than b.Y, we should skip.
                 ' It's a bit late so I'm not thinking straight, this might be a pixel off. 
-                If coordY >= coordA.Y And coordY < coordB.Y Then
-                    coordY = coordB.Y
+                If CoordY >= CoordA.Y And CoordY < CoordB.Y Then
+                    CoordY = CoordB.Y
                 Else
                     ' Default 
-                    coordY += 1
+                    CoordY += 1
                 End If
 
             End While
 
-            coordX += 1
+            CoordX += 1
 
         End While
 
@@ -954,49 +912,49 @@ dBug:
         ' MsgBox("w,h=" & coordA.X & "," & coordA.Y & " --- " & coordB.X & "," & coordB.Y)
         ' then crop away stuff from right
         ' but only the area we have not yet processed
-        coordY = coordA.Y
+        CoordY = CoordA.Y
         ' Top to bottom
-        While coordY <= (coordB.Y)
+        While CoordY <= (CoordB.Y)
 
             ' Right to left 
-            coordX = bmInput.Width - 1
-            While coordX > coordB.X
+            CoordX = bmInput.Width - 1
+            While CoordX > CoordB.X
 
                 ' Get color
-                curColor = bmInput.GetPixel(coordX, coordY)
+                CurColor = bmInput.GetPixel(CoordX, CoordY)
 
-                If curColor <> curTransparentColor And curColor.A = 255 Then
+                If CurColor <> CurTransparentColor And CurColor.A = 255 Then
                     ' Color pixel
-                    If coordX > coordB.X Then coordB.X = coordX ' Bottomright: move to right
+                    If CoordX > CoordB.X Then CoordB.X = CoordX ' Bottomright: move to right
 
                 End If
                 'I don't think we need any test here, do we?
-                coordX -= 1
+                CoordX -= 1
 
             End While
 
-            coordY += 1
+            CoordY += 1
 
         End While
 
 901:
         'MsgBox("w,h=" & coordA.X & "," & coordA.Y & " --- " & coordB.X & "," & coordB.Y)
         ' enabled for cropping of frames, 20150619
-        coordB.X += 1
-        coordB.Y += 1
+        CoordB.X += 1
+        CoordB.Y += 1
 
 
 999:
         ' 20170512 
         ' HENDRIX found out that transparent frames can cause issues.
         ' This is a more simple fix, since it seems this is valid in ZT1 after all?
-        If coordA.X = bmInput.Width And coordA.Y = bmInput.Height Then
-            coordA = New Point(0, 0)
-            coordB = New Point(1, 1)
+        If CoordA.X = bmInput.Width And CoordA.Y = bmInput.Height Then
+            CoordA = New Point(0, 0)
+            CoordB = New Point(1, 1)
         End If
 
         'Debug.Print("x1,y1=" & coordA.X & "," & coordA.Y & " --- x2,y2 " & coordB.X & "," & coordB.Y)
-        Return New Rectangle(coordA.X, coordA.Y, coordB.X - coordA.X, coordB.Y - coordA.Y)
+        Return New Rectangle(CoordA.X, CoordA.Y, CoordB.X - CoordA.X, CoordB.Y - CoordA.Y)
 
 
         Exit Function
@@ -1020,14 +978,14 @@ dBug:
         Dim x_max As Integer = Math.Max(imgBack.Width, imgFront.Width)
         Dim y_max As Integer = Math.Max(imgBack.Height, imgFront.Height)
 
-        Dim bmp As New Bitmap(x_max, y_max)
-        Dim g As Graphics = Graphics.FromImage(bmp)
+        Dim Bmp As New Bitmap(x_max, y_max)
+        Dim g As Graphics = Graphics.FromImage(Bmp)
 
         g.InterpolationMode = Drawing2D.InterpolationMode.NearestNeighbor ' prevent softening
         g.DrawImage(imgBack, CInt((x_max - imgBack.Width) / 2), CInt((y_max - imgBack.Height) / 2), imgBack.Width, imgBack.Height)
         g.DrawImage(imgFront, CInt((x_max - imgFront.Width) / 2), CInt((y_max - imgFront.Height) / 2), imgFront.Width, imgFront.Height)
         g.Dispose()
-        Return bmp
+        Return Bmp
 
     End Function
 
@@ -1044,9 +1002,9 @@ dBug:
         ' 20150624. We have <filename>.pal here. 
         ' We do this to avoid issues with shared color palettes, if users are NOT familiar with them.
         ' We are assuming pro users will only tweak and use the batch conversion.
-        With editorGraphic
+        With EditorGraphic
             .FileName = sFileName
-            .ColorPalette.FileName = editorGraphic.FileName & ".pal"
+            .ColorPalette.FileName = EditorGraphic.FileName & ".pal"
             .Write(sFileName, True)
         End With
 
@@ -1054,92 +1012,13 @@ dBug:
         If Cfg_export_ZT1_Ani = 1 Then
             Debug.Print("Try .ani")
             ' Get the folder + name of the folder + .ani
-            Dim cAni As New ClsAniFile(Path.GetDirectoryName(sFileName) & "\" & Path.GetFileName(Path.GetDirectoryName(sFileName)) & ".ani")
-            cAni.CreateAniConfig()
+            Dim CAni As New ClsAniFile(Path.GetDirectoryName(sFileName) & "\" & Path.GetFileName(Path.GetDirectoryName(sFileName)) & ".ani")
+            CAni.CreateAniConfig()
         End If
 
 60:
         FrmMain.ssFileName.Text = Now.ToString("yyyy-MM-dd HH:mm:ss") & ": saved " & sFileName
 
-
-    End Sub
-
-    ''' <summary>
-    ''' Updates info in main screen.
-    ''' Updates shown info such as animation speed, number of frames, current frame, ...
-    ''' Enables/disables certain controls (for example, button to render background frame)
-    ''' </summary>
-    ''' <param name="strReason"></param>
-    Sub Update_Info(strReason As String)
-
-        ' Displays updated info.
-        ' 20190816: note: before today, it relied on .indexOf(), which might return incorrect results if there are similar frames. Now intFrameIndex is added and required.
-
-
-        Dim intFrameIndex As Integer = FrmMain.TbFrames.Value - 1
-
-
-        With FrmMain
-
-            .tstZT1_AnimSpeed.Text = editorGraphic.AnimationSpeed
-
-            ' NOT using a 0-based frame index visual indication, to avoid confusing
-            .tslFrame_Index.Text = IIf(editorGraphic.Frames.Count = 0, "-", (intFrameIndex + 1) & " / " & (editorGraphic.Frames.Count - editorGraphic.ExtraFrame))
-
-            MdlZTStudio.Trace("ClsTasks", "Update_Info", "Reason: " & strReason & ". # non-background frames = " & (editorGraphic.Frames.Count - editorGraphic.ExtraFrame) & " - background frame: " & editorGraphic.ExtraFrame.ToString())
-
-            With .TbFrames
-                .Minimum = 1
-                .Maximum = (editorGraphic.Frames.Count - editorGraphic.ExtraFrame) ' for actually generated files: - editorGraphic.extraFrame)
-
-                If .Maximum < 1 Then
-                    .Minimum = 1
-                    .Maximum = 1
-                End If
-                If .Value < .Minimum Then
-                    .Value = .Minimum
-                End If
-
-            End With
-
-            ' == Graphic
-            .tsbGraphic_ExtraFrame.Enabled = (editorGraphic.Frames.Count > 1) ' Background frame can only be enabled if there's more than one frame
-            .tsbGraphic_ExtraFrame.Checked = (editorGraphic.ExtraFrame = 1) ' Is background frame enabled for this graphic? Then toggle button.
-
-            ' == Frame
-            .tsbFrame_Delete.Enabled = (editorGraphic.Frames.Count > 1)
-            .tsbFrame_ExportPNG.Enabled = False
-
-            '(IsNothing(editorGraphic.frames(0).cachedFrame) = False)
-
-            If IsNothing(editorFrame) = False Then
-                If editorFrame.CoreImageHex.Count > 0 Then
-                    .tsbFrame_ExportPNG.Enabled = True
-                End If
-            End If
-
-
-            .tsbFrame_ImportPNG.Enabled = (editorGraphic.Frames.Count > 0)
-
-            .tsbFrame_OffsetDown.Enabled = (editorGraphic.Frames.Count > 0)
-            .tsbFrame_OffsetUp.Enabled = (editorGraphic.Frames.Count > 0)
-            .tsbFrame_OffsetLeft.Enabled = (editorGraphic.Frames.Count > 0)
-            .tsbFrame_OffsetRight.Enabled = (editorGraphic.Frames.Count > 0)
-
-            .tsbFrame_IndexIncrease.Enabled = (editorGraphic.Frames.Count > 1 And intFrameIndex < (editorGraphic.Frames.Count - 1 - editorGraphic.ExtraFrame))
-            .tsbFrame_IndexDecrease.Enabled = (editorGraphic.Frames.Count > 1 And intFrameIndex > 0)
-
-            .picBox.BackColor = Cfg_grid_BackGroundColor
-
-            If IsNothing(editorFrame) Then
-                .tslFrame_Offset.Text = "0 , 0"
-
-            Else
-                '.tbFrames.Value = editorGraphic.frames.IndexOf(editorFrame) + 1
-                .tslFrame_Offset.Text = editorFrame.OffsetX & " , " & editorFrame.OffsetY
-            End If
-
-        End With
 
     End Sub
 
@@ -1168,13 +1047,13 @@ dBug:
         ' Draw bitmap with squares first.
         ' To do so, calculate the top left pixel of the center of the grid.
 
-        Dim intWidth As Integer = (intFootPrintX + intFootPrintY) * 16
-        Dim intHeight As Integer = intWidth / 2
+        Dim IntWidth As Integer = (intFootPrintX + intFootPrintY) * 16
+        Dim IntHeight As Integer = IntWidth / 2
 
         ' Every grid square adds this much for X and Y - consider both directions to be efficient!
         Dim x_dim As Integer = intFootPrintX * 16 + intFootPrintY * 16
         Dim y_dim As Integer = intFootPrintY * 8 + intFootPrintX * 8
-        Dim bmInput As New Bitmap(x_dim * 2, y_dim * 2)
+        Dim BmInput As New Bitmap(x_dim * 2, y_dim * 2)
 
         ' first point of the generated grid: intFootprintX * 32, +16px Y (center), 
 
@@ -1185,41 +1064,41 @@ dBug:
         ' Keep track of how many squares are drawn
         ' Do not draw more squares than the max width
 
-        Dim coord As New Point((intFootPrintX / 2) * 32, 0)
+        Dim Coord As New Point((intFootPrintX / 2) * 32, 0)
 
         ' Think with X=10,Y=8
-        Dim intCurFootPrintX As Integer
-        Dim intCurFootPrintY As Integer
+        Dim IntCurFootPrintX As Integer
+        Dim IntCurFootPrintY As Integer
 
-        For intCurFootPrintX = 2 To intFootPrintX Step 2
+        For IntCurFootPrintX = 2 To intFootPrintX Step 2
 
             ' Starting point:
-            coord.X = x_dim - (intWidth / 2) + (intFootPrintX / 2 * 32)
+            Coord.X = x_dim - (IntWidth / 2) + (intFootPrintX / 2 * 32)
 
-            coord.X = x_dim - (intWidth / 2)  ' Move to the left
-            coord.X += ((intFootPrintX - intCurFootPrintX) / 2) * 32  ' What can we add?
+            Coord.X = x_dim - (IntWidth / 2)  ' Move to the left
+            Coord.X += ((intFootPrintX - IntCurFootPrintX) / 2) * 32  ' What can we add?
 
             'Debug.Print("X = " & coord.X)
 
-            coord.Y = y_dim - (intHeight / 2) + 16 * (intCurFootPrintX / 2)
-            coord.Y -= 16
+            Coord.Y = y_dim - (IntHeight / 2) + 16 * (IntCurFootPrintX / 2)
+            Coord.Y -= 16
 
             ' Draw the first block, which is easy. 
-            For intCurFootPrintY = 2 To intFootPrintY Step 2
+            For IntCurFootPrintY = 2 To intFootPrintY Step 2
 
                 ' For each
-                coord.X += 32
-                coord.Y += 16
+                Coord.X += 32
+                Coord.Y += 16
 
                 'Debug.Print(" --> " & coord.X & "," & coord.Y)
 
-                Grid_DrawSquare(coord, bmInput)
+                Grid_DrawSquare(Coord, BmInput)
 
             Next
 
         Next
 
-        Return bmInput
+        Return BmInput
 
     End Function
 
@@ -1232,26 +1111,26 @@ dBug:
     Function Grid_DrawSquare(coordTopLeft As Point, Optional bmInput As Bitmap = Nothing) As Bitmap
 
         If IsNothing(bmInput) = True Then
-            bmInput = MdlSettings.BM
+            bmInput = MdlSettings.BMEmpty
         End If
 
-        Dim intX As Integer
-        Dim intY As Integer = 0
+        Dim IntX As Integer
+        Dim IntY As Integer = 0
 
         ' === Top left
-        For intX = -31 To 0
+        For IntX = -31 To 0
 
-            bmInput.SetPixel(coordTopLeft.X + intX, coordTopLeft.Y + intY, Cfg_grid_ForeGroundColor)
+            bmInput.SetPixel(coordTopLeft.X + IntX, coordTopLeft.Y + IntY, Cfg_grid_ForeGroundColor)
 
             ' Mirror to the right
-            bmInput.SetPixel(coordTopLeft.X + 1 - intX, coordTopLeft.Y + intY, Cfg_grid_ForeGroundColor)
+            bmInput.SetPixel(coordTopLeft.X + 1 - IntX, coordTopLeft.Y + IntY, Cfg_grid_ForeGroundColor)
 
             ' Same for bottom
-            bmInput.SetPixel(coordTopLeft.X + intX, coordTopLeft.Y - intY + 1, Cfg_grid_ForeGroundColor)
-            bmInput.SetPixel(coordTopLeft.X + 1 - intX, coordTopLeft.Y - intY + 1, Cfg_grid_ForeGroundColor)
+            bmInput.SetPixel(coordTopLeft.X + IntX, coordTopLeft.Y - IntY + 1, Cfg_grid_ForeGroundColor)
+            bmInput.SetPixel(coordTopLeft.X + 1 - IntX, coordTopLeft.Y - IntY + 1, Cfg_grid_ForeGroundColor)
 
-            If intX Mod 2 = 0 Then
-                intY -= 1
+            If IntX Mod 2 = 0 Then
+                IntY -= 1
             End If
 
         Next
@@ -1284,14 +1163,14 @@ dBug:
 
         End With
 
-        editorGraphic.ColorPalette.Colors(intIndex) = FrmMain.DlgColor.Color
+        EditorGraphic.ColorPalette.Colors(intIndex) = FrmMain.DlgColor.Color
 
         'frmMain.dgvPaletteMain.Rows(intIndex).DefaultCellStyle.BackColor = frmMain.dlgColor.Color
         'frmMain.dgvPaletteMain.Rows(intIndex).DefaultCellStyle.SelectionBackColor = frmMain.dlgColor.Color  ' prevent selection highlighting (blue)
 
         'On Error Resume Nex
 
-        editorGraphic.ColorPalette.FillPaletteGrid(FrmMain.dgvPaletteMain)
+        EditorGraphic.ColorPalette.FillPaletteGrid(FrmMain.dgvPaletteMain)
 
     End Sub
 
@@ -1304,19 +1183,19 @@ dBug:
     Sub Pal_MoveColor(intIndexNow As Integer, intIndexDest As Integer)
 
         ' Get color
-        Dim cColorToMove As System.Drawing.Color = editorGraphic.ColorPalette.Colors(intIndexNow)
+        Dim CColorToMove As System.Drawing.Color = EditorGraphic.ColorPalette.Colors(intIndexNow)
 
         ' Delete the original.
-        editorGraphic.ColorPalette.Colors.RemoveAt(intIndexNow)
+        EditorGraphic.ColorPalette.Colors.RemoveAt(intIndexNow)
 
         ' We had the color. Insert it at the position we want.
-        editorGraphic.ColorPalette.Colors.Insert(intIndexDest, cColorToMove)
+        EditorGraphic.ColorPalette.Colors.Insert(intIndexDest, CColorToMove)
 
         ' Refresh
-        editorGraphic.ColorPalette.FillPaletteGrid(FrmMain.dgvPaletteMain)
+        EditorGraphic.ColorPalette.FillPaletteGrid(FrmMain.dgvPaletteMain)
 
         ' Update coreImageHex for each frame. Color indexes have changed.
-        For Each ztFrame As ClsFrame In editorGraphic.Frames
+        For Each ztFrame As ClsFrame In EditorGraphic.Frames
             ztFrame.CoreImageHex = Nothing
             ztFrame.BitMapToHex() ' 20170519 - is it necessary to update this already? It could be generated when called.
         Next
@@ -1330,17 +1209,17 @@ dBug:
     ''' <param name="intIndexNow">Index</param>
     Sub Pal_AddColor(intIndexNow As Integer)
 
-        If editorGraphic.ColorPalette.Colors.Count = 256 Then
+        If EditorGraphic.ColorPalette.Colors.Count = 256 Then
             MsgBox("You can't add any more colors to this palette." & vbCrLf & "The maximum of 255 (+1 transparent) colors has been reached.", MsgBoxStyle.Critical + MsgBoxStyle.OkOnly, "Maximum amount of colors reached")
         End If
 
 
         ' Get color
-        Dim cColor As System.Drawing.Color = Cfg_grid_BackGroundColor
+        Dim CColor As System.Drawing.Color = Cfg_grid_BackGroundColor
 
 
         With FrmMain.DlgColor
-            .Color = cColor
+            .Color = CColor
 
             .AllowFullOpen = True
             .FullOpen = True
@@ -1349,13 +1228,13 @@ dBug:
 
         End With
 
-        cColor = FrmMain.DlgColor.Color
+        CColor = FrmMain.DlgColor.Color
 
         ' Insert it at the position we want.
-        editorGraphic.ColorPalette.Colors.Insert(intIndexNow + 1, cColor)
+        EditorGraphic.ColorPalette.Colors.Insert(intIndexNow + 1, CColor)
 
         ' Refresh
-        editorGraphic.ColorPalette.FillPaletteGrid(FrmMain.dgvPaletteMain)
+        EditorGraphic.ColorPalette.FillPaletteGrid(FrmMain.dgvPaletteMain)
 
 
     End Sub
@@ -1374,13 +1253,13 @@ dBug:
 
             Else
 
-                Dim cpPallete As New ClsPalette(Nothing)
+                Dim CpPallete As New ClsPalette(Nothing)
                 Dim frmColPal As New frmPal
 
                 ' Read the .pal file
-                If cpPallete.ReadPal(strFileName) <> 0 Then
+                If CpPallete.ReadPal(strFileName) <> 0 Then
 
-                    cpPallete.FillPaletteGrid(frmColPal.dgvPal)
+                    CpPallete.FillPaletteGrid(frmColPal.dgvPal)
 
                     frmColPal.ssFileName.Text = Path.GetFileName(strFileName)
 
@@ -1420,36 +1299,36 @@ dBug:
         ' Creating a recursive file list.
 
         ' This list stores the results.
-        Dim lstFiles As New List(Of String)
+        Dim LstFiles As New List(Of String)
 
         ' This stack stores the directories to process.
-        Dim stackDirectories As New Stack(Of String)
+        Dim StackDirectories As New Stack(Of String)
 
         ' Add the initial directory
-        stackDirectories.Push(strPath)
+        StackDirectories.Push(strPath)
 
 10:
 
         ' Continue processing for each stacked directory
-        Do While (stackDirectories.Count > 0)
+        Do While (StackDirectories.Count > 0)
             ' Get top directory string
 
 15:
-            Dim strDirectory As String = stackDirectories.Pop
+            Dim StrDirectory As String = StackDirectories.Pop
 
 20:
-            For Each strFile As String In Directory.GetFiles(strDirectory, "*")
+            For Each strFile As String In Directory.GetFiles(StrDirectory, "*")
                 ' Only ZT1 files
                 If Path.GetExtension(strFile) = vbNullString Then
-                    lstFiles.Add(strFile)
+                    LstFiles.Add(strFile)
                 End If
             Next
 
 25:
             ' Loop through all subdirectories and add them to the stack.
-            Dim strSubDirectoryName As String
-            For Each strSubDirectoryName In Directory.GetDirectories(strDirectory)
-                stackDirectories.Push(strSubDirectoryName)
+            Dim StrSubDirectoryName As String
+            For Each StrSubDirectoryName In Directory.GetDirectories(StrDirectory)
+                StackDirectories.Push(StrSubDirectoryName)
             Next
 
         Loop
@@ -1459,12 +1338,12 @@ dBug:
         If IsNothing(PB) = False Then
             PB.Minimum = 0
             PB.Value = 0
-            PB.Maximum = lstFiles.Count
+            PB.Maximum = LstFiles.Count
         End If
 
 1000:
         ' For each file that is a ZT1 Graphic:
-        For Each f As String In lstFiles
+        For Each f As String In LstFiles
             Debug.Print("Processing: " & f)
 
             ' Read graphic, update offsets of frames, save.
@@ -1508,24 +1387,24 @@ dBug:
     ''' <param name="strPath">Path to folder</param>
     Sub Batch_Generate_Ani(strPath As String)
 
-        Dim stackDirectories As New Stack(Of String)
+        Dim StackDirectories As New Stack(Of String)
 
-        stackDirectories.Push(strPath)
+        StackDirectories.Push(strPath)
 
         ' Continue processing for each stacked directory
-        Do While (stackDirectories.Count > 0)
+        Do While (StackDirectories.Count > 0)
             ' Get top directory string
 
-            Dim strDirectoryName As String = stackDirectories.Pop
+            Dim StrDirectoryName As String = StackDirectories.Pop
 
             If Cfg_export_ZT1_Ani = 1 Then
-                Dim cAni As New ClsAniFile(strDirectoryName & "\" & Path.GetFileName(strDirectoryName) & ".ani")
+                Dim CAni As New ClsAniFile(StrDirectoryName & "\" & Path.GetFileName(StrDirectoryName) & ".ani")
                 Debug.Print(Now.ToString() & ": Generate .ani file (batch conversion)")
                 cAni.CreateAniConfig()
             End If
 
             ' Loop through all subdirectories and add them to the stack.
-            Dim strSubDirectoryName As String
+            Dim StrSubDirectoryName As String
             For Each strSubDirectoryName In Directory.GetDirectories(strDirectoryName)
                 stackDirectories.Push(strSubDirectoryName)
             Next

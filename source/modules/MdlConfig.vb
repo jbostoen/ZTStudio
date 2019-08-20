@@ -19,16 +19,16 @@ Module MdlConfig
 
 
 10:
-        Dim sFile As String = System.IO.Path.GetFullPath(Application.StartupPath) & "\settings.cfg"
+        Dim SFile As String = System.IO.Path.GetFullPath(Application.StartupPath) & "\settings.cfg"
 
-        If System.IO.File.Exists(sFile) = False Then
+        If System.IO.File.Exists(SFile) = False Then
 
-            Dim strMessage As String = "ZT Studio is missing the settings.cfg file." & vbCrLf &
+            Dim StrMessage As String = "ZT Studio is missing the settings.cfg file." & vbCrLf &
                       "It should be in the same folder as ZTStudio.exe" & vbCrLf & vbCrLf &
                       "Get the file at:" & vbCrLf &
                       Cfg_GitHub_URL
 
-            If MsgBox(strMessage, MsgBoxStyle.OkOnly + MsgBoxStyle.Critical + MsgBoxStyle.ApplicationModal) = MsgBoxResult.Ok Then
+            If MsgBox(StrMessage, MsgBoxStyle.OkOnly + MsgBoxStyle.Critical + MsgBoxStyle.ApplicationModal) = MsgBoxResult.Ok Then
                 End
             End If
 
@@ -38,48 +38,48 @@ Module MdlConfig
 
 20:
         ' Preview
-        Cfg_grid_BackGroundColor = System.Drawing.Color.FromArgb(CInt(IniRead(sFile, "preview", "bgColor", "")))
-        Cfg_grid_ForeGroundColor = System.Drawing.Color.FromArgb(CInt(IniRead(sFile, "preview", "fgColor", "")))
-        Cfg_grid_numPixels = CInt(IniRead(sFile, "preview", "numPixels", ""))
-        Cfg_grid_zoom = CInt(IniRead(sFile, "preview", "zoom", ""))
-        Cfg_grid_footPrintX = CByte(IniRead(sFile, "preview", "footPrintX", ""))
-        Cfg_grid_footPrintY = CByte(IniRead(sFile, "preview", "footPrintY", ""))
+        Cfg_grid_BackGroundColor = System.Drawing.Color.FromArgb(CInt(IniRead(SFile, "preview", "bgColor", "")))
+        Cfg_grid_ForeGroundColor = System.Drawing.Color.FromArgb(CInt(IniRead(SFile, "preview", "fgColor", "")))
+        Cfg_grid_numPixels = CInt(IniRead(SFile, "preview", "numPixels", ""))
+        Cfg_grid_zoom = CInt(IniRead(SFile, "preview", "zoom", ""))
+        Cfg_grid_footPrintX = CByte(IniRead(SFile, "preview", "footPrintX", ""))
+        Cfg_grid_footPrintY = CByte(IniRead(SFile, "preview", "footPrintY", ""))
 
 30:
         ' Reads from ini and configures all.
-        Cfg_path_Root = IniRead(sFile, "paths", "root", "")
-        Cfg_path_recentPNG = IniRead(sFile, "paths", "recentPNG", "")
-        Cfg_path_recentZT1 = IniRead(sFile, "paths", "recentZT1", "")
+        Cfg_path_Root = IniRead(SFile, "paths", "root", "")
+        Cfg_path_recentPNG = IniRead(SFile, "paths", "recentPNG", "")
+        Cfg_path_recentZT1 = IniRead(SFile, "paths", "recentZT1", "")
         Cfg_path_ColorPals8 = System.IO.Path.GetFullPath(Application.StartupPath) & "\pal8"
         Cfg_path_ColorPals16 = System.IO.Path.GetFullPath(Application.StartupPath) & "\pal16"
 
 40:
         ' Export (PNG)
-        Cfg_export_PNG_CanvasSize = CInt(IniRead(sFile, "exportOptions", "pngCrop", ""))
-        Cfg_export_PNG_RenderBGFrame = CByte(IniRead(sFile, "exportOptions", "pngRenderExtraFrame", ""))
-        Cfg_export_PNG_RenderBGZT1 = CByte(IniRead(sFile, "exportOptions", "pngRenderExtraGraphic", ""))
-        Cfg_export_PNG_TransparentBG = CByte(IniRead(sFile, "exportOptions", "pngRenderTransparentBG", ""))
+        Cfg_export_PNG_CanvasSize = CInt(IniRead(SFile, "exportOptions", "pngCrop", ""))
+        Cfg_export_PNG_RenderBGFrame = CByte(IniRead(SFile, "exportOptions", "pngRenderExtraFrame", ""))
+        Cfg_export_PNG_RenderBGZT1 = CByte(IniRead(SFile, "exportOptions", "pngRenderExtraGraphic", ""))
+        Cfg_export_PNG_TransparentBG = CByte(IniRead(SFile, "exportOptions", "pngRenderTransparentBG", ""))
 
         ' Export (ZT1)
-        Cfg_export_ZT1_Ani = CByte(IniRead(sFile, "exportOptions", "zt1Ani", "1"))
-        Cfg_export_ZT1_AlwaysAddZTAFBytes = CByte(IniRead(sFile, "exportOptions", "zt1AlwaysAddZTAFBytes", ""))
+        Cfg_export_ZT1_Ani = CByte(IniRead(SFile, "exportOptions", "zt1Ani", "1"))
+        Cfg_export_ZT1_AlwaysAddZTAFBytes = CByte(IniRead(SFile, "exportOptions", "zt1AlwaysAddZTAFBytes", ""))
 
 50:
         ' Convert ( ZT1 <=> PNG, other way around )
-        Cfg_convert_startIndex = CInt(IniRead(sFile, "conversionOptions", "pngFilesIndex", ""))
-        Cfg_convert_deleteOriginal = CByte(IniRead(sFile, "conversionOptions", "deleteOriginal", ""))
-        Cfg_convert_overwrite = CByte(IniRead(sFile, "conversionOptions", "overwrite", ""))
-        Cfg_convert_sharedPalette = CByte(IniRead(sFile, "conversionOptions", "sharedPalette", ""))
-        Cfg_convert_fileNameDelimiter = CStr(IniRead(sFile, "conversionOptions", "fileNameDelimiter", ""))
+        Cfg_convert_startIndex = CInt(IniRead(SFile, "conversionOptions", "pngFilesIndex", ""))
+        Cfg_convert_deleteOriginal = CByte(IniRead(SFile, "conversionOptions", "deleteOriginal", ""))
+        Cfg_convert_overwrite = CByte(IniRead(SFile, "conversionOptions", "overwrite", ""))
+        Cfg_convert_sharedPalette = CByte(IniRead(SFile, "conversionOptions", "sharedPalette", ""))
+        Cfg_convert_fileNameDelimiter = CStr(IniRead(SFile, "conversionOptions", "fileNameDelimiter", ""))
 
 60:
         ' Frame editing
-        Cfg_editor_rotFix_individualFrame = CByte(IniRead(sFile, "editing", "individualRotationFix", ""))
-        Cfg_frame_defaultAnimSpeed = CInt(IniRead(sFile, "editing", "animationSpeed", ""))
+        Cfg_editor_rotFix_individualFrame = CByte(IniRead(SFile, "editing", "individualRotationFix", ""))
+        Cfg_frame_defaultAnimSpeed = CInt(IniRead(SFile, "editing", "animationSpeed", ""))
 
 70:
         ' Palette
-        Cfg_palette_import_png_force_add_colors = CByte(IniRead(sFile, "palette", "importPNGForceAddColors", ""))
+        Cfg_palette_import_png_force_add_colors = CByte(IniRead(SFile, "palette", "importPNGForceAddColors", ""))
 
 
 100:
@@ -150,7 +150,7 @@ dBug:
         ' This tasks writes all settings to the .ini-file.
         ' For an explanation of these parameters: check MdlSettings.vb
 
-        Dim sFile As String = System.IO.Path.GetFullPath(Application.StartupPath) & "\settings.cfg"
+        Dim SFile As String = System.IO.Path.GetFullPath(Application.StartupPath) & "\settings.cfg"
 
         ' Preview
         IniWrite(sFile, "preview", "bgColor", Cfg_grid_BackGroundColor.ToArgb())

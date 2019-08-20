@@ -6,9 +6,9 @@ Module StringExtensions
     Public Function ReverseHEX(ByVal aString As String) As String
 
         Dim retString As String
-         
-        Dim lst As New List(Of String)
-        lst.AddRange(Enumerable.Range(0, aString.Length / 2).Select(Function(x) aString.Substring(x * 2, 2)).ToList())
+
+        Dim Lst As New List(Of String)
+        Lst.AddRange(Enumerable.Range(0, aString.Length / 2).Select(Function(x) aString.Substring(x * 2, 2)).ToList())
         lst.Reverse()
          
 

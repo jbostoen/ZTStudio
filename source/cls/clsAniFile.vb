@@ -138,7 +138,7 @@ Public Class ClsAniFile
 
         On Error GoTo dBug
 
-        Dim strAni As String = "[animation]" & vbCrLf
+        Dim StrAni As String = "[animation]" & vbCrLf
 
 1:
         ' If there's a .ani-file present, delete it first.
@@ -149,18 +149,18 @@ Public Class ClsAniFile
 2:
         ' Write out dirs
         For Each s As String In Me.Dirs
-            strAni = strAni & "dir" & Me.Dirs.IndexOf(s) & " = " & s & vbCrLf
+            StrAni = StrAni & "dir" & Me.Dirs.IndexOf(s) & " = " & s & vbCrLf
         Next
 
 3:
         ' Write out views
         For Each s As String In Me.Views
-            strAni = strAni & "animation = " & s & vbCrLf
+            StrAni = StrAni & "animation = " & s & vbCrLf
         Next
 
 4:
         ' Now, the coordinates
-        strAni = strAni &
+        StrAni = StrAni &
             "x0 = " & Me.X0 & vbCrLf &
             "y0 = " & Me.Y0 & vbCrLf &
             "x1 = " & Me.X1 & vbCrLf &
@@ -173,7 +173,7 @@ Public Class ClsAniFile
                 File.Delete(Me.FileName)
             End If
             Using outfile As New StreamWriter(Me.FileName)
-                outfile.Write(strAni.ToString())
+                outfile.Write(StrAni.ToString())
             End Using
         End If
 
@@ -222,28 +222,28 @@ dBug:
 2:
 
             ' This is the full path and the relative path of the .ani file
-            Dim strPath As String = Path.GetDirectoryName(Me.FileName)
-            Dim strPathRel As String
-            strPathRel = Strings.Replace(strPath, Cfg_path_Root & "\", "")
-            strPathRel = Strings.Replace(strPathRel, Cfg_path_Root, "")
+            Dim StrPath As String = Path.GetDirectoryName(Me.FileName)
+            Dim StrPathRel As String
+            StrPathRel = Strings.Replace(StrPath, Cfg_path_Root & "\", "")
+            StrPathRel = Strings.Replace(StrPathRel, Cfg_path_Root, "")
             Dim Graphic As New ClsGraphic
 
-            MdlZTStudio.Trace("ClsAniFile", "CreateAniConfig", "Ani path: * " & strPath & " -> " & strPathRel)
+            MdlZTStudio.Trace("ClsAniFile", "CreateAniConfig", "Ani path: * " & StrPath & " -> " & StrPathRel)
 
             ' Set dirs. If this function is called multiple times, it won't do any harm.
             Me.Dirs.Clear(False)
-            Me.Dirs.AddRange(Strings.Split(strPathRel, "\"), False)
+            Me.Dirs.AddRange(Strings.Split(StrPathRel, "\"), False)
 
 10:
             ' Set views.
             Me.Views.Clear(False)
 
 11:
-            If File.Exists(strPath & "\N") = True And
-                File.Exists(strPath & "\NE") = True And
-                File.Exists(strPath & "\E") = True And
-                File.Exists(strPath & "\SE") = True And
-                File.Exists(strPath & "\S") = True Then
+            If File.Exists(StrPath & "\N") = True And
+                File.Exists(StrPath & "\NE") = True And
+                File.Exists(StrPath & "\E") = True And
+                File.Exists(StrPath & "\SE") = True And
+                File.Exists(StrPath & "\S") = True Then
 
 
                 ' This is typical for animals, guests, staff...
@@ -258,10 +258,10 @@ dBug:
                 MdlZTStudio.Trace("ClsAniFile", "CreateAniConfig", "Determination: 'animals', 'guests', 'staff', ...")
 
 12:
-            ElseIf File.Exists(strPath & "\NE") = True And
-                File.Exists(strPath & "\SE") = True And
-                File.Exists(strPath & "\SW") = True And
-                File.Exists(strPath & "\NW") = True Then
+            ElseIf File.Exists(StrPath & "\NE") = True And
+                File.Exists(StrPath & "\SE") = True And
+                File.Exists(StrPath & "\SW") = True And
+                File.Exists(StrPath & "\NW") = True Then
 
                 ' This is typical for objects
                 With Me.Views
@@ -276,7 +276,7 @@ dBug:
 
 13:
 
-            ElseIf File.Exists(strPath & "\N") = True Then
+            ElseIf File.Exists(StrPath & "\N") = True Then
 
                 ' This is typical for icons
                 With Me.Views
@@ -288,30 +288,30 @@ dBug:
 
 14:
 
-            ElseIf File.Exists(strPath & "\1") = True And
-                File.Exists(strPath & "\2") = True And
-                File.Exists(strPath & "\3") = True And
-                File.Exists(strPath & "\4") = True And
-                File.Exists(strPath & "\5") = True And
-                File.Exists(strPath & "\6") = True And
-                File.Exists(strPath & "\7") = True And
-                File.Exists(strPath & "\8") = True And
-                File.Exists(strPath & "\9") = True And
-                File.Exists(strPath & "\10") = True And
-                File.Exists(strPath & "\11") = True And
-                File.Exists(strPath & "\12") = True And
-                File.Exists(strPath & "\13") = True And
-                File.Exists(strPath & "\14") = True And
-                File.Exists(strPath & "\15") = True And
-                File.Exists(strPath & "\16") = True And
-                File.Exists(strPath & "\17") = True And
-                File.Exists(strPath & "\18") = True And
-                File.Exists(strPath & "\19") = True And
-                File.Exists(strPath & "\20") = True Then
+            ElseIf File.Exists(StrPath & "\1") = True And
+                File.Exists(StrPath & "\2") = True And
+                File.Exists(StrPath & "\3") = True And
+                File.Exists(StrPath & "\4") = True And
+                File.Exists(StrPath & "\5") = True And
+                File.Exists(StrPath & "\6") = True And
+                File.Exists(StrPath & "\7") = True And
+                File.Exists(StrPath & "\8") = True And
+                File.Exists(StrPath & "\9") = True And
+                File.Exists(StrPath & "\10") = True And
+                File.Exists(StrPath & "\11") = True And
+                File.Exists(StrPath & "\12") = True And
+                File.Exists(StrPath & "\13") = True And
+                File.Exists(StrPath & "\14") = True And
+                File.Exists(StrPath & "\15") = True And
+                File.Exists(StrPath & "\16") = True And
+                File.Exists(StrPath & "\17") = True And
+                File.Exists(StrPath & "\18") = True And
+                File.Exists(StrPath & "\19") = True And
+                File.Exists(StrPath & "\20") = True Then
 
                 ' This is typical for paths
                 With Me.Views
-                    Dim intX As Integer = 1
+                    Dim IntX As Integer = 1
                     While intX <= 20
                         .Add(intX.ToString("0"), False)
                         intX += 1

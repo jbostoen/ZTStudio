@@ -11,15 +11,15 @@ Public Class ClsGraphic
     ' All handling of palette files is done by a different class
 
 
-    Private ClsGraphic_FileName As String = vbNullString                 ' File name of graphic
-    Private ClsGraphic_Palette As New ClsPalette(Me)         ' Main color palette
+    Private ClsGraphic_FileName As String = vbNullString ' File name of graphic
+    Private ClsGraphic_Palette As New ClsPalette(Me) ' Main color palette
 
-    Private ClsGraphic_animationSpeed As Integer = 125     ' Speed in milliseconds for this animation
+    Private ClsGraphic_animationSpeed As Integer = 125 ' Speed in milliseconds for this animation
 
-    Private ClsGraphic_Byte9 As Byte = 0                 ' Basic files, FATZ-files with byte 9 = 0: 0. Byte 9 = 1: 1. Extra byte.
+    Private ClsGraphic_Byte9 As Byte = 0 ' Basic files, FATZ-files with byte 9 = 0: 0. Byte 9 = 1: 1. Extra byte.
 
     Private ClsGraphic_frames As New List(Of ClsFrame)
-    Private ClsGraphic_lastUpdated As String = Now.ToString("yyyyMMddHHmmss")            ' For caching purposes for larger frames.
+    Private ClsGraphic_lastUpdated As String = Now.ToString("yyyyMMddHHmmss") ' For caching purposes for larger frames.
 
 
     Public Property FileName As String

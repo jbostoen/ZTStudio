@@ -241,8 +241,8 @@ dBug:
 
         On Error GoTo dBug
 1:
-        Dim IntSpecifiedX As Integer
-        Dim IntSpecifiedY As Integer
+        Dim IntWidth As Integer
+        Dim IntHeight As Integer
 
         ' Retrieve the pure bitmap
         Dim BmCoreImageBitMap = Me.GetCoreImageBitmap()
@@ -251,35 +251,52 @@ dBug:
             Return Nothing
         End If
 
+        ' Determine how big the canvas will be.
+        ' Continue reading below, as only the width/height are determined first, but only multiplied by 2 later!
         Select Case BlnDrawInCenter
             Case False
                 ' Draw on transparent canvas (most common scenario)
                 ' It's important to keep in mind that the canvas is by default 2 * Cfg_grid_numPixels, both in width and in height.
                 ' So these variables will actually contain the top left pixel of the (four pixel) center.
-                IntSpecifiedX = Cfg_grid_numPixels
-                IntSpecifiedY = Cfg_grid_numPixels
+                IntWidth = Cfg_grid_numPixels
+                INtHeight = Cfg_grid_numPixels
             Case True
-                ' Convert everything relative to the center
+                ' Convert everything relative to the center. Method contributed by HENDRIX.
+                ' The idea is to generate a canvas around the center. By adding some spacing to the left/right or top/bottom, 
+                ' ZT Studio's import mechanisms will automatically apply the correct offsets again in ClsFrame::LoadPNG()
+                ' There, the initial offset (before being corrected) is already determined by width /2 and height / 2
+                ' Pick whatever is bigger: the absolute value of the  actual offset compared to the center; or of the offset (+ or -) minus the width/height
+                '
+                ' Some examples (based on width) make this easier to understand.
+                ' Basically it tries to find which side (left or right of the center) is the largest.
+                ' Left part is easy to understand; as for right part here are some examples based on abs(offset-width)
+                ' Positive offset = to left of center; negative = to right of center
+                ' Offset abs(0) = 0 | abs(0 - 50) = 50 ---> max is 50
+                ' Offset abs(5) = 5 | abs(5-50) = 45 ---> max is 45
+                ' Offset abs(5) = 5 | abs(5-4) = 1 ---> max is 5
+                ' Offset abs(-5) = 5 | abs(-5-50) = 55 ---> max is 55
+                ' Offset abs(-5) = 5 | abs(-5-4) = 9 ---> max is 9
+
                 ' It seems the + and -1 are needed to avoid changing the image size
-                ' Really can't remember the logic behind this one, it probably had to do with positive and negative offsets
-                ' Upon investigating, it seems this only happens when exporting to .PNG files.
-                IntSpecifiedX = Math.Max(Math.Abs(Me.OffsetX), Math.Abs(Me.OffsetX - BmCoreImageBitMap.Width)) + 1
-                IntSpecifiedY = Math.Max(Math.Abs(Me.OffsetY), Math.Abs(Me.OffsetY - BmCoreImageBitMap.Height)) - 1
+                ' Keep in mind this is multiplied by 2 further in the code!
+                IntWidth = Math.Max(Math.Abs(Me.OffsetX), Math.Abs(Me.OffsetX - BmCoreImageBitMap.Width)) + 1
+                IntHeight = Math.Max(Math.Abs(Me.OffsetY), Math.Abs(Me.OffsetY - BmCoreImageBitMap.Height)) - 1
         End Select
 
         ' Draw this retrieved bitmap on a transparent canvas
-        Dim BmOutput As New Bitmap(IntSpecifiedX * 2, IntSpecifiedY * 2) ' Creating the output canvas
-        Dim gGraphic As Graphics = Graphics.FromImage(BmOutput) ' Preparing to manipulate this empty canvas
+        Dim BmOutput As New Bitmap(IntWidth * 2, INtHeight * 2) ' Creating the output canvas
+        Dim ObjGraphic As Graphics = Graphics.FromImage(BmOutput) ' Preparing to manipulate this empty canvas
 
 25:
-        gGraphic.InterpolationMode = Drawing2D.InterpolationMode.NearestNeighbor ' Prevent softening: set InterpolationMode to NearestNeighbour
+        ObjGraphic.InterpolationMode = Drawing2D.InterpolationMode.NearestNeighbor ' Prevent softening: set InterpolationMode to NearestNeighbour
 
 30:
-        Dim IntStartingPointX As Integer = IntSpecifiedX - Me.OffsetX + 1
-        Dim IntStartingPointY As Integer = IntSpecifiedY - Me.OffsetY + 1
-        gGraphic.DrawImage(BmCoreImageBitMap, IntStartingPointX, IntStartingPointY, BmCoreImageBitMap.Width, BmCoreImageBitMap.Height)
+        ' Onto this canvas, draw the CoreImageBitmap of this frame.
+        Dim IntStartingPointX As Integer = IntWidth - Me.OffsetX + 1
+        Dim IntStartingPointY As Integer = INtHeight - Me.OffsetY + 1
+        ObjGraphic.DrawImage(BmCoreImageBitMap, IntStartingPointX, IntStartingPointY, BmCoreImageBitMap.Width, BmCoreImageBitMap.Height)
 31:
-        gGraphic.Dispose() 'Dispose as recommended. Output has been stored in bmOutput anyway.
+        ObjGraphic.Dispose() 'Dispose as recommended. Output has been stored in BmOutput anyway.
 
         Return BmOutput
 
@@ -313,20 +330,20 @@ dBug:
 11:
         ' Draw 'extra' background frame, e.g. restaurants?
         If Me.Parent.ExtraFrame = 1 And Cfg_export_PNG_RenderBGFrame = 1 Then
-            BmOutput = MdlTasks.Images_Combine(Me.Parent.Frames(Me.Parent.Frames.Count - 1).GetCoreImageBitmapOnTransparentCanvas(BlnCentered), BmOutput)
+            BmOutput = MdlBitMap.combineimages(Me.Parent.Frames(Me.Parent.Frames.Count - 1).GetCoreImageBitmapOnTransparentCanvas(BlnCentered), BmOutput)
         End If
 
 21:
         ' Optional background ZT1 Graphic frame, e.g. animal + toy?
         If EditorBgGraphic.Frames.Count > 0 And Cfg_export_PNG_RenderBGZT1 = 1 Then
             ' Currently it's always the 
-            BmOutput = MdlTasks.Images_Combine(EditorBgGraphic.Frames(0).GetCoreImageBitmapOnTransparentCanvas(BlnCentered), BmOutput)
+            BmOutput = MdlBitMap.combineimages(EditorBgGraphic.Frames(0).GetCoreImageBitmapOnTransparentCanvas(BlnCentered), BmOutput)
         End If
 
 31:
         ' Draw grid?
         If BlnDrawGrid = True Then
-            BmOutput = MdlTasks.Images_Combine(MdlTasks.Grid_DrawFootPrintXY(Cfg_grid_footPrintX, Cfg_grid_footPrintY), BmOutput)
+            BmOutput = MdlBitMap.combineimages(MdlBitMap.DrawGridFootPrintXY(Cfg_grid_footPrintX, Cfg_grid_footPrintY), BmOutput)
         End If
 
 41:
@@ -780,11 +797,11 @@ dBug:
 
 21:
         ' Get defining rectangle (dimensions)
-        Dim RectCrop As Rectangle = MdlTasks.Bitmap_GetDefiningRectangle(BmpDraw)
+        Dim RectCrop As Rectangle = MdlBitMap.GetDefiningRectangle(BmpDraw)
 
 22:
         ' Get cropped version of bitmap based on this rectangle
-        Dim BmpCropped As Bitmap = MdlTasks.Bitmap_GetCropped(BmpDraw, RectCrop)
+        Dim BmpCropped As Bitmap = MdlBitMap.GetCroppedVersion(BmpDraw, RectCrop)
 
 23:
         ' Improvement: by cropping to the relevant area, the offset should in most cases be better.
@@ -1102,7 +1119,7 @@ dBug:
                 End Using
 
 35:
-                ImgComb = MdlTasks.Images_Combine(ImgComb, Me.GetImage())
+                ImgComb = MdlBitMap.CombineImages(ImgComb, Me.GetImage())
                 ImgComb.Save(StrFileName, System.Drawing.Imaging.ImageFormat.Png)
 
             Case 1
@@ -1124,20 +1141,20 @@ dBug:
                 ' Combine all images. Basically put them all on top of each other.
                 ' That way, it's easy to determine the most relevant pixel top/left and bottom/right
                 For Each ztFrame As ClsFrame In Me.Parent.Frames
-                    ImgComb = MdlTasks.Images_Combine(ImgComb, ztFrame.GetImage())
+                    ImgComb = MdlBitMap.CombineImages(ImgComb, ztFrame.GetImage())
                 Next
 
                 ' Apply to this particular frame.
-                BmRect = Bitmap_GetDefiningRectangle(ImgComb)
-                BmCropped = MdlTasks.Bitmap_GetCropped(Me.GetImage(), BmRect)
+                BmRect = MdlBitMap.GetDefiningRectangle(ImgComb)
+                BmCropped = MdlBitMap.GetCroppedVersion(Me.GetImage(), BmRect)
                 BmCropped.Save(StrFileName, System.Drawing.Imaging.ImageFormat.Png)
 
             Case 2
                 ' Save PNG image. Relevant area of frame.
 
 141:
-                BmRect = Bitmap_GetDefiningRectangle(Me.GetImage())
-                BmCropped = MdlTasks.Bitmap_GetCropped(Me.GetImage(), BmRect)
+                BmRect = MdlBitMap.GetDefiningRectangle(Me.GetImage())
+                BmCropped = MdlBitMap.GetCroppedVersion(Me.GetImage(), BmRect)
                 BmCropped.Save(StrFileName, System.Drawing.Imaging.ImageFormat.Png)
 
             Case 3

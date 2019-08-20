@@ -688,307 +688,6 @@ dBug:
 
 
 
-    ''' <summary>
-    ''' Returns a cropped version of the given bitmap
-    ''' </summary>
-    ''' <param name="bmInput">Bitmap image</param>
-    ''' <param name="rRectangle">Rectangle used to crop the bitmap</param>
-    ''' <returns>Bitmap</returns>
-    Function Bitmap_GetCropped(bmInput As Bitmap, rRectangle As Rectangle) As Bitmap
-
-        ' Debug.Print("w,h=" & bmInput.Width & "," & bmInput.Height)
-        Return bmInput.Clone(rRectangle, bmInput.PixelFormat)
-
-    End Function
-
-    ''' <summary>
-    ''' Returns the defining rectangle for this bitmap.
-    ''' This means the rectangle which contains all colored (non-transparent) pixels
-    ''' </summary>
-    ''' <param name="bmInput">Bitmap image</param>
-    ''' <returns>Rectangle</returns>
-    Function Bitmap_GetDefiningRectangle(bmInput As Bitmap) As Rectangle
-
-        On Error GoTo dBug
-
-        ' This new method using LockBits is much faster than a previous version where GetPixel() was used. 
-        ' This is a big performance boost when loading 512x512 (canvas size) images.
-        ' For now, the old function still exists to make sure regressions can be detected.
-
-101:
-        ' Find most left
-        ' Find most top
-        ' Find most right
-        ' Find most bottom
-
-        Dim CoordX As Integer = 0
-        Dim CoordY As Integer = 0
-
-        Dim CoordA As New Point(bmInput.Width, bmInput.Height)
-        Dim CoordB As New Point(0, 0)
-        Dim CurColor As System.Drawing.Color
-        Dim CurTransparentColor As System.Drawing.Color = bmInput.GetPixel(0, 0)
-
-
-102:
-        Const px As System.Drawing.GraphicsUnit = GraphicsUnit.Pixel
-        Const fmtArgb As Imaging.PixelFormat = Imaging.PixelFormat.Format32bppArgb
-        Dim BoundsF As RectangleF = bmInput.GetBounds(px)
-        Dim Bounds As New Rectangle(New Point(CInt(BoundsF.X), CInt(BoundsF.Y)), New Size(CInt(BoundsF.Width), CInt(BoundsF.Height)))
-        Dim BmClone As Bitmap = bmInput.Clone(Bounds, fmtArgb)
-        Dim BmData As System.Drawing.Imaging.BitmapData = BmClone.LockBits(Bounds, Imaging.ImageLockMode.ReadWrite, BmClone.PixelFormat)
-        Dim offsetToFirstPixel As IntPtr = BmData.Scan0
-        Dim ByteCount As Integer = Math.Abs(BmData.Stride) * BmClone.Height
-        Dim BitmapBytes(ByteCount - 1) As Byte
-        System.Runtime.InteropServices.Marshal.Copy(offsetToFirstPixel, BitmapBytes, 0, ByteCount)
-
-110:
-        ' rectangle = bounds ?
-        Dim StartOffset As Integer = (0 * BmData.Stride)
-        Dim EndOffset As Integer = StartOffset + ((bmInput.Height) * BmData.Stride) - 1
-        Dim RectLeftOffset As Integer = (0 * 4)
-        Dim RectRightOffset As Integer = (0 + (bmInput.Width) * 4) - 1
-        Dim X As Integer = 0
-        Dim y As Integer = 0
-
-        Debug.Print("from " & StartOffset & " to " & EndOffset & " (total bytes: " & BitmapBytes.Length & ")")
-        Debug.Print("offset left from " & RectLeftOffset & " to " & RectRightOffset)
-
-        Dim pixelLocation As Point
-
-251:
-        For FirstOffsetInEachLine As Integer = StartOffset To EndOffset Step BmData.Stride
-            X = 0
-            For PixelOffset As Integer = RectLeftOffset To RectRightOffset Step 4 ' 4 because there are 4 bytes for the color: Blue, Green, Red, Alpha
-
-                pixelLocation = New Point(X, y)
-                'bitmapBytes(FirstOffsetInEachLine + PixelOffset) = FillColor.B
-                'bitmapBytes(FirstOffsetInEachLine + PixelOffset + 1) = FillColor.G
-                'bitmapBytes(FirstOffsetInEachLine + PixelOffset + 2) = FillColor.R
-                'bitmapBytes(FirstOffsetInEachLine + PixelOffset + 3) = FillColor.A
-
-                'If X > 510 And y > 510 Then
-                '    Debug.Print(bitmapBytes(FirstOffsetInEachLine + PixelOffset + 3))
-                'End If
-
-                ' Non-transparent
-                If BitmapBytes(FirstOffsetInEachLine + PixelOffset + 3) = 255 And
-                    BitmapBytes(FirstOffsetInEachLine + PixelOffset) <> CurTransparentColor.B And
-                    BitmapBytes(FirstOffsetInEachLine + PixelOffset + 1) <> CurTransparentColor.G And
-                    BitmapBytes(FirstOffsetInEachLine + PixelOffset + 2) <> CurTransparentColor.R Then
-
-                    ' Detected a non-transparent color
-                    If X < CoordA.X Then CoordA.X = X ' Topleft: move to left
-                    If y < CoordA.Y Then CoordA.Y = y ' Topleft: move to top
-
-                    If y > CoordB.Y Then CoordB.Y = y ' Bottomright: move to bottom 
-                    If X > CoordB.X Then CoordB.X = X ' Bottomright: move to right
-
-                End If
-
-                X += 1
-            Next
-            y += 1
-        Next
-
-        ' Unlock
-        System.Runtime.InteropServices.Marshal.Copy(BitmapBytes, 0, offsetToFirstPixel, ByteCount)
-        BmClone.UnlockBits(BmData)
-
-901:
-        ' The width/height are +1.
-        CoordB.X += 1
-        CoordB.Y += 1
-
-999:
-        ' 20170512 
-        ' HENDRIX found out that completely transparent frames can cause issues.
-        ' This is a simple fix, since it seems that a 1x1 frame is valid in ZT1, even if it's transparent.
-        If CoordA.X = bmInput.Width And CoordA.Y = bmInput.Height Then
-            CoordA = New Point(0, 0)
-            CoordB = New Point(1, 1)
-        End If
-
-        Return New Rectangle(CoordA.X, CoordA.Y, CoordB.X - CoordA.X, CoordB.Y - CoordA.Y)
-
-        Exit Function
-
-dBug:
-        MsgBox("Unexpected error occurred in ClsTasks:Bitmap_GetDefiningRectangle() at line " & Information.Erl() & vbCrLf &
-               Err.Number & " - " & Err.Description & vbCrLf &
-            "Last processed: " & pixelLocation.X & " - " & pixelLocation.Y,
-            vbOKOnly + vbCritical, "Critical error")
-
-    End Function
-
-
-    ''' <summary>
-    ''' Deprecated! Previous version of determining the relevant rectangle.
-    ''' Only left here in case a regression is spotted.
-    ''' </summary>
-    ''' <param name="bmInput">Bitmap image</param>
-    ''' <returns>Rectangle</returns>
-    Function Bitmap_GetDefiningRectangle_old(bmInput As Bitmap) As Rectangle
-
-        On Error GoTo dBug
-
-
-        ' Todo: this must be easier to go through. 
-        ' It doesn't make sense to search through all pixels from left to right, top to bottom. 
-
-101:
-        ' Find most left
-        ' Find most top
-        ' Find most right
-        ' Find most bottom
-
-        Dim CoordX As Integer = 0
-        Dim CoordY As Integer = 0
-
-        Dim CoordA As New Point(bmInput.Width, bmInput.Height)
-        Dim CoordB As New Point(0, 0)
-        Dim CurColor As System.Drawing.Color
-        Dim CurTransparentColor As System.Drawing.Color = bmInput.GetPixel(0, 0)
-
-        ' Optimized by HENDRIX
-        ' I like the new rectangle code, seems to be a good speedup!
-
-        ' However, I think  "If coordX >= coordA.X And coordX < coordB.X Then" can never be true. It works for Y. If we split it into
-        ' two loops, we can make use Of that condition. First Loop As it Is, getting left, top and bottom.
-        ' Second loop would swap While coordX and While coordY from the first loop, and only check the area that the other loop had not
-        ' covered to get the right coord.
-
-        ' I had this idea before reading through your new code:
-        ' how about we split the while loops into four ones And break out of each as soon as we find a non-transparent pixel?
-        ' go over each line from the top -> get coordA.Y
-        ' go over each column from the left -> get coordA.X
-        ' go over each line from the bottom -> get coordB.Y
-        ' go over each column from the right -> get coordB.X
-        ' that would speed things up in cases where there is relatively little padding on each side, but a large defining rectangle
-
-        ' My new idea is a hybrid of that and your new code, and it runs a tiny bit faster and produces better results
-
-        'first, crop away stuff from top and bottom
-        ' Left to right 
-        While CoordX <= (bmInput.Width - 1)
-
-            ' Top to bottom
-            CoordY = 0
-            While CoordY <= (bmInput.Height - 1)
-
-                ' Get color
-                CurColor = bmInput.GetPixel(CoordX, CoordY)
-
-                If CurColor <> CurTransparentColor And CurColor.A = 255 Then
-                    ' Color pixel
-
-                    'in this iteration it makes sense to check the other three
-                    If CoordX < CoordA.X Then CoordA.X = CoordX ' Topleft: move to left
-                    If CoordY < CoordA.Y Then CoordA.Y = CoordY ' Topleft: move to top
-
-                    'test is pointless, because coordX is always at least coordB.X+1
-                    CoordB.X = CoordX ' Bottomright: move to right
-                    If CoordY > CoordB.Y Then CoordB.Y = CoordY ' Bottomright: move to bottom
-
-                End If
-
-                ' If the current pixel is larger than a.Y and smaller than b.Y, we should skip.
-                ' It's a bit late so I'm not thinking straight, this might be a pixel off. 
-                If CoordY >= CoordA.Y And CoordY < CoordB.Y Then
-                    CoordY = CoordB.Y
-                Else
-                    ' Default 
-                    CoordY += 1
-                End If
-
-            End While
-
-            CoordX += 1
-
-        End While
-
-
-200:
-        ' MsgBox("w,h=" & coordA.X & "," & coordA.Y & " --- " & coordB.X & "," & coordB.Y)
-        ' then crop away stuff from right
-        ' but only the area we have not yet processed
-        CoordY = CoordA.Y
-        ' Top to bottom
-        While CoordY <= (CoordB.Y)
-
-            ' Right to left 
-            CoordX = bmInput.Width - 1
-            While CoordX > CoordB.X
-
-                ' Get color
-                CurColor = bmInput.GetPixel(CoordX, CoordY)
-
-                If CurColor <> CurTransparentColor And CurColor.A = 255 Then
-                    ' Color pixel
-                    If CoordX > CoordB.X Then CoordB.X = CoordX ' Bottomright: move to right
-
-                End If
-                'I don't think we need any test here, do we?
-                CoordX -= 1
-
-            End While
-
-            CoordY += 1
-
-        End While
-
-901:
-        'MsgBox("w,h=" & coordA.X & "," & coordA.Y & " --- " & coordB.X & "," & coordB.Y)
-        ' enabled for cropping of frames, 20150619
-        CoordB.X += 1
-        CoordB.Y += 1
-
-
-999:
-        ' 20170512 
-        ' HENDRIX found out that transparent frames can cause issues.
-        ' This is a more simple fix, since it seems this is valid in ZT1 after all?
-        If CoordA.X = bmInput.Width And CoordA.Y = bmInput.Height Then
-            CoordA = New Point(0, 0)
-            CoordB = New Point(1, 1)
-        End If
-
-        'Debug.Print("x1,y1=" & coordA.X & "," & coordA.Y & " --- x2,y2 " & coordB.X & "," & coordB.Y)
-        Return New Rectangle(CoordA.X, CoordA.Y, CoordB.X - CoordA.X, CoordB.Y - CoordA.Y)
-
-
-        Exit Function
-
-dBug:
-        MsgBox("Error while obtaining the 'defining rectangle' of this graphic." & vbCrLf &
-            "Erl " & Erl() & " - " & Err.Number & " - " & Err.Description,
-            vbOKOnly + vbCritical, "Critical error")
-
-    End Function
-
-    ''' <summary>
-    ''' Combines two images into one
-    ''' </summary>
-    ''' <param name="imgBack">Image 1</param>
-    ''' <param name="imgFront">Image 2</param>
-    ''' <returns>Image</returns>
-    Public Function Images_Combine(ByVal imgBack As Image, ByVal imgFront As Image) As Image
-        'this can now combine images of any size and will center them on each other
-
-        Dim x_max As Integer = Math.Max(imgBack.Width, imgFront.Width)
-        Dim y_max As Integer = Math.Max(imgBack.Height, imgFront.Height)
-
-        Dim Bmp As New Bitmap(x_max, y_max)
-        Dim g As Graphics = Graphics.FromImage(Bmp)
-
-        g.InterpolationMode = Drawing2D.InterpolationMode.NearestNeighbor ' prevent softening
-        g.DrawImage(imgBack, CInt((x_max - imgBack.Width) / 2), CInt((y_max - imgBack.Height) / 2), imgBack.Width, imgBack.Height)
-        g.DrawImage(imgFront, CInt((x_max - imgFront.Width) / 2), CInt((y_max - imgFront.Height) / 2), imgFront.Width, imgFront.Height)
-        g.Dispose()
-        Return Bmp
-
-    End Function
-
 
     ' === Extra ===
 
@@ -1023,129 +722,6 @@ dBug:
     End Sub
 
 
-    ''' <summary>
-    ''' Draws an isometric grid (squares).
-    ''' </summary>
-    ''' <param name="intFootPrintX">Sets the amount of squares (X)</param>
-    ''' <param name="intFootPrintY">Sets the amount of squares (Y)</param>
-    ''' <returns></returns>
-    Function Grid_DrawFootPrintXY(intFootPrintX As Integer, intFootPrintY As Integer) As Bitmap
-
-        ' Draws a certain amount of squares.
-        ' ZT1 uses either 1/4th of a square, or complete squares from there on. 
-        ' Anything else doesn't seem to be too reliable!
-
-        ' This function calculates where to put the center of the image.
-        ' View:
-        ' 0 = SE
-        ' 1 = SW
-        ' 2 = NE
-        ' 3 = NW
-
-        ' SE, x10, y8 = front view, 5 squares. Side: 4 squares.
-
-        ' Draw bitmap with squares first.
-        ' To do so, calculate the top left pixel of the center of the grid.
-
-        Dim IntWidth As Integer = (intFootPrintX + intFootPrintY) * 16
-        Dim IntHeight As Integer = IntWidth / 2
-
-        ' Every grid square adds this much for X and Y - consider both directions to be efficient!
-        Dim x_dim As Integer = intFootPrintX * 16 + intFootPrintY * 16
-        Dim y_dim As Integer = intFootPrintY * 8 + intFootPrintX * 8
-        Dim BmInput As New Bitmap(x_dim * 2, y_dim * 2)
-
-        ' first point of the generated grid: intFootprintX * 32, +16px Y (center), 
-
-        ' Find the center of the grid generated.
-        ' Next, align it with the center of the image.
-
-        ' Starting info: coordinate, number of squares, even or odd (= extra row) 
-        ' Keep track of how many squares are drawn
-        ' Do not draw more squares than the max width
-
-        Dim Coord As New Point((intFootPrintX / 2) * 32, 0)
-
-        ' Think with X=10,Y=8
-        Dim IntCurFootPrintX As Integer
-        Dim IntCurFootPrintY As Integer
-
-        For IntCurFootPrintX = 2 To intFootPrintX Step 2
-
-            ' Starting point:
-            Coord.X = x_dim - (IntWidth / 2) + (intFootPrintX / 2 * 32)
-
-            Coord.X = x_dim - (IntWidth / 2)  ' Move to the left
-            Coord.X += ((intFootPrintX - IntCurFootPrintX) / 2) * 32  ' What can we add?
-
-            'Debug.Print("X = " & coord.X)
-
-            Coord.Y = y_dim - (IntHeight / 2) + 16 * (IntCurFootPrintX / 2)
-            Coord.Y -= 16
-
-            ' Draw the first block, which is easy. 
-            For IntCurFootPrintY = 2 To intFootPrintY Step 2
-
-                ' For each
-                Coord.X += 32
-                Coord.Y += 16
-
-                'Debug.Print(" --> " & coord.X & "," & coord.Y)
-
-                Grid_DrawSquare(Coord, BmInput)
-
-            Next
-
-        Next
-
-        Return BmInput
-
-    End Function
-
-    ''' <summary>
-    ''' Draws a square (for a grid)
-    ''' </summary>
-    ''' <param name="coordTopLeft">The top left coordinate</param>
-    ''' <param name="bmInput">The bitmap to drawn on. If not specified</param>
-    ''' <returns></returns>
-    Function Grid_DrawSquare(coordTopLeft As Point, Optional bmInput As Bitmap = Nothing) As Bitmap
-
-        If IsNothing(bmInput) = True Then
-            bmInput = MdlSettings.BMEmpty
-        End If
-
-        Dim IntX As Integer
-        Dim IntY As Integer = 0
-
-        ' === Top left
-        For IntX = -31 To 0
-
-            bmInput.SetPixel(coordTopLeft.X + IntX, coordTopLeft.Y + IntY, Cfg_grid_ForeGroundColor)
-
-            ' Mirror to the right
-            bmInput.SetPixel(coordTopLeft.X + 1 - IntX, coordTopLeft.Y + IntY, Cfg_grid_ForeGroundColor)
-
-            ' Same for bottom
-            bmInput.SetPixel(coordTopLeft.X + IntX, coordTopLeft.Y - IntY + 1, Cfg_grid_ForeGroundColor)
-            bmInput.SetPixel(coordTopLeft.X + 1 - IntX, coordTopLeft.Y - IntY + 1, Cfg_grid_ForeGroundColor)
-
-            If IntX Mod 2 = 0 Then
-                IntY -= 1
-            End If
-
-        Next
-
-        ' === Center = 4px
-        bmInput.SetPixel(coordTopLeft.X, coordTopLeft.Y, Cfg_grid_ForeGroundColor)
-        bmInput.SetPixel(coordTopLeft.X, coordTopLeft.Y + 1, Cfg_grid_ForeGroundColor)
-        bmInput.SetPixel(coordTopLeft.X + 1, coordTopLeft.Y, Cfg_grid_ForeGroundColor)
-        bmInput.SetPixel(coordTopLeft.X + 1, coordTopLeft.Y + 1, Cfg_grid_ForeGroundColor)
-
-        'picBox.Image = bmInput
-
-        Return bmInput
-
-    End Function
 
     ''' <summary>
     ''' Replaces color (specified by index) in the main color palette
@@ -1287,10 +863,13 @@ dBug:
     '''  
     ''' It's especially useful when importing frames from another program, such as Blender, and the user sees the animal should just be a bit more central (up/down).
     ''' </summary>
-    ''' <param name="strPath">Path to folder</param>
-    ''' <param name="pntOffset">The offsets to apply</param>
-    ''' <param name="PB">The bar which will indicate progress</param>
-    Public Sub Batch_RotationFix_Folder_ZT1(strPath As String, pntOffset As Point, Optional PB As ProgressBar = Nothing)
+    ''' <param name="StrPath">Path to folder</param>
+    ''' <param name="PntOffset">The offsets to apply</param>
+    ''' <param name="ObjProgressBar">The bar which will indicate progress</param>
+    Public Sub Batch_RotationFix_Folder_ZT1(StrPath As String, PntOffset As Point, Optional ObjProgressBar As ProgressBar = Nothing)
+
+        ' Todo: check needed to see if strPath is subfolder of Cfg_Path_Root ?
+
 
         On Error GoTo dBug
 
@@ -1305,7 +884,7 @@ dBug:
         Dim StackDirectories As New Stack(Of String)
 
         ' Add the initial directory
-        StackDirectories.Push(strPath)
+        StackDirectories.Push(StrPath)
 
 10:
 
@@ -1335,38 +914,40 @@ dBug:
 
         ' Set the initial configuration for a (optional) progress bar.
         ' We want the max value to be the number of ZT1 Graphics we're trying to convert.
-        If IsNothing(PB) = False Then
-            PB.Minimum = 0
-            PB.Value = 0
-            PB.Maximum = LstFiles.Count
+        If IsNothing(ObjProgressBar) = False Then
+            ObjProgressBar.Minimum = 0
+            ObjProgressBar.Value = 0
+            ObjProgressBar.Maximum = LstFiles.Count
         End If
 
 1000:
         ' For each file that is a ZT1 Graphic:
-        For Each f As String In LstFiles
-            Debug.Print("Processing: " & f)
+        For Each StrCurrentFile As String In LstFiles
+
+            MdlZTStudio.Trace("MdlTasks", "Batch_RotationFix_Folder_ZT1", "Processing file " & StrCurrentFile)
+
 
             ' Read graphic, update offsets of frames, save.
-            Dim g As New ClsGraphic
+            Dim ObjGraphic As New ClsGraphic
 
 1100:
-            g.Read(f)
+            ObjGraphic.Read(StrCurrentFile)
 
 1105:
-            g.Frames(0).UpdateOffsets(pntOffset, True)
+            ObjGraphic.Frames(0).UpdateOffsets(PntOffset, True)
 
 1110:
-            g.Write(f)
+            ObjGraphic.Write(StrCurrentFile)
 
-            If IsNothing(PB) = False Then
-                PB.Value += 1
+            If IsNothing(ObjProgressBar) = False Then
+                ObjProgressBar.Value += 1
             End If
         Next
 
 1200:
         ' Generate a .ani-file in each directory. 
         ' Add the initial directory
-        Batch_Generate_Ani(strPath)
+        Batch_Generate_Ani(StrPath)
 
 1950:
         MsgBox("Finished batch rotation fixing.", vbOKOnly + vbInformation, "Finished job")
@@ -1376,7 +957,7 @@ dBug:
 dBug:
 
         MsgBox("An error occured while trying to list and batch rotation fix ZT1 Graphic files in this folder: " & vbCrLf &
-            strPath & vbCrLf & vbCrLf & "Line: " & Erl() & vbCrLf & Err.Number & " - " & Err.Description,
+            StrPath & vbCrLf & vbCrLf & "Line: " & Erl() & vbCrLf & Err.Number & " - " & Err.Description,
             vbOKOnly + vbCritical, "Error during batch rotation fixing")
 
     End Sub

@@ -117,7 +117,7 @@ Module MdlZTStudioUI
         ' The sub gets triggered when a new frame has been added, but no .PNG has been loaded yet, so frame contains no data.
         ' However, the picbox may need to be cleared (previous frame would still be shown otherwise)
         If editorGraphic.Frames(IntIndexFrameNumber).CoreImageHex.Count = 0 Then
-            FrmMain.picBox.Image = MdlTasks.Grid_DrawFootPrintXY(Cfg_grid_footPrintX, Cfg_grid_footPrintY)
+            FrmMain.picBox.Image = MdlBitMap.DrawGridFootPrintXY(Cfg_grid_footPrintX, Cfg_grid_footPrintY)
             Exit Sub
         End If
 

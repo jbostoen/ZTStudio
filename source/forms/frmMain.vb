@@ -1006,7 +1006,7 @@ dBug:
         editorGraphic.ColorPalette.FillPaletteGrid(dgvPaletteMain)
 
         ' Update frame 
-        picBox.Image = MdlTasks.Grid_DrawFootPrintXY(Cfg_grid_footPrintX, Cfg_grid_footPrintY)
+        picBox.Image = MdlBitMap.DrawGridFootPrintXY(Cfg_grid_footPrintX, Cfg_grid_footPrintY)
 
         MdlZTStudioUI.UpdateInfo("New empty ZT1 Graphic")
 

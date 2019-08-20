@@ -99,6 +99,7 @@
     <Compile Include="cls\ClsGraphic.vb" />
     <Compile Include="cls\ClsList.vb" />
     <Compile Include="cls\ClsString.vb" />
+    <Compile Include="modules\MdlBitMap.vb" />
     <Compile Include="modules\MdlConfig.vb" />
     <Compile Include="modules\MdlTasks.vb" />
     <Compile Include="cls\ClsPalette.vb" />

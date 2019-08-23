@@ -25,13 +25,13 @@ Module MdlZTStudioUI
             .tstZT1_AnimSpeed.Text = editorGraphic.AnimationSpeed
 
             ' NOT using a 0-based frame index visual indication, to avoid confusing
-            .tslFrame_Index.Text = IIf(editorGraphic.Frames.Count = 0, "-", (intFrameIndex + 1) & " / " & (editorGraphic.Frames.Count - editorGraphic.ExtraFrame))
+            .tslFrame_Index.Text = IIf(EditorGraphic.Frames.Count = 0, "-", (IntFrameIndex + 1) & " / " & (EditorGraphic.Frames.Count - EditorGraphic.HasBackgroundFrame))
 
-            MdlZTStudio.Trace("ClsTasks", "Update_Info", "Reason: " & StrReason & ". # non-background frames = " & (editorGraphic.Frames.Count - editorGraphic.ExtraFrame) & " - background frame: " & editorGraphic.ExtraFrame.ToString())
+            MdlZTStudio.Trace("MdlZTStudioUI", "Update_Info", "Reason: " & StrReason & ". # non-background frames = " & (EditorGraphic.Frames.Count - EditorGraphic.HasBackgroundFrame) & " - background frame: " & EditorGraphic.HasBackgroundFrame.ToString())
 
             With .TbFrames
                 .Minimum = 1
-                .Maximum = (editorGraphic.Frames.Count - editorGraphic.ExtraFrame) ' for actually generated files: - editorGraphic.extraFrame)
+                .Maximum = (EditorGraphic.Frames.Count - EditorGraphic.HasBackgroundFrame) ' for actually generated files: - editorGraphic.extraFrame)
 
                 If .Maximum < 1 Then
                     .Minimum = 1
@@ -45,7 +45,7 @@ Module MdlZTStudioUI
 
             ' == Graphic
             .tsbGraphic_ExtraFrame.Enabled = (editorGraphic.Frames.Count > 1) ' Background frame can only be enabled if there's more than one frame
-            .tsbGraphic_ExtraFrame.Checked = (editorGraphic.ExtraFrame = 1) ' Is background frame enabled for this graphic? Then toggle button.
+            .tsbGraphic_ExtraFrame.Checked = (EditorGraphic.HasBackgroundFrame = 1) ' Is background frame enabled for this graphic? Then toggle button.
 
             ' == Frame
             .tsbFrame_Delete.Enabled = (editorGraphic.Frames.Count > 1)
@@ -67,7 +67,7 @@ Module MdlZTStudioUI
             .tsbFrame_OffsetLeft.Enabled = (editorGraphic.Frames.Count > 0)
             .tsbFrame_OffsetRight.Enabled = (editorGraphic.Frames.Count > 0)
 
-            .tsbFrame_IndexIncrease.Enabled = (editorGraphic.Frames.Count > 1 And intFrameIndex < (editorGraphic.Frames.Count - 1 - editorGraphic.ExtraFrame))
+            .tsbFrame_IndexIncrease.Enabled = (EditorGraphic.Frames.Count > 1 And IntFrameIndex < (EditorGraphic.Frames.Count - 1 - EditorGraphic.HasBackgroundFrame))
             .tsbFrame_IndexDecrease.Enabled = (editorGraphic.Frames.Count > 1 And intFrameIndex > 0)
 
             .picBox.BackColor = Cfg_grid_BackGroundColor

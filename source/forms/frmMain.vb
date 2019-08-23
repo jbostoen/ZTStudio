@@ -274,8 +274,8 @@ dBug:
                         MdlZTStudioUI.UpdatePreview(0)
 
                         ' Add time indication
-                        LblAnimTime.Text = ((EditorGraphic.Frames.Count - EditorGraphic.ExtraFrame) * EditorGraphic.AnimationSpeed) & " ms "
-                        LblFrames.Text = (EditorGraphic.Frames.Count - EditorGraphic.ExtraFrame) & " frames. "
+                        LblAnimTime.Text = ((EditorGraphic.Frames.Count - EditorGraphic.HasBackgroundFrame) * EditorGraphic.AnimationSpeed) & " ms "
+                        LblFrames.Text = (EditorGraphic.Frames.Count - EditorGraphic.HasBackgroundFrame) & " frames. "
 
                         ' Show default palette
                         EditorGraphic.ColorPalette.FillPaletteGrid(dgvPaletteMain)
@@ -540,7 +540,7 @@ dBug:
 
 15:
         ' not sure if this is right if an extra frame is applied?
-        TbFrames.Maximum = EditorGraphic.Frames.Count - EditorGraphic.ExtraFrame
+        TbFrames.Maximum = EditorGraphic.Frames.Count - EditorGraphic.HasBackgroundFrame
 
 16:
         TbFrames.Value += 1
@@ -632,11 +632,8 @@ dBug:
 
     Private Sub TsbGraphic_ExtraFrame_Click(sender As Object, e As EventArgs) Handles tsbGraphic_ExtraFrame.Click
 
-        If EditorGraphic.ExtraFrame = 0 Then
-            EditorGraphic.ExtraFrame = 1
-        Else
-            EditorGraphic.ExtraFrame = 0
-        End If
+
+        EditorGraphic.HasBackgroundFrame = Math.Abs(EditorGraphic.HasBackgroundFrame - 1)
 
 
         ' Quick fix: on change, revert to frame 1.
@@ -795,7 +792,7 @@ dBug:
 
 15:
             ' not sure if this is right if an extra frame is applied?
-            TbFrames.Maximum = editorGraphic.Frames.Count - editorGraphic.ExtraFrame
+            TbFrames.Maximum = EditorGraphic.Frames.Count - EditorGraphic.HasBackgroundFrame
 
 16:
             TbFrames.Value += 1

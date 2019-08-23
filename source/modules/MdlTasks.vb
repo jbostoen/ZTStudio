@@ -123,7 +123,7 @@ dBug:
             ' This might however make a nice addition :)
 
             ' RenderBGFrame: this is read as: 'render this as BG for every frame'
-            If Cfg_export_PNG_RenderBGFrame = 0 And g.ExtraFrame = 1 Then
+            If Cfg_export_PNG_RenderBGFrame = 0 And g.HasBackgroundFrame = 1 Then
                 If g.Frames.IndexOf(ztFrame) <> (g.Frames.Count - 1) Then
                     ztFrame.SavePNG(strFile & Cfg_convert_fileNameDelimiter & (g.Frames.IndexOf(ztFrame) + Cfg_convert_startIndex).ToString("0000") & ".png")
                 Else
@@ -192,7 +192,7 @@ dBg:
         ' Fix for graphic_extra.PNG (legacy)
         If File.Exists(frameGraphicPath & graphicName & Cfg_convert_fileNameDelimiter & "extra.png") = True Then
             paths.Add(frameGraphicPath & graphicName & Cfg_convert_fileNameDelimiter & "extra.png")
-            g.ExtraFrame = 1
+            g.HasBackgroundFrame = 1
         End If
 
 20:
@@ -253,7 +253,7 @@ dBg:
 
                 If pngName = "extra" Then
                     ' There's an extra background frame.
-                    g.ExtraFrame = 1
+                    g.HasBackgroundFrame = 1
 
 125:
                 ElseIf IsNumeric(pngName) = True Then

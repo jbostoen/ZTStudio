@@ -45,7 +45,9 @@ Public Class ClsPalette
     Function ReadPal(Optional strFileName As String = vbNullString) As Integer
 
 
-        If strFileName <> vbNullString Then pal_FileName = strFileName
+        If strFileName <> vbNullString Then
+            pal_FileName = strFileName
+        End If
 
         ' File does not exist.
         If File.Exists(pal_FileName) = False Then

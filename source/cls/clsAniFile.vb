@@ -228,7 +228,7 @@ dBug:
             StrPathRel = Strings.Replace(StrPathRel, Cfg_path_Root, "")
             Dim Graphic As New ClsGraphic
 
-            MdlZTStudio.Trace("ClsAniFile", "CreateAniConfig", "Ani path: * " & StrPath & " -> " & StrPathRel)
+            MdlZTStudio.Trace(Me.GetType().FullName, "CreateAniConfig", "Ani path: * " & StrPath & " -> " & StrPathRel)
 
             ' Set dirs. If this function is called multiple times, it won't do any harm.
             Me.Dirs.Clear(False)
@@ -255,7 +255,7 @@ dBug:
                     .Add("S", False)
                 End With
 
-                MdlZTStudio.Trace("ClsAniFile", "CreateAniConfig", "Determination: 'animals', 'guests', 'staff', ...")
+                MdlZTStudio.Trace(Me.GetType().FullName, "CreateAniConfig", "Determination: 'animals', 'guests', 'staff', ...")
 
 12:
             ElseIf File.Exists(StrPath & "\NE") = True And
@@ -271,7 +271,7 @@ dBug:
                     .Add("NW", False)
                 End With
 
-                MdlZTStudio.Trace("ClsAniFile", "CreateAniConfig", "Determination: 'object'")
+                MdlZTStudio.Trace(Me.GetType().FullName, "CreateAniConfig", "Determination: 'object'")
 
 
 13:
@@ -283,7 +283,7 @@ dBug:
                     .Add("N", False)
                 End With
 
-                MdlZTStudio.Trace("ClsAniFile", "CreateAniConfig", "Determination: 'icon'")
+                MdlZTStudio.Trace(Me.GetType().FullName, "CreateAniConfig", "Determination: 'icon'")
 
 
 14:
@@ -312,18 +312,18 @@ dBug:
                 ' This is typical for paths
                 With Me.Views
                     Dim IntX As Integer = 1
-                    While intX <= 20
-                        .Add(intX.ToString("0"), False)
-                        intX += 1
+                    While IntX <= 20
+                        .Add(IntX.ToString("0"), False)
+                        IntX += 1
                     End While
                 End With
 
-                MdlZTStudio.Trace("ClsAniFile", "CreateAniConfig", "Determination: 'path'")
+                MdlZTStudio.Trace(Me.GetType().FullName, "CreateAniConfig", "Determination: 'path'")
 
 15:
             Else
 
-                MdlZTStudio.Trace("ClsAniFile", "CreateAniConfig", "Determination: unable to determine type of graphic in " & Path.GetDirectoryName(Me.FileName))
+                MdlZTStudio.Trace(Me.GetType().FullName, "CreateAniConfig", "Determination: unable to determine type of graphic in " & Path.GetDirectoryName(Me.FileName))
 
             End If
 
@@ -334,7 +334,7 @@ dBug:
                 For Each sAni In Me.Views
 
                     ' We need to read every view for this graphic in the folder.
-                    Graphic.Read(strPath.Replace("\", "/") & "/" & sAni)
+                    Graphic.Read(StrPath.Replace("\", "/") & "/" & sAni)
 
                     For Each ztFrame As ClsFrame In Graphic.Frames
 
@@ -363,7 +363,7 @@ dBug:
         Exit Sub
 
 dBug:
-        MdlZTStudio.UnexpectedError("ClsAniFile", "CreateAniConfig", Information.Erl(), Information.Err())
+        MdlZTStudio.UnexpectedError(Me.GetType().FullName, "CreateAniConfig", Information.Erl(), Information.Err())
 
     End Sub
 

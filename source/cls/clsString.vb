@@ -2,25 +2,26 @@
 
 Module StringExtensions
 
+    ''' <summary>
+    ''' Reverse hex method to allow for easier switching around of bytes
+    ''' </summary>
+    ''' <remarks>In computing, endianness refers to the order of bytes (or sometimes bits) within a binary representation of a number</remarks>
+    ''' <param name="StrInput">String - bytes/hex values to reverse</param>
+    ''' <returns></returns>
     <Extension()>
-    Public Function ReverseHEX(ByVal aString As String) As String
+    Public Function ReverseHex(ByVal StrInput As String) As String
 
-        Dim retString As String
+        Dim StrReturn As String
 
-        Dim Lst As New List(Of String)
-        Lst.AddRange(Enumerable.Range(0, aString.Length / 2).Select(Function(x) aString.Substring(x * 2, 2)).ToList())
-        lst.Reverse()
-         
+        Dim LstStrings As New List(Of String)
+        LstStrings.AddRange(Enumerable.Range(0, StrInput.Length / 2).Select(Function(x) StrInput.Substring(x * 2, 2)).ToList())
+        LstStrings.Reverse()
 
-        retString = Strings.Join(lst.ToArray(), " ")
-
+        StrReturn = Strings.Join(LstStrings.ToArray(), " ")
 
         ' return reverse, with spaces
-        Return Strings.Trim(retString)
-
+        Return Strings.Trim(StrReturn)
 
     End Function
-
-
 
 End Module

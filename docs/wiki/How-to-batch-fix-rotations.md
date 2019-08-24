@@ -1,0 +1,5 @@
+ZT Studio is very powerful when it comes to batch rotation fixing.
+
+* When manually fixing a graphic (so after you open the file in ZT Studio), you can configure a setting (see Settings) which automatically adjusts all the frames in the graphic you're currently editing.
+
+* There's also another batch rotation fix feature. This one allows you to adjust all frames in several graphics - at once! You'll need to know if you want to move all frames up/down, left/right and how many pixels that should be. You can determine this by opening a single graphic first, making the necessary adjustments and noting down how many pixels you want the graphic to be moved. Do **NOT** save. Now, hit the button with the arrows in all directions. You'll be asked to specify the (sub)folder of the ZT1 Graphics this procedure will apply to. 

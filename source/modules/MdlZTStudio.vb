@@ -161,38 +161,68 @@ dBug:
 
 
     ''' <summary>
-    ''' To make errors look more generic, most of them are now handled by this method.
+    ''' To make unexpected errors look more generic, most of them are now handled by this method.
     ''' </summary>
-    ''' <param name="strClass">Class </param>
-    ''' <param name="strMethod">Method</param>
-    ''' <param name="intErrorLine">Error line</param>
-    ''' <param name="objError">Error object (contains number and message)</param>
-    Sub UnexpectedError(strClass As String, strMethod As String, intErrorLine As Integer, objError As ErrObject)
+    ''' <param name="StrClass">Class </param>
+    ''' <param name="StrMethod">Method</param>
+    ''' <param name="ObjError">Error object (contains number and message)</param>
+    Sub UnexpectedError(StrClass As String, strMethod As String, ObjError As ErrObject)
+
+        MdlZTStudio.Trace(StrClass, strMethod, "Unexpected error occurred in " & StrClass & "::" & strMethod & "()")
 
         Dim StrMessage As String = "" &
-            "Sorry, but an unexpected error occurred in " & strClass & "::" & strMethod & "() at line " & intErrorLine.ToString() & vbCrLf &
-            "Error code: " & objError.Number.ToString() & vbCrLf &
-            objError.Description & vbCrLf & vbCrLf &
+            "Sorry, but an unexpected error occurred in " & StrClass & "::" & strMethod & "() at line " & Information.Erl.ToString() & vbCrLf &
+            "Error code: " & ObjError.Number.ToString() & vbCrLf &
+            ObjError.Description & vbCrLf & vbCrLf &
             "------------------------------------" & vbCrLf &
             "As a precaution, " & Application.ProductName & " will close." & vbCrLf &
             "If you can repeat this error, feel free to report it at " & Cfg_GitHub_URL & "." & vbCrLf &
             "Add as many details (steps to reproduce) as possible, include relevant files in your report."
 
-        If MsgBox(strMessage, MsgBoxStyle.ApplicationModal + MsgBoxStyle.OkOnly + MsgBoxStyle.Critical) = MsgBoxResult.Ok Then
+        If MsgBox(StrMessage, MsgBoxStyle.ApplicationModal + MsgBoxStyle.OkOnly + MsgBoxStyle.Critical, "Unexpected error occurred") = MsgBoxResult.Ok Then
             End
 
         End If
 
     End Sub
 
+
+    ''' <summary>
+    ''' To make expected errors look more generic, most of them are now handled by this method. Some parameters are only meant for tracing details.
+    ''' </summary>
+    ''' <param name="StrClass">Class </param>
+    ''' <param name="StrMethod">Method</param>
+    ''' <param name="StrMessage">Message</param>
+    ''' <param name="BlnFatal">Fatal error. Defaults to false.</param>
+    ''' <param name="ObjError">Error object (contains number and message). Defaults to Nothing.</param>
+    Sub ExpectedError(StrClass As String, strMethod As String, StrMessage As String, Optional BlnFatal As Boolean = False, Optional ObjError As ErrObject = Nothing)
+
+        If BlnFatal = True Then
+            StrMessage = StrMessage & vbCrLf & vbCrLf & "Since this error may lead to other issues, " & Application.ProductName & " will now close completely."
+        End If
+
+        ' Tracing info was provided
+        If IsNothing(ObjError) = False Then
+            MdlZTStudio.Trace(StrClass, strMethod, "Expected error occurred in " & StrClass & "::" & strMethod & "()")
+        End If
+
+        If MsgBox(StrMessage, MsgBoxStyle.ApplicationModal + MsgBoxStyle.OkOnly + MsgBoxStyle.Critical, "Error occurred") = MsgBoxResult.Ok Then
+            If BlnFatal = True Then
+                End
+            End If
+        End If
+
+
+    End Sub
+
     ''' <summary>
     ''' To make tracing look more generic
     ''' </summary>
-    ''' <param name="strClass">Class</param>
-    ''' <param name="strMethod">Method</param>
-    ''' <param name="strMessage">Message</param>
-    Sub Trace(strClass As String, strMethod As String, strMessage As String)
-        Debug.Print(Now.ToString("yyyy-MM-dd HH:mm:ss") & ": " & strClass & "::" & strMethod & "(): " & strMessage)
+    ''' <param name="StrClass">Class</param>
+    ''' <param name="StrMethod">Method</param>
+    ''' <param name="StrMessage">Message</param>
+    Sub Trace(StrClass As String, StrMethod As String, StrMessage As String)
+        Debug.Print(Now.ToString("yyyy-MM-dd HH:mm:ss") & ": " & StrClass & "::" & StrMethod & "(): " & StrMessage)
     End Sub
 
 End Module

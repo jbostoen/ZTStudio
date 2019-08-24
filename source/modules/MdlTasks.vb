@@ -383,11 +383,11 @@ dBg:
                                                     .ReadPal(.FileName)
                                                     GoTo paletteReady
                                                 Case ".gpl"
-                                                    .Import_from_GimpPalette(inPath & ext)
+                                                    .ImportFromGIMPPalette(inPath & ext)
                                                     .WritePal(.FileName, True)
                                                     GoTo paletteReady
                                                 Case ".png"
-                                                    .Import_from_PNG(inPath & ext)
+                                                    .ImportFromPNG(inPath & ext)
                                                     .WritePal(.FileName, True)
                                                     GoTo paletteReady
                                             End Select
@@ -833,9 +833,9 @@ dBug:
                 Dim frmColPal As New frmPal
 
                 ' Read the .pal file
-                If CpPallete.ReadPal(strFileName) <> 0 Then
+                CpPallete.ReadPal(strFileName)
 
-                    CpPallete.FillPaletteGrid(frmColPal.dgvPal)
+                CpPallete.FillPaletteGrid(frmColPal.dgvPal)
 
                     frmColPal.ssFileName.Text = Path.GetFileName(strFileName)
 
@@ -849,7 +849,6 @@ dBug:
 
                     frmColPal.Show()
 
-                End If
 
             End If
 

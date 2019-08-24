@@ -225,7 +225,7 @@ Public Class ClsFrame
         Exit Function
 
 dBug:
-        MdlZTStudio.UnexpectedError(Me.GetType().FullName, "GetCoreImageBitmap", Information.Erl(), Information.Err)
+        MdlZTStudio.UnexpectedError(Me.GetType().FullName, "GetCoreImageBitmap", Information.Err)
 
     End Function
 
@@ -303,7 +303,7 @@ dBug:
         Exit Function
 
 dBug:
-        MdlZTStudio.UnexpectedError(Me.GetType().FullName, "GetCoreImageBitmapOnTransparentCanvas", Information.Erl(), Information.Err)
+        MdlZTStudio.UnexpectedError(Me.GetType().FullName, "GetCoreImageBitmapOnTransparentCanvas", Information.Err)
 
     End Function
 
@@ -353,7 +353,7 @@ dBug:
         Exit Function
 
 dBug:
-        MdlZTStudio.UnexpectedError(Me.GetType().FullName, "GetImage", Information.Erl(), Information.Err)
+        MdlZTStudio.UnexpectedError(Me.GetType().FullName, "GetImage", Information.Err)
 
 
     End Function
@@ -653,8 +653,8 @@ dBug2:
                     ' .CoreImageHex(4) and (5) make up offset Y (top/bottom)
                     If ztFrame.OffsetY >= 0 Then
                         ' Positive offsets work just fine.
-                        ztFrame.CoreImageHex(4) = Strings.Split(ztFrame.OffsetY.ToString("X4").ReverseHEX())(0)
-                        ztFrame.CoreImageHex(5) = Strings.Split(ztFrame.OffsetY.ToString("X4").ReverseHEX())(1)
+                        ztFrame.CoreImageHex(4) = Strings.Split(ztFrame.OffsetY.ToString("X4").ReverseHex())(0)
+                        ztFrame.CoreImageHex(5) = Strings.Split(ztFrame.OffsetY.ToString("X4").ReverseHex())(1)
                     Else
                         ' Negative offsets need a different approach.
                         ' 256 (FF) * 256  (FF) = 65536. Despite the plus sign below, offset is negative, so it's substracted.
@@ -662,18 +662,18 @@ dBug2:
                         ' HEX FFFF (-1) -> 8000 (-32768) are negative;
                         ' HEX 0000 (0) -> 7FFF (32767) are positive
                         ' Explained at 
-                        ztFrame.CoreImageHex(4) = Strings.Split((256 * 256 + ztFrame.OffsetY).ToString("X4").ReverseHEX())(0)
-                        ztFrame.CoreImageHex(5) = Strings.Split((256 * 256 + ztFrame.OffsetY).ToString("X4").ReverseHEX())(1)
+                        ztFrame.CoreImageHex(4) = Strings.Split((256 * 256 + ztFrame.OffsetY).ToString("X4").ReverseHex())(0)
+                        ztFrame.CoreImageHex(5) = Strings.Split((256 * 256 + ztFrame.OffsetY).ToString("X4").ReverseHex())(1)
                     End If
 
                     ' .CoreImageHex(6) and (7) make up offset X (left/right)
                     ' Logic: see above
                     If ztFrame.OffsetX >= 0 Then
-                        ztFrame.CoreImageHex(6) = Strings.Split(ztFrame.OffsetX.ToString("X4").ReverseHEX())(0)
-                        ztFrame.CoreImageHex(7) = Strings.Split(ztFrame.OffsetX.ToString("X4").ReverseHEX())(1)
+                        ztFrame.CoreImageHex(6) = Strings.Split(ztFrame.OffsetX.ToString("X4").ReverseHex())(0)
+                        ztFrame.CoreImageHex(7) = Strings.Split(ztFrame.OffsetX.ToString("X4").ReverseHex())(1)
                     Else
-                        ztFrame.CoreImageHex(6) = Strings.Split((256 * 256 + ztFrame.OffsetX).ToString("X4").ReverseHEX())(0)
-                        ztFrame.CoreImageHex(7) = Strings.Split((256 * 256 + ztFrame.OffsetX).ToString("X4").ReverseHEX())(1)
+                        ztFrame.CoreImageHex(6) = Strings.Split((256 * 256 + ztFrame.OffsetX).ToString("X4").ReverseHex())(0)
+                        ztFrame.CoreImageHex(7) = Strings.Split((256 * 256 + ztFrame.OffsetX).ToString("X4").ReverseHex())(1)
                     End If
 
                 End If
@@ -694,19 +694,19 @@ dBug2:
 
                 ' Simply change the hex
                 If Me.OffsetY >= 0 Then
-                    Me.CoreImageHex(4) = Strings.Split(Me.OffsetY.ToString("X4").ReverseHEX())(0)
-                    Me.CoreImageHex(5) = Strings.Split(Me.OffsetY.ToString("X4").ReverseHEX())(0)
+                    Me.CoreImageHex(4) = Strings.Split(Me.OffsetY.ToString("X4").ReverseHex())(0)
+                    Me.CoreImageHex(5) = Strings.Split(Me.OffsetY.ToString("X4").ReverseHex())(0)
                 Else
-                    Me.CoreImageHex(4) = Strings.Split((256 * 256 + Me.OffsetY).ToString("X4").ReverseHEX())(0)
-                    Me.CoreImageHex(5) = Strings.Split((256 * 256 + Me.OffsetY).ToString("X4").ReverseHEX())(0)
+                    Me.CoreImageHex(4) = Strings.Split((256 * 256 + Me.OffsetY).ToString("X4").ReverseHex())(0)
+                    Me.CoreImageHex(5) = Strings.Split((256 * 256 + Me.OffsetY).ToString("X4").ReverseHex())(0)
                 End If
 
                 If Me.OffsetX >= 0 Then
-                    Me.CoreImageHex(6) = Strings.Split(Me.OffsetX.ToString("X4").ReverseHEX())(0)
-                    Me.CoreImageHex(7) = Strings.Split(Me.OffsetX.ToString("X4").ReverseHEX())(0)
+                    Me.CoreImageHex(6) = Strings.Split(Me.OffsetX.ToString("X4").ReverseHex())(0)
+                    Me.CoreImageHex(7) = Strings.Split(Me.OffsetX.ToString("X4").ReverseHex())(0)
                 Else
-                    Me.CoreImageHex(6) = Strings.Split((256 * 256 + Me.OffsetX).ToString("X4").ReverseHEX())(0)
-                    Me.CoreImageHex(7) = Strings.Split((256 * 256 + Me.OffsetX).ToString("X4").ReverseHEX())(0)
+                    Me.CoreImageHex(6) = Strings.Split((256 * 256 + Me.OffsetX).ToString("X4").ReverseHex())(0)
+                    Me.CoreImageHex(7) = Strings.Split((256 * 256 + Me.OffsetX).ToString("X4").ReverseHex())(0)
                 End If
 
             End If
@@ -718,7 +718,7 @@ dBug2:
         Exit Sub
 
 dBug:
-        MdlZTStudio.UnexpectedError(Me.GetType().FullName, "UpdateOffsets", Information.Erl(), Information.Err)
+        MdlZTStudio.UnexpectedError(Me.GetType().FullName, "UpdateOffsets", Information.Err)
 
 
     End Sub
@@ -758,7 +758,7 @@ dBug:
 
 dBug:
 
-        MdlZTStudio.UnexpectedError(Me.GetType().FullName, "UpdateIndex", Information.Erl(), Information.Err)
+        MdlZTStudio.UnexpectedError(Me.GetType().FullName, "UpdateIndex", Information.Err)
 
     End Sub
 
@@ -832,7 +832,7 @@ dBug:
         Exit Sub
 
 dBug:
-        MdlZTStudio.UnexpectedError(Me.GetType().FullName, "LoadPNG", Information.Erl(), Information.Err)
+        MdlZTStudio.UnexpectedError(Me.GetType().FullName, "LoadPNG", Information.Err)
 
     End Sub
 
@@ -1040,21 +1040,21 @@ dBug:
 
 9001:
             ' Easier to build it this way. Start by writing the dimensions: height, width.
-            .AddRange(Strings.Split(BmImage.Height.ToString("X4").ReverseHEX(), " "), False)
-            .AddRange(Strings.Split(BmImage.Width.ToString("X4").ReverseHEX(), " "), False)
+            .AddRange(Strings.Split(BmImage.Height.ToString("X4").ReverseHex(), " "), False)
+            .AddRange(Strings.Split(BmImage.Width.ToString("X4").ReverseHex(), " "), False)
 
 9002:
             If Me.OffsetY >= 0 Then
-                .AddRange(Strings.Split(Me.OffsetY.ToString("X4").ReverseHEX(), " "), False)
+                .AddRange(Strings.Split(Me.OffsetY.ToString("X4").ReverseHex(), " "), False)
             Else
-                .AddRange(Strings.Split((256 * 256 + Me.OffsetY).ToString("X4").ReverseHEX(), " "), False)
+                .AddRange(Strings.Split((256 * 256 + Me.OffsetY).ToString("X4").ReverseHex(), " "), False)
 
             End If
 
             If Me.OffsetX >= 0 Then
-                .AddRange(Strings.Split(Me.OffsetX.ToString("X4").ReverseHEX(), " "), False)
+                .AddRange(Strings.Split(Me.OffsetX.ToString("X4").ReverseHex(), " "), False)
             Else
-                .AddRange(Strings.Split((256 * 256 + Me.OffsetX).ToString("X4").ReverseHEX(), " "), False)
+                .AddRange(Strings.Split((256 * 256 + Me.OffsetX).ToString("X4").ReverseHex(), " "), False)
             End If
 
 9003:
@@ -1080,7 +1080,7 @@ dBug:
         Exit Function
 
 dBug:
-        MdlZTStudio.UnexpectedError(Me.GetType().FullName, "BitMapToHex", Information.Erl(), Information.Err)
+        MdlZTStudio.UnexpectedError(Me.GetType().FullName, "BitMapToHex", Information.Err)
 
 
     End Function
@@ -1167,7 +1167,7 @@ dBug:
         Exit Sub
 
 dBug:
-        MdlZTStudio.UnexpectedError(Me.GetType().FullName, "SavePNG", Information.Erl(), Information.Err)
+        MdlZTStudio.UnexpectedError(Me.GetType().FullName, "SavePNG", Information.Err)
 
 
     End Sub

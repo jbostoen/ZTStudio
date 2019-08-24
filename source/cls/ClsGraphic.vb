@@ -250,7 +250,7 @@ Public Class ClsGraphic
 
 dBg:
         ' Unexpected error
-        MdlZTStudio.UnexpectedError(Me.GetType().FullName, "Read", Information.Erl(), Information.Err)
+        MdlZTStudio.UnexpectedError(Me.GetType().FullName, "Read", Information.Err)
 
     End Sub
 
@@ -402,7 +402,7 @@ dBg:
         Exit Sub
 
 dBug:
-        MdlZTStudio.UnexpectedError(Me.GetType().FullName, "Write", Information.Erl(), Information.Err)
+        MdlZTStudio.UnexpectedError(Me.GetType().FullName, "Write", Information.Err)
 
     End Sub
 

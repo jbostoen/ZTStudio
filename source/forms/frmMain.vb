@@ -869,17 +869,13 @@ dBug:
             .Filter = "PNG Color Palette files (*.png)|*.png|All files|*.*"
             .InitialDirectory = System.IO.Path.GetDirectoryName(Cfg_path_recentZT1)
 
-
             If .ShowDialog() <> Windows.Forms.DialogResult.Cancel Then
 
-                editorGraphic.ColorPalette.Export_to_PNG(DlgSave.FileName)
+                EditorGraphic.ColorPalette.ExportToPNG(DlgSave.FileName)
 
             End If ' cancel check
 
-
         End With
-
-
 
     End Sub
 
@@ -899,10 +895,10 @@ dBug:
 
                 ' Replace palette file (should trigger a re-draw AFTERWARDS )
                 ' Forcefully add colors (some might be the same, after a recolor)
-                editorGraphic.ColorPalette.Import_from_PNG(DlgOpen.FileName)
+                EditorGraphic.ColorPalette.ImportFromPNG(DlgOpen.FileName)
 
                 ' Update color list on the right
-                editorGraphic.ColorPalette.FillPaletteGrid(dgvPaletteMain)
+                EditorGraphic.ColorPalette.FillPaletteGrid(dgvPaletteMain)
 
 
                 ' Now after the color palette has been replaced, our preview must be updated
@@ -910,9 +906,7 @@ dBug:
 
             End If ' cancel check
 
-
         End With
-
 
     End Sub
 
@@ -959,10 +953,10 @@ dBug:
 
                 ' Replace palette file (should trigger a redraw of coreImageBitmap)
                 ' Forcefully add colors (some might be the same, after a recolor)
-                editorGraphic.ColorPalette.Import_from_GimpPalette(DlgOpen.FileName)
+                EditorGraphic.ColorPalette.ImportFromGIMPPalette(DlgOpen.FileName)
 
                 ' Update color list on the right
-                editorGraphic.ColorPalette.FillPaletteGrid(dgvPaletteMain)
+                EditorGraphic.ColorPalette.FillPaletteGrid(dgvPaletteMain)
 
             End If ' cancel check
 

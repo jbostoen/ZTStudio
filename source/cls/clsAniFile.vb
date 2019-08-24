@@ -183,7 +183,7 @@ Public Class ClsAniFile
         Exit Function
 
 dBug:
-        MdlZTStudio.UnexpectedError("ClsTasks", "Write", Information.Erl(), Information.Err())
+        MdlZTStudio.UnexpectedError("ClsTasks", "Write", Information.Err)
 
 
     End Function
@@ -363,7 +363,7 @@ dBug:
         Exit Sub
 
 dBug:
-        MdlZTStudio.UnexpectedError(Me.GetType().FullName, "CreateAniConfig", Information.Erl(), Information.Err())
+        MdlZTStudio.UnexpectedError(Me.GetType().FullName, "CreateAniConfig", Information.Err)
 
     End Sub
 

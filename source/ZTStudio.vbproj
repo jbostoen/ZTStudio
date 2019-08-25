@@ -112,10 +112,10 @@
     <Compile Include="forms\FrmBatchConversion.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="forms\FrmBatchRotationFix.Designer.vb">
-      <DependentUpon>FrmBatchRotationFix.vb</DependentUpon>
+    <Compile Include="forms\FrmBatchOffsetting.Designer.vb">
+      <DependentUpon>FrmBatchOffsetting.vb</DependentUpon>
     </Compile>
-    <Compile Include="forms\FrmBatchRotationFix.vb">
+    <Compile Include="forms\FrmBatchOffsetting.vb">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="forms\FrmMain.vb">
@@ -158,8 +158,8 @@
     <EmbeddedResource Include="forms\FrmBatchConversion.resx">
       <DependentUpon>FrmBatchConversion.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="forms\FrmBatchRotationFix.resx">
-      <DependentUpon>FrmBatchRotationFix.vb</DependentUpon>
+    <EmbeddedResource Include="forms\FrmBatchOffsetting.resx">
+      <DependentUpon>FrmBatchOffsetting.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="forms\FrmMain.resx">
       <DependentUpon>FrmMain.vb</DependentUpon>

@@ -437,7 +437,7 @@ dBug:
         End If
 
         ' This will trigger a refresh.
-        MdlZTStudioUI.UpdateInfo("Property of graphic changed: " & StrProperty)
+        MdlZTStudioUI.UpdateFrameInfo("Property of graphic changed: " & StrProperty)
 
         'RaiseEvent PropertyChanged(Me, New PropertyChangedEventArgs(info))
     End Sub

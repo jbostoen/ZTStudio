@@ -225,4 +225,18 @@ dBug:
         Debug.Print(Now.ToString("yyyy-MM-dd HH:mm:ss") & ": " & StrClass & "::" & StrMethod & "(): " & StrMessage)
     End Sub
 
+
+    ''' <summary>
+    ''' To make information message boxes more generic, most of them are now handled by this method. Some parameters are only meant for tracing details.
+    ''' </summary>
+    ''' <param name="StrClass">Class </param>
+    ''' <param name="StrMethod">Method</param>
+    ''' <param name="StrMessage">Message</param>
+    Sub InfoBox(StrClass As String, strMethod As String, StrMessage As String)
+
+        MdlZTStudio.Trace(StrClass, strMethod, "Information shown by " & StrClass & "::" & strMethod & "()")
+        MsgBox(StrMessage, MsgBoxStyle.Information + MsgBoxStyle.ApplicationModal + MsgBoxStyle.OkOnly, "ZT Studio")
+
+    End Sub
+
 End Module

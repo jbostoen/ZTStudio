@@ -608,7 +608,7 @@ dBug:
 
 dBug2:
         ' Not sure if this is really useful
-        FrmMain.picBox.Image = MdlSettings.BMEmpty
+        FrmMain.PicBox.Image = MdlSettings.BMEmpty
 
 
         MsgBox("Error in ClsFrame.renderCoreImageFromHex()" & vbCrLf &

@@ -92,12 +92,11 @@ Public Class ClsPalette
         While ArrHex.Length > 0
 
             ' Turn bytes/hex values into a color
-            Me.Colors.Add(System.Drawing.Color.FromArgb(
-                CInt("&H" & Hex(3)),
-                CInt("&H" & Hex(0)),
-                CInt("&H" & Hex(1)),
-                CInt("&H" & Hex(2))
-                    ), False)
+            Dim ObjColor As Color = System.Drawing.Color.FromArgb(CInt("&H" & ArrHex(3)), CInt("&H" & ArrHex(0)), CInt("&H" & ArrHex(1)), CInt("&H" & ArrHex(2)))
+
+            MdlZTStudio.Trace(Me.GetType().FullName, "ReadPal", "Color is " & ObjColor.ToArgb().ToString())
+
+            Me.Colors.Add(objColor, False)
 
             ' Remove these bytes
             ArrHex = ArrHex.Skip(4).ToArray()

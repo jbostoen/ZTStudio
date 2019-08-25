@@ -67,10 +67,10 @@
 
 
         editorGraphic.LastUpdated = Now.ToString("yyyyMMddHHmmss")
-        MdlZTStudioUI.Updatepreview(FrmMain.TbFrames.Value - 1)
+        MdlZTStudioUI.UpdatePreview(True, False, FrmMain.TbFrames.Value - 1)
 
         ' Show palette again?
-        editorGraphic.ColorPalette.FillPaletteGrid(FrmMain.dgvPaletteMain)
+        EditorGraphic.ColorPalette.FillPaletteGrid(FrmMain.DgvPaletteMain)
 
 
     End Sub

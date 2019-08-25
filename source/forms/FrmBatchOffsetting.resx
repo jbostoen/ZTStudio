@@ -121,7 +121,8 @@
     <value>17, 17</value>
   </metadata>
   <data name="lblHint.Text" xml:space="preserve">
-    <value>Batch rotation fixing applies the same offsets to all views found in the specified folder.
+    <value>Batch offsetting (rotation fixing) applies the same offsets to all views found in the specified folder.
+
 Hint: adjust one frame manually first, to know which offsets you need below. 
 Don't save that ZT1 Graphic though!</value>
   </data>

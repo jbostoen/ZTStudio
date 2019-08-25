@@ -58,7 +58,7 @@ Public Class List(Of T)
         MyBase.Remove(item)
 
         If BlnForceUpdateInfo = True Then
-            MdlZTStudioUI.UpdateInfo("List - item added. Removed.")
+            MdlZTStudioUI.UpdateFrameInfo("List - item added. Removed.")
         End If
 
     End Sub
@@ -67,7 +67,7 @@ Public Class List(Of T)
         MyBase.RemoveAt(index)
 
         If BlnForceUpdateInfo = True Then
-            MdlZTStudioUI.UpdateInfo("List - item added. Removed at.")
+            MdlZTStudioUI.UpdateFrameInfo("List - item added. Removed at.")
         End If
     End Sub
 
@@ -76,7 +76,7 @@ Public Class List(Of T)
         MyBase.Clear()
 
         If BlnForceUpdateInfo = True Then
-            MdlZTStudioUI.UpdateInfo("List - item added. Cleared.")
+            MdlZTStudioUI.UpdateFrameInfo("List - item added. Cleared.")
         End If
 
     End Sub

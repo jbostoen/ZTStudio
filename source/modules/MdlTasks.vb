@@ -730,7 +730,7 @@ dBug:
     Sub Pal_ReplaceColor(intIndex As Integer)
 
         With FrmMain.DlgColor
-            .Color = FrmMain.dgvPaletteMain.Rows(intIndex).DefaultCellStyle.BackColor
+            .Color = FrmMain.DgvPaletteMain.Rows(intIndex).DefaultCellStyle.BackColor
 
             .AllowFullOpen = True
             .FullOpen = True
@@ -746,7 +746,7 @@ dBug:
 
         'On Error Resume Nex
 
-        EditorGraphic.ColorPalette.FillPaletteGrid(FrmMain.dgvPaletteMain)
+        EditorGraphic.ColorPalette.FillPaletteGrid(FrmMain.DgvPaletteMain)
 
     End Sub
 
@@ -768,7 +768,7 @@ dBug:
         EditorGraphic.ColorPalette.Colors.Insert(intIndexDest, CColorToMove)
 
         ' Refresh
-        EditorGraphic.ColorPalette.FillPaletteGrid(FrmMain.dgvPaletteMain)
+        EditorGraphic.ColorPalette.FillPaletteGrid(FrmMain.DgvPaletteMain)
 
         ' Update coreImageHex for each frame. Color indexes have changed.
         For Each ztFrame As ClsFrame In EditorGraphic.Frames
@@ -810,7 +810,7 @@ dBug:
         EditorGraphic.ColorPalette.Colors.Insert(intIndexNow + 1, CColor)
 
         ' Refresh
-        EditorGraphic.ColorPalette.FillPaletteGrid(FrmMain.dgvPaletteMain)
+        EditorGraphic.ColorPalette.FillPaletteGrid(FrmMain.DgvPaletteMain)
 
 
     End Sub

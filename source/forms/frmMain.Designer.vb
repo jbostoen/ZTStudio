@@ -45,6 +45,8 @@ Partial Class FrmMain
         Me.LblAnimSpeed = New System.Windows.Forms.Label()
         Me.ChkPlayAnimation = New System.Windows.Forms.CheckBox()
         Me.TbFrames = New System.Windows.Forms.TrackBar()
+        Me.GBOtherViews = New System.Windows.Forms.GroupBox()
+        Me.TVExplorer = New System.Windows.Forms.TreeView()
         Me.GBColors = New System.Windows.Forms.GroupBox()
         Me.LblColorTool = New System.Windows.Forms.Label()
         Me.LblColorDetails = New System.Windows.Forms.Label()
@@ -101,20 +103,18 @@ Partial Class FrmMain
         Me.mnuPal_ExportPNG = New System.Windows.Forms.ToolStripMenuItem()
         Me.mnuPal_ImportPNG = New System.Windows.Forms.ToolStripMenuItem()
         Me.mnuPal_ImportGimpPalette = New System.Windows.Forms.ToolStripMenuItem()
-        Me.GBOtherViews = New System.Windows.Forms.GroupBox()
-        Me.LstRootFolder = New System.Windows.Forms.ListBox()
         CType(Me.PicBox, System.ComponentModel.ISupportInitialize).BeginInit
         Me.TsZT1Graphic.SuspendLayout
         Me.Panel1.SuspendLayout
         Me.GBAnimation.SuspendLayout
         CType(Me.TbFrames, System.ComponentModel.ISupportInitialize).BeginInit
+        Me.GBOtherViews.SuspendLayout
         Me.GBColors.SuspendLayout
         Me.SsBar.SuspendLayout
         CType(Me.DgvPaletteMain, System.ComponentModel.ISupportInitialize).BeginInit
         Me.TsFrame.SuspendLayout
         Me.TsTools.SuspendLayout
         Me.MnuPal.SuspendLayout
-        Me.GBOtherViews.SuspendLayout
         Me.SuspendLayout
         '
         'PicBox
@@ -244,11 +244,11 @@ Partial Class FrmMain
         Me.GBAnimation.Controls.Add(Me.LblAnimSpeed)
         Me.GBAnimation.Controls.Add(Me.ChkPlayAnimation)
         Me.GBAnimation.Controls.Add(Me.TbFrames)
-        Me.GBAnimation.Dock = System.Windows.Forms.DockStyle.Left
+        Me.GBAnimation.Dock = System.Windows.Forms.DockStyle.Fill
         Me.GBAnimation.Font = New System.Drawing.Font("Segoe UI", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.GBAnimation.Location = New System.Drawing.Point(549, 0)
         Me.GBAnimation.Name = "GBAnimation"
-        Me.GBAnimation.Size = New System.Drawing.Size(509, 129)
+        Me.GBAnimation.Size = New System.Drawing.Size(259, 129)
         Me.GBAnimation.TabIndex = 37
         Me.GBAnimation.TabStop = False
         Me.GBAnimation.Text = "Animation"
@@ -301,9 +301,29 @@ Partial Class FrmMain
         Me.TbFrames.Maximum = 1
         Me.TbFrames.Minimum = 1
         Me.TbFrames.Name = "TbFrames"
-        Me.TbFrames.Size = New System.Drawing.Size(503, 45)
+        Me.TbFrames.Size = New System.Drawing.Size(253, 45)
         Me.TbFrames.TabIndex = 36
         Me.TbFrames.Value = 1
+        '
+        'GBOtherViews
+        '
+        Me.GBOtherViews.Controls.Add(Me.TVExplorer)
+        Me.GBOtherViews.Dock = System.Windows.Forms.DockStyle.Left
+        Me.GBOtherViews.Font = New System.Drawing.Font("Segoe UI", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.GBOtherViews.Location = New System.Drawing.Point(240, 0)
+        Me.GBOtherViews.Name = "GBOtherViews"
+        Me.GBOtherViews.Size = New System.Drawing.Size(309, 129)
+        Me.GBOtherViews.TabIndex = 38
+        Me.GBOtherViews.TabStop = False
+        Me.GBOtherViews.Text = "Explorer"
+        '
+        'TVExplorer
+        '
+        Me.TVExplorer.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.TVExplorer.Location = New System.Drawing.Point(3, 18)
+        Me.TVExplorer.Name = "TVExplorer"
+        Me.TVExplorer.Size = New System.Drawing.Size(303, 108)
+        Me.TVExplorer.TabIndex = 0
         '
         'GBColors
         '
@@ -334,7 +354,7 @@ Partial Class FrmMain
         Me.LblColorDetails.Font = New System.Drawing.Font("Segoe UI", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.LblColorDetails.Location = New System.Drawing.Point(80, 33)
         Me.LblColorDetails.Name = "LblColorDetails"
-        Me.LblColorDetails.Size = New System.Drawing.Size(139, 47)
+        Me.LblColorDetails.Size = New System.Drawing.Size(139, 70)
         Me.LblColorDetails.TabIndex = 36
         Me.LblColorDetails.Text = "Color details"
         Me.LblColorDetails.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
@@ -756,26 +776,6 @@ Partial Class FrmMain
         Me.mnuPal_ImportGimpPalette.Size = New System.Drawing.Size(244, 22)
         Me.mnuPal_ImportGimpPalette.Text = "Replace with GIMP Color palette"
         '
-        'GBOtherViews
-        '
-        Me.GBOtherViews.Controls.Add(Me.LstRootFolder)
-        Me.GBOtherViews.Dock = System.Windows.Forms.DockStyle.Left
-        Me.GBOtherViews.Font = New System.Drawing.Font("Segoe UI", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.GBOtherViews.Location = New System.Drawing.Point(240, 0)
-        Me.GBOtherViews.Name = "GBOtherViews"
-        Me.GBOtherViews.Size = New System.Drawing.Size(309, 129)
-        Me.GBOtherViews.TabIndex = 38
-        Me.GBOtherViews.TabStop = False
-        Me.GBOtherViews.Text = "Explorer"
-        '
-        'LstRootFolder
-        '
-        Me.LstRootFolder.FormattingEnabled = True
-        Me.LstRootFolder.Location = New System.Drawing.Point(6, 21)
-        Me.LstRootFolder.Name = "LstRootFolder"
-        Me.LstRootFolder.Size = New System.Drawing.Size(297, 95)
-        Me.LstRootFolder.TabIndex = 0
-        '
         'FrmMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -799,6 +799,7 @@ Partial Class FrmMain
         Me.GBAnimation.ResumeLayout(False)
         Me.GBAnimation.PerformLayout
         CType(Me.TbFrames, System.ComponentModel.ISupportInitialize).EndInit
+        Me.GBOtherViews.ResumeLayout(False)
         Me.GBColors.ResumeLayout(False)
         Me.GBColors.PerformLayout
         Me.SsBar.ResumeLayout(False)
@@ -809,7 +810,6 @@ Partial Class FrmMain
         Me.TsTools.ResumeLayout(False)
         Me.TsTools.PerformLayout
         Me.MnuPal.ResumeLayout(False)
-        Me.GBOtherViews.ResumeLayout(False)
         Me.ResumeLayout(False)
         Me.PerformLayout
 
@@ -892,5 +892,5 @@ Partial Class FrmMain
     Friend WithEvents LblColor As Label
     Friend WithEvents TbFrames As TrackBar
     Friend WithEvents GBOtherViews As GroupBox
-    Friend WithEvents LstRootFolder As ListBox
+    Friend WithEvents TVExplorer As TreeView
 End Class

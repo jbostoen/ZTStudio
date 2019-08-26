@@ -664,7 +664,7 @@ dBug:
 1100:
         ' Generate a .ani-file in each directory. 
         ' Add the initial directory
-        Batch_Generate_Ani(strPath)
+        MdlBatch.WriteAniFile(strPath)
 
 
 1150:
@@ -946,7 +946,7 @@ dBug:
 1200:
         ' Generate a .ani-file in each directory. 
         ' Add the initial directory
-        Batch_Generate_Ani(StrPath)
+        MdlBatch.WriteAniFile(StrPath)
 
 1950:
         MsgBox("Finished batch rotation fixing.", vbOKOnly + vbInformation, "Finished job")
@@ -961,49 +961,6 @@ dBug:
 
     End Sub
 
-    ''' <summary>
-    ''' Attempts to create .ani file for each animation. Experimental.
-    ''' </summary>
-    ''' <param name="strPath">Path to folder</param>
-    Sub Batch_Generate_Ani(strPath As String)
-
-        Dim StackDirectories As New Stack(Of String)
-
-        StackDirectories.Push(strPath)
-
-        ' Continue processing for each stacked directory
-        Do While (StackDirectories.Count > 0)
-            ' Get top directory string
-
-            Dim StrDirectoryName As String = StackDirectories.Pop
-
-            If Cfg_export_ZT1_Ani = 1 Then
-                Dim CAni As New ClsAniFile(StrDirectoryName & "\" & Path.GetFileName(StrDirectoryName) & ".ani")
-                Debug.Print(Now.ToString() & ": Generate .ani file (batch conversion)")
-                cAni.CreateAniConfig()
-            End If
-
-            ' Loop through all subdirectories and add them to the stack.
-            Dim StrSubDirectoryName As String
-            For Each strSubDirectoryName In Directory.GetDirectories(strDirectoryName)
-                stackDirectories.Push(strSubDirectoryName)
-            Next
-
-        Loop
-
-        ' Make sure everything is finished.
-        Application.DoEvents()
-
-        Exit Sub
-
-dBug:
-
-        MsgBox("An error occured while trying to list and batch rotation fix ZT1 Graphic files in this folder: " & vbCrLf &
-            strPath & vbCrLf & vbCrLf & "Line: " & Erl() & vbCrLf & Err.Number & " - " & Err.Description,
-            vbOKOnly + vbCritical, "Error during batch rotation fixing")
-
-
-    End Sub
 
 
 End Module

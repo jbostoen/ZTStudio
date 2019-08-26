@@ -2,7 +2,7 @@
 
 
 Imports System.IO
-
+Imports System.Text.RegularExpressions
 
 
 Public Class FrmMain
@@ -11,8 +11,6 @@ Public Class FrmMain
 
 
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-
-
 
         Debug.Flush()
         'mdlSettings.DoubleBuffered(dgvPaletteMain, True)
@@ -58,6 +56,80 @@ Public Class FrmMain
         For Each dra In diar1
             TsbOpenPalBldg16.DropDownItems.Add(dra.Name)
         Next
+
+
+        ' Testing Explorer treeview
+
+
+        Dim StackDirectories As New Stack(Of String)
+
+        StackDirectories.Push(Cfg_path_Root)
+
+        Dim ObjImageList = New ImageList
+        ObjImageList.Images.Add(My.Resources.icon_ZT1_Graphic)
+        ObjImageList.Images.Add(My.Resources.icon_folder)
+        ObjImageList.Images.Add(My.Resources.icon_file)
+        TVExplorer.ImageList = ObjImageList
+
+        ' Continue processing for each stacked directory
+        Do While (StackDirectories.Count > 0)
+
+            ' Get top directory string
+            Dim ObjNode As New TreeNode
+            Dim StrDirectoryName As String = StackDirectories.Pop
+
+            If StrDirectoryName <> Cfg_path_Root Then
+                ObjNode.Name = Regex.Replace(StrDirectoryName, "^" & Regex.Escape(Cfg_path_Root), "")
+                ObjNode.Text = Regex.Match(ObjNode.Name, "(?=[^\\]*$).*$").Value
+                ObjNode.ImageIndex = 1
+
+                ' Parent node?
+                Dim StrParentDirectory = Regex.Replace(ObjNode.Name, "\\(?=[^\\]*$).*$", "")
+                Dim ObjParentNode() As TreeNode = TVExplorer.Nodes.Find(StrParentDirectory, True)
+
+                If ObjParentNode.Count = 1 Then
+                    ObjParentNode(0).Nodes.Add(ObjNode)
+                Else
+                    TVExplorer.Nodes.Add(ObjNode)
+                End If
+
+            End If
+
+            ' Loop through all subdirectories and add them to the stack.
+            Dim StrSubDirectoryName As String
+            For Each StrSubDirectoryName In Directory.GetDirectories(StrDirectoryName)
+
+                ' Subdirectories will be processed later. But as for current dir...
+                StackDirectories.Push(StrSubDirectoryName)
+            Next
+
+            ' Loop through all files and add them to the node
+            Dim StrSubFileName As String
+            For Each StrSubFileName In Directory.GetFiles(StrDirectoryName)
+                Dim ObjFileNode As New TreeNode
+                ObjFileNode.Name = Regex.Replace(StrSubFileName, "^" & Regex.Escape(Cfg_path_Root), "")
+                ObjFileNode.Text = Regex.Match(ObjFileNode.Name, "(?=[^\\]*$).*$").Value
+
+                ' Guess if it's a graphic or not
+                If Regex.IsMatch(ObjFileNode.Text, "^[0-9A-z]{1,}$", RegexOptions.Singleline) Then
+                    ObjFileNode.ImageIndex = 0
+                Else
+                    ObjFileNode.ImageIndex = 2
+                End If
+
+                ObjNode.Nodes.Add(ObjFileNode)
+            Next
+
+            ' Make sure everything is finished. Needed?
+            Application.DoEvents()
+
+        Loop
+
+        ' Make sure everything is finished. Needed?
+        Application.DoEvents()
+
+
+
 
 
     End Sub
@@ -1096,6 +1168,20 @@ dBug:
     End Sub
 
     Private Sub TbFrames_Scroll(sender As Object, e As EventArgs) Handles TbFrames.Scroll
+
+    End Sub
+
+    Private Sub TVExplorer_AfterSelect(sender As Object, e As TreeViewEventArgs) Handles TVExplorer.AfterSelect
+
+        ' Make sure SelectedImageIndex doesn't stay 0 (default) or it will show the icon at index 0 for each item selected
+        TVExplorer.SelectedImageIndex = e.Node.ImageIndex
+
+        ' If the selected item is a ZT1 Graphic file, load?
+        If Regex.IsMatch(e.Node.Text, "[0-9A-z]") = True Then
+
+            ' Same handling as ZT1 open graphic button
+
+        End If
 
     End Sub
 End Class

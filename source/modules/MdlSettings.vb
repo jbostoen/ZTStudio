@@ -68,8 +68,8 @@ Module MdlSettings
 
 
     ' Recent files
-    Public Cfg_path_recentZT1 As String = "" ' Most recent path to select a ZT1 Graphic
-    Public Cfg_path_recentPNG As String = "" ' Most recent path to select a PNG graphic
+    Public Cfg_path_recentZT1 As String = "" ' Most recent path to select a ZT1 Graphic (file!)
+    Public Cfg_path_recentPNG As String = "" ' Most recent path to select a PNG graphic (file!)
 
     ' GitHub
     Public Cfg_GitHub_URL As String = "https://github.com/jbostoen/ZTStudio"

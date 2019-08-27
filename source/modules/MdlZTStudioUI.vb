@@ -1,8 +1,94 @@
-﻿''' <summary>
+﻿Imports System.IO
+
+
+''' <summary>
 ''' Methods related to ZT Studio UI
 ''' </summary>
 
 Module MdlZTStudioUI
+
+    ''' <summary>
+    ''' Load graphic and show
+    ''' </summary>
+    ''' <param name="StrFileName">Source file name</param>
+    Sub LoadGraphic(StrFileName As String)
+
+        MdlZTStudio.Trace("MdlZTStudioUI", "LoadGraphic", "Loading " & StrFileName)
+
+        If System.IO.File.Exists(StrFileName) = False Then
+
+            Dim StrMessage As String = "File does not exist."
+            MdlZTStudio.ExpectedError("MdlZTStudioUI", "LoadGraphic", StrMessage)
+            Exit Sub
+
+        Else
+
+            If Path.GetExtension(StrFileName) <> vbNullString Then
+
+                Dim StrErrorMessage As String = "" &
+                            "You selected a file with the extension '" & Path.GetExtension(StrFileName) & "'." & vbCrLf &
+                            "ZT Studio expects you to select a ZT1 Graphic file, which shouldn't have a file extension."
+                MdlZTStudio.ExpectedError("MdlZTStudioUI", "LoadGraphic", StrErrorMessage)
+
+                Exit Sub
+
+
+            ElseIf StrFileName.ToLower().Contains(Cfg_path_Root.ToLower()) = False Then
+
+                Dim StrErrorMessage As String = "Only select a file in the root directory, which is currently:" & vbCrLf &
+                               Cfg_path_Root & vbCrLf & vbCrLf &
+                               "Would you like to change the root directory?"
+
+                If MsgBox(StrErrorMessage, MsgBoxStyle.YesNo + MsgBoxStyle.Critical + MsgBoxStyle.ApplicationModal, "ZT1 Graphic not within root folder") = MsgBoxResult.Yes Then
+
+                    ' Allow user to quickly change settings -> root directory
+                    FrmSettings.Show()
+
+                End If
+
+                Exit Sub
+
+
+            Else
+
+
+
+                ' Reset any previous info.
+                EditorGraphic = New ClsGraphic
+
+                ' OK
+                EditorGraphic.Read(StrFileName)
+
+                ' Keep filename
+                FrmMain.ssFileName.Text = Now.ToString("yyyy-MM-dd HH:mm:ss") & ": opened " & StrFileName
+
+                ' Draw first frame 
+                MdlZTStudioUI.UpdatePreview(True, True, 0)
+
+                ' Add time indication
+                FrmMain.LblAnimTime.Text = ((EditorGraphic.Frames.Count - EditorGraphic.HasBackgroundFrame) * EditorGraphic.AnimationSpeed) & " ms "
+                FrmMain.LblFrames.Text = (EditorGraphic.Frames.Count - EditorGraphic.HasBackgroundFrame) & " frames. "
+
+                ' Show default palette
+                EditorGraphic.ColorPalette.FillPaletteGrid(FrmMain.DgvPaletteMain)
+
+                ' Set editorframe
+                EditorFrame = EditorGraphic.Frames(0)
+                FrmMain.TbFrames.Value = 1
+
+
+                ' Remember
+                Cfg_path_recentZT1 = StrFileName
+                MdlConfig.Write()
+
+
+            End If
+
+        End If
+
+
+
+    End Sub
 
 
     ''' <summary>

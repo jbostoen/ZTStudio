@@ -79,9 +79,11 @@ Public Class FrmMain
             Dim StrDirectoryName As String = StackDirectories.Pop
 
             If StrDirectoryName <> Cfg_path_Root Then
-                ObjNode.Name = Regex.Replace(StrDirectoryName, "^" & Regex.Escape(Cfg_path_Root), "")
+
+                ObjNode.Name = Regex.Replace(StrDirectoryName, "^" & Regex.Escape(Cfg_path_Root) & "\\", "")
                 ObjNode.Text = Regex.Match(ObjNode.Name, "(?=[^\\]*$).*$").Value
                 ObjNode.ImageIndex = 1
+                ObjNode.SelectedImageIndex = 1
 
                 ' Parent node?
                 Dim StrParentDirectory = Regex.Replace(ObjNode.Name, "\\(?=[^\\]*$).*$", "")
@@ -107,14 +109,16 @@ Public Class FrmMain
             Dim StrSubFileName As String
             For Each StrSubFileName In Directory.GetFiles(StrDirectoryName)
                 Dim ObjFileNode As New TreeNode
-                ObjFileNode.Name = Regex.Replace(StrSubFileName, "^" & Regex.Escape(Cfg_path_Root), "")
+                ObjFileNode.Name = Regex.Replace(StrSubFileName, "^" & Regex.Escape(Cfg_path_Root) & "\\", "")
                 ObjFileNode.Text = Regex.Match(ObjFileNode.Name, "(?=[^\\]*$).*$").Value
 
                 ' Guess if it's a graphic or not
                 If Regex.IsMatch(ObjFileNode.Text, "^[0-9A-z]{1,}$", RegexOptions.Singleline) Then
                     ObjFileNode.ImageIndex = 0
+                    ObjFileNode.SelectedImageIndex = 0
                 Else
                     ObjFileNode.ImageIndex = 2
+                    ObjFileNode.SelectedImageIndex = 2
                 End If
 
                 ObjNode.Nodes.Add(ObjFileNode)
@@ -287,13 +291,15 @@ dBug:
     Private Sub TsbZT1Open_Click(sender As Object, e As EventArgs) Handles TsbZT1Open.Click
 
         MdlZTStudio.Trace(Me.GetType().FullName, "TsbZT1Open_Click", "Open ZT1 file dialog.")
-        MdlZTStudio.Trace(Me.GetType().FullName, "TsbZT1Open_Click", "Last used path: " & Cfg_path_recentZT1)
+        MdlZTStudio.Trace(Me.GetType().FullName, "TsbZT1Open_Click", "Last used file: " & Cfg_path_recentZT1)
 
         With DlgOpen
             .Title = "Pick a ZT1 Graphic"
             .DefaultExt = ""
             .Filter = "All files|*.*"
-            .InitialDirectory = Cfg_path_recentZT1
+            .InitialDirectory = New FileInfo(Cfg_path_recentZT1).Directory.FullName
+            Debug.Print("last used = " & New FileInfo(Cfg_path_recentZT1).Directory.FullName)
+
 
             If DlgOpen.InitialDirectory = vbNullString Or System.IO.Directory.Exists(DlgOpen.InitialDirectory) = False Then
                 If System.IO.Directory.Exists(Cfg_path_Root) Then
@@ -310,67 +316,8 @@ dBug:
 
             If .ShowDialog() <> Windows.Forms.DialogResult.Cancel Then
 
-                If System.IO.File.Exists(DlgOpen.FileName) = True Then
 
-                    If Path.GetExtension(DlgOpen.FileName) <> vbNullString Then
-                        MsgBox("You selected a file with the extension '" & Path.GetExtension(DlgOpen.FileName) & "'." & vbCrLf &
-                               "ZT Studio expects you to select a ZT1 Graphic file, which shouldn't have a file extension.",
-                               MsgBoxStyle.OkOnly + MsgBoxStyle.Critical + MsgBoxStyle.ApplicationModal, "Invalid file")
-
-                        Exit Sub
-
-
-                    ElseIf DlgOpen.FileName.ToLower().Contains(Cfg_path_Root.ToLower()) = False Then
-
-                        If MsgBox("Only select a file in the root directory, which is currently:" & vbCrLf &
-                               Cfg_path_Root & vbCrLf & vbCrLf &
-                               "Would you like to change the root directory?",
-                               MsgBoxStyle.YesNo + MsgBoxStyle.Critical + MsgBoxStyle.ApplicationModal, "ZT1 Graphic not within root folder") = MsgBoxResult.Yes Then
-
-                            ' Allow user to quickly change settings -> root directory
-                            FrmSettings.Show()
-
-                        End If
-
-                        Exit Sub
-
-
-                    Else
-
-                        ' Reset any previous info.
-                        EditorGraphic = New ClsGraphic
-
-                        ' OK
-                        EditorGraphic.Read(DlgOpen.FileName)
-
-                        ' Keep filename
-                        ssFileName.Text = Now.ToString("yyyy-MM-dd HH:mm:ss") & ": opened " & DlgOpen.FileName
-
-                        ' Draw first frame 
-                        MdlZTStudioUI.UpdatePreview(True, True, 0)
-
-                        ' Add time indication
-                        LblAnimTime.Text = ((EditorGraphic.Frames.Count - EditorGraphic.HasBackgroundFrame) * EditorGraphic.AnimationSpeed) & " ms "
-                        LblFrames.Text = (EditorGraphic.Frames.Count - EditorGraphic.HasBackgroundFrame) & " frames. "
-
-                        ' Show default palette
-                        EditorGraphic.ColorPalette.FillPaletteGrid(DgvPaletteMain)
-
-                        ' Set editorframe
-                        EditorFrame = EditorGraphic.Frames(0)
-                        TbFrames.Value = 1
-
-
-
-                    End If
-                Else
-                    MsgBox("File does not exist.", vbOKOnly + vbCritical, "Invalid file")
-                End If
-
-                ' Remember
-                Cfg_path_recentZT1 = New System.IO.FileInfo(DlgOpen.FileName).Directory.FullName
-                MdlConfig.Write()
-
+                MdlZTStudioUI.LoadGraphic(DlgOpen.FileName)
                 ' What has been opened, might need to be saved.
                 DlgSave.FileName = DlgOpen.FileName
 
@@ -1110,7 +1057,8 @@ dBug:
             .Title = "Save ZT1 Graphic"
             .DefaultExt = ""
             .AddExtension = True
-            .InitialDirectory = System.IO.Path.GetDirectoryName(Cfg_path_recentZT1)
+            .InitialDirectory = New FileInfo(Cfg_path_recentZT1).Directory.FullName
+            .FileName = Cfg_path_recentZT1
             .Filter = "ZT1 Graphics|*"
 
 
@@ -1173,13 +1121,17 @@ dBug:
 
     Private Sub TVExplorer_AfterSelect(sender As Object, e As TreeViewEventArgs) Handles TVExplorer.AfterSelect
 
-        ' Make sure SelectedImageIndex doesn't stay 0 (default) or it will show the icon at index 0 for each item selected
-        TVExplorer.SelectedImageIndex = e.Node.ImageIndex
+        MdlZTStudio.Trace(Me.GetType().FullName, "TVExplorer_AfterSelect", "Selected node " & e.Node.Text & " -> " & e.Node.Name)
+
+
+        Application.DoEvents()
+
 
         ' If the selected item is a ZT1 Graphic file, load?
-        If Regex.IsMatch(e.Node.Text, "[0-9A-z]") = True Then
+        If Regex.IsMatch(e.Node.Text, "[0-9A-z]") = True And e.Node.ImageIndex = 0 Then
 
             ' Same handling as ZT1 open graphic button
+            MdlZTStudioUI.LoadGraphic(Cfg_path_Root & "\" & e.Node.Name)
 
         End If
 

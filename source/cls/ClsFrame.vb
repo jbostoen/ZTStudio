@@ -15,16 +15,10 @@ Public Class ClsFrame
 
     Implements INotifyPropertyChanged
 
-    ' Private fr_Hex As New List(Of String)
-
-    'Private fr_width As Integer = -1
-    'Private fr_height As Integer = -1
-
-    ' With coreImage, we mean the actual frame's content. No background canvas, no grid, no 'extra frame'.
+    ' CoreImage means the actual frame's content. No background canvas, no grid, no 'extra frame'.
     ' The bitmap also implictly contains the width and height of this 'core' image. 
     Private fr_coreImageBitmap As Bitmap = Nothing
     Private fr_coreImageHex As New List(Of String) ' contains height/width and offsets after all.
-
 
     Private fr_offsetX As Integer = -9999
     Private fr_offsetY As Integer = -9999
@@ -414,10 +408,13 @@ dBug:
 32:
 
         ' Usually hex(1) = 00. But sometimes, it is "80". This seems to be an indicator introduced in Marine Mania.
-        ' Example: dolphin's "ssurf"-animations. The frames are actually compressed. For shadows, it's only offsets and black.
+        ' Example: dolphin's "ssurfswi"-animations. The frames are actually compressed. For shadows, it's only offsets and black.
+        ' Surprisingly enough, not all shadow animations (even of the dolphin) use this format.
+        ' Probably due to HEX 80 00 being -32678, which is very unlikely to happen?
         If LstFrameHex(1) = "80" Then
 
             MdlZTStudio.Trace(Me.GetType().FullName, "RenderCoreImageFromHex", "Byte index 1 = 80 -> assuming this is the compressed shadow format (Marine Mania)")
+            MdlZTStudio.Trace(Me.GetType().FullName, "RenderCoreImageFromHex", "Byte index 2 = " & LstFrameHex(2) & " -> still signifies height")
 
             BlnIsShadow = True
 
@@ -649,6 +646,18 @@ dBug2:
                     ' Update offsets of this frame
                     ztFrame.OffsetY += PntCoordOffsetChanges.Y
                     ztFrame.OffsetX += PntCoordOffsetChanges.X
+
+                    ' Valid offsets?
+                    Dim StrHintOffset As String = "Problem with a frame. Valid {0} offset should (theoretically, still untested) be between -32768 and 32767."
+                    If ztFrame.OffsetX < -32768 Or ztFrame.OffsetX > 32767 Then
+                        MdlZTStudio.ExpectedError(Me.GetType().FullName, "ClsFrame_UpdateOffsets", String.Format(StrHintOffset, "X"), True)
+                        Exit Sub
+                    End If
+
+                    If ztFrame.OffsetY < -32768 Or ztFrame.OffsetY > 32767 Then
+                        MdlZTStudio.ExpectedError(Me.GetType().FullName, "ClsFrame_UpdateOffsets", String.Format(StrHintOffset, "Y"), True)
+                        Exit Sub
+                    End If
 
                     ' .CoreImageHex(4) and (5) make up offset Y (top/bottom)
                     If ztFrame.OffsetY >= 0 Then

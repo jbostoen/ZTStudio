@@ -1,209 +1,140 @@
 ﻿Option Explicit On
 
-
 Imports System.IO
 Imports System.Text.RegularExpressions
 
-
+''' <summary>
+''' Main user interface
+''' </summary>
 Public Class FrmMain
 
-
-
-
+    ''' <summary>
+    ''' Sets some info on loading
+    ''' </summary>
+    ''' <param name="sender">Object</param>
+    ''' <param name="e">MouseEventArgs</param>
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
-        Debug.Flush()
-        'mdlSettings.DoubleBuffered(dgvPaletteMain, True)
+        ' Done to increase performance of adding colors to this palette.
         DgvPaletteMain.GetType.InvokeMember("DoubleBuffered", Reflection.BindingFlags.NonPublic Or Reflection.BindingFlags.Instance Or System.Reflection.BindingFlags.SetProperty, Nothing, DgvPaletteMain, New Object() {True})
 
+        ' Always start with a new ZT1 Graphic with one frame
+        EditorFrame = New ClsFrame(EditorGraphic)
+        EditorGraphic.Frames.Add(EditorFrame)
 
-        ' Always start with one frame
-        editorFrame = New ClsFrame(editorGraphic)
-        editorGraphic.Frames.Add(editorFrame)
-
-
-        ' Output
-        MdlSettings.bmEmpty = New Bitmap(Cfg_grid_numPixels * 2, Cfg_grid_numPixels * 2)
+        ' Starting with an empty canvas
+        MdlSettings.BMEmpty = New Bitmap(Cfg_grid_numPixels * 2, Cfg_grid_numPixels * 2)
         With PicBox
             .Width = Cfg_grid_numPixels * 2
             .Height = Cfg_grid_numPixels * 2
         End With
 
-        ' Background color
+        ' Background color derived from settings (based on previously configured settings)
         PicBox.BackColor = Cfg_grid_BackGroundColor
 
-
-        ' Grid
+        ' Set grid size (based on previously configured settings)
         TsbFrame_fpX.Text = CStr(Cfg_grid_footPrintX)
         TsbFrame_fpY.Text = CStr(Cfg_grid_footPrintY)
 
         ' ZT1 Default color palettes
         ' strPathBuildingColorPals
 
-        Dim di As New IO.DirectoryInfo(Cfg_path_ColorPals8)
-        Dim diar1 As IO.FileInfo() = di.GetFiles()
-        Dim dra As IO.FileInfo
+        Dim LstColorpalettes As IO.FileInfo()
+        LstColorpalettes = New IO.DirectoryInfo(Cfg_path_ColorPals8).GetFiles()
+        Dim ObjFileInfo As IO.FileInfo
 
-        'list the names of all files in the specified directory
-        For Each dra In diar1
-            TsbOpenPalBldg8.DropDownItems.Add(dra.Name)
+        ' List all files found in the directory with 8-color palettes
+        For Each ObjFileInfo In LstColorpalettes
+            TsbOpenPalBldg8.DropDownItems.Add(ObjFileInfo.Name)
         Next
 
-        di = New IO.DirectoryInfo(Cfg_path_ColorPals16)
-        diar1 = di.GetFiles()
+        LstColorpalettes = New IO.DirectoryInfo(Cfg_path_ColorPals16).GetFiles()
 
-        'list the names of all files in the specified directory
-        For Each dra In diar1
-            TsbOpenPalBldg16.DropDownItems.Add(dra.Name)
+        ' List all files found in the directory with 16-color palettes
+        For Each ObjFileInfo In LstColorpalettes
+            TsbOpenPalBldg16.DropDownItems.Add(ObjFileInfo.Name)
         Next
 
+        ' Update Explorer Panel to show folder structure of root folder
+        MdlZTStudioUI.UpdateExplorerPane()
 
-        ' Testing Explorer treeview
-
-
-        Dim StackDirectories As New Stack(Of String)
-
-        StackDirectories.Push(Cfg_path_Root)
-
-        Dim ObjImageList = New ImageList
-        ObjImageList.Images.Add(My.Resources.icon_ZT1_Graphic)
-        ObjImageList.Images.Add(My.Resources.icon_folder)
-        ObjImageList.Images.Add(My.Resources.icon_file)
-        TVExplorer.ImageList = ObjImageList
-
-        ' Continue processing for each stacked directory
-        Do While (StackDirectories.Count > 0)
-
-            ' Get top directory string
-            Dim ObjNode As New TreeNode
-            Dim StrDirectoryName As String = StackDirectories.Pop
-
-            If StrDirectoryName <> Cfg_path_Root Then
-
-                ObjNode.Name = Regex.Replace(StrDirectoryName, "^" & Regex.Escape(Cfg_path_Root) & "\\", "")
-                ObjNode.Text = Regex.Match(ObjNode.Name, "(?=[^\\]*$).*$").Value
-                ObjNode.ImageIndex = 1
-                ObjNode.SelectedImageIndex = 1
-
-                ' Parent node?
-                Dim StrParentDirectory = Regex.Replace(ObjNode.Name, "\\(?=[^\\]*$).*$", "")
-                Dim ObjParentNode() As TreeNode = TVExplorer.Nodes.Find(StrParentDirectory, True)
-
-                If ObjParentNode.Count = 1 Then
-                    ObjParentNode(0).Nodes.Add(ObjNode)
-                Else
-                    TVExplorer.Nodes.Add(ObjNode)
-                End If
-
-            End If
-
-            ' Loop through all subdirectories and add them to the stack.
-            Dim StrSubDirectoryName As String
-            For Each StrSubDirectoryName In Directory.GetDirectories(StrDirectoryName)
-
-                ' Subdirectories will be processed later. But as for current dir...
-                StackDirectories.Push(StrSubDirectoryName)
-            Next
-
-            ' Loop through all files and add them to the node
-            Dim StrSubFileName As String
-            For Each StrSubFileName In Directory.GetFiles(StrDirectoryName)
-                Dim ObjFileNode As New TreeNode
-                ObjFileNode.Name = Regex.Replace(StrSubFileName, "^" & Regex.Escape(Cfg_path_Root) & "\\", "")
-                ObjFileNode.Text = Regex.Match(ObjFileNode.Name, "(?=[^\\]*$).*$").Value
-
-                ' Guess if it's a graphic or not
-                If Regex.IsMatch(ObjFileNode.Text, "^[0-9A-z]{1,}$", RegexOptions.Singleline) Then
-                    ObjFileNode.ImageIndex = 0
-                    ObjFileNode.SelectedImageIndex = 0
-                Else
-                    ObjFileNode.ImageIndex = 2
-                    ObjFileNode.SelectedImageIndex = 2
-                End If
-
-                ObjNode.Nodes.Add(ObjFileNode)
-            Next
-
-            ' Make sure everything is finished. Needed?
-            Application.DoEvents()
-
-        Loop
+        ' If exists, load ZT1 Graphic. Won't decrease performance a lot and might be helpful while working on a project
+        If File.Exists(Cfg_path_recentZT1) = True Then
+            MdlZTStudioUI.LoadGraphic(Cfg_path_recentZT1)
+        End If
 
         ' Make sure everything is finished. Needed?
         Application.DoEvents()
 
-
-
-
-
     End Sub
 
-
-    Private Sub PicBox_MouseEnter(sender As Object, e As EventArgs) Handles PicBox.MouseEnter
-
-    End Sub
-
+    ''' <summary>
+    ''' Handles mouse movements. Shows
+    ''' </summary>
+    ''' <param name="sender">Object</param>
+    ''' <param name="e">MouseEventArgs</param>
     Private Sub PicBox_MouseMove(sender As Object, e As MouseEventArgs) Handles PicBox.MouseMove
 
         On Error GoTo dBug
 
-        ' If we have something in our canvas / if we have a cached frame rendered, 
-        ' we will show color info on mouseover.
 1:
-        If IsNothing(PicBox.Image) Then
+        ' Canvas is still entirely empty
+        If IsNothing(PicBox.Image) = True Then
+            MdlZTStudio.Trace(Me.GetType().FullName, "MouseMove", "Picture box empty")
             Exit Sub
         End If
 
 2:
-        ' frame might have been just initiated
-        If IsNothing(editorFrame.CoreImageBitmap) And IsNothing(editorFrame.CoreImageHex) Then
+        ' Frame might have been just initiated
+        If IsNothing(EditorFrame.CoreImageBitmap) And IsNothing(EditorFrame.CoreImageHex) Then
+            MdlZTStudio.Trace(Me.GetType().FullName, "MouseMove", "EditorFrame has no CoreImageBitmap or CoreImageHex")
             Exit Sub
         End If
-
-
-
 3:
         ' This is a bit of a dilemma. 
-        ' If using picBox.image, it also shows the grid color on hovering.
-        ' If just usting editorFrame.GetImage(), it won't show colors of background graphic.
-        ' Todo: ombining them makes more sense but is more intensive. Should be cached somewhere.
+        ' If using PicBox.image, it also shows the grid color on hovering. Ignoring the grid color is a bad idea since the color may be present in the image too.
+        ' If just using editorFrame.GetImage(), it won't show colors of any background graphic (toy for Orang Utan).
+        ' Todo: combining them makes more sense but is more intensive. Should be cached somewhere.
         ' Images_Combine(editorFrame.GetImage(), editorBgGraphic.getimage())
         Dim BmTmp As Bitmap
-        BmTmp = PicBox.Image ' editorFrame.getImage()
-        Application.DoEvents()
-
-4:
-        If IsNothing(BmTmp) Then
-            Exit Sub
-        End If
+        BmTmp = PicBox.Image ' Used to be EditorFrame.GetImage()
 
 
 20:
-        Dim eX As Integer = (PicBox.Width - BmTmp.Width) / 2
-        Dim eY As Integer = (PicBox.Height - BmTmp.Height) / 2
+        ' Find out which pixel area matters within the PicBox
+        ' Offset compared to PicBox Left/Top
+        ' Keep in mind: BmTmp is NOT necessarily the entire PicBox (adjusts to window)
+        Dim IntOffsetX As Integer = (PicBox.Width - BmTmp.Width) / 2 ' Left = positive; right = negative
+        Dim IntOffsetY As Integer = (PicBox.Height - BmTmp.Height) / 2 ' Top = positive; bottom = negative
 
 100:
-        If e.X - eX >= 0 And e.X - eX < BmTmp.Width And e.Y - eY >= 0 And e.Y - eY < BmTmp.Height Then
+
+        MdlZTStudio.Trace(Me.GetType().FullName, "MouseMove", "e.X = " & e.X & ", Y = " & e.Y)
+        MdlZTStudio.Trace(Me.GetType().FullName, "MouseMove", "Offset X = " & intoffsetX & ", Y = " & intoffsetY )
+        MdlZTStudio.Trace(Me.GetType().FullName, "MouseMove", "Bmp width = " & BmTmp.Width & ", Height = " & BmTmp.Height)
+
+        If e.X > IntOffsetX And e.X < (BmTmp.Width + IntOffsetX) And e.Y > IntOffsetY And e.Y < (BmTmp.Height + IntOffsetY) Then
 
 101:
-            Dim C As System.Drawing.Color = BmTmp.GetPixel(e.X - eX, e.Y - eY)
+            ' Image might be smaller, while PicBox appears larger due to background color.
+            Dim ObjColor As System.Drawing.Color = BmTmp.GetPixel(e.X - IntOffsetX, e.Y - IntOffsetY)
 
-
-            If C.A <> 0 Then
+            ' Alpha channel is not set to 0 (transparent). This check is still from when using BmpTmp = EditorFrame.GetImage()
+            ' Display color info
+            If ObjColor.A <> 0 Then
 
 102:
-                LblColor.BackColor = C '.ToString()
-                LblColorDetails.Text = "Coordinates: x: " & e.X - eX & " , y: " & e.Y - eY & vbCrLf &
-                    "RGB: " & C.R & "," & C.G & "," & C.B & vbCrLf &
-                    "Index in .pal file: # " & EditorGraphic.ColorPalette.Colors.IndexOf(C) & vbCrLf &
-                    "VB.Net: " & C.ToArgb()
-
-
+                LblColor.BackColor = ObjColor
+                LblColorDetails.Text = "" &
+                    "Coordinates: x: " & e.X - IntOffsetX & " , y: " & e.Y - IntOffsetY & vbCrLf &
+                    "RGB: " & ObjColor.R & "," & ObjColor.G & "," & ObjColor.B & vbCrLf &
+                    "Index in .pal file: # " & EditorGraphic.ColorPalette.Colors.IndexOf(ObjColor) & vbCrLf &
+                    "VB.Net: " & ObjColor.ToArgb()
 
             Else
 
 112:
-                ' Alpha, transparent.
+                ' Definitely just the background color.
                 LblColor.BackColor = PicBox.BackColor
                 LblColorDetails.Text = vbNullString
 
@@ -220,14 +151,15 @@ Public Class FrmMain
         Exit Sub
 
 dBug:
-
-        MsgBox("Error in frmMain.picBox.MouseMove() " & vbCrLf &
-            "Line " & Erl() & vbCrLf &
-            Err.Number & " " & Err.Description, vbOKOnly + vbCritical + vbApplicationModal, "Error determining pixel color")
-
+        MdlZTStudio.UnexpectedError(Me.GetType().FullName, "PicBox_MouseMove", Information.Err)
 
     End Sub
 
+    ''' <summary>
+    ''' This is unfinished, but it was meant to be a zoom function.
+    ''' </summary>
+    ''' <param name="sender">Object</param>
+    ''' <param name="e">MouseEventArgs</param>
     Private Sub PicBox_MouseWheel(sender As Object, e As MouseEventArgs) Handles PicBox.MouseWheel
 
         Debug.Print("Picbox Wheel")
@@ -236,9 +168,13 @@ dBug:
         ' it should be the image, not the picbox!
         If e.Delta <> 0 Then
             If e.Delta <= 0 Then
-                If PicBox.Width < 500 Then Exit Sub 'minimum 500?
+                If PicBox.Width < 500 Then
+                    Exit Sub 'minimum 500?
+                End If
             Else
-                If PicBox.Width > 2000 Then Exit Sub 'maximum 2000?
+                If PicBox.Width > 2000 Then
+                    Exit Sub 'maximum 2000?
+                End If
             End If
 
             PicBox.Width += CInt(PicBox.Width * e.Delta / 1000)
@@ -247,13 +183,22 @@ dBug:
 
     End Sub
 
-
+    ''' <summary>
+    ''' Handles value changes in frame slider control.
+    ''' </summary>
+    ''' <param name="sender">Object</param>
+    ''' <param name="e">EventArgs</param>
     Private Sub TTbFrames_ValueChanged(sender As Object, e As EventArgs)
 
         MdlZTStudioUI.UpdatePreview(True, False, TbFrames.Value - 1)
 
     End Sub
 
+    ''' <summary>
+    ''' If "play animation" has been checked, the timer updates the preview. Timer interval = graphic animation speed.
+    ''' </summary>
+    ''' <param name="sender">Object</param>
+    ''' <param name="e">EventArgs</param>
     Private Sub TmrAnimation_Tick(sender As Object, e As EventArgs) Handles TmrAnimation.Tick
 
 
@@ -450,7 +395,7 @@ dBug:
 
     Private Sub TsbBatchConversion_Click(sender As Object, e As EventArgs) Handles TsbBatchConversion.Click
 
-        frmBatchConversion.ShowDialog(Me)
+        FrmBatchConversion.ShowDialog(Me)
 
     End Sub
 
@@ -493,7 +438,7 @@ dBug:
                         'editorBgGraphic.colorPalette.fillPaletteGrid(dgvPaletteMain)
 
                         ' Remember
-                        Cfg_path_recentZT1 = New System.IO.FileInfo(DlgOpen.FileName).Directory.FullName
+                        Cfg_path_recentZT1 = DlgOpen.FileName
                         MdlConfig.Write()
 
                     End If
@@ -509,42 +454,35 @@ dBug:
 
 
 
-
-    Private Sub TsbZT1Write_Click(sender As Object, e As EventArgs) Handles TsbZT1Write.Click
-
-
-
-    End Sub
-
-    Private Sub TstZT1_AnimSpeed_Click(sender As Object, e As EventArgs) Handles TstZT1_AnimSpeed.Click
-
-    End Sub
-
     Private Sub TstZT1_AnimSpeed_TextChanged(sender As Object, e As EventArgs) Handles TstZT1_AnimSpeed.TextChanged
 
+        If TstZT1_AnimSpeed.Text = "" Then
+            ' User is just changing value, don't be too strict on empty values.
+            EditorGraphic.AnimationSpeed = 1000
 
-
-        If IsNumeric(TstZT1_AnimSpeed.Text) = False Then
-            MsgBox("Invalid value." & vbCrLf & "The animation speed should be a number of milliseconds.",
-                   vbOKOnly + vbCritical, "Invalid value for animation speed.")
+        ElseIf IsNumeric(TstZT1_AnimSpeed.Text) = False Then
+            MdlZTStudio.ExpectedError(Me.GetType().FullName, "TstZT1_AnimSpeed_TextChanged", "The animation speed should be a number of milliseconds.")
             TstZT1_AnimSpeed.Text = "1000"
+            EditorGraphic.AnimationSpeed = 1000
             Exit Sub
 
         Else
 
-            If CInt(TstZT1_AnimSpeed.Text) < 1 And (CInt(TstZT1_AnimSpeed.Text) > 1000) Then
-                MsgBox("Invalid value." & vbCrLf & "ZT Studio currently expects a value between 1 and 1000 milliseconds.",
-                       vbOKOnly + vbCritical, "Invalid value for animation speed.")
+            ' Valid value?
+            If CInt(TstZT1_AnimSpeed.Text) < 1 Or (CInt(TstZT1_AnimSpeed.Text) > 1000) Then
+
+                MdlZTStudio.ExpectedError(Me.GetType().FullName, "TstZT1_AnimSpeed_TextChanged", "Invalid value for animation speed. Expecting a value between 1 and 1000 milliseconds.")
                 TstZT1_AnimSpeed.Text = "1000"
+                EditorGraphic.AnimationSpeed = 1000
                 Exit Sub
 
-            Else
-
-                EditorGraphic.AnimationSpeed = CInt(TstZT1_AnimSpeed.Text)
-
-
             End If
+
+            ' Seems to be okay, numeric and within range.
+            EditorGraphic.AnimationSpeed = CInt(TstZT1_AnimSpeed.Text)
+
         End If
+
 
     End Sub
 
@@ -552,9 +490,6 @@ dBug:
     Private Sub TsbFrame_Add_Click(sender As Object, e As EventArgs) Handles TsbFrame_Add.Click
 
         On Error GoTo dBug
-
-
-
 
 0:
         Dim ZtFrame As New ClsFrame(EditorGraphic)
@@ -609,7 +544,7 @@ dBug:
             EditorFrame.UpdateOffsets(New Point(0, 1))
         End If
 
-        MdlZTStudioUI.UpdatePreview(False, False)
+        MdlZTStudioUI.UpdatePreview(True, False)
 
     End Sub
 
@@ -622,7 +557,7 @@ dBug:
             EditorFrame.UpdateOffsets(New Point(0, -1))
         End If
 
-        MdlZTStudioUI.UpdatePreview(False, False)
+        MdlZTStudioUI.UpdatePreview(True, False)
 
     End Sub
 
@@ -636,7 +571,7 @@ dBug:
             EditorFrame.UpdateOffsets(New Point(1, 0))
         End If
 
-        MdlZTStudioUI.UpdatePreview(False, False)
+        MdlZTStudioUI.UpdatePreview(True, False)
 
     End Sub
 
@@ -649,7 +584,7 @@ dBug:
             EditorFrame.UpdateOffsets(New Point(-1, 0))
         End If
 
-        MdlZTStudioUI.UpdatePreview(False, False)
+        MdlZTStudioUI.UpdatePreview(True, False)
 
 
 
@@ -714,9 +649,6 @@ dBug:
 
     End Sub
 
-    Private Sub TsbFrame_fpY_ForeColorChanged(sender As Object, e As EventArgs) Handles TsbFrame_fpY.ForeColorChanged
-
-    End Sub
     Private Sub TsbFrame_fpY_SelectedIndexChanged(sender As Object, e As EventArgs) Handles TsbFrame_fpY.SelectedIndexChanged
 
 
@@ -810,7 +742,7 @@ dBug:
 
 10:
             ' Add the frame after the existing one(s)
-            editorGraphic.Frames.Insert(TbFrames.Value, ztFrame)
+            EditorGraphic.Frames.Insert(TbFrames.Value, ZtFrame)
 
 15:
             ' not sure if this is right if an extra frame is applied?
@@ -851,7 +783,7 @@ dBug:
                     Else
 
                         ' OK
-                        editorFrame.LoadPNG(DlgOpen.FileName)
+                        EditorFrame.LoadPNG(DlgOpen.FileName)
 
                         ' Draw first frame 
                         MdlZTStudioUI.UpdatePreview(True, True)
@@ -948,7 +880,7 @@ dBug:
 
             If .ShowDialog() <> Windows.Forms.DialogResult.Cancel Then
 
-                editorGraphic.ColorPalette.WritePal(DlgSave.FileName, True)
+                EditorGraphic.ColorPalette.WritePal(DlgSave.FileName, True)
 
             End If ' cancel check
 
@@ -986,20 +918,9 @@ dBug:
 
     End Sub
 
-    Private Sub TsbFrame_OffsetLeft_Click(sender As Object, e As EventArgs) Handles TsbFrame_OffsetLeft.Click
-
-    End Sub
 
     Private Sub TsbBatchRotFix_Click(sender As Object, e As EventArgs) Handles TsbBatchRotFix.Click
         FrmBatchOffsetFix.ShowDialog(Me)
-
-    End Sub
-
-    Private Sub TsbFrame_OffsetRight_Click(sender As Object, e As EventArgs) Handles TsbFrame_OffsetRight.Click
-
-    End Sub
-
-    Private Sub TsbFrame_OffsetUp_Click(sender As Object, e As EventArgs) Handles TsbFrame_OffsetUp.Click
 
     End Sub
 
@@ -1007,40 +928,35 @@ dBug:
 
     Private Sub TsbZT1New_Click(sender As Object, e As EventArgs) Handles TsbZT1New.Click
 
-
-        editorGraphic = New ClsGraphic
-
+        ' New ZT1 Graphic
+        EditorGraphic = New ClsGraphic
 
         ' Always start with one frame
-        editorFrame = New ClsFrame(editorGraphic)
-        editorGraphic.Frames.Add(editorFrame)
+        EditorFrame = New ClsFrame(EditorGraphic)
+        EditorGraphic.Frames.Add(EditorFrame)
 
         ' Update/reset color palette
-        editorGraphic.ColorPalette.FillPaletteGrid(DgvPaletteMain)
+        EditorGraphic.ColorPalette.FillPaletteGrid(DgvPaletteMain)
 
-        ' Update frame 
-        ' PicBox.Image = MdlBitMap.DrawGridFootPrintXY(Cfg_grid_footPrintX, Cfg_grid_footPrintY)
-
+        ' Update preview
         MdlZTStudioUI.UpdatePreview(True, True, 0)
-
-
 
     End Sub
 
 
     Private Sub TsbZT1Write_MouseDown(sender As Object, e As MouseEventArgs) Handles TsbZT1Write.MouseDown
 
-        If editorGraphic.Frames.Count = 0 Then
-            MsgBox("You can't create a ZT1 Graphic without adding a frame first.", vbOKOnly + vbCritical, "No frames")
+        If EditorGraphic.Frames.Count = 0 Then
+            MdlZTStudio.ExpectedError(Me.GetType().FullName, "TsbZT1Write_MouseDown", "You can't create a ZT1 Graphic without adding a frame first.")
             Exit Sub
         End If
 
         If (e.Button = Windows.Forms.MouseButtons.Right) Then
 
             ' Shortcut to saving directly
-            If File.Exists(editorGraphic.FileName) = True Then
+            If File.Exists(EditorGraphic.FileName) = True Then
 
-                MdlTasks.Save_Graphic(editorGraphic.FileName)
+                MdlTasks.Save_Graphic(EditorGraphic.FileName)
                 MdlConfig.Write()
 
                 'No need to continue
@@ -1061,7 +977,6 @@ dBug:
             .FileName = Cfg_path_recentZT1
             .Filter = "ZT1 Graphics|*"
 
-
             If .ShowDialog() <> Windows.Forms.DialogResult.Cancel Then
 
                 If Path.GetExtension(DlgSave.FileName).ToLower() <> "" Then
@@ -1073,39 +988,29 @@ dBug:
 51:
                 MdlTasks.Save_Graphic(DlgSave.FileName)
 
-
 60:
                 ' Remember
-                Cfg_path_recentZT1 = New System.IO.FileInfo(DlgSave.FileName).Directory.FullName
+                Cfg_path_recentZT1 = DlgSave.FileName
                 MdlConfig.Write()
 
                 ' What has been opened, might need to be saved.
                 DlgOpen.FileName = DlgSave.FileName
 
-            End If
+65:
+                ' Might be a new file, so update root folder and select this.
+                MdlZTStudioUI.UpdateExplorerPane()
 
+            End If
 
         End With
 
-
-
     End Sub
 
-    Private Sub SsBar_ItemClicked(sender As Object, e As ToolStripItemClickedEventArgs) Handles SsBar.ItemClicked
 
-    End Sub
-
-    Private Sub MnuPal_Opening(sender As Object, e As System.ComponentModel.CancelEventArgs) Handles MnuPal.Opening
-
-    End Sub
-
-    Private Sub TsbFrame_ImportPNG_Click(sender As Object, e As EventArgs) Handles TsbFrame_ImportPNG.Click
-
-    End Sub
 
     Private Sub ChkPlayAnimation_CheckedChanged(sender As Object, e As EventArgs) Handles ChkPlayAnimation.CheckedChanged
 
-        TmrAnimation.Interval = editorGraphic.AnimationSpeed
+        TmrAnimation.Interval = EditorGraphic.AnimationSpeed
         TmrAnimation.Enabled = ChkPlayAnimation.Checked
 
 
@@ -1135,5 +1040,17 @@ dBug:
 
         End If
 
+    End Sub
+
+    ''' <summary>
+    ''' Makes sure there is a value present for the animation speed
+    ''' </summary>
+    ''' <param name="sender">Object</param>
+    ''' <param name="e">EventArgs</param>
+    Private Sub TstZT1_AnimSpeed_LostFocus(sender As Object, e As EventArgs) Handles TstZT1_AnimSpeed.LostFocus
+        If IsNumeric(TstZT1_AnimSpeed.Text) = False Then
+            TstZT1_AnimSpeed.Text = "1000"
+            EditorGraphic.AnimationSpeed = 1000
+        End If
     End Sub
 End Class

@@ -196,6 +196,7 @@
     <None Include="Resources\picture.png" />
     <None Include="Resources\folder.png" />
     <None Include="Resources\page.png" />
+    <None Include="Resources\palette.png" />
     <Content Include="Zebra.ico" />
   </ItemGroup>
   <ItemGroup>

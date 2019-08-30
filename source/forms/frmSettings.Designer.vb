@@ -306,10 +306,10 @@ Partial Class FrmSettings
         'lblColorPal16
         '
         Me.lblColorPal16.AutoSize = True
-        Me.lblColorPal16.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.lblColorPal16.Font = New System.Drawing.Font("Segoe UI", 8.25!)
         Me.lblColorPal16.Location = New System.Drawing.Point(24, 152)
         Me.lblColorPal16.Name = "lblColorPal16"
-        Me.lblColorPal16.Size = New System.Drawing.Size(142, 13)
+        Me.lblColorPal16.Size = New System.Drawing.Size(158, 13)
         Me.lblColorPal16.TabIndex = 27
         Me.lblColorPal16.Text = "Folder with 16-color palettes:"
         Me.lblColorPal16.Visible = False
@@ -317,10 +317,10 @@ Partial Class FrmSettings
         'lblPalette8
         '
         Me.lblPalette8.AutoSize = True
-        Me.lblPalette8.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.lblPalette8.Font = New System.Drawing.Font("Segoe UI", 8.25!)
         Me.lblPalette8.Location = New System.Drawing.Point(24, 88)
         Me.lblPalette8.Name = "lblPalette8"
-        Me.lblPalette8.Size = New System.Drawing.Size(136, 13)
+        Me.lblPalette8.Size = New System.Drawing.Size(152, 13)
         Me.lblPalette8.TabIndex = 25
         Me.lblPalette8.Text = "Folder with 8-color palettes:"
         Me.lblPalette8.Visible = False
@@ -328,10 +328,10 @@ Partial Class FrmSettings
         'lblWarnings
         '
         Me.lblWarnings.AutoSize = True
-        Me.lblWarnings.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.lblWarnings.Font = New System.Drawing.Font("Segoe UI", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.lblWarnings.Location = New System.Drawing.Point(24, 15)
         Me.lblWarnings.Name = "lblWarnings"
-        Me.lblWarnings.Size = New System.Drawing.Size(65, 13)
+        Me.lblWarnings.Size = New System.Drawing.Size(72, 13)
         Me.lblWarnings.TabIndex = 23
         Me.lblWarnings.Text = "Root folder: "
         '

@@ -72,6 +72,8 @@ Public Class FrmSettings
             txtRootFolder.Text = .SelectedPath
             Cfg_path_Root = .SelectedPath
 
+            ' Update Explorer pane on main window
+            MdlZTStudioUI.UpdateExplorerPane()
 
         End With
 

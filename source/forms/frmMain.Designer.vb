@@ -42,7 +42,6 @@ Partial Class FrmMain
         Me.GBAnimation = New System.Windows.Forms.GroupBox()
         Me.LblFrames = New System.Windows.Forms.Label()
         Me.LblAnimTime = New System.Windows.Forms.Label()
-        Me.LblAnimSpeed = New System.Windows.Forms.Label()
         Me.ChkPlayAnimation = New System.Windows.Forms.CheckBox()
         Me.TbFrames = New System.Windows.Forms.TrackBar()
         Me.GBOtherViews = New System.Windows.Forms.GroupBox()
@@ -70,10 +69,8 @@ Partial Class FrmMain
         Me.TsbFrame_OffsetLeft = New System.Windows.Forms.ToolStripButton()
         Me.TsbFrame_OffsetRight = New System.Windows.Forms.ToolStripButton()
         Me.TslFrame_Offset = New System.Windows.Forms.ToolStripLabel()
-        Me.Tss_Frame_3 = New System.Windows.Forms.ToolStripSeparator()
-        Me.TslFrame_FP = New System.Windows.Forms.ToolStripLabel()
-        Me.TsbFrame_fpX = New System.Windows.Forms.ToolStripComboBox()
-        Me.TsbFrame_fpY = New System.Windows.Forms.ToolStripComboBox()
+        Me.TstOffsetX = New System.Windows.Forms.ToolStripTextBox()
+        Me.TstOffsetY = New System.Windows.Forms.ToolStripTextBox()
         Me.Tss_Frame_4 = New System.Windows.Forms.ToolStripSeparator()
         Me.TsbFrame_IndexDecrease = New System.Windows.Forms.ToolStripButton()
         Me.TsbFrame_IndexIncrease = New System.Windows.Forms.ToolStripButton()
@@ -90,7 +87,11 @@ Partial Class FrmMain
         Me.TsbBatchRotFix = New System.Windows.Forms.ToolStripButton()
         Me.TsbDelete_ZT1Files = New System.Windows.Forms.ToolStripButton()
         Me.TsbDelete_PNG = New System.Windows.Forms.ToolStripButton()
-        Me.TssMisc_3 = New System.Windows.Forms.ToolStripSeparator()
+        Me.Tss_Misc_3 = New System.Windows.Forms.ToolStripSeparator()
+        Me.TslFrame_FP = New System.Windows.Forms.ToolStripLabel()
+        Me.TsbFrame_fpX = New System.Windows.Forms.ToolStripComboBox()
+        Me.TsbFrame_fpY = New System.Windows.Forms.ToolStripComboBox()
+        Me.TssMisc_4 = New System.Windows.Forms.ToolStripSeparator()
         Me.TsbSettings = New System.Windows.Forms.ToolStripButton()
         Me.TsbAbout = New System.Windows.Forms.ToolStripButton()
         Me.MnuPal = New System.Windows.Forms.ContextMenuStrip(Me.components)
@@ -241,7 +242,6 @@ Partial Class FrmMain
         '
         Me.GBAnimation.Controls.Add(Me.LblFrames)
         Me.GBAnimation.Controls.Add(Me.LblAnimTime)
-        Me.GBAnimation.Controls.Add(Me.LblAnimSpeed)
         Me.GBAnimation.Controls.Add(Me.ChkPlayAnimation)
         Me.GBAnimation.Controls.Add(Me.TbFrames)
         Me.GBAnimation.Dock = System.Windows.Forms.DockStyle.Fill
@@ -273,21 +273,11 @@ Partial Class FrmMain
         Me.LblAnimTime.TabIndex = 34
         Me.LblAnimTime.Text = "0 ms"
         '
-        'LblAnimSpeed
-        '
-        Me.LblAnimSpeed.AutoSize = True
-        Me.LblAnimSpeed.Font = New System.Drawing.Font("Segoe UI", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.LblAnimSpeed.Location = New System.Drawing.Point(15, 77)
-        Me.LblAnimSpeed.Name = "LblAnimSpeed"
-        Me.LblAnimSpeed.Size = New System.Drawing.Size(94, 13)
-        Me.LblAnimSpeed.TabIndex = 33
-        Me.LblAnimSpeed.Text = "Animation speed"
-        '
         'ChkPlayAnimation
         '
         Me.ChkPlayAnimation.AutoSize = True
         Me.ChkPlayAnimation.Font = New System.Drawing.Font("Segoe UI", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.ChkPlayAnimation.Location = New System.Drawing.Point(18, 57)
+        Me.ChkPlayAnimation.Location = New System.Drawing.Point(18, 69)
         Me.ChkPlayAnimation.Name = "ChkPlayAnimation"
         Me.ChkPlayAnimation.Size = New System.Drawing.Size(101, 17)
         Me.ChkPlayAnimation.TabIndex = 32
@@ -411,7 +401,7 @@ Partial Class FrmMain
         '
         'TsFrame
         '
-        Me.TsFrame.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.TslFrame, Me.TsbFrame_ImportPNG, Me.TsbFrame_ExportPNG, Me.Tss_Frame_1, Me.TsbFrame_Add, Me.TsbFrame_Delete, Me.Tss_Frame_2, Me.TsbFrame_OffsetUp, Me.TsbFrame_OffsetDown, Me.TsbFrame_OffsetLeft, Me.TsbFrame_OffsetRight, Me.TslFrame_Offset, Me.Tss_Frame_3, Me.TslFrame_FP, Me.TsbFrame_fpX, Me.TsbFrame_fpY, Me.Tss_Frame_4, Me.TsbFrame_IndexDecrease, Me.TsbFrame_IndexIncrease, Me.TslFrame_Index})
+        Me.TsFrame.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.TslFrame, Me.TsbFrame_ImportPNG, Me.TsbFrame_ExportPNG, Me.Tss_Frame_1, Me.TsbFrame_Add, Me.TsbFrame_Delete, Me.Tss_Frame_2, Me.TsbFrame_OffsetUp, Me.TsbFrame_OffsetDown, Me.TsbFrame_OffsetLeft, Me.TsbFrame_OffsetRight, Me.TslFrame_Offset, Me.TstOffsetX, Me.TstOffsetY, Me.Tss_Frame_4, Me.TsbFrame_IndexDecrease, Me.TsbFrame_IndexIncrease, Me.TslFrame_Index})
         Me.TsFrame.Location = New System.Drawing.Point(0, 39)
         Me.TsFrame.Name = "TsFrame"
         Me.TsFrame.Size = New System.Drawing.Size(1008, 39)
@@ -520,35 +510,20 @@ Partial Class FrmMain
         'TslFrame_Offset
         '
         Me.TslFrame_Offset.Name = "TslFrame_Offset"
-        Me.TslFrame_Offset.Size = New System.Drawing.Size(66, 36)
-        Me.TslFrame_Offset.Text = "Offset: 0 , 0"
+        Me.TslFrame_Offset.Size = New System.Drawing.Size(68, 36)
+        Me.TslFrame_Offset.Text = "Offset: X, Y:"
         '
-        'Tss_Frame_3
+        'TstOffsetX
         '
-        Me.Tss_Frame_3.Name = "Tss_Frame_3"
-        Me.Tss_Frame_3.Size = New System.Drawing.Size(6, 39)
+        Me.TstOffsetX.Font = New System.Drawing.Font("Segoe UI", 9.0!)
+        Me.TstOffsetX.Name = "TstOffsetX"
+        Me.TstOffsetX.Size = New System.Drawing.Size(50, 39)
         '
-        'TslFrame_FP
+        'TstOffsetY
         '
-        Me.TslFrame_FP.Name = "TslFrame_FP"
-        Me.TslFrame_FP.Size = New System.Drawing.Size(79, 36)
-        Me.TslFrame_FP.Text = "Footprint X,Y:"
-        '
-        'TsbFrame_fpX
-        '
-        Me.TsbFrame_fpX.AutoSize = False
-        Me.TsbFrame_fpX.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-        Me.TsbFrame_fpX.Items.AddRange(New Object() {"2", "4", "6", "8", "10", "12", "14", "16", "18"})
-        Me.TsbFrame_fpX.Name = "TsbFrame_fpX"
-        Me.TsbFrame_fpX.Size = New System.Drawing.Size(50, 23)
-        '
-        'TsbFrame_fpY
-        '
-        Me.TsbFrame_fpY.AutoSize = False
-        Me.TsbFrame_fpY.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-        Me.TsbFrame_fpY.Items.AddRange(New Object() {"2", "4", "6", "8", "10", "12", "14", "16", "18"})
-        Me.TsbFrame_fpY.Name = "TsbFrame_fpY"
-        Me.TsbFrame_fpY.Size = New System.Drawing.Size(50, 23)
+        Me.TstOffsetY.Font = New System.Drawing.Font("Segoe UI", 9.0!)
+        Me.TstOffsetY.Name = "TstOffsetY"
+        Me.TstOffsetY.Size = New System.Drawing.Size(50, 39)
         '
         'Tss_Frame_4
         '
@@ -583,7 +558,7 @@ Partial Class FrmMain
         '
         'TsTools
         '
-        Me.TsTools.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.TslMisc, Me.TsbOpenPalBldg8, Me.TsbOpenPalBldg16, Me.TssMisc_1, Me.TsbGridBG, Me.TsbPreview_BGGraphic, Me.TssMisc_2, Me.TsbBatchConversion, Me.TsbBatchRotFix, Me.TsbDelete_ZT1Files, Me.TsbDelete_PNG, Me.TssMisc_3, Me.TsbSettings, Me.TsbAbout})
+        Me.TsTools.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.TslMisc, Me.TsbOpenPalBldg8, Me.TsbOpenPalBldg16, Me.TssMisc_1, Me.TsbGridBG, Me.TsbPreview_BGGraphic, Me.TssMisc_2, Me.TsbBatchConversion, Me.TsbBatchRotFix, Me.TsbDelete_ZT1Files, Me.TsbDelete_PNG, Me.Tss_Misc_3, Me.TslFrame_FP, Me.TsbFrame_fpX, Me.TsbFrame_fpY, Me.TssMisc_4, Me.TsbSettings, Me.TsbAbout})
         Me.TsTools.Location = New System.Drawing.Point(0, 78)
         Me.TsTools.Name = "TsTools"
         Me.TsTools.Size = New System.Drawing.Size(1008, 39)
@@ -691,10 +666,37 @@ Partial Class FrmMain
         Me.TsbDelete_PNG.Size = New System.Drawing.Size(36, 36)
         Me.TsbDelete_PNG.Text = "Delete all .PNG files in the root directory"
         '
-        'TssMisc_3
+        'Tss_Misc_3
         '
-        Me.TssMisc_3.Name = "TssMisc_3"
-        Me.TssMisc_3.Size = New System.Drawing.Size(6, 39)
+        Me.Tss_Misc_3.Name = "Tss_Misc_3"
+        Me.Tss_Misc_3.Size = New System.Drawing.Size(6, 39)
+        '
+        'TslFrame_FP
+        '
+        Me.TslFrame_FP.Name = "TslFrame_FP"
+        Me.TslFrame_FP.Size = New System.Drawing.Size(79, 36)
+        Me.TslFrame_FP.Text = "Footprint X,Y:"
+        '
+        'TsbFrame_fpX
+        '
+        Me.TsbFrame_fpX.AutoSize = False
+        Me.TsbFrame_fpX.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.TsbFrame_fpX.Items.AddRange(New Object() {"2", "4", "6", "8", "10", "12", "14", "16", "18"})
+        Me.TsbFrame_fpX.Name = "TsbFrame_fpX"
+        Me.TsbFrame_fpX.Size = New System.Drawing.Size(50, 23)
+        '
+        'TsbFrame_fpY
+        '
+        Me.TsbFrame_fpY.AutoSize = False
+        Me.TsbFrame_fpY.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.TsbFrame_fpY.Items.AddRange(New Object() {"2", "4", "6", "8", "10", "12", "14", "16", "18"})
+        Me.TsbFrame_fpY.Name = "TsbFrame_fpY"
+        Me.TsbFrame_fpY.Size = New System.Drawing.Size(50, 23)
+        '
+        'TssMisc_4
+        '
+        Me.TssMisc_4.Name = "TssMisc_4"
+        Me.TssMisc_4.Size = New System.Drawing.Size(6, 39)
         '
         'TsbSettings
         '
@@ -846,14 +848,13 @@ Partial Class FrmMain
     Friend WithEvents TsbGridBG As System.Windows.Forms.ToolStripButton
     Friend WithEvents TssMisc_2 As System.Windows.Forms.ToolStripSeparator
     Friend WithEvents TsbBatchConversion As System.Windows.Forms.ToolStripButton
-    Friend WithEvents TssMisc_3 As System.Windows.Forms.ToolStripSeparator
+    Friend WithEvents TssMisc_4 As System.Windows.Forms.ToolStripSeparator
     Friend WithEvents TsbSettings As System.Windows.Forms.ToolStripButton
     Friend WithEvents TsbAbout As System.Windows.Forms.ToolStripButton
     Friend WithEvents Tss_Graphic_1 As System.Windows.Forms.ToolStripSeparator
     Friend WithEvents TslZT1_AnimSpeed As System.Windows.Forms.ToolStripLabel
     Friend WithEvents TstZT1_AnimSpeed As System.Windows.Forms.ToolStripTextBox
     Friend WithEvents TslFrame_Offset As System.Windows.Forms.ToolStripLabel
-    Friend WithEvents Tss_Frame_3 As System.Windows.Forms.ToolStripSeparator
     Friend WithEvents TsbFrame_IndexDecrease As System.Windows.Forms.ToolStripButton
     Friend WithEvents TsbFrame_IndexIncrease As System.Windows.Forms.ToolStripButton
     Friend WithEvents TslFrame_Index As System.Windows.Forms.ToolStripLabel
@@ -864,9 +865,6 @@ Partial Class FrmMain
     Friend WithEvents TsbGraphic_ExtraFrame As System.Windows.Forms.ToolStripButton
     Friend WithEvents TsbDelete_PNG As System.Windows.Forms.ToolStripButton
     Friend WithEvents TsbDelete_ZT1Files As System.Windows.Forms.ToolStripButton
-    Friend WithEvents TslFrame_FP As System.Windows.Forms.ToolStripLabel
-    Friend WithEvents TsbFrame_fpX As System.Windows.Forms.ToolStripComboBox
-    Friend WithEvents TsbFrame_fpY As System.Windows.Forms.ToolStripComboBox
     Friend WithEvents Tss_Frame_4 As System.Windows.Forms.ToolStripSeparator
     Friend WithEvents MnuPal As System.Windows.Forms.ContextMenuStrip
     Friend WithEvents mnuPal_MoveEnd As System.Windows.Forms.ToolStripMenuItem
@@ -884,7 +882,6 @@ Partial Class FrmMain
     Friend WithEvents GBAnimation As GroupBox
     Friend WithEvents LblFrames As Label
     Friend WithEvents LblAnimTime As Label
-    Friend WithEvents LblAnimSpeed As Label
     Friend WithEvents ChkPlayAnimation As CheckBox
     Friend WithEvents GBColors As GroupBox
     Friend WithEvents LblColorTool As Label
@@ -893,4 +890,10 @@ Partial Class FrmMain
     Friend WithEvents TbFrames As TrackBar
     Friend WithEvents GBOtherViews As GroupBox
     Friend WithEvents TVExplorer As TreeView
+    Friend WithEvents TstOffsetX As ToolStripTextBox
+    Friend WithEvents TstOffsetY As ToolStripTextBox
+    Friend WithEvents Tss_Misc_3 As ToolStripSeparator
+    Friend WithEvents TslFrame_FP As ToolStripLabel
+    Friend WithEvents TsbFrame_fpX As ToolStripComboBox
+    Friend WithEvents TsbFrame_fpY As ToolStripComboBox
 End Class

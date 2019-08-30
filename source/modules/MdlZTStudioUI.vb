@@ -1,4 +1,6 @@
 ﻿Imports System.IO
+Imports System.Text.RegularExpressions
+
 
 
 ''' <summary>
@@ -163,6 +165,95 @@ Module MdlZTStudioUI
 
     End Sub
 
+    ''' <summary>
+    ''' Updates explorer pane
+    ''' </summary>
+    Sub UpdateExplorerPane()
+
+        MdlZTStudio.Trace("MdlZTStudio", "UpdateExplorerPane", "Updating Explorer pane")
+
+        Dim TVExplorer As TreeView = FrmMain.TVExplorer
+        Dim StackDirectories As New Stack(Of String)
+
+        StackDirectories.Push(Cfg_path_Root)
+
+        Dim ObjImageList = New ImageList
+        ObjImageList.Images.Add(My.Resources.icon_ZT1_Graphic)
+        ObjImageList.Images.Add(My.Resources.icon_folder)
+        ObjImageList.Images.Add(My.Resources.icon_file)
+        ObjImageList.Images.Add(My.Resources.icon_ZT1_palette)
+        TVExplorer.ImageList = ObjImageList
+
+        ' Continue processing for each stacked directory
+        Do While (StackDirectories.Count > 0)
+
+            ' Get top directory string
+            Dim ObjNode As New TreeNode
+            Dim StrDirectoryName As String = StackDirectories.Pop
+
+            If StrDirectoryName <> Cfg_path_Root Then
+
+                ObjNode.Name = Regex.Replace(StrDirectoryName, "^" & Regex.Escape(Cfg_path_Root) & "\\", "")
+                ObjNode.Text = Regex.Match(ObjNode.Name, "(?=[^\\]*$).*$").Value
+                ObjNode.ImageIndex = 1
+                ObjNode.SelectedImageIndex = 1
+
+                ' Parent node?
+                Dim StrParentDirectory = Regex.Replace(ObjNode.Name, "\\(?=[^\\]*$).*$", "")
+                Dim ObjParentNode() As TreeNode = TVExplorer.Nodes.Find(StrParentDirectory, True)
+
+                If ObjParentNode.Count = 1 Then
+                    ObjParentNode(0).Nodes.Add(ObjNode)
+                Else
+                    TVExplorer.Nodes.Add(ObjNode)
+                End If
+
+            End If
+
+            ' Loop through all subdirectories and add them to the stack.
+            Dim StrSubDirectoryName As String
+            For Each StrSubDirectoryName In Directory.GetDirectories(StrDirectoryName)
+
+                ' Subdirectories will be processed later. But as for current dir...
+                StackDirectories.Push(StrSubDirectoryName)
+            Next
+
+            ' Loop through all files and add them to the node
+            Dim StrSubFileName As String
+            For Each StrSubFileName In Directory.GetFiles(StrDirectoryName)
+                Dim ObjFileNode As New TreeNode
+                ObjFileNode.Name = Regex.Replace(StrSubFileName, "^" & Regex.Escape(Cfg_path_Root) & "\\", "")
+                ObjFileNode.Text = Regex.Match(ObjFileNode.Name, "(?=[^\\]*$).*$").Value
+
+                ' Guess if it's a graphic or not
+                If Regex.IsMatch(ObjFileNode.Text, "^[0-9A-z]{1,}$", RegexOptions.Singleline) Then
+                    ObjFileNode.ImageIndex = 0
+                    ObjFileNode.SelectedImageIndex = 0
+                ElseIf Regex.IsMatch(ObjFileNode.Text, "^.*\.pal$", RegexOptions.Singleline) Then
+                    ObjFileNode.ImageIndex = 3
+                    ObjFileNode.SelectedImageIndex = 3
+                Else
+                    ObjFileNode.ImageIndex = 2
+                    ObjFileNode.SelectedImageIndex = 2
+                End If
+
+                ObjNode.Nodes.Add(ObjFileNode)
+            Next
+
+            ' Make sure everything is finished. Needed?
+            Application.DoEvents()
+
+        Loop
+
+        ' If user changed root path but last chosen file was somewhere else, this would raise errors if there was no condition here.
+        Dim ObjNodeSet As TreeNode() = TVExplorer.Nodes.Find(Regex.Replace(Cfg_path_recentZT1, "^" & Regex.Escape(Cfg_path_Root) & "\\", ""), True)
+        If ObjNodeSet.Count = 1 Then
+            TVExplorer.SelectedNode = ObjNodeSet(0)
+        End If
+
+
+
+    End Sub
 
     ''' <summary>
     ''' Updates shown info such as number of frames, current frame, ...
@@ -194,11 +285,13 @@ Module MdlZTStudioUI
             End With
 
             If IsNothing(EditorFrame) Then
-                .TslFrame_Offset.Text = "0 , 0"
+                .TstOffsetX.Text = "0"
+                .TstOffsetY.Text = "0"
 
             Else
                 '.tbFrames.Value = editorGraphic.frames.IndexOf(editorFrame) + 1
-                .TslFrame_Offset.Text = EditorFrame.OffsetX & " , " & EditorFrame.OffsetY
+                .TstOffsetX.Text = EditorFrame.OffsetX
+                .TstOffsetY.Text = EditorFrame.OffsetY
             End If
 
         End With

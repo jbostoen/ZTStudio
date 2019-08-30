@@ -1,0 +1,14 @@
+[animation]
+dir0 = animals
+dir1 = redpanda
+dir2 = m
+dir3 = scratch
+animation = N
+animation = NE
+animation = E
+animation = SE
+animation = S
+x0 = -17
+y0 = -13
+x1 = 10
+y1 = 8

@@ -115,10 +115,10 @@ Module MdlConfig
         End If
 
         ' Paths invalid?
-        If System.IO.Directory.Exists(Cfg_path_recentPNG) = False Then
+        If System.IO.File.Exists(Cfg_path_recentPNG) = False Then
             Cfg_path_recentPNG = Cfg_path_Root
         End If
-        If System.IO.Directory.Exists(Cfg_path_recentZT1) = False Then
+        If System.IO.File.Exists(Cfg_path_recentZT1) = False Then
             Cfg_path_recentZT1 = Cfg_path_Root
         End If
 

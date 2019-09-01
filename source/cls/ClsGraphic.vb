@@ -15,7 +15,7 @@ Public Class ClsGraphic
     Private ClsGraphic_FileName As String = vbNullString ' File name of graphic
     Private ClsGraphic_Palette As New ClsPalette(Me) ' Main color palette
 
-    Private ClsGraphic_AnimationSpeed As Integer = 125 ' Speed in milliseconds for this animation
+    Private ClsGraphic_AnimationSpeed As Integer = Cfg_frame_defaultAnimSpeed ' Speed in milliseconds for this animation
 
     Private ClsGraphic_HasBackgroundFrame As Byte = 0 ' Basic files, FATZ-files with byte 9 = 0: no extra background frame. Byte 9 = 1: graphic contain a background frame.
 

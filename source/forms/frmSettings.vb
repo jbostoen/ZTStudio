@@ -48,10 +48,8 @@ Public Class FrmSettings
         numConvert_PNGStartIndex.Value = Cfg_convert_startIndex
         chkPNGTransparentBG.Checked = (Cfg_export_PNG_TransparentBG = 1)
 
-
-        ' Frame
-        chkEditor_Frame_Offsets_SingleFrame.Checked = (Cfg_editor_rotFix_individualFrame = 1)
-        numFrameAnimSpeed.Value = Cfg_frame_defaultAnimSpeed
+        ' Graphic
+        numFrameDefaultAnimSpeed.Value = Cfg_frame_defaultAnimSpeed
 
         ' Palette
         chkPalImportPNGForceAddAll.Checked = (Cfg_palette_import_png_force_add_colors = 1)
@@ -90,7 +88,7 @@ Public Class FrmSettings
             .ShowDialog()
 
             txtFolderPal8.Text = .SelectedPath
-            iniWrite(System.IO.Path.GetFullPath(Application.StartupPath) & "\settings.ini", "paths", "pal8", .SelectedPath)
+            IniWrite(System.IO.Path.GetFullPath(Application.StartupPath) & "\settings.ini", "paths", "pal8", .SelectedPath)
 
 
         End With
@@ -108,7 +106,7 @@ Public Class FrmSettings
             .ShowDialog()
 
             txtFolderPal16.Text = .SelectedPath
-            iniWrite(System.IO.Path.GetFullPath(Application.StartupPath) & "\settings.ini", "paths", "pal16", .SelectedPath)
+            IniWrite(System.IO.Path.GetFullPath(Application.StartupPath) & "\settings.ini", "paths", "pal16", .SelectedPath)
 
 
         End With
@@ -156,12 +154,6 @@ Public Class FrmSettings
 
     End Sub
 
-    Private Sub ChkFrame_Offsets_SingleFrame_CheckedChanged(sender As Object, e As EventArgs) Handles chkEditor_Frame_Offsets_SingleFrame.CheckedChanged
-
-        If chkEditor_Frame_Offsets_SingleFrame.IsHandleCreated = False Then Exit Sub
-        Cfg_editor_rotFix_individualFrame = CByte(chkEditor_Frame_Offsets_SingleFrame.Checked * -1)
-
-    End Sub
 
 
     Private Sub ChkConvert_AddZTAFBytes_CheckedChanged(sender As Object, e As EventArgs) Handles chkExportZT1_AddZTAFBytes.CheckedChanged
@@ -236,14 +228,14 @@ Public Class FrmSettings
         Cfg_export_PNG_TransparentBG = CByte(CInt(chkPNGTransparentBG.Checked) * -1)
     End Sub
 
-    Private Sub NumFrameAnimSpeed_ValueChanged(sender As Object, e As EventArgs) Handles numFrameAnimSpeed.ValueChanged
+    Private Sub NumFrameAnimSpeed_ValueChanged(sender As Object, e As EventArgs) Handles numFrameDefaultAnimSpeed.ValueChanged
 
-        If numFrameAnimSpeed.IsHandleCreated = False Then Exit Sub
-        Cfg_frame_defaultAnimSpeed = numFrameAnimSpeed.Value
+        If numFrameDefaultAnimSpeed.IsHandleCreated = False Then Exit Sub
+        Cfg_frame_defaultAnimSpeed = numFrameDefaultAnimSpeed.Value
 
     End Sub
 
-    Private Sub NumFrameAnimSpeed_VisibleChanged(sender As Object, e As EventArgs) Handles numFrameAnimSpeed.VisibleChanged
+    Private Sub NumFrameAnimSpeed_VisibleChanged(sender As Object, e As EventArgs) Handles numFrameDefaultAnimSpeed.VisibleChanged
 
     End Sub
 

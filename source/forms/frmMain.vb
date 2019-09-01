@@ -35,6 +35,7 @@ Public Class FrmMain
         ' Set grid size (based on previously configured settings)
         TsbFrame_fpX.Text = CStr(Cfg_grid_footPrintX)
         TsbFrame_fpY.Text = CStr(Cfg_grid_footPrintY)
+        TsbFrame_OffsetAll.Checked = (Cfg_editor_rotFix_individualFrame * -1)
 
         ' ZT1 Default color palettes
         ' strPathBuildingColorPals
@@ -110,7 +111,7 @@ Public Class FrmMain
 100:
 
         MdlZTStudio.Trace(Me.GetType().FullName, "MouseMove", "e.X = " & e.X & ", Y = " & e.Y)
-        MdlZTStudio.Trace(Me.GetType().FullName, "MouseMove", "Offset X = " & intoffsetX & ", Y = " & intoffsetY )
+        MdlZTStudio.Trace(Me.GetType().FullName, "MouseMove", "Offset X = " & IntOffsetX & ", Y = " & IntOffsetY)
         MdlZTStudio.Trace(Me.GetType().FullName, "MouseMove", "Bmp width = " & BmTmp.Width & ", Height = " & BmTmp.Height)
 
         If e.X > IntOffsetX And e.X < (BmTmp.Width + IntOffsetX) And e.Y > IntOffsetY And e.Y < (BmTmp.Height + IntOffsetY) Then
@@ -359,7 +360,7 @@ dBug:
 
             If .ShowDialog() <> Windows.Forms.DialogResult.Cancel Then
 
-                Pal_Open(DlgOpen.FileName)
+                MdlColorPalette.LoadPalette(DlgOpen.FileName)
 
             End If ' cancel check
 
@@ -384,12 +385,12 @@ dBug:
 
     Private Sub TsbOpenPalBldg8_DropDownItemClicked(sender As Object, e As ToolStripItemClickedEventArgs) Handles TsbOpenPalBldg8.DropDownItemClicked
 
-        Pal_Open(Cfg_path_ColorPals8 & "\" & e.ClickedItem.Text)
+        MdlColorPalette.LoadPalette(Cfg_path_ColorPals8 & "\" & e.ClickedItem.Text)
 
     End Sub
     Private Sub TsbOpenPalBldg16_DropDownItemClicked(sender As Object, e As ToolStripItemClickedEventArgs) Handles TsbOpenPalBldg16.DropDownItemClicked
 
-        Pal_Open(Cfg_path_ColorPals16 & "\" & e.ClickedItem.Text)
+        MdlColorPalette.LoadPalette(Cfg_path_ColorPals16 & "\" & e.ClickedItem.Text)
 
     End Sub
 
@@ -453,40 +454,6 @@ dBug:
     End Sub
 
 
-
-    Private Sub TstZT1_AnimSpeed_TextChanged(sender As Object, e As EventArgs) Handles TstZT1_AnimSpeed.TextChanged
-
-        If TstZT1_AnimSpeed.Text = "" Then
-            ' User is just changing value, don't be too strict on empty values.
-            EditorGraphic.AnimationSpeed = 1000
-
-        ElseIf IsNumeric(TstZT1_AnimSpeed.Text) = False Then
-            MdlZTStudio.ExpectedError(Me.GetType().FullName, "TstZT1_AnimSpeed_TextChanged", "The animation speed should be a number of milliseconds.")
-            TstZT1_AnimSpeed.Text = "1000"
-            EditorGraphic.AnimationSpeed = 1000
-            Exit Sub
-
-        Else
-
-            ' Valid value?
-            If CInt(TstZT1_AnimSpeed.Text) < 1 Or (CInt(TstZT1_AnimSpeed.Text) > 1000) Then
-
-                MdlZTStudio.ExpectedError(Me.GetType().FullName, "TstZT1_AnimSpeed_TextChanged", "Invalid value for animation speed. Expecting a value between 1 and 1000 milliseconds.")
-                TstZT1_AnimSpeed.Text = "1000"
-                EditorGraphic.AnimationSpeed = 1000
-                Exit Sub
-
-            End If
-
-            ' Seems to be okay, numeric and within range.
-            EditorGraphic.AnimationSpeed = CInt(TstZT1_AnimSpeed.Text)
-
-        End If
-
-
-    End Sub
-
-
     Private Sub TsbFrame_Add_Click(sender As Object, e As EventArgs) Handles TsbFrame_Add.Click
 
         On Error GoTo dBug
@@ -532,6 +499,7 @@ dBug:
         ' Change handled in slider control
         TbFrames.Value += 1
 
+        MdlZTStudioUI.UpdateGUI("TsbFrame_IndexIncrease_Click")
 
     End Sub
 
@@ -592,9 +560,7 @@ dBug:
 
     Private Sub TsbGraphic_ExtraFrame_Click(sender As Object, e As EventArgs) Handles TsbGraphic_ExtraFrame.Click
 
-
         EditorGraphic.HasBackgroundFrame = Math.Abs(EditorGraphic.HasBackgroundFrame - 1)
-
 
         ' Quick fix: on change, revert to frame 1.
         Dim IntFrameNumber As Integer = EditorGraphic.Frames.IndexOf(EditorFrame)
@@ -616,6 +582,8 @@ dBug:
 
         ' Change handled in slider control
         TbFrames.Value -= 1
+
+        MdlZTStudioUI.UpdateGUI("TsbFrame_IndexDecrease_Click")
 
     End Sub
 
@@ -665,7 +633,7 @@ dBug:
         If e.RowIndex > -1 Then
 
             ' Replace colors
-            MdlTasks.Pal_ReplaceColor(e.RowIndex)
+            MdlColorPalette.ReplaceColor(e.RowIndex)
 
         End If
 
@@ -696,26 +664,26 @@ dBug:
 
     Private Sub MnuPal_MoveUp_Click(sender As Object, e As EventArgs) Handles mnuPal_MoveUp.Click
 
-        MdlTasks.Pal_MoveColor(DgvPaletteMain.SelectedRows(0).Index, DgvPaletteMain.SelectedRows(0).Index - 1)
+        MdlColorPalette.MoveColor(DgvPaletteMain.SelectedRows(0).Index, DgvPaletteMain.SelectedRows(0).Index - 1)
 
     End Sub
     Private Sub MnuPal_MoveDown_Click(sender As Object, e As EventArgs) Handles mnuPal_MoveDown.Click
 
-        MdlTasks.Pal_MoveColor(DgvPaletteMain.SelectedRows(0).Index, DgvPaletteMain.SelectedRows(0).Index + 1)
+        MdlColorPalette.moveColor(DgvPaletteMain.SelectedRows(0).Index, DgvPaletteMain.SelectedRows(0).Index + 1)
 
     End Sub
 
 
     Private Sub MnuPal_Replace_Click(sender As Object, e As EventArgs) Handles mnuPal_Replace.Click
 
-        MdlTasks.Pal_ReplaceColor(DgvPaletteMain.SelectedRows(0).Index)
+        MdlColorPalette.replaceColor(DgvPaletteMain.SelectedRows(0).Index)
 
 
     End Sub
 
     Private Sub MnuPal_MoveEnd_Click(sender As Object, e As EventArgs) Handles mnuPal_MoveEnd.Click
 
-        MdlTasks.Pal_MoveColor(DgvPaletteMain.SelectedRows(0).Index, EditorGraphic.ColorPalette.Colors.Count - 1)
+        MdlColorPalette.MoveColor(DgvPaletteMain.SelectedRows(0).Index, EditorGraphic.ColorPalette.Colors.Count - 1)
 
 
     End Sub
@@ -723,7 +691,7 @@ dBug:
     Private Sub MnuPal_Add_Click(sender As Object, e As EventArgs) Handles mnuPal_Add.Click
 
         ' Add after this entry
-        Pal_AddColor(DgvPaletteMain.SelectedRows(0).Index)
+        MdlColorPalette.AddColor(DgvPaletteMain.SelectedRows(0).Index)
 
     End Sub
 
@@ -1024,13 +992,10 @@ dBug:
 
     End Sub
 
+
     Private Sub TVExplorer_AfterSelect(sender As Object, e As TreeViewEventArgs) Handles TVExplorer.AfterSelect
 
         MdlZTStudio.Trace(Me.GetType().FullName, "TVExplorer_AfterSelect", "Selected node " & e.Node.Text & " -> " & e.Node.Name)
-
-
-        Application.DoEvents()
-
 
         ' If the selected item is a ZT1 Graphic file, load?
         If Regex.IsMatch(e.Node.Text, "[0-9A-z]") = True And e.Node.ImageIndex = 0 Then
@@ -1042,15 +1007,170 @@ dBug:
 
     End Sub
 
+
+
     ''' <summary>
-    ''' Makes sure there is a value present for the animation speed
+    ''' Handles Leave event of toolstrip textbox animation speed. Resets animation speed textbox.
     ''' </summary>
     ''' <param name="sender">Object</param>
     ''' <param name="e">EventArgs</param>
-    Private Sub TstZT1_AnimSpeed_LostFocus(sender As Object, e As EventArgs) Handles TstZT1_AnimSpeed.LostFocus
-        If IsNumeric(TstZT1_AnimSpeed.Text) = False Then
-            TstZT1_AnimSpeed.Text = "1000"
-            EditorGraphic.AnimationSpeed = 1000
+    Private Sub TstZT1_AnimSpeed_Leave(sender As Object, e As EventArgs) Handles TstZT1_AnimSpeed.Leave
+
+        ' If nothing has been confirmed ([Enter]), reset original value
+        TstZT1_AnimSpeed.Text = EditorGraphic.AnimationSpeed
+
+
+    End Sub
+
+    ''' <summary>
+    ''' Handles confirmation of new offset (on Enter)
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
+    Private Sub TstOffsetX_KeyDown(sender As Object, e As KeyEventArgs) Handles TstOffsetX.KeyDown
+
+        ' On enter
+        If e.KeyCode <> 13 Then
+            Exit Sub
         End If
+
+        If TstOffsetX.Text = "" Then
+            ' Suspend checking, user is most likely still busy changing this value
+            Exit Sub
+        ElseIf IsNumeric(TstOffsetX.Text) = False Then
+            MdlZTStudio.ExpectedError(Me.GetType().FullName, "TstOffsetX_TextChanged", "Offset should be a numerical value between -32767 and 32767")
+            Exit Sub
+        ElseIf CInt(TstOffsetX.Text) < -32767 Or CInt(TstOffsetX.Text) > 32767 Then
+            MdlZTStudio.ExpectedError(Me.GetType().FullName, "TstOffsetX_TextChanged", "Offset should be a numerical value between -32767 and 32767")
+            Exit Sub
+        End If
+
+
+        ' UpdateOffsets() takes changes, not final coordinates
+        ' Get the difference
+        Dim IntDifference = CInt(TstOffsetX.Text) - EditorFrame.OffsetX
+
+        EditorFrame.UpdateOffsets(New Point(IntDifference, 0))
+
+        MdlZTStudioUI.UpdatePreview(True, False)
+
+    End Sub
+
+
+    ''' <summary>
+    ''' Handles confirmation of new offset (on Enter)
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
+    Private Sub TstOffsetY_KeyDown(sender As Object, e As KeyEventArgs) Handles TstOffsetY.KeyDown
+
+        ' On enter
+        If e.KeyCode <> 13 Then
+            Exit Sub
+        End If
+
+        If TstOffsetY.Text = "" Then
+            ' Suspend checking, user is most likely still busy changing this value
+            Exit Sub
+        ElseIf IsNumeric(TstOffsetY.Text) = False Then
+            MdlZTStudio.ExpectedError(Me.GetType().FullName, "TstOffsetY_TextChanged", "Offset should be a numerical value between -32767 and 32767")
+            Exit Sub
+        ElseIf CInt(TstOffsetY.Text) < -32767 Or CInt(TstOffsetY.Text) > 32767 Then
+            MdlZTStudio.ExpectedError(Me.GetType().FullName, "TstOffsetY_TextChanged", "Offset should be a numerical value between -32767 and 32767")
+            Exit Sub
+        End If
+
+
+        ' UpdateOffsets() takes changes, not final coordinates
+        ' Get the difference
+        Dim IntDifference = CInt(TstOffsetY.Text) - EditorFrame.OffsetY
+
+        EditorFrame.UpdateOffsets(New Point(0, IntDifference))
+
+        MdlZTStudioUI.UpdatePreview(True, False)
+
+    End Sub
+
+
+    ''' <summary>
+    ''' Handles Leave event of toolstrip textbox offset X. Resets offset value in textbox.
+    ''' </summary>
+    ''' <param name="sender">Object</param>
+    ''' <param name="e">EventArgs</param>
+    Private Sub TstOffsetX_Leave(sender As Object, e As EventArgs) Handles TstOffsetX.Leave
+
+        ' If nothing has been confirmed ([Enter]), reset original value
+        TstOffsetX.Text = EditorFrame.OffsetX
+
+    End Sub
+
+
+
+    ''' <summary>
+    ''' Handles Leave event of toolstrip textbox offset Y. Resets offset
+    ''' </summary>
+    ''' <param name="sender">Object</param>
+    ''' <param name="e">EventArgs</param>
+    Private Sub TstOffsetY_Leave(sender As Object, e As EventArgs) Handles TstOffsetY.Leave
+
+        ' If nothing has been confirmed ([Enter]), reset original value
+        TstOffsetY.Text = EditorFrame.OffsetY
+
+    End Sub
+
+
+    ''' <summary>
+    ''' Handles confirmation of new animation speed (on Enter)
+    ''' </summary>
+    ''' <param name="sender">Object</param>
+    ''' <param name="e">KeyEventArgs</param>
+    Private Sub TstZT1_AnimSpeed_KeyDown(sender As Object, e As KeyEventArgs) Handles TstZT1_AnimSpeed.KeyDown
+
+        If e.KeyCode <> 13 Then
+            ' Not confirming by pressing [Enter]
+        End If
+
+
+        If TstZT1_AnimSpeed.Text = "" Then
+            ' User is just changing value, don't be too strict on empty values.
+            Exit Sub
+
+        ElseIf IsNumeric(TstZT1_AnimSpeed.Text) = False Then
+
+            ' Not numeric = invalid
+            MdlZTStudio.ExpectedError(Me.GetType().FullName, "TstZT1_AnimSpeed_TextChanged", "The animation speed should be a number of milliseconds.")
+            Exit Sub
+
+        ElseIf CInt(TstZT1_AnimSpeed.Text) < 1 Or (CInt(TstZT1_AnimSpeed.Text) > 1000) Then
+
+            ' Not in a valid range. Theoretically, the interval could be much higher.
+            ' In practical ways, it should never be.
+            MdlZTStudio.ExpectedError(Me.GetType().FullName, "TstZT1_AnimSpeed_TextChanged", "Invalid value for animation speed. Expecting a value between 1 and 1000 milliseconds.")
+            Exit Sub
+
+        End If
+
+
+        ' Seems to be okay, numeric and within range.
+        EditorGraphic.AnimationSpeed = CInt(TstZT1_AnimSpeed.Text)
+
+
+    End Sub
+
+    Private Sub TstZT1_AnimSpeed_Click(sender As Object, e As EventArgs) Handles TstZT1_AnimSpeed.Click
+
+    End Sub
+
+    Private Sub TstOffsetX_Click(sender As Object, e As EventArgs) Handles TstOffsetX.Click
+
+    End Sub
+
+    Private Sub TsbFrame_OffsetAll_Click(sender As Object, e As EventArgs) Handles TsbFrame_OffsetAll.Click
+
+        TsbFrame_OffsetAll.Checked = Not TsbFrame_OffsetAll.Checked ' Change toggle
+        Cfg_editor_rotFix_individualFrame = CByte(TsbFrame_OffsetAll.Checked * -1)
+        MdlConfig.Write()
+
+
     End Sub
 End Class

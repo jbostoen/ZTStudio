@@ -64,8 +64,6 @@ Module MdlZTStudioUI
                 ' Keep filename
                 FrmMain.ssFileName.Text = Now.ToString("yyyy-MM-dd HH:mm:ss") & ": opened " & StrFileName
 
-                ' Draw first frame 
-                MdlZTStudioUI.UpdatePreview(True, True, 0)
 
                 ' Add time indication
                 FrmMain.LblAnimTime.Text = ((EditorGraphic.Frames.Count - EditorGraphic.HasBackgroundFrame) * EditorGraphic.AnimationSpeed) & " ms "
@@ -78,6 +76,8 @@ Module MdlZTStudioUI
                 EditorFrame = EditorGraphic.Frames(0)
                 FrmMain.TbFrames.Value = 1
 
+                ' Draw first frame. Must be done after setting EditorFrame!
+                MdlZTStudioUI.UpdatePreview(True, True, 0)
 
                 ' Remember
                 Cfg_path_recentZT1 = StrFileName
@@ -183,6 +183,9 @@ Module MdlZTStudioUI
         ObjImageList.Images.Add(My.Resources.icon_file)
         ObjImageList.Images.Add(My.Resources.icon_ZT1_palette)
         TVExplorer.ImageList = ObjImageList
+
+        TVExplorer.Nodes.Clear()
+
 
         ' Continue processing for each stacked directory
         Do While (StackDirectories.Count > 0)

@@ -61,9 +61,13 @@ Partial Class FrmMain
         Me.TsbFrame_ImportPNG = New System.Windows.Forms.ToolStripButton()
         Me.TsbFrame_ExportPNG = New System.Windows.Forms.ToolStripButton()
         Me.Tss_Frame_1 = New System.Windows.Forms.ToolStripSeparator()
+        Me.TslFrame_Index = New System.Windows.Forms.ToolStripLabel()
+        Me.TsbFrame_IndexDecrease = New System.Windows.Forms.ToolStripButton()
+        Me.TsbFrame_IndexIncrease = New System.Windows.Forms.ToolStripButton()
+        Me.Tss_Frame_2 = New System.Windows.Forms.ToolStripSeparator()
         Me.TsbFrame_Add = New System.Windows.Forms.ToolStripButton()
         Me.TsbFrame_Delete = New System.Windows.Forms.ToolStripButton()
-        Me.Tss_Frame_2 = New System.Windows.Forms.ToolStripSeparator()
+        Me.TsbFrame_OffsetAll = New System.Windows.Forms.ToolStripButton()
         Me.TsbFrame_OffsetUp = New System.Windows.Forms.ToolStripButton()
         Me.TsbFrame_OffsetDown = New System.Windows.Forms.ToolStripButton()
         Me.TsbFrame_OffsetLeft = New System.Windows.Forms.ToolStripButton()
@@ -72,9 +76,6 @@ Partial Class FrmMain
         Me.TstOffsetX = New System.Windows.Forms.ToolStripTextBox()
         Me.TstOffsetY = New System.Windows.Forms.ToolStripTextBox()
         Me.Tss_Frame_4 = New System.Windows.Forms.ToolStripSeparator()
-        Me.TsbFrame_IndexDecrease = New System.Windows.Forms.ToolStripButton()
-        Me.TsbFrame_IndexIncrease = New System.Windows.Forms.ToolStripButton()
-        Me.TslFrame_Index = New System.Windows.Forms.ToolStripLabel()
         Me.TsTools = New System.Windows.Forms.ToolStrip()
         Me.TslMisc = New System.Windows.Forms.ToolStripLabel()
         Me.TsbOpenPalBldg8 = New System.Windows.Forms.ToolStripDropDownButton()
@@ -104,19 +105,19 @@ Partial Class FrmMain
         Me.mnuPal_ExportPNG = New System.Windows.Forms.ToolStripMenuItem()
         Me.mnuPal_ImportPNG = New System.Windows.Forms.ToolStripMenuItem()
         Me.mnuPal_ImportGimpPalette = New System.Windows.Forms.ToolStripMenuItem()
-        CType(Me.PicBox, System.ComponentModel.ISupportInitialize).BeginInit
-        Me.TsZT1Graphic.SuspendLayout
-        Me.Panel1.SuspendLayout
-        Me.GBAnimation.SuspendLayout
-        CType(Me.TbFrames, System.ComponentModel.ISupportInitialize).BeginInit
-        Me.GBOtherViews.SuspendLayout
-        Me.GBColors.SuspendLayout
-        Me.SsBar.SuspendLayout
-        CType(Me.DgvPaletteMain, System.ComponentModel.ISupportInitialize).BeginInit
-        Me.TsFrame.SuspendLayout
-        Me.TsTools.SuspendLayout
-        Me.MnuPal.SuspendLayout
-        Me.SuspendLayout
+        CType(Me.PicBox, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.TsZT1Graphic.SuspendLayout()
+        Me.Panel1.SuspendLayout()
+        Me.GBAnimation.SuspendLayout()
+        CType(Me.TbFrames, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.GBOtherViews.SuspendLayout()
+        Me.GBColors.SuspendLayout()
+        Me.SsBar.SuspendLayout()
+        CType(Me.DgvPaletteMain, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.TsFrame.SuspendLayout()
+        Me.TsTools.SuspendLayout()
+        Me.MnuPal.SuspendLayout()
+        Me.SuspendLayout()
         '
         'PicBox
         '
@@ -216,14 +217,15 @@ Partial Class FrmMain
         'TslZT1_AnimSpeed
         '
         Me.TslZT1_AnimSpeed.Name = "TslZT1_AnimSpeed"
-        Me.TslZT1_AnimSpeed.Size = New System.Drawing.Size(180, 36)
-        Me.TslZT1_AnimSpeed.Text = "Animation speed (milli seconds):"
+        Me.TslZT1_AnimSpeed.Size = New System.Drawing.Size(100, 36)
+        Me.TslZT1_AnimSpeed.Text = "Animation speed:"
         '
         'TstZT1_AnimSpeed
         '
         Me.TstZT1_AnimSpeed.Font = New System.Drawing.Font("Segoe UI", 9.0!)
         Me.TstZT1_AnimSpeed.Name = "TstZT1_AnimSpeed"
         Me.TstZT1_AnimSpeed.Size = New System.Drawing.Size(50, 39)
+        Me.TstZT1_AnimSpeed.ToolTipText = "Animation speed in milliseconds. Press [Enter] to confirm new values."
         '
         'Panel1
         '
@@ -401,7 +403,7 @@ Partial Class FrmMain
         '
         'TsFrame
         '
-        Me.TsFrame.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.TslFrame, Me.TsbFrame_ImportPNG, Me.TsbFrame_ExportPNG, Me.Tss_Frame_1, Me.TsbFrame_Add, Me.TsbFrame_Delete, Me.Tss_Frame_2, Me.TsbFrame_OffsetUp, Me.TsbFrame_OffsetDown, Me.TsbFrame_OffsetLeft, Me.TsbFrame_OffsetRight, Me.TslFrame_Offset, Me.TstOffsetX, Me.TstOffsetY, Me.Tss_Frame_4, Me.TsbFrame_IndexDecrease, Me.TsbFrame_IndexIncrease, Me.TslFrame_Index})
+        Me.TsFrame.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.TslFrame, Me.TsbFrame_ImportPNG, Me.TsbFrame_ExportPNG, Me.Tss_Frame_1, Me.TsbFrame_Add, Me.TsbFrame_Delete, Me.Tss_Frame_2, Me.TsbFrame_OffsetAll, Me.TsbFrame_OffsetUp, Me.TsbFrame_OffsetDown, Me.TsbFrame_OffsetLeft, Me.TsbFrame_OffsetRight, Me.TslFrame_Offset, Me.TstOffsetX, Me.TstOffsetY, Me.Tss_Frame_4, Me.TsbFrame_IndexDecrease, Me.TsbFrame_IndexIncrease, Me.TslFrame_Index})
         Me.TsFrame.Location = New System.Drawing.Point(0, 39)
         Me.TsFrame.Name = "TsFrame"
         Me.TsFrame.Size = New System.Drawing.Size(1008, 39)
@@ -442,6 +444,37 @@ Partial Class FrmMain
         Me.Tss_Frame_1.Name = "Tss_Frame_1"
         Me.Tss_Frame_1.Size = New System.Drawing.Size(6, 39)
         '
+        'TslFrame_Index
+        '
+        Me.TslFrame_Index.Name = "TslFrame_Index"
+        Me.TslFrame_Index.Size = New System.Drawing.Size(65, 36)
+        Me.TslFrame_Index.Text = "Index: 0 / 0"
+        '
+        'TsbFrame_IndexDecrease
+        '
+        Me.TsbFrame_IndexDecrease.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.TsbFrame_IndexDecrease.Image = CType(resources.GetObject("TsbFrame_IndexDecrease.Image"), System.Drawing.Image)
+        Me.TsbFrame_IndexDecrease.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None
+        Me.TsbFrame_IndexDecrease.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.TsbFrame_IndexDecrease.Name = "TsbFrame_IndexDecrease"
+        Me.TsbFrame_IndexDecrease.Size = New System.Drawing.Size(36, 36)
+        Me.TsbFrame_IndexDecrease.Text = "Show frame earlier in animation"
+        '
+        'TsbFrame_IndexIncrease
+        '
+        Me.TsbFrame_IndexIncrease.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.TsbFrame_IndexIncrease.Image = CType(resources.GetObject("TsbFrame_IndexIncrease.Image"), System.Drawing.Image)
+        Me.TsbFrame_IndexIncrease.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None
+        Me.TsbFrame_IndexIncrease.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.TsbFrame_IndexIncrease.Name = "TsbFrame_IndexIncrease"
+        Me.TsbFrame_IndexIncrease.Size = New System.Drawing.Size(36, 36)
+        Me.TsbFrame_IndexIncrease.Text = "Show frame later in animation"
+        '
+        'Tss_Frame_2
+        '
+        Me.Tss_Frame_2.Name = "Tss_Frame_2"
+        Me.Tss_Frame_2.Size = New System.Drawing.Size(6, 39)
+        '
         'TsbFrame_Add
         '
         Me.TsbFrame_Add.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
@@ -462,10 +495,15 @@ Partial Class FrmMain
         Me.TsbFrame_Delete.Size = New System.Drawing.Size(36, 36)
         Me.TsbFrame_Delete.Text = "Delete frame"
         '
-        'Tss_Frame_2
+        'TsbFrame_OffsetAll
         '
-        Me.Tss_Frame_2.Name = "Tss_Frame_2"
-        Me.Tss_Frame_2.Size = New System.Drawing.Size(6, 39)
+        Me.TsbFrame_OffsetAll.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.TsbFrame_OffsetAll.Image = CType(resources.GetObject("TsbFrame_OffsetAll.Image"), System.Drawing.Image)
+        Me.TsbFrame_OffsetAll.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None
+        Me.TsbFrame_OffsetAll.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.TsbFrame_OffsetAll.Name = "TsbFrame_OffsetAll"
+        Me.TsbFrame_OffsetAll.Size = New System.Drawing.Size(36, 36)
+        Me.TsbFrame_OffsetAll.Text = "Force offset adjustments on all frames"
         '
         'TsbFrame_OffsetUp
         '
@@ -518,43 +556,19 @@ Partial Class FrmMain
         Me.TstOffsetX.Font = New System.Drawing.Font("Segoe UI", 9.0!)
         Me.TstOffsetX.Name = "TstOffsetX"
         Me.TstOffsetX.Size = New System.Drawing.Size(50, 39)
+        Me.TstOffsetX.ToolTipText = "Offset X. Press [Enter] to confirm new values."
         '
         'TstOffsetY
         '
         Me.TstOffsetY.Font = New System.Drawing.Font("Segoe UI", 9.0!)
         Me.TstOffsetY.Name = "TstOffsetY"
         Me.TstOffsetY.Size = New System.Drawing.Size(50, 39)
+        Me.TstOffsetY.ToolTipText = "Offset Y. Press [Enter] to confirm new values."
         '
         'Tss_Frame_4
         '
         Me.Tss_Frame_4.Name = "Tss_Frame_4"
         Me.Tss_Frame_4.Size = New System.Drawing.Size(6, 39)
-        '
-        'TsbFrame_IndexDecrease
-        '
-        Me.TsbFrame_IndexDecrease.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
-        Me.TsbFrame_IndexDecrease.Image = CType(resources.GetObject("TsbFrame_IndexDecrease.Image"), System.Drawing.Image)
-        Me.TsbFrame_IndexDecrease.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None
-        Me.TsbFrame_IndexDecrease.ImageTransparentColor = System.Drawing.Color.Magenta
-        Me.TsbFrame_IndexDecrease.Name = "TsbFrame_IndexDecrease"
-        Me.TsbFrame_IndexDecrease.Size = New System.Drawing.Size(36, 36)
-        Me.TsbFrame_IndexDecrease.Text = "Show frame earlier in animation"
-        '
-        'TsbFrame_IndexIncrease
-        '
-        Me.TsbFrame_IndexIncrease.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
-        Me.TsbFrame_IndexIncrease.Image = CType(resources.GetObject("TsbFrame_IndexIncrease.Image"), System.Drawing.Image)
-        Me.TsbFrame_IndexIncrease.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None
-        Me.TsbFrame_IndexIncrease.ImageTransparentColor = System.Drawing.Color.Magenta
-        Me.TsbFrame_IndexIncrease.Name = "TsbFrame_IndexIncrease"
-        Me.TsbFrame_IndexIncrease.Size = New System.Drawing.Size(36, 36)
-        Me.TsbFrame_IndexIncrease.Text = "Show frame later in animation"
-        '
-        'TslFrame_Index
-        '
-        Me.TslFrame_Index.Name = "TslFrame_Index"
-        Me.TslFrame_Index.Size = New System.Drawing.Size(65, 36)
-        Me.TslFrame_Index.Text = "Index: 0 / 0"
         '
         'TsTools
         '
@@ -793,27 +807,27 @@ Partial Class FrmMain
         Me.Name = "FrmMain"
         Me.Text = "ZT Studio"
         Me.WindowState = System.Windows.Forms.FormWindowState.Maximized
-        CType(Me.PicBox, System.ComponentModel.ISupportInitialize).EndInit
+        CType(Me.PicBox, System.ComponentModel.ISupportInitialize).EndInit()
         Me.TsZT1Graphic.ResumeLayout(False)
-        Me.TsZT1Graphic.PerformLayout
+        Me.TsZT1Graphic.PerformLayout()
         Me.Panel1.ResumeLayout(False)
-        Me.Panel1.PerformLayout
+        Me.Panel1.PerformLayout()
         Me.GBAnimation.ResumeLayout(False)
-        Me.GBAnimation.PerformLayout
-        CType(Me.TbFrames, System.ComponentModel.ISupportInitialize).EndInit
+        Me.GBAnimation.PerformLayout()
+        CType(Me.TbFrames, System.ComponentModel.ISupportInitialize).EndInit()
         Me.GBOtherViews.ResumeLayout(False)
         Me.GBColors.ResumeLayout(False)
-        Me.GBColors.PerformLayout
+        Me.GBColors.PerformLayout()
         Me.SsBar.ResumeLayout(False)
-        Me.SsBar.PerformLayout
-        CType(Me.DgvPaletteMain, System.ComponentModel.ISupportInitialize).EndInit
+        Me.SsBar.PerformLayout()
+        CType(Me.DgvPaletteMain, System.ComponentModel.ISupportInitialize).EndInit()
         Me.TsFrame.ResumeLayout(False)
-        Me.TsFrame.PerformLayout
+        Me.TsFrame.PerformLayout()
         Me.TsTools.ResumeLayout(False)
-        Me.TsTools.PerformLayout
+        Me.TsTools.PerformLayout()
         Me.MnuPal.ResumeLayout(False)
         Me.ResumeLayout(False)
-        Me.PerformLayout
+        Me.PerformLayout()
 
     End Sub
     Friend WithEvents PicBox As System.Windows.Forms.PictureBox
@@ -896,4 +910,5 @@ Partial Class FrmMain
     Friend WithEvents TslFrame_FP As ToolStripLabel
     Friend WithEvents TsbFrame_fpX As ToolStripComboBox
     Friend WithEvents TsbFrame_fpY As ToolStripComboBox
+    Friend WithEvents TsbFrame_OffsetAll As ToolStripButton
 End Class

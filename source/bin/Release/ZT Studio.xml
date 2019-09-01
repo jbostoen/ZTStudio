@@ -22,6 +22,26 @@ ZT Studio
   resource lookups using this strongly typed resource class.
 </summary>
 </member>
+<member name="P:ZTStudio.My.Resources.Resources.icon_file">
+<summary>
+  Looks up a localized resource of type System.Drawing.Bitmap.
+</summary>
+</member>
+<member name="P:ZTStudio.My.Resources.Resources.icon_folder">
+<summary>
+  Looks up a localized resource of type System.Drawing.Bitmap.
+</summary>
+</member>
+<member name="P:ZTStudio.My.Resources.Resources.icon_ZT1_Graphic">
+<summary>
+  Looks up a localized resource of type System.Drawing.Bitmap.
+</summary>
+</member>
+<member name="P:ZTStudio.My.Resources.Resources.icon_ZT1_palette">
+<summary>
+  Looks up a localized resource of type System.Drawing.Bitmap.
+</summary>
+</member>
 <member name="T:ZTStudio.ClsAniFile">
  <summary>
  ClsAniFile manages information about the .ani file.
@@ -386,6 +406,17 @@ ZT Studio
  <param name="StrInput">String - bytes/hex values to reverse</param>
  <returns></returns>
 </member>
+<member name="T:ZTStudio.MdlBatch">
+ <summary>
+ Groups batch operations
+ </summary>
+</member>
+<member name="M:ZTStudio.MdlBatch.WriteAniFile(System.String)">
+ <summary>
+ Attempts to create .ani file for each animation. Experimental.
+ </summary>
+ <param name="StrPath">Path to folder</param>
+</member>
 <member name="T:ZTStudio.MdlBitMap">
  <summary>
  Contains functions related to bitmap operations
@@ -443,6 +474,38 @@ ZT Studio
  <param name="bmInput">Bitmap image</param>
  <returns>Rectangle</returns>
 </member>
+<member name="T:ZTStudio.MdlColorPalette">
+ <summary>
+ Some methods related to color palettes
+ </summary>
+</member>
+<member name="M:ZTStudio.MdlColorPalette.ReplaceColor(System.Int32)">
+ <summary>
+ Replaces color (specified by index) in the main color palette
+ </summary>
+ <param name="IntIndex">Index of color to be replaced</param>
+</member>
+<member name="M:ZTStudio.MdlColorPalette.MoveColor(System.Int32,System.Int32)">
+ <summary>
+ Moves color in the palette to a new position.
+ This has repercussions: order of colors changes, hex values (color index) need to be updated!
+ </summary>
+ <param name="IntIndexNow">Current index</param>
+ <param name="IntIndexDest">Wanted index</param>
+</member>
+<member name="M:ZTStudio.MdlColorPalette.AddColor(System.Int32)">
+ <summary>
+ Adds a new color entry at the specified index. 
+ The color hasn't been picked yet, so by default it's transparent.
+ </summary>
+ <param name="IntIndexNow">Index</param>
+</member>
+<member name="M:ZTStudio.MdlColorPalette.LoadPalette(System.String)">
+ <summary>
+ Opens a color palette, displays it as a separate window.
+ </summary>
+ <param name="StrFileName">Source filename of the ZT1 color palette (.pal)</param>
+</member>
 <member name="T:ZTStudio.MdlConfig">
  <summary>
  Contains methods related to ZT Studio's configuration
@@ -466,33 +529,6 @@ ZT Studio
  </summary>
  <param name="sFileName">Filename</param>
 </member>
-<member name="M:ZTStudio.MdlTasks.Pal_ReplaceColor(System.Int32)">
- <summary>
- Replaces color (specified by index) in the main color palette
- </summary>
- <param name="intIndex">Index of color to be replaced</param>
-</member>
-<member name="M:ZTStudio.MdlTasks.Pal_MoveColor(System.Int32,System.Int32)">
- <summary>
- Moves color in the palette to a new position.
- This has repercussions: order of colors changes, hex values need to be updated!
- </summary>
- <param name="intIndexNow">Current index</param>
- <param name="intIndexDest">Wanted index</param>
-</member>
-<member name="M:ZTStudio.MdlTasks.Pal_AddColor(System.Int32)">
- <summary>
- Adds a new color entry at the specified index. 
- The color hasn't been picked yet, so by default it's transparent.
- </summary>
- <param name="intIndexNow">Index</param>
-</member>
-<member name="M:ZTStudio.MdlTasks.Pal_Open(System.String)">
- <summary>
- Opens a color palette, displays it as a separate window.
- </summary>
- <param name="strFileName">Filename of the ZT1 color palette (.pal)</param>
-</member>
 <member name="M:ZTStudio.MdlTasks.Batch_RotationFix_Folder_ZT1(System.String,System.Drawing.Point,System.Windows.Forms.ProgressBar)">
  <summary>
  Batch rotation fixes all animations in a selected folder.
@@ -503,12 +539,6 @@ ZT Studio
  <param name="StrPath">Path to folder</param>
  <param name="PntOffset">The offsets to apply</param>
  <param name="ObjProgressBar">The bar which will indicate progress</param>
-</member>
-<member name="M:ZTStudio.MdlTasks.Batch_Generate_Ani(System.String)">
- <summary>
- Attempts to create .ani file for each animation. Experimental.
- </summary>
- <param name="strPath">Path to folder</param>
 </member>
 <member name="T:ZTStudio.ClsPalette">
  <summary>
@@ -677,6 +707,46 @@ ZT Studio
  </para>
  </summary>
 </member>
+<member name="T:ZTStudio.FrmMain">
+ <summary>
+ Main user interface
+ </summary>
+</member>
+<member name="M:ZTStudio.FrmMain.Form1_Load(System.Object,System.EventArgs)">
+ <summary>
+ Sets some info on loading
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">MouseEventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmMain.PicBox_MouseMove(System.Object,System.Windows.Forms.MouseEventArgs)">
+ <summary>
+ Handles mouse movements. Shows
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">MouseEventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmMain.PicBox_MouseWheel(System.Object,System.Windows.Forms.MouseEventArgs)">
+ <summary>
+ This is unfinished, but it was meant to be a zoom function.
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">MouseEventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmMain.TTbFrames_ValueChanged(System.Object,System.EventArgs)">
+ <summary>
+ Handles value changes in frame slider control.
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmMain.TmrAnimation_Tick(System.Object,System.EventArgs)">
+ <summary>
+ If "play animation" has been checked, the timer updates the preview. Timer interval = graphic animation speed.
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
 <member name="M:ZTStudio.FrmMain.MnuPal_ImportGimpPalette_Click(System.Object,System.EventArgs)">
  <summary>
  Button triggers an action to import a GIMP Color Palette
@@ -684,24 +754,91 @@ ZT Studio
  <param name="sender"></param>
  <param name="e"></param>
 </member>
+<member name="M:ZTStudio.FrmMain.TstZT1_AnimSpeed_Leave(System.Object,System.EventArgs)">
+ <summary>
+ Handles Leave event of toolstrip textbox animation speed. Resets animation speed textbox.
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmMain.TstOffsetX_KeyDown(System.Object,System.Windows.Forms.KeyEventArgs)">
+ <summary>
+ Handles confirmation of new offset (on Enter)
+ </summary>
+ <param name="sender"></param>
+ <param name="e"></param>
+</member>
+<member name="M:ZTStudio.FrmMain.TstOffsetY_KeyDown(System.Object,System.Windows.Forms.KeyEventArgs)">
+ <summary>
+ Handles confirmation of new offset (on Enter)
+ </summary>
+ <param name="sender"></param>
+ <param name="e"></param>
+</member>
+<member name="M:ZTStudio.FrmMain.TstOffsetX_Leave(System.Object,System.EventArgs)">
+ <summary>
+ Handles Leave event of toolstrip textbox offset X. Resets offset value in textbox.
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmMain.TstOffsetY_Leave(System.Object,System.EventArgs)">
+ <summary>
+ Handles Leave event of toolstrip textbox offset Y. Resets offset
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmMain.TstZT1_AnimSpeed_KeyDown(System.Object,System.Windows.Forms.KeyEventArgs)">
+ <summary>
+ Handles confirmation of new animation speed (on Enter)
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">KeyEventArgs</param>
+</member>
 <member name="T:ZTStudio.MdlZTStudioUI">
  <summary>
  Methods related to ZT Studio UI
  </summary>
 </member>
-<member name="M:ZTStudio.MdlZTStudioUI.UpdateInfo(System.String)">
+<member name="M:ZTStudio.MdlZTStudioUI.LoadGraphic(System.String)">
  <summary>
- Updates info in main screen.
- Updates shown info such as animation speed, number of frames, current frame, ...
- Enables/disables certain controls (for example, button to render background frame)
+ Load graphic and show
+ </summary>
+ <param name="StrFileName">Source file name</param>
+</member>
+<member name="M:ZTStudio.MdlZTStudioUI.UpdateGUI(System.String)">
+ <summary>
+ <para>
+     Updates info in main window.
+ </para>
+ <para>
+     Updates shown info such as animation speed, number of frames, current frame, ...
+ </para>
+ <para>
+     Enables/disables certain controls (for example, button to render background frame)
+ </para>
  </summary>
  <param name="StrReason"></param>
 </member>
-<member name="M:ZTStudio.MdlZTStudioUI.UpdatePreview(System.Int32)">
+<member name="M:ZTStudio.MdlZTStudioUI.UpdateExplorerPane">
+ <summary>
+ Updates explorer pane
+ </summary>
+</member>
+<member name="M:ZTStudio.MdlZTStudioUI.UpdateFrameInfo(System.String)">
+ <summary>
+ Updates shown info such as number of frames, current frame, ...
+ </summary>
+ <param name="StrReason"></param>
+</member>
+<member name="M:ZTStudio.MdlZTStudioUI.UpdatePreview(System.Boolean,System.Boolean,System.Int32)">
  <summary>
  Updates all sort of info.
  </summary>
- <param name="intIndexFrameNumber">Optional frame index number. Defaults to value of slider in main window.</param>
+ <param name="BlnUpdateFrameInfo">Boolean. Update frame info.</param>
+ <param name="BlnUpdateUI">Boolean. Update UI (buttons), animation speed, file list...).</param>
+ <param name="IntIndexFrameNumber">Optional frame index number. Defaults to value of slider in main window.</param>
 </member>
 </members>
 </doc>

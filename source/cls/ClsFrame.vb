@@ -198,8 +198,6 @@ Public Class ClsFrame
         On Error GoTo dBug
 
 
-        MdlZTStudio.Trace(Me.GetType().FullName, "GetCoreImageBitmap", "Fetching core image bitmap...")
-
 11:
         If IsNothing(Me.CoreImageBitmap) = True Then
 12:
@@ -238,12 +236,17 @@ dBug:
         Dim IntWidth As Integer
         Dim IntHeight As Integer
 
+2:
+
         ' Retrieve the pure bitmap
         Dim BmCoreImageBitMap = Me.GetCoreImageBitmap()
 
+3:
         If IsNothing(Me.GetCoreImageBitmap) = True Then
             Return Nothing
         End If
+
+4:
 
         ' Determine how big the canvas will be.
         ' Continue reading below, as only the width/height are determined first, but only multiplied by 2 later!
@@ -276,6 +279,8 @@ dBug:
                 IntWidth = Math.Max(Math.Abs(Me.OffsetX), Math.Abs(Me.OffsetX - BmCoreImageBitMap.Width)) + 1
                 IntHeight = Math.Max(Math.Abs(Me.OffsetY), Math.Abs(Me.OffsetY - BmCoreImageBitMap.Height)) - 1
         End Select
+
+5:
 
         ' Draw this retrieved bitmap on a transparent canvas
         Dim BmOutput As New Bitmap(IntWidth * 2, IntHeight * 2) ' Creating the output canvas

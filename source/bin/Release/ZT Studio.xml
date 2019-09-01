@@ -684,6 +684,28 @@ ZT Studio
  <param name="StrMethod">Method</param>
  <param name="StrMessage">Message</param>
 </member>
+<member name="M:ZTStudio.MdlTests.GetHashesOfFilesInFolder(System.String,System.String)">
+ <summary>
+ Recursively processes all files in a folder and writes the hash files out to a .INI file
+ </summary>
+ <param name="StrPath">Source Folder</param>
+ <param name="StrDestinationFileName">Destination file name</param>
+</member>
+<member name="M:ZTStudio.MdlTests.GenerateHash(System.String,System.String)">
+ <summary>
+ Function to obtain the desired hash of a file
+ </summary>
+ <param name="StrHashType">Hash type</param>
+ <param name="StrFileName">Source file name</param>
+ <returns></returns>
+</member>
+<member name="M:ZTStudio.MdlTests.PrintByteArray(System.Byte[])">
+ <summary>
+ Traverse the array of bytes and converting each byte in hexadecimal
+ </summary>
+ <param name="array">Byte array</param>
+ <returns></returns>
+</member>
 <member name="T:ZTStudio.FrmBatchConversion">
  <summary>
  Form which briefly explains to users how to prepare files and what to expect from a batch graphic conversion.

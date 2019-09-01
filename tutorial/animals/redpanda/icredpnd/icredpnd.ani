@@ -1,9 +1,0 @@
-[animation]
-dir0 = animals
-dir1 = redpanda
-dir2 = icredpnd
-animation = N
-x0 = -22
-y0 = -16
-x1 = 22
-y1 = 16

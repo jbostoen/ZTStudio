@@ -20,7 +20,7 @@ Module MdlZTStudio
 
 20:
 
-        ' We will configure our parameters.
+        ' Configure parameters.
         Dim StrArgAction = vbNullString
         Dim StrArgActionValue = vbNullString
         Dim argK As String
@@ -31,7 +31,7 @@ Module MdlZTStudio
             Debug.Print(arg)
 
             ' Arguments are specified as:  ZTStudio.exe /arg1:<val1> /argN:<valN>
-            ' We are expecting valid arguments.
+            ' Expecting valid arguments.
             argK = Strings.Split(arg.ToLower & ":", ":")(0)
             argV = Strings.Replace(arg, argK & ":", "", , , CompareMethod.Text)
 
@@ -92,6 +92,12 @@ Module MdlZTStudio
                     StrArgAction = "convertfile"
                     StrArgActionValue = argV
 
+
+                Case "/action.listhashes"
+                    StrArgAction = "listhashes"
+                    StrArgActionValue = argV
+
+
             End Select
             ' Parameters?
 
@@ -136,6 +142,10 @@ Module MdlZTStudio
                 End
 
 
+            Case "listhashes"
+                MdlTests.GetHashesOfFilesInFolder(StrArgActionValue, StrArgActionValue & "\hashes.cfg")
+                End
+
             Case Else
                 ' Default.
                 ' Just load.
@@ -145,15 +155,7 @@ Module MdlZTStudio
         Exit Sub
 
 dBug:
-
-        If MsgBox("It seems an invalid value for a command line argument was specified (" & argK & ")." & vbCrLf &
-            "Please read the proper documentation and specify values properly." & vbCrLf &
-            vbCrLf &
-            "Example:" & vbCrLf &
-            "ZTStudio.exe /convertFolder:path-to-folder /ZTAF:1" & vbCrLf & vbCrLf &
-            "Details: error in ClsTasks::ZTStudio_StartUp() at line " & Erl() & vbCrLf & Err.Number & " - " & Err.Description, vbOKOnly + vbCritical, "Invalid value for command line argument") = vbOK Then
-            End
-        End If
+        MdlZTStudio.UnexpectedError("MdlZTStudio", "StartUp", Information.Err)
 
 
     End Sub

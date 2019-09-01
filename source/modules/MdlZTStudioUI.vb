@@ -192,7 +192,11 @@ Module MdlZTStudioUI
 
             ' Get top directory string
             Dim ObjNode As New TreeNode
-            Dim StrDirectoryName As String = StackDirectories.Pop
+            Dim StrDirectoryName As String = StackDirectories.Pop()
+
+
+            Debug.Print(StrDirectoryName)
+
 
             If StrDirectoryName <> Cfg_path_Root Then
 
@@ -215,7 +219,7 @@ Module MdlZTStudioUI
 
             ' Loop through all subdirectories and add them to the stack.
             Dim StrSubDirectoryName As String
-            For Each StrSubDirectoryName In Directory.GetDirectories(StrDirectoryName)
+            For Each StrSubDirectoryName In Directory.GetDirectories(StrDirectoryName).Reverse()
 
                 ' Subdirectories will be processed later. But as for current dir...
                 StackDirectories.Push(StrSubDirectoryName)
@@ -242,6 +246,7 @@ Module MdlZTStudioUI
 
                 ObjNode.Nodes.Add(ObjFileNode)
             Next
+
 
             ' Make sure everything is finished. Needed?
             Application.DoEvents()

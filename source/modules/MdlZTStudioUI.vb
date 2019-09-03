@@ -362,4 +362,26 @@ Module MdlZTStudioUI
 
     End Sub
 
+
+    ''' <summary>
+    ''' Shows tooltip when hovering above element
+    ''' </summary>
+    ''' <param name="ObjControl">Control which owns this tooltip</param>
+    ''' <param name="StrTitle">Title</param>
+    ''' <param name="StrMessage">Message</param>
+    Sub ShowToolTip(ObjControl As Control, StrTitle As String, StrMessage As String)
+
+        Dim buttonToolTip As ToolTip = FrmSettings.ToolTip1
+        buttonToolTip.ToolTipTitle = StrTitle
+        buttonToolTip.SetToolTip(ObjControl, StrMessage)
+        buttonToolTip.UseFading = False
+        buttonToolTip.UseAnimation = False
+        buttonToolTip.IsBalloon = False
+        buttonToolTip.ShowAlways = True
+        buttonToolTip.AutoPopDelay = 5000
+        buttonToolTip.InitialDelay = 0
+        buttonToolTip.ReshowDelay = 500
+        buttonToolTip.IsBalloon = False
+    End Sub
+
 End Module

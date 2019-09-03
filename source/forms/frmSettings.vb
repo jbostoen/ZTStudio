@@ -256,4 +256,33 @@ Public Class FrmSettings
         Cfg_palette_import_png_force_add_colors = CByte(CInt(chkPalImportPNGForceAddAll.Checked) * -1)
 
     End Sub
+
+    Private Sub TxtRootFolder_TextChanged(sender As Object, e As EventArgs) Handles txtRootFolder.TextChanged
+
+    End Sub
+
+    Private Sub LblRootFolder_MouseHover(sender As Object, e As EventArgs) Handles LblRootFolder.MouseHover
+
+        MdlZTStudioUI.ShowToolTip(LblRootFolder, "Root folder", "This is the project folder. Common subfolders are 'animals', 'objects', ...")
+
+    End Sub
+
+    Private Sub LblRootFolder_Click(sender As Object, e As EventArgs) Handles LblRootFolder.Click
+
+    End Sub
+
+    Private Sub LblPalette8_Click(sender As Object, e As EventArgs) Handles lblPalette8.Click
+
+    End Sub
+
+    Private Sub lblPalette8_MouseHover(sender As Object, e As EventArgs) Handles lblPalette8.MouseHover
+
+        MdlZTStudioUI.ShowToolTip(LblRootFolder, "Folder with 8-color palettes", "The folder containing .pal-files which consist of 8 colors.")
+
+    End Sub
+    Private Sub lblPalette16_MouseHover(sender As Object, e As EventArgs) Handles lblPalette8.MouseHover
+
+        MdlZTStudioUI.ShowToolTip(LblRootFolder, "Folder with 16-color palettes", "The folder containing .pal-files which consist of 16 colors.")
+
+    End Sub
 End Class

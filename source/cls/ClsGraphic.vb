@@ -453,4 +453,37 @@ dBug:
         Me.ColorPalette.Parent = Me
 
     End Sub
+
+    ''' <summary>
+    ''' Experimental method. Writes info about graphic and each frame to a .nfo file (same name as graphic).
+    ''' To be used for re-importing (keeping correct offsets), perhaps discovering mystery bytes etc.
+    ''' </summary>
+    Public Sub WriteInfo()
+
+        Dim StrDestinationFileName As String = Me.FileName & ".nfo"
+        Dim IntFrameIndex As Integer = 0
+
+        IniWrite(StrDestinationFileName, "Graphic", "animationSpeed", Me.AnimationSpeed)
+        IniWrite(StrDestinationFileName, "Graphic", "frameCount", Me.Frames.Count)
+        IniWrite(StrDestinationFileName, "Graphic", "palFile", Me.ColorPalette.FileName)
+        IniWrite(StrDestinationFileName, "Graphic", "hasBackgroundFrame", Me.HasBackgroundFrame)
+
+        For Each ObjFrame In Me.Frames
+            ' todo: check if this works with identical frames? Still proper index?
+            Dim StrSection As String = "Frame" & IntFrameIndex.ToString()
+
+            IniWrite(StrDestinationFileName, StrSection, "offsetX", ObjFrame.OffsetX)
+            IniWrite(StrDestinationFileName, StrSection, "offsetY", ObjFrame.OffsetY)
+            IniWrite(StrDestinationFileName, StrSection, "height", ObjFrame.CoreImageBitmap.Height)
+            IniWrite(StrDestinationFileName, StrSection, "width", ObjFrame.CoreImageBitmap.Width)
+            IniWrite(StrDestinationFileName, StrSection, "numBytes", ObjFrame.CoreImageHex.Count)
+            IniWrite(StrDestinationFileName, StrSection, "mysteryBytes", String.Join(" ", ObjFrame.MysteryHEX))
+
+            IntFrameIndex += 1
+
+        Next
+
+
+    End Sub
+
 End Class

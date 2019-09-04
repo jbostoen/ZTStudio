@@ -171,7 +171,6 @@ Public Class ClsFrame
     ''' This sub is used to inform the object that an important property has changed.
     ''' By calling this sub, the LastUpdated property will be set.
     ''' </summary>
-    ''' <param name="strSource">Which property has changed</param>
     Private Sub NotifyPropertyChanged(ByVal StrSource As String)
 
         Me.LastUpdated = Me.Parent.LastUpdated '   Now.ToString("yyyyMMddHHmmss")

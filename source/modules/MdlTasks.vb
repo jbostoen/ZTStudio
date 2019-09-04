@@ -320,7 +320,7 @@ dBg:
                 If Cfg_convert_sharedPalette = 1 And blnSingleConversion = False Then
 
                     ' 20170513: changed behavior for even more flexibility. 
-                    ' We try to get a shared palette:
+                    ' ZT Studio tries to detect a color palette:
                     ' - in the same folder as the graphic (animals/redpanda/m/walk - walk.pal) - in case this animation uses colors not used anywhere else.
                     ' - in the folder one level up (animals/redpanda/m - m.pal) - in case a palette is shared for the gender (male, female, young)
                     ' - in the folder two levels up (animals/redpanda - redpanda.pal) - in case a palette is shared for (most of) the animal
@@ -329,7 +329,6 @@ dBg:
                     Dim SPath0 As String
                     Dim SPath1 As String
                     Dim SPath2 As String
-
 
                     SPath0 = Path.GetDirectoryName(StrPathDir)
                     SPath1 = Path.GetDirectoryName(SPath0)
@@ -340,13 +339,14 @@ dBg:
                     SPath2 = SPath2 & "\" & Path.GetFileName(SPath2)
 
                     ' N should not be the only view (icon etc) in this folder.
-                    ' If it does seem to be the only view, we should NOT fall back on higher level.
+                    ' If it does seem to be the only view, this method should NOT fall back on higher level.
                     ' An icon is NOT animated and often contains very different colors (plaque, icon in menu). 
                     ' An exception to this rule could be the list icon, but it's not worth making an exception for it.
 
-                    If Directory.GetFiles(StrPathDir, graphicName & "*.png").Length <>
-                            Directory.GetFiles(StrPathDir, "*.png").Length Then
-
+                    ' 20190904, remark, no code change:
+                    ' Is this meant as a way to check if this is the sole PNG graphic in this folder? 
+                    ' Why not length = 1?
+                    If Directory.GetFiles(StrPathDir, graphicName & "*.png").Length <> Directory.GetFiles(StrPathDir, "*.png").Length Then
 
                         ' 20170502 Optimized by Hendrix.
                         Dim InPaths() As String = {SPath0, SPath1, SPath2}
@@ -357,6 +357,7 @@ dBg:
 
                             ' Figure out if there is a preferred palette (perhaps already prepared by the user) to be used.
                             ' Two ideas come to mind here:
+                            '
                             ' (1) Palette at lower level folder gets priority over palette in higher level folder
                             '     For example: an animal might use one palette for nearly all animations, except one
                             '   

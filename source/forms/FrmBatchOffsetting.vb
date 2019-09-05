@@ -11,6 +11,11 @@
 ''' </summary>
 Public Class FrmBatchOffsetFix
 
+    ''' <summary>
+    ''' Initializes window
+    ''' </summary>
+    ''' <param name="sender">Object</param>
+    ''' <param name="e">EventArgs</param>
     Private Sub FrmBatchRotationFix_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
         ' Assume default folder
@@ -18,18 +23,25 @@ Public Class FrmBatchOffsetFix
             TxtFolder.Text = Cfg_path_Root
         End If
 
-
-
     End Sub
 
+    ''' <summary>
+    ''' On click, run batch rotation fixing
+    ''' </summary>
+    ''' <param name="sender">Object</param>
+    ''' <param name="e">EventArgs</param>
     Private Sub BtnBatchOffsetting_Click(sender As Object, e As EventArgs) Handles BtnBatchOffsettFix.Click
 
         ' Runs procedure
         MdlTasks.Batch_RotationFix_Folder_ZT1(TxtFolder.Text, New Point(numLeftRight.Value, numUpDown.Value), PBProgress)
 
-
     End Sub
 
+    ''' <summary>
+    ''' On click, show folder selection dialog
+    ''' </summary>
+    ''' <param name="sender">Object</param>
+    ''' <param name="e">EventArgs</param>
     Private Sub BtnSelect_Click(sender As Object, e As EventArgs) Handles btnSelect.Click
 
         ' Allows user to select a different folder

@@ -10,11 +10,9 @@ ZT Studio is a graphical tool for viewing/manipulating the original Zoo Tycoon g
 * read all possible ZT1 Graphic formats (there are a few variations, we'll document them, we're the first and only tool for ZT1 to support them all at this point!).
 * write ZT1 Graphics (traditional formats only for now)
 * import from or export to a folder of .PNG-images (frame per frame OR **in batch**!) ( ZT1 Graphic <=> .PNG files )
-* preview all graphics, including a way to preview variations (eg. when you can choose the color of the roof in the game) and adding a background graphic (eg to see the Orang Utan's play animation combined with the actual toy)
-* rotation fixing (move graphic up, down, left, right) - immediately applied to all frames in a view or entire animation, unless explicitly set otherwise
-* modify (add, delete, change) color palettes
-* reorder color palettes (necessary to create color customizable items, e.g. roof) or change a color in the palette
-* import/export color palettes to .PNG, export color palettes to .GPL (GIMP Palette)
+* preview all graphics, including a way to preview color customization (for example when you can choose the color of the roof in the game) and adding a background graphic (for example to see the Orang Utan's play animation combined with the actual toy)
+* offsetting ("rotation fixing") (move graphic up, down, left, right) - immediately applied to all frames in a view or entire animation, unless explicitly set otherwise
+* modify color palettes: add, delete, change, reorder colors, import/export to .PNG or .GPL (GIMP Palette)
 * share color palettes among graphics (in batch conversions) 
 * create .ani file
 

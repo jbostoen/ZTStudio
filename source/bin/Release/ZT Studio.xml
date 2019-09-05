@@ -209,7 +209,6 @@ ZT Studio
  This sub is used to inform the object that an important property has changed.
  By calling this sub, the LastUpdated property will be set.
  </summary>
- <param name="strSource">Which property has changed</param>
 </member>
 <member name="M:ZTStudio.ClsFrame.GetCoreImageBitmap">
  <summary>
@@ -361,6 +360,12 @@ ZT Studio
 <member name="M:ZTStudio.ClsGraphic.#ctor">
  <summary>
  On initializing, set parent of color palette
+ </summary>
+</member>
+<member name="M:ZTStudio.ClsGraphic.WriteInfo">
+ <summary>
+ Experimental method. Writes info about graphic and each frame to a .nfo file (same name as graphic).
+ To be used for re-importing (keeping correct offsets), perhaps discovering mystery bytes etc.
  </summary>
 </member>
 <member name="T:ZTStudio.List`1">
@@ -729,6 +734,27 @@ ZT Studio
  </para>
  </summary>
 </member>
+<member name="M:ZTStudio.FrmBatchOffsetFix.FrmBatchRotationFix_Load(System.Object,System.EventArgs)">
+ <summary>
+ Initializes window
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmBatchOffsetFix.BtnBatchOffsetting_Click(System.Object,System.EventArgs)">
+ <summary>
+ On click, run batch rotation fixing
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmBatchOffsetFix.BtnSelect_Click(System.Object,System.EventArgs)">
+ <summary>
+ On click, show folder selection dialog
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
 <member name="T:ZTStudio.FrmMain">
  <summary>
  Main user interface
@@ -818,6 +844,277 @@ ZT Studio
  <param name="sender">Object</param>
  <param name="e">KeyEventArgs</param>
 </member>
+<member name="M:ZTStudio.FrmMain.TsbFrame_OffsetAll_Click(System.Object,System.EventArgs)">
+ <summary>
+ Toggle option to enforce offsets on each frame in the loaded ZT1 Graphic
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmMain.TVExplorer_DoubleClick(System.Object,System.EventArgs)">
+ <summary>
+ Doubleclick on Explorer Pane may open .pal file
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="T:ZTStudio.FrmPal">
+ <summary>
+ Color Palette window
+ </summary>
+</member>
+<member name="M:ZTStudio.FrmPal.BtnUseInMainPal_Click(System.Object,System.EventArgs)">
+ <summary>
+ Handles color replacement in main color palette (in main window). 
+ This allows to quickly preview how graphics would look like too, with a different color pattern.
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="T:ZTStudio.FrmSettings">
+ <summary>
+ Form which allows the user to change some settings.
+ </summary>
+</member>
+<member name="M:ZTStudio.FrmSettings.FrmSettings_FormClosing(System.Object,System.Windows.Forms.FormClosingEventArgs)">
+ <summary>
+ On unload form, save config.
+ </summary>
+ <param name="sender">ObjectObjectObjectObjectObject</param>
+ <param name="e">FormClosingEventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmSettings.FrmSettings_Load(System.Object,System.EventArgs)">
+ <summary>
+ On load form, initialize some controls to display the current configuration.
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmSettings.BtnBrowse_Click(System.Object,System.EventArgs)">
+ <summary>
+ Button click triggers select folder dialog, so user can select root project folder
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmSettings.BtnBrowsePal8_Click(System.Object,System.EventArgs)">
+ <summary>
+ Button click triggers select folder dialog, so user can select a folder which contains color palettes with 8 (+1) colors in them.
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmSettings.BtnBrowsePal16_Click(System.Object,System.EventArgs)">
+ <summary>
+ Button click triggers select folder dialog, so user can select a folder which contains color palettes with 16 (+1) colors in them.
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmSettings.CboPNGExport_Crop_SelectedValueChanged(System.Object,System.EventArgs)">
+ <summary>
+ Handles selection of different PNG Export method
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmSettings.ChkRenderFrame_RenderExtraFrame_CheckedChanged(System.Object,System.EventArgs)">
+ <summary>
+ Handles toggling of whether there's an extra frame to be rendered as background
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmSettings.ChkExportPNG_BGGraphic_CheckedChanged(System.Object,System.EventArgs)">
+ <summary>
+ Handles toggling of whether there's a ZT1 Graphic selected which needs to be rendered as background
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmSettings.NumExportPNG_StartIndex_ValueChanged(System.Object,System.EventArgs)">
+ <summary>
+ Handles changes of the index numbering for PNG files
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmSettings.ChkConvert_AddZTAFBytes_CheckedChanged(System.Object,System.EventArgs)">
+ <summary>
+ Handles toggling of whether ZTAF bytes should always be added to the beginning of a ZT1 Graphic file on creation
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmSettings.ChkConvert_DeleteOriginal_CheckedChanged(System.Object,System.EventArgs)">
+ <summary>
+ Handles toggling of whether the source files should automatically be deleted after a conversion from one format to another (ZT1 - PNG)
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmSettings.ChkConvert_Overwrite_CheckedChanged(System.Object,System.EventArgs)">
+ <summary>
+ Handles toggling of whether files can automatically be overwritten
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmSettings.ChkExportZT1_Ani_CheckedChanged(System.Object,System.EventArgs)">
+ <summary>
+ Handles toggling of whether an .ani-file should be generated
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmSettings.ChkConvert_SharedColorPalette_CheckedChanged(System.Object,System.EventArgs)">
+ <summary>
+ Handles toggling of whether ZT Studio should try to use a shared color palette, if present, when creating ZT1 Graphics
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmSettings.TxtConvert_fileNameDelimiter_TextChanged(System.Object,System.EventArgs)">
+ <summary>
+ Handles changes in the file name delimiter
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmSettings.ChkPNGTransparentBG_CheckedChanged(System.Object,System.EventArgs)">
+ <summary>
+ Handles toggling of whether PNGs should be exported with a transparent background or the chosen background color in ZT Studio
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmSettings.NumFrameAnimSpeed_ValueChanged(System.Object,System.EventArgs)">
+ <summary>
+ Handles changes in the default animation speed for new graphics
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmSettings.ChkPalImportPNGForceAddAll_CheckedChanged(System.Object,System.EventArgs)">
+ <summary>
+ Handles toggling of whether colors should always be added (rather than only when unique) on importing PNG files
+ </summary>
+ <remarks>After recolors, the palette may contain identical colors. However, hex indexes in the frame may not be updated yet!</remarks>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmSettings.LblRootFolder_MouseHover(System.Object,System.EventArgs)">
+ <summary>
+ Show help on mousehover
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmSettings.LblColorPal8_MouseHover(System.Object,System.EventArgs)">
+ <summary>
+ Show help on mousehover
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmSettings.LblColorPal16_MouseHover(System.Object,System.EventArgs)">
+ <summary>
+ Show help on mousehover
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmSettings.ChkRenderFrame_BGGraphic_MouseHover(System.Object,System.EventArgs)">
+ <summary>
+ Show help on mousehover
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmSettings.ChkRenderFrame_RenderExtraFrame_MouseHover(System.Object,System.EventArgs)">
+ <summary>
+ Show help on mousehover
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmSettings.ChkConvert_DeleteOriginal_MouseHover(System.Object,System.EventArgs)">
+ <summary>
+ Show help on mousehover
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmSettings.LblConvert_fileNameDelimiter_MouseHover(System.Object,System.EventArgs)">
+ <summary>
+ Show help on mousehover
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmSettings.ChkConvert_SharedColorPalette_MouseHover(System.Object,System.EventArgs)">
+ <summary>
+ Show help on mousehover
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmSettings.ChkConvert_Overwrite_MouseHover(System.Object,System.EventArgs)">
+ <summary>
+ Show help on mousehover
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmSettings.ChkExportZT1_AddZTAFBytes_MouseHover(System.Object,System.EventArgs)">
+ <summary>
+ Show help on mousehover
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmSettings.ChkExportZT1_Ani_MouseHover(System.Object,System.EventArgs)">
+ <summary>
+ Show help on mousehover
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmSettings.ChkPNGTransparentBG_MouseHover(System.Object,System.EventArgs)">
+ <summary>
+ Show help on mousehover
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmSettings.LblHowToExportPNG_MouseHover(System.Object,System.EventArgs)">
+ <summary>
+ Show help on mousehover
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param> 
+</member>
+<member name="M:ZTStudio.FrmSettings.ChkPalImportPNGForceAddAll_MouseHover(System.Object,System.EventArgs)">
+ <summary>
+ Show help on mousehover
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmSettings.LblExportPNG_Index_MouseHover(System.Object,System.EventArgs)">
+ <summary>
+ Show help on mousehover
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmSettings.LblDefaultAnimSpeed_MouseHover(System.Object,System.EventArgs)">
+ <summary>
+ Show help on mousehover
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
 <member name="T:ZTStudio.MdlZTStudioUI">
  <summary>
  Methods related to ZT Studio UI
@@ -861,6 +1158,13 @@ ZT Studio
  <param name="BlnUpdateFrameInfo">Boolean. Update frame info.</param>
  <param name="BlnUpdateUI">Boolean. Update UI (buttons), animation speed, file list...).</param>
  <param name="IntIndexFrameNumber">Optional frame index number. Defaults to value of slider in main window.</param>
+</member>
+<member name="M:ZTStudio.MdlZTStudioUI.ShowToolTip(System.Windows.Forms.Control,System.String)">
+ <summary>
+ Shows tooltip when hovering above element
+ </summary>
+ <param name="ObjControl">Control which owns this tooltip</param>
+ <param name="StrMessage">Message</param>
 </member>
 </members>
 </doc>

@@ -13,8 +13,11 @@ Version 1.0
 
 * New
   * Explorer pane, showing contents of root folder
+    * Selecting ZT1 Graphic: loads instantly
+	* Double clicking a .pal file: loads palette in separate window
   * Method to list hashes of each file in a folder (meant for debugging when changing code, see if output is still the same)
     * Command line: /action.listhashes:foldername
+  * Autoloads last used graphic
       
 * Improvements
   * Added right click option to Save as button. 

@@ -24,7 +24,7 @@ Partial Class FrmSettings
     Private Sub InitializeComponent()
         Me.dlgBrowseFolder = New System.Windows.Forms.FolderBrowserDialog()
         Me.tpPalette = New System.Windows.Forms.TabPage()
-        Me.chkPalImportPNGForceAddAll = New System.Windows.Forms.CheckBox()
+        Me.ChkPalImportPNGForceAddAll = New System.Windows.Forms.CheckBox()
         Me.tpWritePNG = New System.Windows.Forms.TabPage()
         Me.ChkPNGTransparentBG = New System.Windows.Forms.CheckBox()
         Me.LblHowToExportPNG = New System.Windows.Forms.Label()
@@ -35,9 +35,9 @@ Partial Class FrmSettings
         Me.tpRenderingFrames = New System.Windows.Forms.TabPage()
         Me.Label3 = New System.Windows.Forms.Label()
         Me.numFrameDefaultAnimSpeed = New System.Windows.Forms.NumericUpDown()
-        Me.lblDefaultAnimSpeed = New System.Windows.Forms.Label()
-        Me.chkRenderFrame_BGGraphic = New System.Windows.Forms.CheckBox()
-        Me.chkRenderFrame_RenderExtraFrame = New System.Windows.Forms.CheckBox()
+        Me.LblDefaultAnimSpeed = New System.Windows.Forms.Label()
+        Me.ChkRenderFrame_BGGraphic = New System.Windows.Forms.CheckBox()
+        Me.ChkRenderFrame_RenderExtraFrame = New System.Windows.Forms.CheckBox()
         Me.tpConversions = New System.Windows.Forms.TabPage()
         Me.TxtConvert_fileNameDelimiter = New System.Windows.Forms.TextBox()
         Me.LblConvert_fileNameDelimiter = New System.Windows.Forms.Label()
@@ -47,9 +47,9 @@ Partial Class FrmSettings
         Me.LblExportPNG_Index = New System.Windows.Forms.Label()
         Me.NumConvert_PNGStartIndex = New System.Windows.Forms.NumericUpDown()
         Me.tpFolders = New System.Windows.Forms.TabPage()
-        Me.btnBrowsePal16 = New System.Windows.Forms.Button()
-        Me.btnBrowsePal8 = New System.Windows.Forms.Button()
-        Me.btnBrowse = New System.Windows.Forms.Button()
+        Me.BtnBrowsePal16 = New System.Windows.Forms.Button()
+        Me.BtnBrowsePal8 = New System.Windows.Forms.Button()
+        Me.BtnBrowse = New System.Windows.Forms.Button()
         Me.txtFolderPal16 = New System.Windows.Forms.TextBox()
         Me.txtFolderPal8 = New System.Windows.Forms.TextBox()
         Me.txtRootFolder = New System.Windows.Forms.TextBox()
@@ -72,7 +72,7 @@ Partial Class FrmSettings
         '
         'tpPalette
         '
-        Me.tpPalette.Controls.Add(Me.chkPalImportPNGForceAddAll)
+        Me.tpPalette.Controls.Add(Me.ChkPalImportPNGForceAddAll)
         Me.tpPalette.Location = New System.Drawing.Point(4, 22)
         Me.tpPalette.Name = "tpPalette"
         Me.tpPalette.Size = New System.Drawing.Size(710, 248)
@@ -80,15 +80,15 @@ Partial Class FrmSettings
         Me.tpPalette.Text = "Color palettes"
         Me.tpPalette.UseVisualStyleBackColor = True
         '
-        'chkPalImportPNGForceAddAll
+        'ChkPalImportPNGForceAddAll
         '
-        Me.chkPalImportPNGForceAddAll.AutoSize = True
-        Me.chkPalImportPNGForceAddAll.Location = New System.Drawing.Point(24, 15)
-        Me.chkPalImportPNGForceAddAll.Name = "chkPalImportPNGForceAddAll"
-        Me.chkPalImportPNGForceAddAll.Size = New System.Drawing.Size(344, 17)
-        Me.chkPalImportPNGForceAddAll.TabIndex = 23
-        Me.chkPalImportPNGForceAddAll.Text = "Add all colors (even identical) when importing from .PNG files "
-        Me.chkPalImportPNGForceAddAll.UseVisualStyleBackColor = True
+        Me.ChkPalImportPNGForceAddAll.AutoSize = True
+        Me.ChkPalImportPNGForceAddAll.Location = New System.Drawing.Point(24, 15)
+        Me.ChkPalImportPNGForceAddAll.Name = "ChkPalImportPNGForceAddAll"
+        Me.ChkPalImportPNGForceAddAll.Size = New System.Drawing.Size(344, 17)
+        Me.ChkPalImportPNGForceAddAll.TabIndex = 23
+        Me.ChkPalImportPNGForceAddAll.Text = "Add all colors (even identical) when importing from .PNG files "
+        Me.ChkPalImportPNGForceAddAll.UseVisualStyleBackColor = True
         '
         'tpWritePNG
         '
@@ -170,9 +170,9 @@ Partial Class FrmSettings
         '
         Me.tpRenderingFrames.Controls.Add(Me.Label3)
         Me.tpRenderingFrames.Controls.Add(Me.numFrameDefaultAnimSpeed)
-        Me.tpRenderingFrames.Controls.Add(Me.lblDefaultAnimSpeed)
-        Me.tpRenderingFrames.Controls.Add(Me.chkRenderFrame_BGGraphic)
-        Me.tpRenderingFrames.Controls.Add(Me.chkRenderFrame_RenderExtraFrame)
+        Me.tpRenderingFrames.Controls.Add(Me.LblDefaultAnimSpeed)
+        Me.tpRenderingFrames.Controls.Add(Me.ChkRenderFrame_BGGraphic)
+        Me.tpRenderingFrames.Controls.Add(Me.ChkRenderFrame_RenderExtraFrame)
         Me.tpRenderingFrames.Location = New System.Drawing.Point(4, 22)
         Me.tpRenderingFrames.Name = "tpRenderingFrames"
         Me.tpRenderingFrames.Padding = New System.Windows.Forms.Padding(3)
@@ -199,38 +199,38 @@ Partial Class FrmSettings
         Me.numFrameDefaultAnimSpeed.Size = New System.Drawing.Size(120, 22)
         Me.numFrameDefaultAnimSpeed.TabIndex = 36
         '
-        'lblDefaultAnimSpeed
+        'LblDefaultAnimSpeed
         '
-        Me.lblDefaultAnimSpeed.AutoSize = True
-        Me.lblDefaultAnimSpeed.Location = New System.Drawing.Point(21, 137)
-        Me.lblDefaultAnimSpeed.Name = "lblDefaultAnimSpeed"
-        Me.lblDefaultAnimSpeed.Size = New System.Drawing.Size(137, 13)
-        Me.lblDefaultAnimSpeed.TabIndex = 34
-        Me.lblDefaultAnimSpeed.Text = "Default animation speed:"
+        Me.LblDefaultAnimSpeed.AutoSize = True
+        Me.LblDefaultAnimSpeed.Location = New System.Drawing.Point(21, 137)
+        Me.LblDefaultAnimSpeed.Name = "LblDefaultAnimSpeed"
+        Me.LblDefaultAnimSpeed.Size = New System.Drawing.Size(137, 13)
+        Me.LblDefaultAnimSpeed.TabIndex = 34
+        Me.LblDefaultAnimSpeed.Text = "Default animation speed:"
         '
-        'chkRenderFrame_BGGraphic
+        'ChkRenderFrame_BGGraphic
         '
-        Me.chkRenderFrame_BGGraphic.AutoSize = True
-        Me.chkRenderFrame_BGGraphic.Checked = True
-        Me.chkRenderFrame_BGGraphic.CheckState = System.Windows.Forms.CheckState.Checked
-        Me.chkRenderFrame_BGGraphic.Location = New System.Drawing.Point(24, 79)
-        Me.chkRenderFrame_BGGraphic.Name = "chkRenderFrame_BGGraphic"
-        Me.chkRenderFrame_BGGraphic.Size = New System.Drawing.Size(220, 17)
-        Me.chkRenderFrame_BGGraphic.TabIndex = 17
-        Me.chkRenderFrame_BGGraphic.Text = "Use selected background ZT1 Graphic"
-        Me.chkRenderFrame_BGGraphic.UseVisualStyleBackColor = True
+        Me.ChkRenderFrame_BGGraphic.AutoSize = True
+        Me.ChkRenderFrame_BGGraphic.Checked = True
+        Me.ChkRenderFrame_BGGraphic.CheckState = System.Windows.Forms.CheckState.Checked
+        Me.ChkRenderFrame_BGGraphic.Location = New System.Drawing.Point(24, 79)
+        Me.ChkRenderFrame_BGGraphic.Name = "ChkRenderFrame_BGGraphic"
+        Me.ChkRenderFrame_BGGraphic.Size = New System.Drawing.Size(234, 17)
+        Me.ChkRenderFrame_BGGraphic.TabIndex = 17
+        Me.ChkRenderFrame_BGGraphic.Text = "Use selected ZT1 Graphic as background"
+        Me.ChkRenderFrame_BGGraphic.UseVisualStyleBackColor = True
         '
-        'chkRenderFrame_RenderExtraFrame
+        'ChkRenderFrame_RenderExtraFrame
         '
-        Me.chkRenderFrame_RenderExtraFrame.AutoSize = True
-        Me.chkRenderFrame_RenderExtraFrame.Checked = True
-        Me.chkRenderFrame_RenderExtraFrame.CheckState = System.Windows.Forms.CheckState.Checked
-        Me.chkRenderFrame_RenderExtraFrame.Location = New System.Drawing.Point(24, 56)
-        Me.chkRenderFrame_RenderExtraFrame.Name = "chkRenderFrame_RenderExtraFrame"
-        Me.chkRenderFrame_RenderExtraFrame.Size = New System.Drawing.Size(187, 17)
-        Me.chkRenderFrame_RenderExtraFrame.TabIndex = 16
-        Me.chkRenderFrame_RenderExtraFrame.Text = "Use last frame as a background"
-        Me.chkRenderFrame_RenderExtraFrame.UseVisualStyleBackColor = True
+        Me.ChkRenderFrame_RenderExtraFrame.AutoSize = True
+        Me.ChkRenderFrame_RenderExtraFrame.Checked = True
+        Me.ChkRenderFrame_RenderExtraFrame.CheckState = System.Windows.Forms.CheckState.Checked
+        Me.ChkRenderFrame_RenderExtraFrame.Location = New System.Drawing.Point(24, 56)
+        Me.ChkRenderFrame_RenderExtraFrame.Name = "ChkRenderFrame_RenderExtraFrame"
+        Me.ChkRenderFrame_RenderExtraFrame.Size = New System.Drawing.Size(187, 17)
+        Me.ChkRenderFrame_RenderExtraFrame.TabIndex = 16
+        Me.ChkRenderFrame_RenderExtraFrame.Text = "Use last frame as a background"
+        Me.ChkRenderFrame_RenderExtraFrame.UseVisualStyleBackColor = True
         '
         'tpConversions
         '
@@ -322,9 +322,9 @@ Partial Class FrmSettings
         '
         'tpFolders
         '
-        Me.tpFolders.Controls.Add(Me.btnBrowsePal16)
-        Me.tpFolders.Controls.Add(Me.btnBrowsePal8)
-        Me.tpFolders.Controls.Add(Me.btnBrowse)
+        Me.tpFolders.Controls.Add(Me.BtnBrowsePal16)
+        Me.tpFolders.Controls.Add(Me.BtnBrowsePal8)
+        Me.tpFolders.Controls.Add(Me.BtnBrowse)
         Me.tpFolders.Controls.Add(Me.txtFolderPal16)
         Me.tpFolders.Controls.Add(Me.txtFolderPal8)
         Me.tpFolders.Controls.Add(Me.txtRootFolder)
@@ -339,34 +339,34 @@ Partial Class FrmSettings
         Me.tpFolders.Text = "Folders"
         Me.tpFolders.UseVisualStyleBackColor = True
         '
-        'btnBrowsePal16
+        'BtnBrowsePal16
         '
-        Me.btnBrowsePal16.Location = New System.Drawing.Point(539, 152)
-        Me.btnBrowsePal16.Name = "btnBrowsePal16"
-        Me.btnBrowsePal16.Size = New System.Drawing.Size(78, 20)
-        Me.btnBrowsePal16.TabIndex = 31
-        Me.btnBrowsePal16.Text = "Browse..."
-        Me.btnBrowsePal16.UseVisualStyleBackColor = True
-        Me.btnBrowsePal16.Visible = False
+        Me.BtnBrowsePal16.Location = New System.Drawing.Point(539, 152)
+        Me.BtnBrowsePal16.Name = "BtnBrowsePal16"
+        Me.BtnBrowsePal16.Size = New System.Drawing.Size(78, 20)
+        Me.BtnBrowsePal16.TabIndex = 31
+        Me.BtnBrowsePal16.Text = "Browse..."
+        Me.BtnBrowsePal16.UseVisualStyleBackColor = True
+        Me.BtnBrowsePal16.Visible = False
         '
-        'btnBrowsePal8
+        'BtnBrowsePal8
         '
-        Me.btnBrowsePal8.Location = New System.Drawing.Point(541, 104)
-        Me.btnBrowsePal8.Name = "btnBrowsePal8"
-        Me.btnBrowsePal8.Size = New System.Drawing.Size(78, 20)
-        Me.btnBrowsePal8.TabIndex = 30
-        Me.btnBrowsePal8.Text = "Browse..."
-        Me.btnBrowsePal8.UseVisualStyleBackColor = True
-        Me.btnBrowsePal8.Visible = False
+        Me.BtnBrowsePal8.Location = New System.Drawing.Point(541, 104)
+        Me.BtnBrowsePal8.Name = "BtnBrowsePal8"
+        Me.BtnBrowsePal8.Size = New System.Drawing.Size(78, 20)
+        Me.BtnBrowsePal8.TabIndex = 30
+        Me.BtnBrowsePal8.Text = "Browse..."
+        Me.BtnBrowsePal8.UseVisualStyleBackColor = True
+        Me.BtnBrowsePal8.Visible = False
         '
-        'btnBrowse
+        'BtnBrowse
         '
-        Me.btnBrowse.Location = New System.Drawing.Point(539, 30)
-        Me.btnBrowse.Name = "btnBrowse"
-        Me.btnBrowse.Size = New System.Drawing.Size(78, 20)
-        Me.btnBrowse.TabIndex = 29
-        Me.btnBrowse.Text = "Browse..."
-        Me.btnBrowse.UseVisualStyleBackColor = True
+        Me.BtnBrowse.Location = New System.Drawing.Point(539, 30)
+        Me.BtnBrowse.Name = "BtnBrowse"
+        Me.BtnBrowse.Size = New System.Drawing.Size(78, 20)
+        Me.BtnBrowse.TabIndex = 29
+        Me.BtnBrowse.Text = "Browse..."
+        Me.BtnBrowse.UseVisualStyleBackColor = True
         '
         'txtFolderPal16
         '
@@ -496,7 +496,7 @@ Partial Class FrmSettings
     End Sub
     Friend WithEvents dlgBrowseFolder As System.Windows.Forms.FolderBrowserDialog
     Friend WithEvents tpPalette As TabPage
-    Friend WithEvents chkPalImportPNGForceAddAll As CheckBox
+    Friend WithEvents ChkPalImportPNGForceAddAll As CheckBox
     Friend WithEvents tpWritePNG As TabPage
     Friend WithEvents ChkPNGTransparentBG As CheckBox
     Friend WithEvents LblHowToExportPNG As Label
@@ -506,9 +506,9 @@ Partial Class FrmSettings
     Friend WithEvents ChkExportZT1_AddZTAFBytes As CheckBox
     Friend WithEvents tpRenderingFrames As TabPage
     Friend WithEvents numFrameDefaultAnimSpeed As NumericUpDown
-    Friend WithEvents lblDefaultAnimSpeed As Label
-    Friend WithEvents chkRenderFrame_BGGraphic As CheckBox
-    Friend WithEvents chkRenderFrame_RenderExtraFrame As CheckBox
+    Friend WithEvents LblDefaultAnimSpeed As Label
+    Friend WithEvents ChkRenderFrame_BGGraphic As CheckBox
+    Friend WithEvents ChkRenderFrame_RenderExtraFrame As CheckBox
     Friend WithEvents tpConversions As TabPage
     Friend WithEvents TxtConvert_fileNameDelimiter As TextBox
     Friend WithEvents LblConvert_fileNameDelimiter As Label
@@ -518,9 +518,9 @@ Partial Class FrmSettings
     Friend WithEvents LblExportPNG_Index As Label
     Friend WithEvents NumConvert_PNGStartIndex As NumericUpDown
     Friend WithEvents tpFolders As TabPage
-    Friend WithEvents btnBrowsePal16 As Button
-    Friend WithEvents btnBrowsePal8 As Button
-    Friend WithEvents btnBrowse As Button
+    Friend WithEvents BtnBrowsePal16 As Button
+    Friend WithEvents BtnBrowsePal8 As Button
+    Friend WithEvents BtnBrowse As Button
     Friend WithEvents txtFolderPal16 As TextBox
     Friend WithEvents txtFolderPal8 As TextBox
     Friend WithEvents txtRootFolder As TextBox

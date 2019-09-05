@@ -113,14 +113,16 @@ Module MdlColorPalette
 
                 ' Read the .pal file
                 CpPallete.ReadPal(StrFileName)
-                CpPallete.FillPaletteGrid(frmColPal.dgvPal)
+                CpPallete.FillPaletteGrid(FrmColPal.DgvPal)
 
-                frmColPal.ssFileName.Text = Path.GetFileName(StrFileName)
+                FrmColPal.SsFileName.Text = Path.GetFileName(StrFileName)
 
                 FrmColPal.Show()
 
             End If
 
+        Else
+            MdlZTStudio.ExpectedError("MdlColorPalette", "LoadPalette", "Could not find '" & StrFileName & "'")
         End If
 
     End Sub

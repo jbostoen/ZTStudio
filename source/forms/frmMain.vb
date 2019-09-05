@@ -1157,20 +1157,31 @@ dBug:
 
     End Sub
 
-    Private Sub TstZT1_AnimSpeed_Click(sender As Object, e As EventArgs) Handles TstZT1_AnimSpeed.Click
-
-    End Sub
-
-    Private Sub TstOffsetX_Click(sender As Object, e As EventArgs) Handles TstOffsetX.Click
-
-    End Sub
-
+    ''' <summary>
+    ''' Toggle option to enforce offsets on each frame in the loaded ZT1 Graphic
+    ''' </summary>
+    ''' <param name="sender">Object</param>
+    ''' <param name="e">EventArgs</param>
     Private Sub TsbFrame_OffsetAll_Click(sender As Object, e As EventArgs) Handles TsbFrame_OffsetAll.Click
 
         TsbFrame_OffsetAll.Checked = Not TsbFrame_OffsetAll.Checked ' Change toggle
         Cfg_editor_rotFix_individualFrame = CByte(TsbFrame_OffsetAll.Checked * -1)
         MdlConfig.Write()
 
+
+    End Sub
+
+    ''' <summary>
+    ''' Doubleclick on Explorer Pane may open .pal file
+    ''' </summary>
+    ''' <param name="sender">Object</param>
+    ''' <param name="e">EventArgs</param>
+    Private Sub TVExplorer_DoubleClick(sender As Object, e As EventArgs) Handles TVExplorer.DoubleClick
+
+        ' Open .pal file
+        If Regex.IsMatch(TVExplorer.SelectedNode.Name, ".*\.pal$", RegexOptions.IgnoreCase) = True Then
+            MdlColorPalette.LoadPalette(Cfg_path_Root & "\" & TVExplorer.SelectedNode.Name)
+        End If
 
     End Sub
 End Class

@@ -64,11 +64,6 @@ Module MdlZTStudioUI
                 ' Keep filename
                 FrmMain.ssFileName.Text = Now.ToString("yyyy-MM-dd HH:mm:ss") & ": opened " & StrFileName
 
-
-                ' Add time indication
-                FrmMain.LblAnimTime.Text = ((EditorGraphic.Frames.Count - EditorGraphic.HasBackgroundFrame) * EditorGraphic.AnimationSpeed) & " ms "
-                FrmMain.LblFrames.Text = (EditorGraphic.Frames.Count - EditorGraphic.HasBackgroundFrame) & " frames. "
-
                 ' Show default palette
                 EditorGraphic.ColorPalette.FillPaletteGrid(FrmMain.DgvPaletteMain)
 
@@ -151,9 +146,13 @@ Module MdlZTStudioUI
         End With
 
 
+105:
 
-101:
-        ' 20190825 - new feature: show other ZT1 views in the same folder
+        ' Add time indication
+        FrmMain.LblAnimTime.Text = ((EditorGraphic.Frames.Count - EditorGraphic.HasBackgroundFrame) * EditorGraphic.AnimationSpeed) & " ms "
+        FrmMain.LblFrames.Text = (EditorGraphic.Frames.Count - EditorGraphic.HasBackgroundFrame) & " frames. "
+
+205:
         If EditorGraphic.FileName <> vbNullString Then
 
             ' Get path
@@ -162,6 +161,7 @@ Module MdlZTStudioUI
             MdlZTStudio.Trace("MdlZTStudioUI", "UpdateInfo", "Path of graphic is " & StrDirectoryName)
 
         End If
+
 
     End Sub
 
@@ -320,6 +320,9 @@ Module MdlZTStudioUI
 10:
         ' Can't update if there are no frames.
         If EditorGraphic.Frames.Count = 0 Then
+            ' Add time indication
+            FrmMain.LblAnimTime.Text = "0 ms"
+            FrmMain.LblFrames.Text = "0 frames."
             Exit Sub
         End If
 

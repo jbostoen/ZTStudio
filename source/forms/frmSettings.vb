@@ -42,8 +42,8 @@ Public Class FrmSettings
         txtFolderPal16.Text = Cfg_path_ColorPals16
 
         ' Export stuff (to PNG)
-        chkRenderFrame_BGGraphic.Checked = CBool(Cfg_export_PNG_RenderBGZT1)
-        chkRenderFrame_RenderExtraFrame.Checked = CBool(Cfg_export_PNG_RenderBGFrame)
+        ChkRenderFrame_BGGraphic.Checked = CBool(Cfg_export_PNG_RenderBGZT1)
+        ChkRenderFrame_RenderExtraFrame.Checked = CBool(Cfg_export_PNG_RenderBGFrame)
         CboPNGExport_Crop.SelectedIndex = Cfg_export_PNG_CanvasSize
 
         ' Export to ZT1
@@ -61,7 +61,7 @@ Public Class FrmSettings
         numFrameDefaultAnimSpeed.Value = Cfg_frame_defaultAnimSpeed
 
         ' Palette
-        chkPalImportPNGForceAddAll.Checked = (Cfg_palette_import_png_force_add_colors = 1)
+        ChkPalImportPNGForceAddAll.Checked = (Cfg_palette_import_png_force_add_colors = 1)
 
 
     End Sub
@@ -71,7 +71,7 @@ Public Class FrmSettings
     ''' </summary>
     ''' <param name="sender">Object</param>
     ''' <param name="e">EventArgs</param>
-    Private Sub BtnBrowse_Click(sender As Object, e As EventArgs) Handles btnBrowse.Click
+    Private Sub BtnBrowse_Click(sender As Object, e As EventArgs) Handles BtnBrowse.Click
 
         With dlgBrowseFolder
 
@@ -79,7 +79,9 @@ Public Class FrmSettings
 
             .ShowNewFolderButton = True
             .Description = "Select the root folder which contains a ZT1-folder structure where graphics will come." & vbCrLf &
-                "You are looking for something like this:" & vbCrLf & "[root folder]\objects\bamboo\idle\SE"
+                "You are looking for something like this:" & vbCrLf & vbCrLf &
+                "[root folder]\animals\dolphin\..." & vbCrLf &
+                "[root folder]\objects\bamboo\..."
             .ShowDialog()
 
             txtRootFolder.Text = .SelectedPath
@@ -97,7 +99,7 @@ Public Class FrmSettings
     ''' </summary>
     ''' <param name="sender">Object</param>
     ''' <param name="e">EventArgs</param>
-    Private Sub BtnBrowsePal8_Click(sender As Object, e As EventArgs) Handles btnBrowsePal8.Click
+    Private Sub BtnBrowsePal8_Click(sender As Object, e As EventArgs) Handles BtnBrowsePal8.Click
 
         With dlgBrowseFolder
 
@@ -121,7 +123,7 @@ Public Class FrmSettings
     ''' </summary>
     ''' <param name="sender">Object</param>
     ''' <param name="e">EventArgs</param>
-    Private Sub BtnBrowsePal16_Click(sender As Object, e As EventArgs) Handles btnBrowsePal16.Click
+    Private Sub BtnBrowsePal16_Click(sender As Object, e As EventArgs) Handles BtnBrowsePal16.Click
 
         With dlgBrowseFolder
 
@@ -163,12 +165,16 @@ Public Class FrmSettings
     ''' </summary>
     ''' <param name="sender">Object</param>
     ''' <param name="e">EventArgs</param>
-    Private Sub ChkRenderFrame_RenderExtraFrame_CheckedChanged(sender As Object, e As EventArgs) Handles chkRenderFrame_RenderExtraFrame.CheckedChanged
+    Private Sub ChkRenderFrame_RenderExtraFrame_CheckedChanged(sender As Object, e As EventArgs) Handles ChkRenderFrame_RenderExtraFrame.CheckedChanged
 
-        If chkRenderFrame_RenderExtraFrame.IsHandleCreated = False Then
+        If ChkRenderFrame_RenderExtraFrame.IsHandleCreated = False Then
             Exit Sub
         End If
-        Cfg_export_PNG_RenderBGFrame = CByte(chkRenderFrame_RenderExtraFrame.Checked * -1)
+
+        Cfg_export_PNG_RenderBGFrame = CByte(ChkRenderFrame_RenderExtraFrame.Checked * -1)
+
+        ' Update preview in main window instantly
+        MdlZTStudioUI.UpdatePreview(True, True)
 
 
     End Sub
@@ -178,12 +184,17 @@ Public Class FrmSettings
     ''' </summary>
     ''' <param name="sender">Object</param>
     ''' <param name="e">EventArgs</param>
-    Private Sub ChkExportPNG_BGGraphic_CheckedChanged(sender As Object, e As EventArgs) Handles chkRenderFrame_BGGraphic.CheckedChanged
+    Private Sub ChkExportPNG_BGGraphic_CheckedChanged(sender As Object, e As EventArgs) Handles ChkRenderFrame_BGGraphic.CheckedChanged
 
-        If chkRenderFrame_BGGraphic.IsHandleCreated = False Then
+        If ChkRenderFrame_BGGraphic.IsHandleCreated = False Then
             Exit Sub
         End If
-        Cfg_export_PNG_RenderBGZT1 = CByte(chkRenderFrame_BGGraphic.Checked * -1)
+
+        Cfg_export_PNG_RenderBGZT1 = CByte(ChkRenderFrame_BGGraphic.Checked * -1)
+
+        ' Update preview in main window instantly
+        MdlZTStudioUI.UpdatePreview(False, True)
+
 
     End Sub
 
@@ -322,12 +333,12 @@ Public Class FrmSettings
     ''' <remarks>After recolors, the palette may contain identical colors. However, hex indexes in the frame may not be updated yet!</remarks>
     ''' <param name="sender">Object</param>
     ''' <param name="e">EventArgs</param>
-    Private Sub ChkPalImportPNGForceAddAll_CheckedChanged(sender As Object, e As EventArgs) Handles chkPalImportPNGForceAddAll.CheckedChanged
+    Private Sub ChkPalImportPNGForceAddAll_CheckedChanged(sender As Object, e As EventArgs) Handles ChkPalImportPNGForceAddAll.CheckedChanged
 
-        If chkPalImportPNGForceAddAll.IsHandleCreated = False Then
+        If ChkPalImportPNGForceAddAll.IsHandleCreated = False Then
             Exit Sub
         End If
-        Cfg_palette_import_png_force_add_colors = CByte(CInt(chkPalImportPNGForceAddAll.Checked) * -1)
+        Cfg_palette_import_png_force_add_colors = CByte(CInt(ChkPalImportPNGForceAddAll.Checked) * -1)
 
     End Sub
 
@@ -369,9 +380,13 @@ Public Class FrmSettings
     ''' </summary>
     ''' <param name="sender">Object</param>
     ''' <param name="e">EventArgs</param>
-    Private Sub chkRenderFrame_BGGraphic_MouseHover(sender As Object, e As EventArgs) Handles chkRenderFrame_BGGraphic.MouseHover
+    Private Sub ChkRenderFrame_BGGraphic_MouseHover(sender As Object, e As EventArgs) Handles ChkRenderFrame_BGGraphic.MouseHover
 
-        MdlZTStudioUI.ShowToolTip(chkRenderFrame_BGGraphic, "Allows to see two graphics combined. User can load the orang utan's swinging animation and use the rope swing toy as background.")
+        MdlZTStudioUI.ShowToolTip(ChkRenderFrame_BGGraphic, "" &
+            "Allows to see two graphics combined. " & vbCrLf &
+            "User can load the Orang Utan's swinging animation and use the Rope Swing toy as background." & vbCrLf &
+            "Hint: using this technique, Blue Fang could use 2 color palettes = 2x 255 colors for this animation!"
+            )
     End Sub
 
     ''' <summary>
@@ -379,9 +394,12 @@ Public Class FrmSettings
     ''' </summary>
     ''' <param name="sender">Object</param>
     ''' <param name="e">EventArgs</param>
-    Private Sub chkRenderFrame_RenderExtraFrame_MouseHover(sender As Object, e As EventArgs) Handles chkRenderFrame_RenderExtraFrame.MouseHover
+    Private Sub ChkRenderFrame_RenderExtraFrame_MouseHover(sender As Object, e As EventArgs) Handles ChkRenderFrame_RenderExtraFrame.MouseHover
 
-        MdlZTStudioUI.ShowToolTip(chkRenderFrame_RenderExtraFrame, "Some graphics (usually ZTAF-files) use a background frame. Examples: Restaurant, Waterfall, Arctic Gift Shop, ...")
+        MdlZTStudioUI.ShowToolTip(ChkRenderFrame_RenderExtraFrame, "Some graphics (usually ZTAF-files) use a background frame. " & vbCrLf &
+                                  "Example: most of the frames of the Restaurant only contain the smoke coming out of the chimney. " & vbCrLf &
+                                  "The last frame contains the non-changing part of the graphic (most of the building)." & vbCrLf &
+                                  "Other graphics using this technique are Waterfall, Arctic Gift Shop, ...")
 
     End Sub
 
@@ -403,8 +421,8 @@ Public Class FrmSettings
     ''' <param name="sender">Object</param>
     ''' <param name="e">EventArgs</param>
     Private Sub LblConvert_fileNameDelimiter_MouseHover(sender As Object, e As EventArgs) Handles LblConvert_fileNameDelimiter.MouseHover
-        MdlZTStudioUI.ShowToolTip(LblConvert_fileNameDelimiter, "The character used in filenames, between the name of the graphic and the frame." & vbCrLf &
-            "For example, _ is the delimiter in NE_0000.png ")
+        MdlZTStudioUI.ShowToolTip(LblConvert_fileNameDelimiter, "The character used in filenames, between the name of the graphic And the frame." & vbCrLf &
+            "For example, _ Is the delimiter in NE_0000.png ")
     End Sub
 
     ''' <summary>
@@ -412,7 +430,7 @@ Public Class FrmSettings
     ''' </summary>
     ''' <param name="sender">Object</param>
     ''' <param name="e">EventArgs</param>
-    Private Sub chkConvert_SharedColorPalette_MouseHover(sender As Object, e As EventArgs) Handles ChkConvert_SharedColorPalette.MouseHover
+    Private Sub ChkConvert_SharedColorPalette_MouseHover(sender As Object, e As EventArgs) Handles ChkConvert_SharedColorPalette.MouseHover
         MdlZTStudioUI.ShowToolTip(ChkConvert_SharedColorPalette, "Rather than creating a separate color palette (.pal) for each view of each animation," & vbCrLf &
             "this feature checks if there's a shared palette (.pal, .gpl or .png - in this order) provided by the user." & vbCrLf &
             "Palette names should be the same as the folder they're in: for example 'm.pal' in 'animals/redpanda/m'" & vbCrLf &
@@ -437,7 +455,7 @@ Public Class FrmSettings
     ''' <param name="e">EventArgs</param>
     Private Sub ChkExportZT1_AddZTAFBytes_MouseHover(sender As Object, e As EventArgs) Handles ChkExportZT1_AddZTAFBytes.MouseHover
         MdlZTStudioUI.ShowToolTip(ChkExportZT1_AddZTAFBytes, "Always adds 'ZTAF' bytes at beginning of graphic file." & vbCrLf &
-                                  "ZTAF-bytes are usually seen in front of graphics which contain a background frame." & vbCrLf &
+                                  "ZTAF-bytes are usually found at the beginning of graphic files which contain a background frame." & vbCrLf &
                                   "They don't seem to have any real function.")
 
     End Sub
@@ -448,7 +466,14 @@ Public Class FrmSettings
     ''' <param name="sender">Object</param>
     ''' <param name="e">EventArgs</param>
     Private Sub ChkExportZT1_Ani_MouseHover(sender As Object, e As EventArgs) Handles ChkExportZT1_Ani.MouseHover
-        MdlZTStudioUI.ShowToolTip(ChkExportZT1_Ani, "Tries to generate a .ani file containing information related to offsets.")
+        MdlZTStudioUI.ShowToolTip(ChkExportZT1_Ani, "Tries to generate a .ani file containing information related to offsets." & vbCrLf &
+                                  "It will do so based on the most commonly found filenames and try to determine the object type." & vbCrLf &
+                                  "It should work for most graphics, although there are exceptions (such as dustcloud)" & vbCrLf &
+                                  "Finds 'N': assumes icon" & vbCrLf &
+                                  "Finds 'NE', 'SE', 'SW', 'NW': assumes object (foliage, scenery, building, ...)" & vbCrLf &
+                                  "Finds 'N', 'NE', 'E', 'SE', 'S': assumes moving creature (animal, guest, staff, ...)" & vbCrLf &
+                                  "Finds '1' , '2', ... , '20': assumes path")
+
     End Sub
 
     ''' <summary>
@@ -482,8 +507,8 @@ Public Class FrmSettings
     ''' </summary>
     ''' <param name="sender">Object</param>
     ''' <param name="e">EventArgs</param>
-    Private Sub ChkPalImportPNGForceAddAll_MouseHover(sender As Object, e As EventArgs) Handles chkPalImportPNGForceAddAll.MouseHover
-        MdlZTStudioUI.ShowToolTip(chkPalImportPNGForceAddAll, "Sometimes there may be duplicates in the color palette." & vbCrLf &
+    Private Sub ChkPalImportPNGForceAddAll_MouseHover(sender As Object, e As EventArgs) Handles ChkPalImportPNGForceAddAll.MouseHover
+        MdlZTStudioUI.ShowToolTip(ChkPalImportPNGForceAddAll, "Sometimes there may be duplicates in the color palette." & vbCrLf &
             "Usually only unique colors are added." & vbCrLf &
             "In some cases (such as recolors), it is desired at some points to forcefully add them to the color palette.")
 
@@ -504,8 +529,8 @@ Public Class FrmSettings
     ''' </summary>
     ''' <param name="sender">Object</param>
     ''' <param name="e">EventArgs</param>
-    Private Sub lblDefaultAnimSpeed_MouseHover(sender As Object, e As EventArgs) Handles lblDefaultAnimSpeed.MouseHover
-        MdlZTStudioUI.ShowToolTip(lblDefaultAnimSpeed, "The animation speed (in milliseconds) determines the interval before the next frame is shown.")
+    Private Sub LblDefaultAnimSpeed_MouseHover(sender As Object, e As EventArgs) Handles LblDefaultAnimSpeed.MouseHover
+        MdlZTStudioUI.ShowToolTip(LblDefaultAnimSpeed, "The animation speed (in milliseconds) determines the interval before the next frame is shown.")
 
     End Sub
 End Class

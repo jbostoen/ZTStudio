@@ -15,6 +15,7 @@ ZT Studio is a graphical tool for viewing/manipulating the original Zoo Tycoon g
 * modify color palettes: add, delete, change, reorder colors, import/export to .PNG or .GPL (GIMP Palette)
 * share color palettes among graphics (in batch conversions) 
 * create .ani file
+* command line support (so it can be used in scripts!)
 
 
 ## To-do

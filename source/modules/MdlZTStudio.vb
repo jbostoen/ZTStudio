@@ -89,7 +89,7 @@ Module MdlZTStudio
                     StrArgAction = "convertfile.topng"
                     StrArgActionValue = argV
                 Case "/action.convertfile.tozt1"
-                    StrArgAction = "convertfile"
+                    StrArgAction = "convertfile.tozt1"
                     StrArgActionValue = argV
 
 

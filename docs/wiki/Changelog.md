@@ -16,7 +16,9 @@ Version 1.0
     * Selecting ZT1 Graphic: loads instantly
 	* Double clicking a .pal file: loads palette in separate window
   * Method to list hashes of each file in a folder (meant for debugging when changing code, see if output is still the same)
-    * Command line: /action.listhashes:foldername
+  * Command line changes:
+    * /action.listhashes:foldername - see change above
+	* /action.saveconfig:1 - enforces saving of settings passed to ZT Studio
   * Autoloads last used graphic
       
 * Improvements
@@ -29,6 +31,7 @@ Version 1.0
 
 * Fixes
   * Several minor UI issues have been resolved.
+  * Some command line arguments didn't work properly (missing part in action.convertFile.toZT1, typo in conversionOptions.filenameDelimiter)
 
 # Build 2017.06.03:
 

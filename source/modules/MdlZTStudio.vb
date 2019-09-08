@@ -97,6 +97,9 @@ Module MdlZTStudio
                     StrArgAction = "listhashes"
                     StrArgActionValue = argV
 
+                Case "/action.saveconfig"
+                    StrArgAction = "saveconfig"
+                    StrArgActionValue = argV
 
             End Select
             ' Parameters?
@@ -120,18 +123,21 @@ Module MdlZTStudio
                 ' Do conversion.
                 ' Then exit.
                 MdlTasks.Convert_file_ZT1_to_PNG(StrArgActionValue)
+                Application.DoEvents()
                 End
 
             Case "convertfile.tozt1"
                 ' Do conversion.
                 ' Then exit.
                 MdlTasks.Convert_file_PNG_to_ZT1(StrArgActionValue)
+                Application.DoEvents()
                 End
 
             Case "convertfolder.topng"
                 ' Do conversion.
                 ' Then exit.
                 MdlTasks.Convert_folder_ZT1_to_PNG(StrArgActionValue)
+                Application.DoEvents()
                 End
 
             Case "convertfolder.tozt1"
@@ -139,12 +145,21 @@ Module MdlZTStudio
                 ' Do conversion.
                 ' Then exit.
                 MdlTasks.Convert_folder_PNG_to_ZT1(StrArgActionValue)
+                Application.DoEvents()
                 End
 
 
             Case "listhashes"
                 MdlTests.GetHashesOfFilesInFolder(StrArgActionValue, StrArgActionValue & "\hashes.cfg")
+                Application.DoEvents()
                 End
+
+            Case "saveconfig"
+                If StrArgActionValue = 1 Then
+                    MdlConfig.Write()
+                    Application.DoEvents()
+                    End
+                End If
 
             Case Else
                 ' Default.

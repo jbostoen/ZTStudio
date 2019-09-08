@@ -8,6 +8,9 @@ E.g. 1.0.2015.0511 = version 1.0, last updated 11th of May 2015
 Version 1.0
 
 # Build 2019.xx.yy:
+
+
+# Build 2019.08.09:
 * Requirements
   * .NET FrameWork 4.7.2 (no longer supporting lower versions)
 

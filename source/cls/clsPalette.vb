@@ -65,11 +65,11 @@ Public Class ClsPalette
     Sub ReadPal(Optional StrFileName As String = vbNullString)
 
         If StrFileName <> vbNullString Then
-            Pal_FileName = StrFileName
+            Me.FileName = StrFileName
         End If
 
         ' File does not exist.
-        If File.Exists(Pal_FileName) = False Then
+        If File.Exists(Me.FileName) = False Then
             ' Fatal error if used for a graphic. Any further processing of graphics could lead to issues.
             MdlZTStudio.ExpectedError(Me.GetType().FullName, "ReadPal", "Could not find '" & Pal_FileName & "'", (IsNothing(Me.Parent) = False))
         End If

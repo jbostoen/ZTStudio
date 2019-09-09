@@ -37,7 +37,6 @@ Partial Class FrmSettings
         Me.numFrameDefaultAnimSpeed = New System.Windows.Forms.NumericUpDown()
         Me.LblDefaultAnimSpeed = New System.Windows.Forms.Label()
         Me.ChkRenderFrame_BGGraphic = New System.Windows.Forms.CheckBox()
-        Me.ChkRenderFrame_RenderExtraFrame = New System.Windows.Forms.CheckBox()
         Me.tpConversions = New System.Windows.Forms.TabPage()
         Me.TxtConvert_fileNameDelimiter = New System.Windows.Forms.TextBox()
         Me.LblConvert_fileNameDelimiter = New System.Windows.Forms.Label()
@@ -59,16 +58,16 @@ Partial Class FrmSettings
         Me.TCSettings = New System.Windows.Forms.TabControl()
         Me.LblHelp = New System.Windows.Forms.Label()
         Me.LblHelpTopic = New System.Windows.Forms.Label()
-        Me.tpPalette.SuspendLayout()
-        Me.tpWritePNG.SuspendLayout()
-        Me.tpWriteZT1.SuspendLayout()
-        Me.tpRenderingFrames.SuspendLayout()
-        CType(Me.numFrameDefaultAnimSpeed, System.ComponentModel.ISupportInitialize).BeginInit()
-        Me.tpConversions.SuspendLayout()
-        CType(Me.NumConvert_PNGStartIndex, System.ComponentModel.ISupportInitialize).BeginInit()
-        Me.tpFolders.SuspendLayout()
-        Me.TCSettings.SuspendLayout()
-        Me.SuspendLayout()
+        Me.tpPalette.SuspendLayout
+        Me.tpWritePNG.SuspendLayout
+        Me.tpWriteZT1.SuspendLayout
+        Me.tpRenderingFrames.SuspendLayout
+        CType(Me.numFrameDefaultAnimSpeed, System.ComponentModel.ISupportInitialize).BeginInit
+        Me.tpConversions.SuspendLayout
+        CType(Me.NumConvert_PNGStartIndex, System.ComponentModel.ISupportInitialize).BeginInit
+        Me.tpFolders.SuspendLayout
+        Me.TCSettings.SuspendLayout
+        Me.SuspendLayout
         '
         'tpPalette
         '
@@ -172,7 +171,6 @@ Partial Class FrmSettings
         Me.tpRenderingFrames.Controls.Add(Me.numFrameDefaultAnimSpeed)
         Me.tpRenderingFrames.Controls.Add(Me.LblDefaultAnimSpeed)
         Me.tpRenderingFrames.Controls.Add(Me.ChkRenderFrame_BGGraphic)
-        Me.tpRenderingFrames.Controls.Add(Me.ChkRenderFrame_RenderExtraFrame)
         Me.tpRenderingFrames.Location = New System.Drawing.Point(4, 22)
         Me.tpRenderingFrames.Name = "tpRenderingFrames"
         Me.tpRenderingFrames.Padding = New System.Windows.Forms.Padding(3)
@@ -219,18 +217,6 @@ Partial Class FrmSettings
         Me.ChkRenderFrame_BGGraphic.TabIndex = 17
         Me.ChkRenderFrame_BGGraphic.Text = "Use selected ZT1 Graphic as background"
         Me.ChkRenderFrame_BGGraphic.UseVisualStyleBackColor = True
-        '
-        'ChkRenderFrame_RenderExtraFrame
-        '
-        Me.ChkRenderFrame_RenderExtraFrame.AutoSize = True
-        Me.ChkRenderFrame_RenderExtraFrame.Checked = True
-        Me.ChkRenderFrame_RenderExtraFrame.CheckState = System.Windows.Forms.CheckState.Checked
-        Me.ChkRenderFrame_RenderExtraFrame.Location = New System.Drawing.Point(24, 56)
-        Me.ChkRenderFrame_RenderExtraFrame.Name = "ChkRenderFrame_RenderExtraFrame"
-        Me.ChkRenderFrame_RenderExtraFrame.Size = New System.Drawing.Size(187, 17)
-        Me.ChkRenderFrame_RenderExtraFrame.TabIndex = 16
-        Me.ChkRenderFrame_RenderExtraFrame.Text = "Use last frame as a background"
-        Me.ChkRenderFrame_RenderExtraFrame.UseVisualStyleBackColor = True
         '
         'tpConversions
         '
@@ -476,22 +462,22 @@ Partial Class FrmSettings
         Me.Name = "FrmSettings"
         Me.Text = "Settings"
         Me.tpPalette.ResumeLayout(False)
-        Me.tpPalette.PerformLayout()
+        Me.tpPalette.PerformLayout
         Me.tpWritePNG.ResumeLayout(False)
-        Me.tpWritePNG.PerformLayout()
+        Me.tpWritePNG.PerformLayout
         Me.tpWriteZT1.ResumeLayout(False)
-        Me.tpWriteZT1.PerformLayout()
+        Me.tpWriteZT1.PerformLayout
         Me.tpRenderingFrames.ResumeLayout(False)
-        Me.tpRenderingFrames.PerformLayout()
-        CType(Me.numFrameDefaultAnimSpeed, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.tpRenderingFrames.PerformLayout
+        CType(Me.numFrameDefaultAnimSpeed, System.ComponentModel.ISupportInitialize).EndInit
         Me.tpConversions.ResumeLayout(False)
-        Me.tpConversions.PerformLayout()
-        CType(Me.NumConvert_PNGStartIndex, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.tpConversions.PerformLayout
+        CType(Me.NumConvert_PNGStartIndex, System.ComponentModel.ISupportInitialize).EndInit
         Me.tpFolders.ResumeLayout(False)
-        Me.tpFolders.PerformLayout()
+        Me.tpFolders.PerformLayout
         Me.TCSettings.ResumeLayout(False)
         Me.ResumeLayout(False)
-        Me.PerformLayout()
+        Me.PerformLayout
 
     End Sub
     Friend WithEvents dlgBrowseFolder As System.Windows.Forms.FolderBrowserDialog
@@ -508,7 +494,6 @@ Partial Class FrmSettings
     Friend WithEvents numFrameDefaultAnimSpeed As NumericUpDown
     Friend WithEvents LblDefaultAnimSpeed As Label
     Friend WithEvents ChkRenderFrame_BGGraphic As CheckBox
-    Friend WithEvents ChkRenderFrame_RenderExtraFrame As CheckBox
     Friend WithEvents tpConversions As TabPage
     Friend WithEvents TxtConvert_fileNameDelimiter As TextBox
     Friend WithEvents LblConvert_fileNameDelimiter As Label

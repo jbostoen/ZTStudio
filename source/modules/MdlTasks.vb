@@ -96,10 +96,10 @@ dBug:
 
 5:
         ' Create a new instance of a ZT1 Graphic object.
-        Dim g As New ClsGraphic
+        Dim ObjGraphic As New ClsGraphic(Nothing)
 
         ' Read the ZT1 Graphic
-        g.Read(strFile)
+        ObjGraphic.Read(strFile)
 
         ' We will render this set of frames within this ZT1 Graphic.
         ' However, there are two main options:
@@ -109,12 +109,12 @@ dBug:
 
 10:
         ' Loop over each frame of the ZT1 Graphic
-        For Each ztFrame As ClsFrame In g.Frames
+        For Each ObjFrame As ClsFrame In ObjGraphic.Frames
 
 11:
 
             ' the bitmap's save function does not overwrite, nor warn 
-            System.IO.File.Delete(strFile & Cfg_convert_fileNameDelimiter & (g.Frames.IndexOf(ztFrame) + Cfg_convert_startIndex).ToString("0000") & ".png")
+            System.IO.File.Delete(strFile & Cfg_Convert_FileNameDelimiter & (ObjGraphic.Frames.IndexOf(ObjFrame) + Cfg_Convert_StartIndex).ToString("0000") & ".png")
 
             ' Save frames as PNG, just autonumber the frames.
             ' Exception: if we have an extra frame which should be rendered separately rather than as background. 
@@ -123,14 +123,14 @@ dBug:
             ' This might however make a nice addition :)
 
             ' RenderBGFrame: this is read as: 'render this as BG for every frame'
-            If Cfg_export_PNG_RenderBGFrame = 0 And g.HasBackgroundFrame = 1 Then
-                If g.Frames.IndexOf(ztFrame) <> (g.Frames.Count - 1) Then
-                    ztFrame.SavePNG(strFile & Cfg_convert_fileNameDelimiter & (g.Frames.IndexOf(ztFrame) + Cfg_convert_startIndex).ToString("0000") & ".png")
+            If Cfg_Export_PNG_RenderBGFrame = 0 And ObjGraphic.HasBackgroundFrame = 1 Then
+                If ObjGraphic.Frames.IndexOf(ObjFrame) <> (ObjGraphic.Frames.Count - 1) Then
+                    ObjFrame.SavePNG(strFile & Cfg_Convert_FileNameDelimiter & (ObjGraphic.Frames.IndexOf(ObjFrame) + Cfg_Convert_StartIndex).ToString("0000") & ".png")
                 Else
-                    ztFrame.SavePNG(strFile & Cfg_convert_fileNameDelimiter & "extra.png")
+                    ObjFrame.SavePNG(strFile & Cfg_Convert_FileNameDelimiter & "extra.png")
                 End If
             Else
-                ztFrame.SavePNG(strFile & Cfg_convert_fileNameDelimiter & (g.Frames.IndexOf(ztFrame) + Cfg_convert_startIndex).ToString("0000") & ".png")
+                ObjFrame.SavePNG(strFile & Cfg_Convert_FileNameDelimiter & (ObjGraphic.Frames.IndexOf(ObjFrame) + Cfg_Convert_StartIndex).ToString("0000") & ".png")
 
             End If
 
@@ -171,28 +171,28 @@ dBg:
 
 
         Dim paths As New List(Of String)
-        Dim g As New ClsGraphic
-        Dim ZtFrame As ClsFrame
-        Dim graphicName As String = System.IO.Path.GetFileName(strPath)
-        Dim frameGraphicPath As String = Strings.Left(strPath, strPath.Length - graphicName.Length)
+        Dim ObjGraphic As New ClsGraphic(Nothing)
+        Dim ObjFrame As ClsFrame
+        Dim StrGraphicName As String = System.IO.Path.GetFileName(strPath)
+        Dim StrFrameGraphicPath As String = Strings.Left(strPath, strPath.Length - StrGraphicName.Length)
 
 
-        Dim pngName As String
+        Dim StrPngName As String
 
 
 10:
-        Debug.Print("Convert PNG to ZT1: " & strPath & " (" & graphicName & ") " & Now.ToString("HH:mm:ss"))
+        Debug.Print("Convert PNG to ZT1: " & strPath & " (" & StrGraphicName & ") " & Now.ToString("HH:mm:ss"))
 
 
 
         ' Get the entire list of .PNG files matching the naming convention for this graphic.
         ' Anything else is irrelevant to process.
-        paths.AddRange(System.IO.Directory.GetFiles(frameGraphicPath, graphicName & Cfg_convert_fileNameDelimiter & "????.png"))
+        paths.AddRange(System.IO.Directory.GetFiles(StrFrameGraphicPath, StrGraphicName & Cfg_Convert_FileNameDelimiter & "????.png"))
 
         ' Fix for graphic_extra.PNG (legacy)
-        If File.Exists(frameGraphicPath & graphicName & Cfg_convert_fileNameDelimiter & "extra.png") = True Then
-            paths.Add(frameGraphicPath & graphicName & Cfg_convert_fileNameDelimiter & "extra.png")
-            g.HasBackgroundFrame = 1
+        If File.Exists(StrFrameGraphicPath & StrGraphicName & Cfg_Convert_FileNameDelimiter & "extra.png") = True Then
+            paths.Add(StrFrameGraphicPath & StrGraphicName & Cfg_Convert_FileNameDelimiter & "extra.png")
+            ObjGraphic.HasBackgroundFrame = 1
         End If
 
 20:
@@ -222,9 +222,9 @@ dBg:
             'pngName = Split(System.IO.Path.GetFileNameWithoutExtension(s), "_")(1)
             ' 20161007 - changed this to adapt to different filename delimiters, including an empty one.
             If Strings.Right(System.IO.Path.GetFileName(s).ToLower(), 9) = "extra.png" Then
-                pngName = "extra"
+                StrPngName = "extra"
             Else
-                pngName = Strings.Right(System.IO.Path.GetFileNameWithoutExtension(s), 4)
+                StrPngName = Strings.Right(System.IO.Path.GetFileNameWithoutExtension(s), 4)
             End If
 
 
@@ -232,13 +232,13 @@ dBg:
 110:
 
 
-            If pngName.Length <> 4 And pngName <> "extra" Then
+            If StrPngName.Length <> 4 And StrPngName <> "extra" Then
 
                 ' This could occur if for some reason we have for instance a ne.png file instead of the expected ne[delimiter]0000.png file
                 MsgBox("A .PNG-file has been detected which does not match the pattern expected." & vbCrLf &
                     "The files should be named something similar to: " & vbCrLf &
-                    graphicName & Cfg_convert_fileNameDelimiter & "000" & Cfg_convert_startIndex & ".png (number increases)" & vbCrLf &
-                    "or " & graphicName & Cfg_convert_fileNameDelimiter & "extra.png (for the extra frame in certain ZT1 Graphics." & vbCrLf & vbCrLf &
+                    StrGraphicName & Cfg_Convert_FileNameDelimiter & "000" & Cfg_Convert_StartIndex & ".png (number increases)" & vbCrLf &
+                    "or " & StrGraphicName & Cfg_Convert_FileNameDelimiter & "extra.png (for the extra frame in certain ZT1 Graphics." & vbCrLf & vbCrLf &
                     "File which caused this error: " & vbCrLf & "'" & s & "'" & vbCrLf &
                        "ZT Studio will close to prevent program or game crashes.",
                         vbOKOnly + vbCritical + vbApplicationModal,
@@ -251,25 +251,25 @@ dBg:
 
 120:
 
-                If pngName = "extra" Then
+                If StrPngName = "extra" Then
                     ' There's an extra background frame.
-                    g.HasBackgroundFrame = 1
+                    ObjGraphic.HasBackgroundFrame = 1
 
 125:
-                ElseIf IsNumeric(pngName) = True Then
+                ElseIf IsNumeric(strpngName) = True Then
 
                     ' Here we check whether the pattern is still appropriate.
                     ' The specification is that - depending on a variable to see if we start counting from 0 or 1 - 
                     ' the user should have PNGs named <graphicName><delimiter>0000.png, <graphicName><delimiter>0001.png, ... 
                     ' This checks if no number is skipped or invalid.
-                    If (CInt(pngName) - Cfg_convert_startIndex) <> g.Frames.Count Then
+                    If (CInt(StrPngName) - Cfg_Convert_StartIndex) <> ObjGraphic.Frames.Count Then
 
 135:
                         ' Check if file name pattern is okay
-                        MsgBox("The file name ('" & frameGraphicPath & graphicName & Cfg_convert_fileNameDelimiter & (CInt(pngName)).ToString("0000") & ".png') does not match the expected name " &
-                               "('" & frameGraphicPath & graphicName & Cfg_convert_fileNameDelimiter & (g.Frames.Count + Cfg_convert_startIndex).ToString("0000") & ".png')" & vbCrLf & vbCrLf &
-                               "Your current starting index is: " & Cfg_convert_startIndex & vbCrLf &
-                               "Do not store other .png-files starting with '" & frameGraphicPath & graphicName & "' in that folder.", vbOKOnly + vbCritical, "Error")
+                        MsgBox("The file name ('" & StrFrameGraphicPath & StrGraphicName & Cfg_Convert_FileNameDelimiter & (CInt(StrPngName)).ToString("0000") & ".png') does not match the expected name " &
+                               "('" & StrFrameGraphicPath & StrGraphicName & Cfg_Convert_FileNameDelimiter & (ObjGraphic.Frames.Count + Cfg_Convert_StartIndex).ToString("0000") & ".png')" & vbCrLf & vbCrLf &
+                               "Your current starting index is: " & Cfg_Convert_StartIndex & vbCrLf &
+                               "Do not store other .png-files starting with '" & StrFrameGraphicPath & StrGraphicName & "' in that folder.", vbOKOnly + vbCritical, "Error")
 
                         Return -1
 
@@ -277,7 +277,7 @@ dBg:
 
 140:
 
-                ElseIf pngName = Path.GetFileName(StrPathDir) Then
+                ElseIf strpngName = Path.GetFileName(StrPathDir) Then
 
                     ' This checks the last part of the directory path of this graphic.
                     ' One exception which we could accept, is an extremely uncommon one.
@@ -293,17 +293,17 @@ dBg:
 
 
                     ' Check if file name pattern is okay
-                    MsgBox("The file name ('" & frameGraphicPath & graphicName & Cfg_convert_fileNameDelimiter & pngName & ".png') does not match the expected name " &
-                           "('" & frameGraphicPath & graphicName & Cfg_convert_fileNameDelimiter & (g.Frames.Count + Cfg_convert_startIndex).ToString("0000") & ".png')" & vbCrLf & vbCrLf &
-                           "Your current starting index is: " & Cfg_convert_startIndex & vbCrLf &
-                           "Do not store other .png-files starting with '" & frameGraphicPath & graphicName & "' in that folder.", vbOKOnly + vbCritical, "Error")
+                    MsgBox("The file name ('" & StrFrameGraphicPath & StrGraphicName & Cfg_Convert_FileNameDelimiter & StrPngName & ".png') does not match the expected name " &
+                           "('" & StrFrameGraphicPath & StrGraphicName & Cfg_Convert_FileNameDelimiter & (ObjGraphic.Frames.Count + Cfg_Convert_StartIndex).ToString("0000") & ".png')" & vbCrLf & vbCrLf &
+                           "Your current starting index is: " & Cfg_Convert_StartIndex & vbCrLf &
+                           "Do not store other .png-files starting with '" & StrFrameGraphicPath & StrGraphicName & "' in that folder.", vbOKOnly + vbCritical, "Error")
 
                     Return -1
 
                 End If
 
 200:
-                ZtFrame = New ClsFrame(g)
+                ObjFrame = New ClsFrame(ObjGraphic)
 
 
 201:
@@ -346,14 +346,14 @@ dBg:
                     ' 20190904, remark, no code change:
                     ' Is this meant as a way to check if this is the sole PNG graphic in this folder? 
                     ' Why not length = 1?
-                    If Directory.GetFiles(StrPathDir, graphicName & "*.png").Length <> Directory.GetFiles(StrPathDir, "*.png").Length Then
+                    If Directory.GetFiles(StrPathDir, StrGraphicName & "*.png").Length <> Directory.GetFiles(StrPathDir, "*.png").Length Then
 
                         ' 20170502 Optimized by Hendrix.
                         Dim InPaths() As String = {SPath0, SPath1, SPath2}
                         Dim exts() As String = {".pal", ".gpl", ".png"}
 
                         ' No palette has been saved/set yet for this graphic.
-                        If ZtFrame.Parent.ColorPalette.FileName = vbNullString Then
+                        If ObjFrame.Parent.ColorPalette.FileName = vbNullString Then
 
                             ' Figure out if there is a preferred palette (perhaps already prepared by the user) to be used.
                             ' Two ideas come to mind here:
@@ -370,7 +370,7 @@ dBg:
                                 For Each ext As String In exts
 
                                     If File.Exists(inPath & ext) = True Then
-                                        With ZtFrame.Parent.ColorPalette
+                                        With ObjFrame.Parent.ColorPalette
                                             ' Read a new palette once
                                             ' Ignore different extensions, so reloading within the loop is skipped
 
@@ -399,12 +399,12 @@ dBg:
                             Next inPath
 
                             ' Todo: does this lead to issues?
-                            MdlZTStudio.Trace("MdlTasks", "Convert_file_PNG_to_ZT1", "Warning: no shared palette found for " & ZtFrame.Parent.FileName)
+                            MdlZTStudio.Trace("MdlTasks", "Convert_file_PNG_to_ZT1", "Warning: no shared palette found for " & ObjFrame.Parent.FileName)
 
                         Else
                             ' Color palette has already been set for this graphic.
                             ' No further action needed.
-                            MdlZTStudio.Trace("MdlTasks", "Convert_file_PNG_to_ZT1", "Skip. Specific color palette defined for " & ZtFrame.Parent.FileName)
+                            MdlZTStudio.Trace("MdlTasks", "Convert_file_PNG_to_ZT1", "Skip. Specific color palette defined for " & ObjFrame.Parent.FileName)
                         End If
 
                     End If
@@ -418,11 +418,11 @@ paletteReady:
 
 245:
                 ' Add this frame to our parent graphic's frame collection 
-                g.Frames.Add(ZtFrame)
+                ObjGraphic.Frames.Add(ObjFrame)
 
 250:
                 ' Create a frame from the .PNG-file
-                ZtFrame.LoadPNG(s)
+                ObjFrame.LoadPNG(s)
 
             End If
         Next
@@ -432,7 +432,7 @@ paletteReady:
 
 1530:
         ' Create our ZT1 Graphic. 
-        g.Write(strPath)
+        ObjGraphic.Write(strPath)
 
 
         'Debug.Print("After write: " & Now.ToString("HH:mm:ss"))
@@ -451,11 +451,11 @@ paletteReady:
 
 
 
-        Debug.Print("Graphic converted: " & strPath & " (" & graphicName & ") " & Now.ToString("HH:mm:ss"))
+        Debug.Print("Graphic converted: " & strPath & " (" & StrGraphicName & ") " & Now.ToString("HH:mm:ss"))
 
 9999:
         ' Clear everything.
-        g = Nothing
+        ObjGraphic = Nothing
 
 
 
@@ -621,7 +621,7 @@ dBug:
 
                 ' Just a warning, so users don't accidentally have "sitscratch" as animation name.
                 ' Actually '-' is supported as well.
-                If Path.GetFileName(directoryName).Length > 8 Or System.Text.RegularExpressions.Regex.IsMatch(Strings.Replace(Path.GetFileName(directoryName), "-", ""), "^[a-zA-Z0-9]+$") = False Then
+                If Path.GetFileName(directoryName).Length > 8 Or System.Text.RegularExpressions.Regex.IsMatch(Strings.Replace(Path.GetFileName(directoryName), "-", ""), "^[a-zA-Z0-9_-]+$") = False Then
                     MsgBox("Directory name '" & Path.GetFileName(directoryName) & "' is invalid." & vbCrLf &
                         "The limit of a folder name is a maximum of 8 alphanumeric characters." & vbCrLf &
                         "You will need to rename the folder manually and then retry." & vbCrLf &
@@ -795,7 +795,7 @@ dBug:
 
 
             ' Read graphic, update offsets of frames, save.
-            Dim ObjGraphic As New ClsGraphic
+            Dim ObjGraphic As New ClsGraphic(Nothing)
 
 1100:
             ObjGraphic.Read(StrCurrentFile)

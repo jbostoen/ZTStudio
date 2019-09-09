@@ -51,7 +51,7 @@ Public Class ClsGraphic
     End Property
 
     ''' <summary>
-    ''' Array of frames (ClsFrame) in this graphic.
+    ''' Array of frames (ClsFrame) in this graphic. Includes background frame (as last frame), if present.
     ''' </summary>
     ''' <returns>List(Of ClsFrame) - list of ZT1 frames</returns>
     Public Property Frames As List(Of ClsFrame)
@@ -128,10 +128,11 @@ Public Class ClsGraphic
 
         Dim IntNumberOfFrames As Integer = 0 ' Number of frames for this animation (at least 1)
 
+        Dim StrOriginalColorPaletteFileName As String = Me.ColorPalette.FileName
+        Dim StrNewColorPaletteFileName As String = Cfg_Path_Root & "/"
+
         MdlZTStudio.Trace(Me.gettype().FullName, "Read", "Reading graphic " & Me.FileName & " ...")
 
-        ' Reset color palette.
-        Me.ColorPalette = New ClsPalette(Me)
 
 5:
         ' Read full file.
@@ -146,7 +147,8 @@ Public Class ClsGraphic
             MdlZTStudio.Trace(Me.GetType().FullName, "Read", "FATZ-file (ZT Animation File)")
             ' 46 41 54 5A 00 | 00 00 00 01
             MdlZTStudio.Trace(Me.GetType().FullName, "Read", "Background frame: " & LstHexValues(8))
-            ClsGraphic_HasBackgroundFrame = LstHexValues(8)
+            Me.HasBackgroundFrame = LstHexValues(8)
+            Cfg_Export_PNG_RenderBGFrame = CByte(LstHexValues(8))
             LstHexValues.Skip(9)
         Else
             MdlZTStudio.Trace(Me.GetType().FullName, "Read", "Basic graphic format")
@@ -164,11 +166,15 @@ Public Class ClsGraphic
 
 30:
 
+
         IntX = 0
         While IntX < IntTemplength
-            Me.ColorPalette.FileName &= Chr(CInt("&H" & LstHexValues(8 + IntX)))
+            StrNewColorPaletteFileName &= Chr(CInt("&H" & LstHexValues(8 + IntX)))
             IntX += 1
         End While
+
+
+
         MdlZTStudio.Trace(Me.GetType().FullName, "Read", "Color palette filename '" & Me.ColorPalette.FileName & "' (length: " & IntTemplength & ")")
 
 35:
@@ -178,11 +184,24 @@ Public Class ClsGraphic
 
 40:
         ' === READ COLOR PALETTE ===
-        MdlZTStudio.Trace(Me.GetType().FullName, "Read", "Reading color palette...")
 
         ' Read the color palette
         ' In case of failure, such as missing palette file, ZTStudio will throw a fatal error.
-        Me.ColorPalette.ReadPal(Cfg_path_Root & "/" & Me.ColorPalette.FileName)
+        ' Only necessary if different name! (optimize performance)
+        If StrNewColorPaletteFileName <> StrOriginalColorPaletteFileName Then
+
+            MdlZTStudio.Trace(Me.GetType().FullName, "Read", "Reading color palette...")
+
+            ' Read palette
+            Me.ColorPalette.Colors.Clear()
+            Me.ColorPalette.ReadPal(StrNewColorPaletteFileName)
+
+        Else
+
+            ' Graphic uses same palette; no need to reload
+            MdlZTStudio.Trace(Me.GetType().FullName, "Read", "Color palette already loaded for previous graphic...")
+
+        End If
 
 50:
         ' === NUMBER OF FRAMES ===
@@ -333,7 +352,7 @@ dBg:
             For Each StrChar As Char In StrPalName
                 .Add(Convert.ToString(Convert.ToInt32(StrChar), 16), False)
             Next StrChar
-            .Add("00", False)
+            .Add("00", False) ' Add null character.
 
             ' === Number of frames ====
             ' Limit - todo: find out if the theoretical number of frames is 255 (FF - X2) or the number can be larger (other bytes?)
@@ -447,10 +466,18 @@ dBug:
     ''' <summary>
     ''' On initializing, set parent of color palette
     ''' </summary>
-    Public Sub New()
+    Public Sub New(ObjPalette As ClsPalette)
+
+        If IsNothing(ObjPalette) = False Then
+
+            Me.ColorPalette = ObjPalette
+
+        End If
 
         ' Make sure the color palette knows this graphic is it's parent
+        ' (not remembered by the actual .pal file)
         Me.ColorPalette.Parent = Me
+
 
     End Sub
 

@@ -22,44 +22,44 @@ Module MdlSettings
     Public EditorBgGraphic As ClsGraphic           ' The background graphic, e.g. toy
     Public EditorFrame As ClsFrame                 ' The clsFrame we are currently viewing/editing
 
-    Public Cfg_grid_BackGroundColor As Color = Color.White ' The default background color?
-    Public Cfg_grid_ForeGroundColor As Color = Color.Black ' The default foreground color for the grid lines?
+    Public Cfg_Grid_BackGroundColor As Color = Color.White ' The default background color?
+    Public Cfg_Grid_ForeGroundColor As Color = Color.Black ' The default foreground color for the grid lines?
 
-    Public Cfg_grid_numPixels As Integer = 256 ' 256 - The maximum number of pixels
-    Public Cfg_grid_zoom As Integer = 1 ' Default zoom level
+    Public Cfg_Grid_NumPixels As Integer = 256 ' 256 - The maximum number of pixels
+    Public Cfg_Grid_zoom As Integer = 1 ' Default zoom level
 
-    Public Cfg_path_Root As String = "C:\Program Files (x86)\Microsoft Games\Zoo Tycoon" ' Default location of our project folder. The user should select a <root>folder with contents similar to <root>/animals/ibex/m/
-    Public Cfg_path_ColorPals8 As String = "C:\Users\root\Documents\GitHub\ZTStudio\source\bin\Release\pal8" ' Location of color palettes (for color replacement) - 8 shades
-    Public Cfg_path_ColorPals16 As String = "C:\Users\root\Documents\GitHub\ZTStudio\source\bin\Release\pal16" ' Location of color palettes (for color replacement) - 16 shades
+    Public Cfg_Path_Root As String = "C:\Program Files (x86)\Microsoft Games\Zoo Tycoon" ' Default location of our project folder. The user should select a <root>folder with contents similar to <root>/animals/ibex/m/
+    Public Cfg_Path_ColorPals8 As String = "C:\Users\root\Documents\GitHub\ZTStudio\source\bin\Release\pal8" ' Location of color palettes (for color replacement) - 8 shades
+    Public Cfg_Path_ColorPals16 As String = "C:\Users\root\Documents\GitHub\ZTStudio\source\bin\Release\pal16" ' Location of color palettes (for color replacement) - 16 shades
 
     ' Export
-    Public Cfg_export_PNG_RenderBGFrame As Byte = 1 ' If a background frame is present: should it be rendered in all PNG output files (or separately?)
-    Public Cfg_export_PNG_CanvasSize As Integer = 0 ' Should the PNG be the size (height/width) of the canvas, or cropped? 
-    Public Cfg_export_PNG_RenderBGZT1 As Byte = 0 ' If a background ZT1 Graphic was chosen, should it be rendered in the PNG output files?
-    Public Cfg_export_PNG_TransparentBG As Byte = 0 ' 0 = use ZT Studio background color; 1 = write transparent color
+    Public Cfg_Export_PNG_RenderBGFrame As Byte = 1 ' If a background frame is present: should it be rendered in all PNG output files (or separately?)
+    Public Cfg_Export_PNG_CanvasSize As Integer = 0 ' Should the PNG be the size (height/width) of the canvas, or cropped? 
+    Public Cfg_Export_PNG_RenderBGZT1 As Byte = 0 ' If a background ZT1 Graphic was chosen, should it be rendered in the PNG output files?
+    Public Cfg_Export_PNG_TransparentBG As Byte = 0 ' 0 = use ZT Studio background color; 1 = write transparent color
 
 
     ' Write ZT1
-    Public Cfg_export_ZT1_Ani As Byte = 1 ' Try to generate an .ani file
-    Public Cfg_export_ZT1_AlwaysAddZTAFBytes As Byte = 0 ' Should we add ZTAF-bytes even for a simple object? 
+    Public Cfg_Export_ZT1_Ani As Byte = 1 ' Try to generate an .ani file
+    Public Cfg_Export_ZT1_AlwaysAddZTAFBytes As Byte = 0 ' Should we add ZTAF-bytes even for a simple object? 
 
 
     ' Convert
-    Public Cfg_convert_deleteOriginal As Byte = 1 ' Should the original image(s) be deleted upon conversion?
-    Public Cfg_convert_overwrite As Byte = 1 ' Should we overwrite existing files?
-    Public Cfg_convert_startIndex As Integer = 0 ' Does the index start at for example N_0000.png or N_0001.png ?
-    Public Cfg_convert_sharedPalette As Byte = 1 ' Do we (try to) share a color palette?
-    Public Cfg_convert_fileNameDelimiter As String = "_" ' The file name delimiter. eg _ in NE_0000.png
+    Public Cfg_Convert_DeleteOriginal As Byte = 1 ' Should the original image(s) be deleted upon conversion?
+    Public Cfg_Convert_Overwrite As Byte = 1 ' Should we overwrite existing files?
+    Public Cfg_Convert_StartIndex As Integer = 0 ' Does the index start at for example N_0000.png or N_0001.png ?
+    Public Cfg_Convert_SharedPalette As Byte = 1 ' Do we (try to) share a color palette?
+    Public Cfg_Convert_FileNameDelimiter As String = "_" ' The file name delimiter. eg _ in NE_0000.png
 
 
     ' Frame
-    Public Cfg_editor_rotFix_individualFrame As Byte = 0 ' determines whether we are fixing the position of an object in 1 frame or in the entire graphic
-    Public Cfg_frame_defaultAnimSpeed As Integer = 125 ' Default animation speed
+    Public Cfg_Editor_RotFix_IndividualFrame As Byte = 0 ' determines whether we are fixing the position of an object in 1 frame or in the entire graphic
+    Public Cfg_Frame_DefaultAnimSpeed As Integer = 125 ' Default animation speed
 
 
     ' Palette
-    Public Cfg_palette_quantization As Byte = 0 ' Set to 1 to allow quantization
-    Public Cfg_palette_import_png_force_add_colors As Byte = 0 ' Set to 1 to force duplicate colors to be processed (recommended after recolors - some colors, especially when making things brighter or darker, may end up the same.)
+    Public Cfg_Palette_Quantization As Byte = 0 ' Set to 1 to allow quantization
+    Public Cfg_Palette_Import_PNG_Force_Add_Colors As Byte = 0 ' Set to 1 to force duplicate colors to be processed (recommended after recolors - some colors, especially when making things brighter or darker, may end up the same.)
 
 
     ' Grid
@@ -68,8 +68,8 @@ Module MdlSettings
 
 
     ' Recent files
-    Public Cfg_path_recentZT1 As String = "" ' Most recent path to select a ZT1 Graphic (file!)
-    Public Cfg_path_recentPNG As String = "" ' Most recent path to select a PNG graphic (file!)
+    Public Cfg_Path_RecentZT1 As String = "" ' Most recent path to select a ZT1 Graphic (file!)
+    Public Cfg_Path_RecentPNG As String = "" ' Most recent path to select a PNG graphic (file!)
 
     ' GitHub
     Public Cfg_GitHub_URL As String = "https://github.com/jbostoen/ZTStudio"

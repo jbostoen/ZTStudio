@@ -55,8 +55,7 @@ Module MdlConfig
 
 40:
         ' Export (PNG)
-        Cfg_export_PNG_CanvasSize = CInt(IniRead(SFile, "exportOptions", "pngCrop", ""))
-        Cfg_export_PNG_RenderBGFrame = CByte(IniRead(SFile, "exportOptions", "pngRenderExtraFrame", ""))
+        Cfg_export_PNG_CanvasSize = CInt(IniRead(SFile, "exportOptions", "pngCrop", "")) 
         Cfg_export_PNG_RenderBGZT1 = CByte(IniRead(SFile, "exportOptions", "pngRenderExtraGraphic", ""))
         Cfg_export_PNG_TransparentBG = CByte(IniRead(SFile, "exportOptions", "pngRenderTransparentBG", ""))
 
@@ -122,15 +121,16 @@ Module MdlConfig
             Cfg_path_recentZT1 = Cfg_path_Root
         End If
 
+205:
 
 
         ' Only now should the objects be created, if they don't exist yet
         ' 20190817: wait, there were no conditions here. So on saving settings, editorGraphic and editorBgGraphic were reset?
         If IsNothing(editorGraphic) = True Then
-            editorGraphic = New ClsGraphic ' The ClsGraphic object
+            EditorGraphic = New ClsGraphic(Nothing) ' The ClsGraphic object
         End If
         If IsNothing(editorBgGraphic) = True Then
-            editorBgGraphic = New ClsGraphic ' The background graphic, e.g. toy
+            EditorBgGraphic = New ClsGraphic(Nothing) ' The background graphic, e.g. toy
         End If
 
         Exit Sub

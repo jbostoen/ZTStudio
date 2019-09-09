@@ -23,7 +23,7 @@ Public Class ClsFrame
     Private fr_offsetX As Integer = -9999
     Private fr_offsetY As Integer = -9999
 
-    Private fr_parent As New ClsGraphic
+    Private fr_parent As New ClsGraphic(Nothing)
 
     Private fr_MysteryHEX As New List(Of String)
 
@@ -1153,8 +1153,8 @@ dBug:
 
                 ' Combine all images. Basically put them all on top of each other.
                 ' That way, it's easy to determine the most relevant pixel top/left and bottom/right
-                For Each ztFrame As ClsFrame In Me.Parent.Frames
-                    ImgComb = MdlBitMap.CombineImages(ImgComb, ztFrame.GetImage())
+                For Each ObjFrame As ClsFrame In Me.Parent.Frames
+                    ImgComb = MdlBitMap.CombineImages(ImgComb, ObjFrame.GetImage())
                 Next
 
                 ' Apply to this particular frame.

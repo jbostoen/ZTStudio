@@ -39,11 +39,10 @@ Public Class FrmSettings
         ' Paths
         txtRootFolder.Text = Cfg_path_Root
         txtFolderPal8.Text = Cfg_path_ColorPals8
-        txtFolderPal16.Text = Cfg_path_ColorPals16
+        txtFolderPal16.Text = Cfg_Path_ColorPals16
 
         ' Export stuff (to PNG)
-        ChkRenderFrame_BGGraphic.Checked = CBool(Cfg_export_PNG_RenderBGZT1)
-        ChkRenderFrame_RenderExtraFrame.Checked = CBool(Cfg_export_PNG_RenderBGFrame)
+        ChkRenderFrame_BGGraphic.Checked = CBool(Cfg_Export_PNG_RenderBGZT1)
         CboPNGExport_Crop.SelectedIndex = Cfg_export_PNG_CanvasSize
 
         ' Export to ZT1
@@ -161,25 +160,6 @@ Public Class FrmSettings
     End Sub
 
     ''' <summary>
-    ''' Handles toggling of whether there's an extra frame to be rendered as background
-    ''' </summary>
-    ''' <param name="sender">Object</param>
-    ''' <param name="e">EventArgs</param>
-    Private Sub ChkRenderFrame_RenderExtraFrame_CheckedChanged(sender As Object, e As EventArgs) Handles ChkRenderFrame_RenderExtraFrame.CheckedChanged
-
-        If ChkRenderFrame_RenderExtraFrame.IsHandleCreated = False Then
-            Exit Sub
-        End If
-
-        Cfg_export_PNG_RenderBGFrame = CByte(ChkRenderFrame_RenderExtraFrame.Checked * -1)
-
-        ' Update preview in main window instantly
-        MdlZTStudioUI.UpdatePreview(True, True)
-
-
-    End Sub
-
-    ''' <summary>
     ''' Handles toggling of whether there's a ZT1 Graphic selected which needs to be rendered as background
     ''' </summary>
     ''' <param name="sender">Object</param>
@@ -190,7 +170,7 @@ Public Class FrmSettings
             Exit Sub
         End If
 
-        Cfg_export_PNG_RenderBGZT1 = CByte(ChkRenderFrame_BGGraphic.Checked * -1)
+        Cfg_Export_PNG_RenderBGZT1 = CByte(ChkRenderFrame_BGGraphic.Checked * -1)
 
         ' Update preview in main window instantly
         MdlZTStudioUI.UpdatePreview(False, True)
@@ -208,7 +188,7 @@ Public Class FrmSettings
         If NumConvert_PNGStartIndex.IsHandleCreated = False Then
             Exit Sub
         End If
-        Cfg_convert_startIndex = NumConvert_PNGStartIndex.Value
+        Cfg_Convert_StartIndex = NumConvert_PNGStartIndex.Value
 
         Debug.Print("Value changed")
 
@@ -226,7 +206,7 @@ Public Class FrmSettings
         If ChkExportZT1_AddZTAFBytes.IsHandleCreated = False Then
             Exit Sub
         End If
-        Cfg_export_ZT1_AlwaysAddZTAFBytes = CByte(ChkExportZT1_AddZTAFBytes.Checked * -1)
+        Cfg_Export_ZT1_AlwaysAddZTAFBytes = CByte(ChkExportZT1_AddZTAFBytes.Checked * -1)
 
     End Sub
 
@@ -240,7 +220,7 @@ Public Class FrmSettings
         If ChkConvert_DeleteOriginal.IsHandleCreated = False Then
             Exit Sub
         End If
-        Cfg_convert_deleteOriginal = CByte(ChkConvert_DeleteOriginal.Checked * -1)
+        Cfg_Convert_DeleteOriginal = CByte(ChkConvert_DeleteOriginal.Checked * -1)
 
 
     End Sub
@@ -255,7 +235,7 @@ Public Class FrmSettings
         If ChkConvert_Overwrite.IsHandleCreated = False Then
             Exit Sub
         End If
-        Cfg_convert_overwrite = CByte(ChkConvert_Overwrite.Checked * -1)
+        Cfg_Convert_Overwrite = CByte(ChkConvert_Overwrite.Checked * -1)
 
     End Sub
 
@@ -270,7 +250,7 @@ Public Class FrmSettings
         If ChkExportZT1_Ani.IsHandleCreated = False Then
             Exit Sub
         End If
-        Cfg_export_ZT1_Ani = CByte(ChkExportZT1_Ani.Checked * -1)
+        Cfg_Export_ZT1_Ani = CByte(ChkExportZT1_Ani.Checked * -1)
 
     End Sub
 
@@ -285,7 +265,7 @@ Public Class FrmSettings
         If ChkConvert_SharedColorPalette.IsHandleCreated = False Then
             Exit Sub
         End If
-        Cfg_convert_sharedPalette = CByte(CInt(ChkConvert_SharedColorPalette.Checked) * -1)
+        Cfg_Convert_SharedPalette = CByte(CInt(ChkConvert_SharedColorPalette.Checked) * -1)
 
     End Sub
 
@@ -295,7 +275,7 @@ Public Class FrmSettings
     ''' <param name="sender">Object</param>
     ''' <param name="e">EventArgs</param>
     Private Sub TxtConvert_fileNameDelimiter_TextChanged(sender As Object, e As EventArgs) Handles TxtConvert_fileNameDelimiter.TextChanged
-        Cfg_convert_fileNameDelimiter = TxtConvert_fileNameDelimiter.Text
+        Cfg_Convert_FileNameDelimiter = TxtConvert_fileNameDelimiter.Text
     End Sub
 
 
@@ -309,7 +289,7 @@ Public Class FrmSettings
         If ChkPNGTransparentBG.IsHandleCreated = False Then
             Exit Sub
         End If
-        Cfg_export_PNG_TransparentBG = CByte(CInt(ChkPNGTransparentBG.Checked) * -1)
+        Cfg_Export_PNG_TransparentBG = CByte(CInt(ChkPNGTransparentBG.Checked) * -1)
     End Sub
 
     ''' <summary>
@@ -322,7 +302,7 @@ Public Class FrmSettings
         If numFrameDefaultAnimSpeed.IsHandleCreated = False Then
             Exit Sub
         End If
-        Cfg_frame_defaultAnimSpeed = numFrameDefaultAnimSpeed.Value
+        Cfg_Frame_DefaultAnimSpeed = numFrameDefaultAnimSpeed.Value
 
     End Sub
 
@@ -338,7 +318,7 @@ Public Class FrmSettings
         If ChkPalImportPNGForceAddAll.IsHandleCreated = False Then
             Exit Sub
         End If
-        Cfg_palette_import_png_force_add_colors = CByte(CInt(ChkPalImportPNGForceAddAll.Checked) * -1)
+        Cfg_Palette_Import_PNG_Force_Add_Colors = CByte(CInt(ChkPalImportPNGForceAddAll.Checked) * -1)
 
     End Sub
 
@@ -389,19 +369,6 @@ Public Class FrmSettings
             )
     End Sub
 
-    ''' <summary>
-    ''' Show help on mousehover
-    ''' </summary>
-    ''' <param name="sender">Object</param>
-    ''' <param name="e">EventArgs</param>
-    Private Sub ChkRenderFrame_RenderExtraFrame_MouseHover(sender As Object, e As EventArgs) Handles ChkRenderFrame_RenderExtraFrame.MouseHover
-
-        MdlZTStudioUI.ShowToolTip(ChkRenderFrame_RenderExtraFrame, "Some graphics (usually ZTAF-files) use a background frame. " & vbCrLf &
-                                  "Example: most of the frames of the Restaurant only contain the smoke coming out of the chimney. " & vbCrLf &
-                                  "The last frame contains the non-changing part of the graphic (most of the building)." & vbCrLf &
-                                  "Other graphics using this technique are Waterfall, Arctic Gift Shop, ...")
-
-    End Sub
 
 
     ''' <summary>

@@ -56,7 +56,9 @@ Module MdlZTStudioUI
 
 
                 ' Reset any previous info.
-                EditorGraphic = New ClsGraphic
+                Dim StrFileNamePalette_Original As String = EditorGraphic.ColorPalette.FileName
+
+                EditorGraphic = New ClsGraphic(EditorGraphic.ColorPalette)
 
                 ' OK
                 EditorGraphic.Read(StrFileName)
@@ -65,25 +67,32 @@ Module MdlZTStudioUI
                 FrmMain.ssFileName.Text = Now.ToString("yyyy-MM-dd HH:mm:ss") & ": opened " & StrFileName
 
                 ' Show default palette
-                EditorGraphic.ColorPalette.FillPaletteGrid(FrmMain.DgvPaletteMain)
+                If StrFileNamePalette_Original <> EditorGraphic.ColorPalette.FileName Then
+                    EditorGraphic.ColorPalette.FillPaletteGrid(FrmMain.DgvPaletteMain)
+                End If
+
 
                 ' Set editorframe
                 EditorFrame = EditorGraphic.Frames(0)
-                FrmMain.TbFrames.Value = 1
+                    FrmMain.TbFrames.Value = 1
 
-                ' Draw first frame. Must be done after setting EditorFrame!
-                MdlZTStudioUI.UpdatePreview(True, True, 0)
+                    ' Draw first frame. Must be done after setting EditorFrame!
+                    MdlZTStudioUI.UpdatePreview(True, True, 0)
 
-                ' Remember
-                Cfg_path_recentZT1 = StrFileName
-                MdlConfig.Write()
+                    ' Remember
+                    Cfg_Path_RecentZT1 = StrFileName
+                    MdlConfig.Write()
 
+
+                End If
 
             End If
 
+        ' Select in Explorer Pane (if not the case yet)
+        Dim ObjNodeSet As TreeNode() = FrmMain.TVExplorer.Nodes.Find(Strings.LCase(Regex.Replace(Cfg_Path_RecentZT1, "^" & Regex.Escape(Cfg_Path_Root) & "\\", "")), True)
+        If ObjNodeSet.Count = 1 Then
+            FrmMain.TVExplorer.SelectedNode = ObjNodeSet(0)
         End If
-
-
 
     End Sub
 
@@ -105,7 +114,7 @@ Module MdlZTStudioUI
         ' Displays updated info.
         ' 20190816: note: before today, it relied on .indexOf(), which might return incorrect results if there are similar frames. Now intFrameIndex is added and required.
 
-        MdlZTStudio.Trace("MdlZTStudio", "UpdateGUI", "Reason: " & StrReason & ". Non-background frames: " & (EditorGraphic.Frames.Count - EditorGraphic.HasBackgroundFrame) & " - background frame: " & EditorGraphic.HasBackgroundFrame.ToString())
+        MdlZTStudio.Trace("MdlZTStudioUI", "UpdateGUI", "Reason: " & StrReason & ". Non-background frames: " & (EditorGraphic.Frames.Count - EditorGraphic.HasBackgroundFrame) & " - background frame: " & EditorGraphic.HasBackgroundFrame.ToString())
 
         Dim IntFrameIndex As Integer = FrmMain.TbFrames.Value - 1
 
@@ -253,11 +262,6 @@ Module MdlZTStudioUI
 
         Loop
 
-        ' If user changed root path but last chosen file was somewhere else, this would raise errors if there was no condition here.
-        Dim ObjNodeSet As TreeNode() = TVExplorer.Nodes.Find(Regex.Replace(Cfg_path_recentZT1, "^" & Regex.Escape(Cfg_path_Root) & "\\", ""), True)
-        If ObjNodeSet.Count = 1 Then
-            TVExplorer.SelectedNode = ObjNodeSet(0)
-        End If
 
 
 
@@ -269,9 +273,12 @@ Module MdlZTStudioUI
     ''' <param name="StrReason"></param>
     Sub UpdateFrameInfo(StrReason As String)
 
-        MdlZTStudio.Trace("MdlZTStudio", "UpdateFrameInfo", "Reason: " & StrReason & ". Non-background frames: " & (EditorGraphic.Frames.Count - EditorGraphic.HasBackgroundFrame) & " - background frame: " & EditorGraphic.HasBackgroundFrame.ToString())
+        MdlZTStudio.Trace("MdlZTStudioUI", "UpdateFrameInfo", "Reason: " & StrReason & ". Non-background frames: " & (EditorGraphic.Frames.Count - EditorGraphic.HasBackgroundFrame) & " - background frame: " & EditorGraphic.HasBackgroundFrame.ToString())
 
         Dim IntFrameIndex As Integer = FrmMain.TbFrames.Value - 1
+
+        'MsgBox(IntFrameIndex)
+
 
         With FrmMain
 
@@ -338,12 +345,12 @@ Module MdlZTStudioUI
         ' Previous/next frame; current And max value of progress bar, ...
         ' Update preview is called from lots of places, so this may be a bit of an overkill, but better safe.
         If BlnUpdateFrameInfo = True Then
-            MdlZTStudioUI.UpdateFrameInfo("MdlSettings::UpdatePreview()")
+            MdlZTStudioUI.UpdateFrameInfo("MdlZTStudioUI_UpdatePreview()")
         End If
 
 126:
         If BlnUpdateUI = True Then
-            MdlZTStudioUI.UpdateGUI("MdlSettings::UpdatePreview()")
+            MdlZTStudioUI.UpdateGUI("MdlZTStudioUI_UpdatePreview()")
         End If
 
 

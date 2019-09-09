@@ -61,12 +61,9 @@ Partial Class FrmMain
         Me.TsbFrame_ImportPNG = New System.Windows.Forms.ToolStripButton()
         Me.TsbFrame_ExportPNG = New System.Windows.Forms.ToolStripButton()
         Me.Tss_Frame_1 = New System.Windows.Forms.ToolStripSeparator()
-        Me.TslFrame_Index = New System.Windows.Forms.ToolStripLabel()
-        Me.TsbFrame_IndexDecrease = New System.Windows.Forms.ToolStripButton()
-        Me.TsbFrame_IndexIncrease = New System.Windows.Forms.ToolStripButton()
-        Me.Tss_Frame_2 = New System.Windows.Forms.ToolStripSeparator()
         Me.TsbFrame_Add = New System.Windows.Forms.ToolStripButton()
         Me.TsbFrame_Delete = New System.Windows.Forms.ToolStripButton()
+        Me.Tss_Frame_2 = New System.Windows.Forms.ToolStripSeparator()
         Me.TsbFrame_OffsetAll = New System.Windows.Forms.ToolStripButton()
         Me.TsbFrame_OffsetUp = New System.Windows.Forms.ToolStripButton()
         Me.TsbFrame_OffsetDown = New System.Windows.Forms.ToolStripButton()
@@ -76,12 +73,15 @@ Partial Class FrmMain
         Me.TstOffsetX = New System.Windows.Forms.ToolStripTextBox()
         Me.TstOffsetY = New System.Windows.Forms.ToolStripTextBox()
         Me.Tss_Frame_4 = New System.Windows.Forms.ToolStripSeparator()
+        Me.TsbFrame_IndexDecrease = New System.Windows.Forms.ToolStripButton()
+        Me.TsbFrame_IndexIncrease = New System.Windows.Forms.ToolStripButton()
+        Me.TslFrame_Index = New System.Windows.Forms.ToolStripLabel()
         Me.TsTools = New System.Windows.Forms.ToolStrip()
         Me.TslMisc = New System.Windows.Forms.ToolStripLabel()
         Me.TsbOpenPalBldg8 = New System.Windows.Forms.ToolStripDropDownButton()
         Me.TsbOpenPalBldg16 = New System.Windows.Forms.ToolStripDropDownButton()
         Me.TssMisc_1 = New System.Windows.Forms.ToolStripSeparator()
-        Me.TsbGridBG = New System.Windows.Forms.ToolStripButton()
+        Me.TsbCanvasBG = New System.Windows.Forms.ToolStripButton()
         Me.TsbPreview_BGGraphic = New System.Windows.Forms.ToolStripButton()
         Me.TssMisc_2 = New System.Windows.Forms.ToolStripSeparator()
         Me.TsbBatchConversion = New System.Windows.Forms.ToolStripButton()
@@ -105,19 +105,19 @@ Partial Class FrmMain
         Me.mnuPal_ExportPNG = New System.Windows.Forms.ToolStripMenuItem()
         Me.mnuPal_ImportPNG = New System.Windows.Forms.ToolStripMenuItem()
         Me.mnuPal_ImportGimpPalette = New System.Windows.Forms.ToolStripMenuItem()
-        CType(Me.PicBox, System.ComponentModel.ISupportInitialize).BeginInit()
-        Me.TsZT1Graphic.SuspendLayout()
-        Me.Panel1.SuspendLayout()
-        Me.GBAnimation.SuspendLayout()
-        CType(Me.TbFrames, System.ComponentModel.ISupportInitialize).BeginInit()
-        Me.GBOtherViews.SuspendLayout()
-        Me.GBColors.SuspendLayout()
-        Me.SsBar.SuspendLayout()
-        CType(Me.DgvPaletteMain, System.ComponentModel.ISupportInitialize).BeginInit()
-        Me.TsFrame.SuspendLayout()
-        Me.TsTools.SuspendLayout()
-        Me.MnuPal.SuspendLayout()
-        Me.SuspendLayout()
+        CType(Me.PicBox, System.ComponentModel.ISupportInitialize).BeginInit
+        Me.TsZT1Graphic.SuspendLayout
+        Me.Panel1.SuspendLayout
+        Me.GBAnimation.SuspendLayout
+        CType(Me.TbFrames, System.ComponentModel.ISupportInitialize).BeginInit
+        Me.GBOtherViews.SuspendLayout
+        Me.GBColors.SuspendLayout
+        Me.SsBar.SuspendLayout
+        CType(Me.DgvPaletteMain, System.ComponentModel.ISupportInitialize).BeginInit
+        Me.TsFrame.SuspendLayout
+        Me.TsTools.SuspendLayout
+        Me.MnuPal.SuspendLayout
+        Me.SuspendLayout
         '
         'PicBox
         '
@@ -444,37 +444,6 @@ Partial Class FrmMain
         Me.Tss_Frame_1.Name = "Tss_Frame_1"
         Me.Tss_Frame_1.Size = New System.Drawing.Size(6, 39)
         '
-        'TslFrame_Index
-        '
-        Me.TslFrame_Index.Name = "TslFrame_Index"
-        Me.TslFrame_Index.Size = New System.Drawing.Size(65, 36)
-        Me.TslFrame_Index.Text = "Index: 0 / 0"
-        '
-        'TsbFrame_IndexDecrease
-        '
-        Me.TsbFrame_IndexDecrease.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
-        Me.TsbFrame_IndexDecrease.Image = CType(resources.GetObject("TsbFrame_IndexDecrease.Image"), System.Drawing.Image)
-        Me.TsbFrame_IndexDecrease.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None
-        Me.TsbFrame_IndexDecrease.ImageTransparentColor = System.Drawing.Color.Magenta
-        Me.TsbFrame_IndexDecrease.Name = "TsbFrame_IndexDecrease"
-        Me.TsbFrame_IndexDecrease.Size = New System.Drawing.Size(36, 36)
-        Me.TsbFrame_IndexDecrease.Text = "Show frame earlier in animation"
-        '
-        'TsbFrame_IndexIncrease
-        '
-        Me.TsbFrame_IndexIncrease.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
-        Me.TsbFrame_IndexIncrease.Image = CType(resources.GetObject("TsbFrame_IndexIncrease.Image"), System.Drawing.Image)
-        Me.TsbFrame_IndexIncrease.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None
-        Me.TsbFrame_IndexIncrease.ImageTransparentColor = System.Drawing.Color.Magenta
-        Me.TsbFrame_IndexIncrease.Name = "TsbFrame_IndexIncrease"
-        Me.TsbFrame_IndexIncrease.Size = New System.Drawing.Size(36, 36)
-        Me.TsbFrame_IndexIncrease.Text = "Show frame later in animation"
-        '
-        'Tss_Frame_2
-        '
-        Me.Tss_Frame_2.Name = "Tss_Frame_2"
-        Me.Tss_Frame_2.Size = New System.Drawing.Size(6, 39)
-        '
         'TsbFrame_Add
         '
         Me.TsbFrame_Add.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
@@ -494,6 +463,11 @@ Partial Class FrmMain
         Me.TsbFrame_Delete.Name = "TsbFrame_Delete"
         Me.TsbFrame_Delete.Size = New System.Drawing.Size(36, 36)
         Me.TsbFrame_Delete.Text = "Delete frame"
+        '
+        'Tss_Frame_2
+        '
+        Me.Tss_Frame_2.Name = "Tss_Frame_2"
+        Me.Tss_Frame_2.Size = New System.Drawing.Size(6, 39)
         '
         'TsbFrame_OffsetAll
         '
@@ -570,9 +544,35 @@ Partial Class FrmMain
         Me.Tss_Frame_4.Name = "Tss_Frame_4"
         Me.Tss_Frame_4.Size = New System.Drawing.Size(6, 39)
         '
+        'TsbFrame_IndexDecrease
+        '
+        Me.TsbFrame_IndexDecrease.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.TsbFrame_IndexDecrease.Image = CType(resources.GetObject("TsbFrame_IndexDecrease.Image"), System.Drawing.Image)
+        Me.TsbFrame_IndexDecrease.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None
+        Me.TsbFrame_IndexDecrease.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.TsbFrame_IndexDecrease.Name = "TsbFrame_IndexDecrease"
+        Me.TsbFrame_IndexDecrease.Size = New System.Drawing.Size(36, 36)
+        Me.TsbFrame_IndexDecrease.Text = "Show frame earlier in animation"
+        '
+        'TsbFrame_IndexIncrease
+        '
+        Me.TsbFrame_IndexIncrease.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.TsbFrame_IndexIncrease.Image = CType(resources.GetObject("TsbFrame_IndexIncrease.Image"), System.Drawing.Image)
+        Me.TsbFrame_IndexIncrease.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None
+        Me.TsbFrame_IndexIncrease.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.TsbFrame_IndexIncrease.Name = "TsbFrame_IndexIncrease"
+        Me.TsbFrame_IndexIncrease.Size = New System.Drawing.Size(36, 36)
+        Me.TsbFrame_IndexIncrease.Text = "Show frame later in animation"
+        '
+        'TslFrame_Index
+        '
+        Me.TslFrame_Index.Name = "TslFrame_Index"
+        Me.TslFrame_Index.Size = New System.Drawing.Size(65, 36)
+        Me.TslFrame_Index.Text = "Index: 0 / 0"
+        '
         'TsTools
         '
-        Me.TsTools.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.TslMisc, Me.TsbOpenPalBldg8, Me.TsbOpenPalBldg16, Me.TssMisc_1, Me.TsbGridBG, Me.TsbPreview_BGGraphic, Me.TssMisc_2, Me.TsbBatchConversion, Me.TsbBatchRotFix, Me.TsbDelete_ZT1Files, Me.TsbDelete_PNG, Me.Tss_Misc_3, Me.TslFrame_FP, Me.TsbFrame_fpX, Me.TsbFrame_fpY, Me.TssMisc_4, Me.TsbSettings, Me.TsbAbout})
+        Me.TsTools.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.TslMisc, Me.TsbOpenPalBldg8, Me.TsbOpenPalBldg16, Me.TssMisc_1, Me.TsbCanvasBG, Me.TsbPreview_BGGraphic, Me.TssMisc_2, Me.TsbBatchConversion, Me.TsbBatchRotFix, Me.TsbDelete_ZT1Files, Me.TsbDelete_PNG, Me.Tss_Misc_3, Me.TslFrame_FP, Me.TsbFrame_fpX, Me.TsbFrame_fpY, Me.TssMisc_4, Me.TsbSettings, Me.TsbAbout})
         Me.TsTools.Location = New System.Drawing.Point(0, 78)
         Me.TsTools.Name = "TsTools"
         Me.TsTools.Size = New System.Drawing.Size(1008, 39)
@@ -613,16 +613,16 @@ Partial Class FrmMain
         Me.TssMisc_1.Name = "TssMisc_1"
         Me.TssMisc_1.Size = New System.Drawing.Size(6, 39)
         '
-        'TsbGridBG
+        'TsbCanvasBG
         '
-        Me.TsbGridBG.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
-        Me.TsbGridBG.Image = CType(resources.GetObject("TsbGridBG.Image"), System.Drawing.Image)
-        Me.TsbGridBG.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None
-        Me.TsbGridBG.ImageTransparentColor = System.Drawing.Color.Magenta
-        Me.TsbGridBG.Name = "TsbGridBG"
-        Me.TsbGridBG.Size = New System.Drawing.Size(36, 36)
-        Me.TsbGridBG.Text = "Change the canvas background"
-        Me.TsbGridBG.ToolTipText = "Background color of the image preview"
+        Me.TsbCanvasBG.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.TsbCanvasBG.Image = CType(resources.GetObject("TsbCanvasBG.Image"), System.Drawing.Image)
+        Me.TsbCanvasBG.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None
+        Me.TsbCanvasBG.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.TsbCanvasBG.Name = "TsbCanvasBG"
+        Me.TsbCanvasBG.Size = New System.Drawing.Size(36, 36)
+        Me.TsbCanvasBG.Text = "Change the canvas background"
+        Me.TsbCanvasBG.ToolTipText = "Background color of the image preview"
         '
         'TsbPreview_BGGraphic
         '
@@ -807,27 +807,27 @@ Partial Class FrmMain
         Me.Name = "FrmMain"
         Me.Text = "ZT Studio"
         Me.WindowState = System.Windows.Forms.FormWindowState.Maximized
-        CType(Me.PicBox, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.PicBox, System.ComponentModel.ISupportInitialize).EndInit
         Me.TsZT1Graphic.ResumeLayout(False)
-        Me.TsZT1Graphic.PerformLayout()
+        Me.TsZT1Graphic.PerformLayout
         Me.Panel1.ResumeLayout(False)
-        Me.Panel1.PerformLayout()
+        Me.Panel1.PerformLayout
         Me.GBAnimation.ResumeLayout(False)
-        Me.GBAnimation.PerformLayout()
-        CType(Me.TbFrames, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.GBAnimation.PerformLayout
+        CType(Me.TbFrames, System.ComponentModel.ISupportInitialize).EndInit
         Me.GBOtherViews.ResumeLayout(False)
         Me.GBColors.ResumeLayout(False)
-        Me.GBColors.PerformLayout()
+        Me.GBColors.PerformLayout
         Me.SsBar.ResumeLayout(False)
-        Me.SsBar.PerformLayout()
-        CType(Me.DgvPaletteMain, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.SsBar.PerformLayout
+        CType(Me.DgvPaletteMain, System.ComponentModel.ISupportInitialize).EndInit
         Me.TsFrame.ResumeLayout(False)
-        Me.TsFrame.PerformLayout()
+        Me.TsFrame.PerformLayout
         Me.TsTools.ResumeLayout(False)
-        Me.TsTools.PerformLayout()
+        Me.TsTools.PerformLayout
         Me.MnuPal.ResumeLayout(False)
         Me.ResumeLayout(False)
-        Me.PerformLayout()
+        Me.PerformLayout
 
     End Sub
     Friend WithEvents PicBox As System.Windows.Forms.PictureBox
@@ -859,7 +859,7 @@ Partial Class FrmMain
     Friend WithEvents TsbOpenPalBldg8 As System.Windows.Forms.ToolStripDropDownButton
     Friend WithEvents TsbOpenPalBldg16 As System.Windows.Forms.ToolStripDropDownButton
     Friend WithEvents TssMisc_1 As System.Windows.Forms.ToolStripSeparator
-    Friend WithEvents TsbGridBG As System.Windows.Forms.ToolStripButton
+    Friend WithEvents TsbCanvasBG As System.Windows.Forms.ToolStripButton
     Friend WithEvents TssMisc_2 As System.Windows.Forms.ToolStripSeparator
     Friend WithEvents TsbBatchConversion As System.Windows.Forms.ToolStripButton
     Friend WithEvents TssMisc_4 As System.Windows.Forms.ToolStripSeparator

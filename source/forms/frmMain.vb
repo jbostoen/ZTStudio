@@ -191,6 +191,8 @@ dBug:
     ''' <param name="e">EventArgs</param>
     Private Sub TTbFrames_ValueChanged(sender As Object, e As EventArgs)
 
+        ' Update canvas. 
+        ' UI: update frame info; don't update button states
         MdlZTStudioUI.UpdatePreview(True, False, TbFrames.Value - 1)
 
     End Sub
@@ -202,51 +204,68 @@ dBug:
     ''' <param name="e">EventArgs</param>
     Private Sub TmrAnimation_Tick(sender As Object, e As EventArgs) Handles TmrAnimation.Tick
 
-
         MdlZTStudio.Trace("TmrAnimation", "Tick", "Interval = " & TmrAnimation.Interval.ToString())
 
-
+        ' Reset if maximum value has already been reached
+        ' Else, show next frame
         If (TbFrames.Value = TbFrames.Maximum) Then
             TbFrames.Value = 1
         Else
             TbFrames.Value += 1
         End If
 
+        ' Update canvas.
+        ' UI: update frame info; don't update button states
         MdlZTStudioUI.UpdatePreview(True, False, TbFrames.Value - 1)
 
     End Sub
 
 
-
-    Private Sub TsbGridBG_Click(sender As Object, e As EventArgs) Handles TsbGridBG.Click
+    ''' <summary>
+    ''' Handles toolbar button click to change background color
+    ''' </summary>
+    ''' <param name="sender">Object</param>
+    ''' <param name="e">EventArgs</param>
+    Private Sub TsbCanvasBG_Click(sender As Object, e As EventArgs) Handles TsbCanvasBG.Click
 
         With DlgColor
             .Color = Cfg_grid_BackGroundColor
             .ShowDialog()
 
+            ' Remember this color
             Cfg_grid_BackGroundColor = .Color
 
 
         End With
 
+        ' Save this change
         MdlConfig.Write()
-        MdlZTStudioUI.UpdatePreview(False, False, Me.GetType().FullName & "::TsbGridBG_Click(): Background color changed.")
+
+        ' Update UI in preview
+        MdlZTStudioUI.UpdatePreview(False, False)
 
     End Sub
 
+    ''' <summary>
+    ''' Handles toolbar button click to open ZT1 Graphic
+    ''' </summary>
+    ''' <param name="sender">Object</param>
+    ''' <param name="e">EventArgs</param>
     Private Sub TsbZT1Open_Click(sender As Object, e As EventArgs) Handles TsbZT1Open.Click
 
         MdlZTStudio.Trace(Me.GetType().FullName, "TsbZT1Open_Click", "Open ZT1 file dialog.")
         MdlZTStudio.Trace(Me.GetType().FullName, "TsbZT1Open_Click", "Last used file: " & Cfg_path_recentZT1)
 
+        ' Show dialog to open a ZT1 Graphic
         With DlgOpen
             .Title = "Pick a ZT1 Graphic"
             .DefaultExt = ""
             .Filter = "All files|*.*"
+
+            ' Default to path of last used graphic
             .InitialDirectory = New FileInfo(Cfg_path_recentZT1).Directory.FullName
-            Debug.Print("last used = " & New FileInfo(Cfg_path_recentZT1).Directory.FullName)
 
-
+            ' If that path doesn't exist: attempt fallback to default game locations on x86 and x64 systems
             If DlgOpen.InitialDirectory = vbNullString Or System.IO.Directory.Exists(DlgOpen.InitialDirectory) = False Then
                 If System.IO.Directory.Exists(Cfg_path_Root) Then
                     MdlZTStudio.Trace(Me.GetType().FullName, "TsbZT1Open_Click", "Open ZT1 file dialog. Fallback to root: " & Cfg_path_Root)
@@ -260,36 +279,43 @@ dBug:
                 End If
             End If
 
+            ' User did NOT cancel
             If .ShowDialog() <> Windows.Forms.DialogResult.Cancel Then
 
-
+                ' Load ZT1 Graphic
                 MdlZTStudioUI.LoadGraphic(DlgOpen.FileName)
-                ' What has been opened, might need to be saved.
-                DlgSave.FileName = DlgOpen.FileName
 
-            End If ' End Cancel check
-
+            End If
 
         End With
     End Sub
 
-    Private Sub TbFrames_ValueChanged1(sender As Object, e As EventArgs) Handles TbFrames.ValueChanged
+    ''' <summary>
+    ''' Handles value change of trackbar (slider) and updates preview accordingly
+    ''' </summary>
+    ''' <param name="sender">Object</param>
+    ''' <param name="e">EventArgs</param>
+    Private Sub TbFrames_ValueChanged(sender As Object, e As EventArgs) Handles TbFrames.ValueChanged
 
+        ' Update preview in UI
         MdlZTStudioUI.UpdatePreview(True, False, TbFrames.Value - 1)
 
-        Debug.Print("Value changed.")
-
+        ' Update current editor frame value
         EditorFrame = EditorGraphic.Frames(TbFrames.Value - 1)
 
     End Sub
 
-
+    ''' <summary>
+    ''' Handles toolbar button click to show about info (credits, version info)
+    ''' </summary>
+    ''' <param name="sender">Object</param>
+    ''' <param name="e">EventArgs</param>
     Private Sub TsbAbout_Click(sender As Object, e As EventArgs) Handles TsbAbout.Click
 
         MsgBox("About " & Application.ProductName & " " & Application.ProductVersion & vbCrLf &
             Strings.StrDup(50, "_") & vbCrLf &
             "© since 2015 by Jeffrey Bostoen" & vbCrLf &
-            "https://github.com/jbostoen/ZTStudio" & vbCrLf &
+            Cfg_GitHub_URL & vbCrLf &
             vbCrLf & vbCrLf &
             "" &
             "Bugs? " & vbCrLf &
@@ -311,180 +337,230 @@ dBug:
 
     End Sub
 
+    ''' <summary>
+    ''' Handles toolbar button click to export frame as PNG
+    ''' </summary>
+    ''' <param name="sender">Object</param>
+    ''' <param name="e">EventArgs</param>
     Private Sub TsbFrame_ExportPNG_Click(sender As Object, e As EventArgs) Handles TsbFrame_ExportPNG.Click
 
-
+        ' Show save dialog
         With DlgSave
-            .Title = "Save single frame as .PNG"
+            .Title = "Save current frame as .PNG"
             .DefaultExt = ".png"
             .AddExtension = True
-            .InitialDirectory = System.IO.Path.GetDirectoryName(Cfg_path_recentPNG)
             .Filter = "PNG files (*.png)|*.png|All files|*.*"
 
+            ' Suggest path based on most recently saved PNG
+            .InitialDirectory = System.IO.Path.GetDirectoryName(Cfg_Path_RecentPNG)
 
+            ' User did not cancel? Then save.
             If .ShowDialog() <> Windows.Forms.DialogResult.Cancel Then
 
-
-                ' was bminput
-
-
-                ' bminput.cachedFrame.Save(dlgSave.FileName, System.Drawing.Imaging.ImageFormat.Png)
-
+                ' Save current frame as PNG
                 EditorFrame.SavePNG(DlgSave.FileName)
 
-
-                ' Remember
-                Cfg_path_recentPNG = New System.IO.FileInfo(DlgSave.FileName).Directory.FullName
+                ' Remember most recent PNG path
+                Cfg_Path_RecentPNG = New System.IO.FileInfo(DlgSave.FileName).Directory.FullName
                 MdlConfig.Write()
-
 
             End If
 
         End With
 
 
-
     End Sub
 
 
+    ''' <summary>
+    ''' Handles toolbar button click to open ZT1 Color palette (.pal file)
+    ''' </summary>
+    ''' <param name="sender">Object</param>
+    ''' <param name="e">EventArgs</param>
     Private Sub TsbZT1_OpenPal_Click(sender As Object, e As EventArgs) Handles TsbZT1_OpenPal.Click
-
 
         With DlgOpen
 
             .Title = "Pick a ZT1 Color Palette"
             .DefaultExt = ".pal"
             .Filter = "ZT1 Color Palette files (*.pal)|*.pal|All files|*.*"
+
+            ' Set directory by default to where a ZT1 Graphic was last opened
             .InitialDirectory = System.IO.Path.GetDirectoryName(Cfg_path_recentZT1)
 
-
+            ' If the user didn't press cancel, load palette.
             If .ShowDialog() <> Windows.Forms.DialogResult.Cancel Then
 
                 MdlColorPalette.LoadPalette(DlgOpen.FileName)
 
-            End If ' cancel check
-
+            End If
 
         End With
 
     End Sub
 
-
-
-
-
+    ''' <summary>
+    ''' Handles toolbar button click to modify Settings
+    ''' </summary>
+    ''' <param name="sender">Object</param>
+    ''' <param name="e">EventArgs</param>
     Private Sub TsbSettings_Click(sender As Object, e As EventArgs) Handles TsbSettings.Click
 
+        ' Show Settings window
         FrmSettings.ShowDialog()
 
     End Sub
 
-    Private Sub ToolStrip1_ItemClicked(sender As Object, e As ToolStripItemClickedEventArgs) Handles TsFrame.ItemClicked
-
-    End Sub
-
+    ''' <summary>
+    ''' Handles clicking a menu item in the list of 8-color palettes
+    ''' </summary>
+    ''' <param name="sender">Object</param>
+    ''' <param name="e">ToolStripItemClickedEventArgs</param>
     Private Sub TsbOpenPalBldg8_DropDownItemClicked(sender As Object, e As ToolStripItemClickedEventArgs) Handles TsbOpenPalBldg8.DropDownItemClicked
 
+        ' Load color palette (in its own window)
         MdlColorPalette.LoadPalette(Cfg_path_ColorPals8 & "\" & e.ClickedItem.Text)
 
     End Sub
+
+    ''' <summary>
+    ''' Handles clicking a menu item in the list of 16-color palettes
+    ''' </summary>
+    ''' <param name="sender">Object</param>
+    ''' <param name="e">TooLStripItemClickedEventArgs</param>
     Private Sub TsbOpenPalBldg16_DropDownItemClicked(sender As Object, e As ToolStripItemClickedEventArgs) Handles TsbOpenPalBldg16.DropDownItemClicked
 
+        ' Load color palette (in its own window)
         MdlColorPalette.LoadPalette(Cfg_path_ColorPals16 & "\" & e.ClickedItem.Text)
 
     End Sub
 
+    ''' <summary>
+    ''' Handles toolbar button click to start batch conversion (ZT1 Graphic - PNG)
+    ''' </summary>
+    ''' <param name="sender">Object</param>
+    ''' <param name="e">EventArgs</param>
     Private Sub TsbBatchConversion_Click(sender As Object, e As EventArgs) Handles TsbBatchConversion.Click
 
+        ' Show window to start batch conversion
         FrmBatchConversion.ShowDialog(Me)
 
     End Sub
 
+    ''' <summary>
+    ''' Handles toolbar button click to pick a ZT1 Graphic to use as background
+    ''' </summary>
+    ''' <param name="sender">Object</param>
+    ''' <param name="e">EventArgs</param>
     Private Sub TsbPreview_BGGraphic_Click(sender As Object, e As EventArgs) Handles TsbPreview_BGGraphic.Click
 
-
+        ' Show dialog
         With DlgOpen
             .Title = "Pick a ZT1 Graphic"
             .DefaultExt = ""
-            .InitialDirectory = System.IO.Path.GetDirectoryName(Cfg_path_recentZT1)
             .Filter = "All files|*.*"
 
-            If DlgOpen.InitialDirectory = vbNullString Then
+            If Directory.Exists(New System.IO.FileInfo(Cfg_Path_RecentZT1).Directory.FullName) = False Then
+
+                ' If this directory does not exist, try default game directory on x86 and x64 systems
                 If System.IO.Directory.Exists("C:\Program Files\Microsoft Games\Zoo Tycoon") Then
                     .InitialDirectory = "C:\Program Files\Microsoft Games\Zoo Tycoon"
                 ElseIf System.IO.Directory.Exists("C:\Program Files (x86)\Microsoft Games\Zoo Tycoon") Then
                     .InitialDirectory = "C:\Program Files (x86)\Microsoft Games\Zoo Tycoon"
-
                 End If
+
+            Else
+
+                ' As for initial directory, use the one from the last picked ZT1 Graphic
+                .InitialDirectory = New System.IO.FileInfo(Cfg_Path_RecentZT1).Directory.FullName
+
             End If
 
+            ' If user didn't cancel, load background graphic.
             If .ShowDialog() <> Windows.Forms.DialogResult.Cancel Then
-
 
                 If System.IO.File.Exists(DlgOpen.FileName) = True Then
 
                     If Path.GetExtension(DlgOpen.FileName) <> vbNullString Then
-                        MsgBox("You selected a file with the extension '" & Path.GetExtension(DlgOpen.FileName) & "'." & vbCrLf &
-                               "With ZT1 graphic, we mean a ZT1 graphics file without extension.",
-                               vbOKOnly + vbCritical, "Invalid file")
+
+                        ' The file path has an extension.
+                        ' So it's not a ZT1 Graphic
+                        Dim StrMessage As String =
+                               "You selected a file with the extension '" & Path.GetExtension(DlgOpen.FileName) & "'." & vbCrLf &
+                               "With ZT1 graphic, we mean a ZT1 graphics file without extension."
+
+                        MdlZTStudio.ExpectedError(Me.GetType().FullName, "TsbPreview_BGGraphic_Click", strmessage, False)
+
                     Else
 
-                        ' OK
+                        ' Add background graphic
                         EditorBgGraphic.Read(DlgOpen.FileName)
 
-                        ' reDraw current frame 
-                        MdlZTStudioUI.UpdatePreview(True, False)
+                        ' Update preview. No need to update frame info, button states (GUI)
+                        MdlZTStudioUI.UpdatePreview(False, False)
 
-                        ' Show default palette
-                        'editorBgGraphic.colorPalette.fillPaletteGrid(dgvPaletteMain)
-
-                        ' Remember
-                        Cfg_path_recentZT1 = DlgOpen.FileName
+                        ' Remember this graphic as last selected
+                        Cfg_Path_RecentZT1 = DlgOpen.FileName
                         MdlConfig.Write()
 
                     End If
                 Else
-                    MsgBox("File does not exist.", vbOKOnly + vbCritical, "Invalid file")
+
+                    ' File does not exist (for some reason)
+                    MdlZTStudio.ExpectedError(Me.GetType().FullName, "TsbPreview_BGGraphic_Click", "File does not exist.", False)
+
                 End If
 
-            End If ' End Cancel check
+            End If
 
 
         End With
     End Sub
 
 
+    ''' <summary>
+    ''' Handles toolbar button click to add a new empty frame. (or on right click: to immediately add PNG as new frame)
+    ''' </summary>
+    ''' <param name="sender">Object</param>
+    ''' <param name="e">EventArgs</param>
     Private Sub TsbFrame_Add_Click(sender As Object, e As EventArgs) Handles TsbFrame_Add.Click
 
         On Error GoTo dBug
 
 0:
-        Dim ZtFrame As New ClsFrame(EditorGraphic)
+        ' New ClsFrame
+        Dim ObjFrame As New ClsFrame(EditorGraphic)
 2:
 
 10:
-        EditorGraphic.Frames.Insert(TbFrames.Value, ZtFrame) ' add after
+        ' Add it to the list of frames (after the currently displayed one)
+        EditorGraphic.Frames.Insert(TbFrames.Value, ObjFrame)
 
-15:
-        ' not sure if this is right if an extra frame is applied?
-        TbFrames.Maximum = EditorGraphic.Frames.Count - EditorGraphic.HasBackgroundFrame
 
-16:
-        TbFrames.Value += 1
-
-        MdlZTStudioUI.UpdatePreview(True, True, TbFrames.Value - 1)
+        ' Update preview. Update frame info and other GUI elements (button states, offsets, ...)
+        MdlZTStudioUI.UpdatePreview(True, True, TbFrames.Value)
 
         Exit Sub
 
 dBug:
-        MsgBox("Error at line " & Erl() & " in tsbFrame_Add: " & Err.Number & " - " & Err.Description, vbOKOnly + vbCritical, "Error")
+        MdlZTStudio.UnexpectedError(Me.GetType().FullName, "TsbFrame_Add_Click", Information.Err)
+
+
 
     End Sub
 
+
+    ''' <summary>
+    ''' Handles toolbar button click to delete an existing frame
+    ''' </summary>
+    ''' <param name="sender">Object</param>
+    ''' <param name="e">EventArgs</param>
     Private Sub TsbFrame_Delete_Click(sender As Object, e As EventArgs) Handles TsbFrame_Delete.Click
 
+        ' Remove the frame
         EditorGraphic.Frames.RemoveAt(TbFrames.Value - 1)
 
+        ' Update preview. Update frame info and other GUI elements (button states, offsets, ...)
         MdlZTStudioUI.UpdatePreview(True, True, TbFrames.Value - 1)
 
 
@@ -897,7 +973,7 @@ dBug:
     Private Sub TsbZT1New_Click(sender As Object, e As EventArgs) Handles TsbZT1New.Click
 
         ' New ZT1 Graphic
-        EditorGraphic = New ClsGraphic
+        EditorGraphic = New ClsGraphic(Nothing)
 
         ' Always start with one frame
         EditorFrame = New ClsFrame(EditorGraphic)
@@ -905,6 +981,9 @@ dBug:
 
         ' Update/reset color palette
         EditorGraphic.ColorPalette.FillPaletteGrid(DgvPaletteMain)
+
+        ' This is the only (or one of the few) cases where frame reset happens:
+        TbFrames.Value = 1
 
         ' Update preview
         MdlZTStudioUI.UpdatePreview(True, True, 0)
@@ -984,13 +1063,6 @@ dBug:
 
     End Sub
 
-    Private Sub LblColorDetails_Click(sender As Object, e As EventArgs) Handles LblColorDetails.Click
-
-    End Sub
-
-    Private Sub TbFrames_Scroll(sender As Object, e As EventArgs) Handles TbFrames.Scroll
-
-    End Sub
 
 
     Private Sub TVExplorer_AfterSelect(sender As Object, e As TreeViewEventArgs) Handles TVExplorer.AfterSelect
@@ -1000,8 +1072,10 @@ dBug:
         ' If the selected item is a ZT1 Graphic file, load?
         If Regex.IsMatch(e.Node.Text, "[0-9A-z]") = True And e.Node.ImageIndex = 0 Then
 
-            ' Same handling as ZT1 open graphic button
-            MdlZTStudioUI.LoadGraphic(Cfg_path_Root & "\" & e.Node.Name)
+            ' Same handling as ZT1 open graphic button (but don't do loop: selection also happens on form load)
+            If Strings.LCase(EditorGraphic.FileName) <> Strings.LCase(Cfg_Path_Root & "\" & e.Node.Name) Then
+                MdlZTStudioUI.LoadGraphic(Cfg_Path_Root & "\" & e.Node.Name)
+            End If
 
         End If
 
@@ -1182,6 +1256,10 @@ dBug:
         If Regex.IsMatch(TVExplorer.SelectedNode.Name, ".*\.pal$", RegexOptions.IgnoreCase) = True Then
             MdlColorPalette.LoadPalette(Cfg_path_Root & "\" & TVExplorer.SelectedNode.Name)
         End If
+
+    End Sub
+
+    Private Sub TsbZT1Write_Click(sender As Object, e As EventArgs) Handles TsbZT1Write.Click
 
     End Sub
 End Class

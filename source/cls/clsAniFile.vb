@@ -22,10 +22,10 @@ Public Class ClsAniFile
     Private Ani_X1 As Integer = 0 ' canvas: bottom right
     Private Ani_Y1 As Integer = 0 ' canvas: bottom right
 
-    Private Ani_Dirs As New List(Of String) ' lists the dirs in the relative location to this file
+    Private Ani_RelativeDirectories As New List(Of String) ' lists the directories in the relative location to this file
     Private Ani_Views As New List(Of String) ' lists the Views in this file
 
-    Private ani_fileName As String = "" ' filename of .ani-file
+    Private ani_FileName As String = "" ' filename of .ani-file
 
     ''' <summary>
     ''' Offset (X) of top left pixel
@@ -84,12 +84,12 @@ Public Class ClsAniFile
     ''' List of directories (tree structure) relative to root
     ''' </summary>
     ''' <returns></returns>
-    Public Property Dirs As List(Of String)
+    Public Property RelativeDirectories As List(Of String)
         Get
-            Return ani_dirs
+            Return Ani_RelativeDirectories
         End Get
         Set(value As List(Of String))
-            ani_dirs = value
+            Ani_RelativeDirectories = value
         End Set
     End Property
 
@@ -148,8 +148,8 @@ Public Class ClsAniFile
 
 2:
         ' Write out dirs
-        For Each s As String In Me.Dirs
-            StrAni = StrAni & "dir" & Me.Dirs.IndexOf(s) & " = " & s & vbCrLf
+        For Each s As String In Me.RelativeDirectories
+            StrAni = StrAni & "dir" & Me.RelativeDirectories.IndexOf(s) & " = " & s & vbCrLf
         Next
 
 3:
@@ -168,7 +168,7 @@ Public Class ClsAniFile
 
 10:
         ' Write.
-        If Me.Views.Count > 0 And Me.Dirs.Count > 0 Then
+        If Me.Views.Count > 0 And Me.RelativeDirectories.Count > 0 Then
             If File.Exists(Me.FileName) = True Then
                 File.Delete(Me.FileName)
             End If
@@ -183,7 +183,7 @@ Public Class ClsAniFile
         Exit Function
 
 dBug:
-        MdlZTStudio.UnexpectedError("ClsTasks", "Write", Information.Err)
+        MdlZTStudio.UnexpectedError(Me.GetType().FullName, "Write", Information.Err)
 
 
     End Function
@@ -193,8 +193,8 @@ dBug:
     ''' This sub tries to create a .ani-file. It does so based on the offsets of graphics it detects.
     ''' This is experimental, but it should work for the majority of graphics.
     ''' </summary>
-    ''' <param name="strFileName">Destination filename</param>
-    Public Sub CreateAniConfig(Optional strFileName As String = Nothing)
+    ''' <param name="StrFileName">Destination filename</param>
+    Public Sub CreateAniConfig(Optional StrFileName As String = Nothing)
 
         ' This function needs a filename for the .ani-file, since it derives its directory from it.
         ' It will take note of the 'dirs'
@@ -205,8 +205,8 @@ dBug:
         ' N/NE/E/SE/S       animals, guests, staff...
         ' 1-20              paths
 
-        If IsNothing(strFileName) = False Then
-            Me.FileName = strFileName.Replace("/", "\")
+        If IsNothing(StrFileName) = False Then
+            Me.FileName = StrFileName.Replace("/", "\")
         End If
 
 
@@ -214,8 +214,7 @@ dBug:
         If Me.FileName = "" Then
 
             ' Is there any path which leads up to this error?
-            MsgBox("ClsAniFile::createAniConfig() assumes you've set the filename for the .ani-file.",
-                vbOKOnly + vbCritical, "Error while guessing views for .ani-file")
+            MdlZTStudio.ExpectedError(Me.GetType().FullName, "ClsAniFile", "Unexpected error: filename for .ani file is empty?", True, Information.Err)
 
         Else
 
@@ -223,16 +222,16 @@ dBug:
 
             ' This is the full path and the relative path of the .ani file
             Dim StrPath As String = Path.GetDirectoryName(Me.FileName)
-            Dim StrPathRel As String
-            StrPathRel = Strings.Replace(StrPath, Cfg_path_Root & "\", "")
-            StrPathRel = Strings.Replace(StrPathRel, Cfg_path_Root, "")
-            Dim Graphic As New ClsGraphic
+            Dim StrPathRelative As String
+            StrPathRelative = Strings.Replace(StrPath, Cfg_path_Root & "\", "")
+            StrPathRelative = Strings.Replace(StrPathRelative, Cfg_path_Root, "")
+            Dim ObjGraphic As New ClsGraphic(Nothing)
 
-            MdlZTStudio.Trace(Me.GetType().FullName, "CreateAniConfig", "Ani path: * " & StrPath & " -> " & StrPathRel)
+            MdlZTStudio.Trace(Me.GetType().FullName, "CreateAniConfig", "Ani path: * " & StrPath & " -> " & StrPathRelative)
 
             ' Set dirs. If this function is called multiple times, it won't do any harm.
-            Me.Dirs.Clear(False)
-            Me.Dirs.AddRange(Strings.Split(StrPathRel, "\"), False)
+            Me.RelativeDirectories.Clear(False)
+            Me.RelativeDirectories.AddRange(Strings.Split(StrPathRelative, "\"), False)
 
 10:
             ' Set views.
@@ -334,18 +333,18 @@ dBug:
                 For Each sAni In Me.Views
 
                     ' We need to read every view for this graphic in the folder.
-                    Graphic.Read(StrPath.Replace("\", "/") & "/" & sAni)
+                    ObjGraphic.Read(StrPath.Replace("\", "/") & "/" & sAni)
 
-                    For Each ztFrame As ClsFrame In Graphic.Frames
+                    For Each ObjFrame As ClsFrame In ObjGraphic.Frames
 
                         ' Get original hex
-                        ztFrame.RenderCoreImageFromHex()
+                        ObjFrame.RenderCoreImageFromHex()
 
                         ' Passes the bamboo.ani-test
-                        Me.X0 = Math.Min(Me.X0, -ztFrame.OffsetX)
-                        Me.Y0 = Math.Min(Me.Y0, -ztFrame.OffsetY)
-                        Me.X1 = Math.Max(Me.X1, -ztFrame.OffsetX + ztFrame.CoreImageBitmap.Width)
-                        Me.Y1 = Math.Max(Me.Y1, -ztFrame.OffsetY + ztFrame.CoreImageBitmap.Height)
+                        Me.X0 = Math.Min(Me.X0, -ObjFrame.OffsetX)
+                        Me.Y0 = Math.Min(Me.Y0, -ObjFrame.OffsetY)
+                        Me.X1 = Math.Max(Me.X1, -ObjFrame.OffsetX + ObjFrame.CoreImageBitmap.Width)
+                        Me.Y1 = Math.Max(Me.Y1, -ObjFrame.OffsetY + ObjFrame.CoreImageBitmap.Height)
 
                     Next
                 Next

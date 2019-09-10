@@ -152,7 +152,7 @@ Public Class FrmMain
         Exit Sub
 
 dBug:
-        MdlZTStudio.UnexpectedError(Me.GetType().FullName, "PicBox_MouseMove", Information.Err)
+        MdlZTStudio.UnhandledError(Me.GetType().FullName, "PicBox_MouseMove", Information.Err)
 
     End Sub
 
@@ -229,11 +229,11 @@ dBug:
     Private Sub TsbCanvasBG_Click(sender As Object, e As EventArgs) Handles TsbCanvasBG.Click
 
         With DlgColor
-            .Color = Cfg_grid_BackGroundColor
+            .Color = Cfg_Grid_BackGroundColor
             .ShowDialog()
 
             ' Remember this color
-            Cfg_grid_BackGroundColor = .Color
+            Cfg_Grid_BackGroundColor = .Color
 
 
         End With
@@ -254,7 +254,7 @@ dBug:
     Private Sub TsbZT1Open_Click(sender As Object, e As EventArgs) Handles TsbZT1Open.Click
 
         MdlZTStudio.Trace(Me.GetType().FullName, "TsbZT1Open_Click", "Open ZT1 file dialog.")
-        MdlZTStudio.Trace(Me.GetType().FullName, "TsbZT1Open_Click", "Last used file: " & Cfg_path_recentZT1)
+        MdlZTStudio.Trace(Me.GetType().FullName, "TsbZT1Open_Click", "Last used file: " & Cfg_Path_RecentZT1)
 
         ' Show dialog to open a ZT1 Graphic
         With DlgOpen
@@ -263,13 +263,13 @@ dBug:
             .Filter = "All files|*.*"
 
             ' Default to path of last used graphic
-            .InitialDirectory = New FileInfo(Cfg_path_recentZT1).Directory.FullName
+            .InitialDirectory = New FileInfo(Cfg_Path_RecentZT1).Directory.FullName
 
             ' If that path doesn't exist: attempt fallback to default game locations on x86 and x64 systems
             If DlgOpen.InitialDirectory = vbNullString Or System.IO.Directory.Exists(DlgOpen.InitialDirectory) = False Then
-                If System.IO.Directory.Exists(Cfg_path_Root) Then
-                    MdlZTStudio.Trace(Me.GetType().FullName, "TsbZT1Open_Click", "Open ZT1 file dialog. Fallback to root: " & Cfg_path_Root)
-                    .InitialDirectory = Cfg_path_Root
+                If System.IO.Directory.Exists(Cfg_Path_Root) Then
+                    MdlZTStudio.Trace(Me.GetType().FullName, "TsbZT1Open_Click", "Open ZT1 file dialog. Fallback to root: " & Cfg_Path_Root)
+                    .InitialDirectory = Cfg_Path_Root
                 ElseIf System.IO.Directory.Exists("C:\Program Files (x86)\Microsoft Games\Zoo Tycoon") Then
                     MdlZTStudio.Trace(Me.GetType().FullName, "TsbZT1Open_Click", "Open ZT1 file dialog. Fallback to Program Files (x86)")
                     .InitialDirectory = "C:\Program Files (x86)\Microsoft Games\Zoo Tycoon"
@@ -386,7 +386,7 @@ dBug:
             .Filter = "ZT1 Color Palette files (*.pal)|*.pal|All files|*.*"
 
             ' Set directory by default to where a ZT1 Graphic was last opened
-            .InitialDirectory = System.IO.Path.GetDirectoryName(Cfg_path_recentZT1)
+            .InitialDirectory = System.IO.Path.GetDirectoryName(Cfg_Path_RecentZT1)
 
             ' If the user didn't press cancel, load palette.
             If .ShowDialog() <> Windows.Forms.DialogResult.Cancel Then
@@ -419,7 +419,7 @@ dBug:
     Private Sub TsbOpenPalBldg8_DropDownItemClicked(sender As Object, e As ToolStripItemClickedEventArgs) Handles TsbOpenPalBldg8.DropDownItemClicked
 
         ' Load color palette (in its own window)
-        MdlColorPalette.LoadPalette(Cfg_path_ColorPals8 & "\" & e.ClickedItem.Text)
+        MdlColorPalette.LoadPalette(Cfg_Path_ColorPals8 & "\" & e.ClickedItem.Text)
 
     End Sub
 
@@ -431,7 +431,7 @@ dBug:
     Private Sub TsbOpenPalBldg16_DropDownItemClicked(sender As Object, e As ToolStripItemClickedEventArgs) Handles TsbOpenPalBldg16.DropDownItemClicked
 
         ' Load color palette (in its own window)
-        MdlColorPalette.LoadPalette(Cfg_path_ColorPals16 & "\" & e.ClickedItem.Text)
+        MdlColorPalette.LoadPalette(Cfg_Path_ColorPals16 & "\" & e.ClickedItem.Text)
 
     End Sub
 
@@ -489,7 +489,7 @@ dBug:
                                "You selected a file with the extension '" & Path.GetExtension(DlgOpen.FileName) & "'." & vbCrLf &
                                "With ZT1 graphic, we mean a ZT1 graphics file without extension."
 
-                        MdlZTStudio.ExpectedError(Me.GetType().FullName, "TsbPreview_BGGraphic_Click", strmessage, False)
+                        MdlZTStudio.HandledError(Me.GetType().FullName, "TsbPreview_BGGraphic_Click", StrMessage, False)
 
                     Else
 
@@ -507,7 +507,7 @@ dBug:
                 Else
 
                     ' File does not exist (for some reason)
-                    MdlZTStudio.ExpectedError(Me.GetType().FullName, "TsbPreview_BGGraphic_Click", "File does not exist.", False)
+                    MdlZTStudio.HandledError(Me.GetType().FullName, "TsbPreview_BGGraphic_Click", "File does not exist.", False)
 
                 End If
 
@@ -543,7 +543,7 @@ dBug:
         Exit Sub
 
 dBug:
-        MdlZTStudio.UnexpectedError(Me.GetType().FullName, "TsbFrame_Add_Click", Information.Err)
+        MdlZTStudio.UnhandledError(Me.GetType().FullName, "TsbFrame_Add_Click", Information.Err)
 
 
 
@@ -566,10 +566,11 @@ dBug:
 
     End Sub
 
-    Private Sub PicBox_Click(sender As Object, e As EventArgs) Handles PicBox.Click
-
-    End Sub
-
+    ''' <summary>
+    ''' Handles toolbar button click to show the next frame
+    ''' </summary>
+    ''' <param name="sender">Object</param>
+    ''' <param name="e">EventArgs</param>
     Private Sub TsbFrame_IndexIncrease_Click(sender As Object, e As EventArgs) Handles TsbFrame_IndexIncrease.Click
 
         ' Change handled in slider control
@@ -580,6 +581,11 @@ dBug:
     End Sub
 
 
+    ''' <summary>
+    ''' Handles toolbar button click to move the frame contents up
+    ''' </summary>
+    ''' <param name="sender">Object</param>
+    ''' <param name="e">MouseEventArgs</param>
     Private Sub TsbFrame_OffsetUp_MouseDown(sender As Object, e As MouseEventArgs) Handles TsbFrame_OffsetUp.MouseDown
 
         If (e.Button = Windows.Forms.MouseButtons.Right) Then
@@ -592,6 +598,11 @@ dBug:
 
     End Sub
 
+    ''' <summary>
+    ''' Handles toolbar button click to move the frame contents down
+    ''' </summary>
+    ''' <param name="sender">Object</param>
+    ''' <param name="e">MouseEventArgs</param>
     Private Sub TsbFrame_OffsetDown_MouseDown(sender As Object, e As MouseEventArgs) Handles TsbFrame_OffsetDown.MouseDown
 
 
@@ -605,6 +616,11 @@ dBug:
 
     End Sub
 
+    ''' <summary>
+    ''' Handles toolbar button click to move the frame contents to the left
+    ''' </summary>
+    ''' <param name="sender">Object</param>
+    ''' <param name="e">MouseEventArgs</param>
     Private Sub TsbFrame_OffsetLeft_MouseDown(sender As Object, e As MouseEventArgs) Handles TsbFrame_OffsetLeft.MouseDown
 
 
@@ -619,6 +635,11 @@ dBug:
 
     End Sub
 
+    ''' <summary>
+    ''' Handles toolbar button click to move the frame contents to the right
+    ''' </summary>
+    ''' <param name="sender">Object</param>
+    ''' <param name="e">MouseEventArgs</param>
     Private Sub TsbFrame_OffsetRight_MouseDown(sender As Object, e As MouseEventArgs) Handles TsbFrame_OffsetRight.MouseDown
 
 
@@ -634,6 +655,11 @@ dBug:
 
     End Sub
 
+    ''' <summary>
+    ''' Handles toolbar button click to indicate whether this graphic has an extra frame or not
+    ''' </summary>
+    ''' <param name="sender">Object</param>
+    ''' <param name="e">EventArgs</param>
     Private Sub TsbGraphic_ExtraFrame_Click(sender As Object, e As EventArgs) Handles TsbGraphic_ExtraFrame.Click
 
         EditorGraphic.HasBackgroundFrame = Math.Abs(EditorGraphic.HasBackgroundFrame - 1)
@@ -654,55 +680,90 @@ dBug:
 
     End Sub
 
+    ''' <summary>
+    ''' Handles toolbar button click to show the previous frame
+    ''' </summary>
+    ''' <param name="sender">Object</param>
+    ''' <param name="e">EventArgs</param>
     Private Sub TsbFrame_IndexDecrease_Click(sender As Object, e As EventArgs) Handles TsbFrame_IndexDecrease.Click
 
         ' Change handled in slider control
         TbFrames.Value -= 1
 
+        ' Update preview
         MdlZTStudioUI.UpdateGUI("TsbFrame_IndexDecrease_Click")
 
     End Sub
 
-    Private Sub Tstools_ItemClicked(sender As Object, e As ToolStripItemClickedEventArgs) Handles TsTools.ItemClicked
 
-    End Sub
-
+    ''' <summary>
+    ''' Handles toolbar button click to delete PNG files in the root folder
+    ''' </summary>
+    ''' <param name="sender">Object</param>
+    ''' <param name="e">EventArgs</param>
     Private Sub TsbDelete_PNG_Click(sender As Object, e As EventArgs) Handles TsbDelete_PNG.Click
 
-        MdlTasks.CleanUp_files(Cfg_path_Root, ".png")
-        MsgBox("Finished clean up.", vbOKOnly + vbInformation, "Finished clean up.")
+        ' Clean up files is generic, hence the specific messagebox needs to be shown here
+        MdlTasks.CleanUp_Files(Cfg_Path_Root, ".png")
+        MdlZTStudio.InfoBox("MdlTasks", "CleanUp_Files", "Deleted all .PNG files in the root folder.")
 
     End Sub
 
+    ''' <summary>
+    ''' Handles toolbar button click to delete ZT1 Graphic files and color palettes in the root folder
+    ''' </summary>
+    ''' <param name="sender">Object</param>
+    ''' <param name="e">EventArgs</param>
     Private Sub TsbDelete_ZT1Files_Click(sender As Object, e As EventArgs) Handles TsbDelete_ZT1Files.Click
 
         ' Cleanup ZT1 Graphics and color palettes
-        MdlTasks.CleanUp_files(Cfg_path_Root, "")
-        MdlTasks.CleanUp_files(Cfg_path_Root, ".pal")
-        MsgBox("Finished clean up.", vbOKOnly + vbInformation, "Finished clean up.")
+        MdlTasks.CleanUp_Files(Cfg_Path_Root, "")
+        MdlTasks.CleanUp_Files(Cfg_Path_Root, ".pal")
+        MdlTasks.CleanUp_Files(Cfg_Path_Root, ".ani")
+        MdlZTStudio.InfoBox("MdlTasks", "CleanUp_Files", "Deleted all ZT1 Graphic files (including .ani and .pal) in the root folder.")
 
     End Sub
 
 
 
+    ''' <summary>
+    ''' Handles footprint (X) selection change
+    ''' </summary>
+    ''' <param name="sender">Object</param>
+    ''' <param name="e">EventArgs</param>
     Private Sub TsbFrame_fpX_SelectedIndexChanged(sender As Object, e As EventArgs) Handles TsbFrame_fpX.SelectedIndexChanged
 
+        ' Update setting and remember
         Cfg_grid_footPrintX = TsbFrame_fpX.Text
         MdlConfig.Write()
+
+        ' Update preview. Update frame info, not GUI (button states etc)
         MdlZTStudioUI.UpdatePreview(True, False)
 
     End Sub
 
+    ''' <summary>
+    ''' Handles footprint (Y) selection change
+    ''' </summary>
+    ''' <param name="sender">Object</param>
+    ''' <param name="e">EventArgs</param>
     Private Sub TsbFrame_fpY_SelectedIndexChanged(sender As Object, e As EventArgs) Handles TsbFrame_fpY.SelectedIndexChanged
 
-
+        ' Update setting and remember
         Cfg_grid_footPrintY = TsbFrame_fpY.Text
         MdlConfig.Write()
+
+        ' Update preview. Update frame info, not GUI (button states etc)
         MdlZTStudioUI.UpdatePreview(True, False)
 
     End Sub
 
 
+    ''' <summary>
+    ''' Handles double clicking a color in the datagridview (color palette on the right)
+    ''' </summary>
+    ''' <param name="sender">Object</param>
+    ''' <param name="e">DataGridViewCellEventArgs</param>
     Private Sub DgvPaletteMain_CellDoubleClick(sender As Object, e As DataGridViewCellEventArgs) Handles DgvPaletteMain.CellDoubleClick
 
         ' Actual row rather than header. Avoid crash.
@@ -713,12 +774,19 @@ dBug:
 
         End If
 
-
     End Sub
 
+
+    ''' <summary>
+    ''' Handles clicking a color in the datagridview (color palette on the right), triggers menu
+    ''' </summary>
+    ''' <param name="sender">Object</param>
+    ''' <param name="e">DataGridViewCellEventArgs</param>
     Private Sub DgvPaletteMain_CellMouseClick(sender As Object, e As DataGridViewCellMouseEventArgs) Handles DgvPaletteMain.CellMouseClick
 
         If e.RowIndex <> -1 Then
+
+            ' Set selected
             DgvPaletteMain.Rows(e.RowIndex).Selected = True
 
         End If
@@ -726,37 +794,58 @@ dBug:
 
         If e.Button = Windows.Forms.MouseButtons.Right Then
 
-            ' visible?
+            ' Which options to move the color up, down or to the end are enabled?
             mnuPal_MoveDown.Visible = (e.RowIndex <> DgvPaletteMain.Rows.Count - 1)
             mnuPal_MoveEnd.Visible = (e.RowIndex <> DgvPaletteMain.Rows.Count - 1)
             mnuPal_MoveUp.Visible = (e.RowIndex <> 0)
 
-            'mnuPal.Show(Me.dgvPaletteMain, e.Location)
+            ' Display menu
             MnuPal.Show(Cursor.Position)
 
         End If
 
     End Sub
 
+    ''' <summary>
+    ''' Handles clicking 'move color up' in the palette menu.
+    ''' </summary>
+    ''' <param name="sender">Object</param>
+    ''' <param name="e">EventArgs</param>
     Private Sub MnuPal_MoveUp_Click(sender As Object, e As EventArgs) Handles mnuPal_MoveUp.Click
 
         MdlColorPalette.MoveColor(DgvPaletteMain.SelectedRows(0).Index, DgvPaletteMain.SelectedRows(0).Index - 1)
 
     End Sub
+
+    ''' <summary>
+    ''' Handles clicking 'move color down' in the palette menu.
+    ''' </summary>
+    ''' <param name="sender">Object</param>
+    ''' <param name="e">EventArgs</param>
     Private Sub MnuPal_MoveDown_Click(sender As Object, e As EventArgs) Handles mnuPal_MoveDown.Click
 
-        MdlColorPalette.moveColor(DgvPaletteMain.SelectedRows(0).Index, DgvPaletteMain.SelectedRows(0).Index + 1)
+        MdlColorPalette.MoveColor(DgvPaletteMain.SelectedRows(0).Index, DgvPaletteMain.SelectedRows(0).Index + 1)
 
     End Sub
 
 
+    ''' <summary>
+    ''' Handles clicking 'replace color' in the palette menu.
+    ''' </summary>
+    ''' <param name="sender">Object</param>
+    ''' <param name="e">EventArgs</param>
     Private Sub MnuPal_Replace_Click(sender As Object, e As EventArgs) Handles mnuPal_Replace.Click
 
-        MdlColorPalette.replaceColor(DgvPaletteMain.SelectedRows(0).Index)
+        MdlColorPalette.ReplaceColor(DgvPaletteMain.SelectedRows(0).Index)
 
 
     End Sub
 
+    ''' <summary>
+    ''' Handles clicking 'move color to the end' in the palette menu.
+    ''' </summary>
+    ''' <param name="sender">Object</param>
+    ''' <param name="e">EventArgs</param>
     Private Sub MnuPal_MoveEnd_Click(sender As Object, e As EventArgs) Handles mnuPal_MoveEnd.Click
 
         MdlColorPalette.MoveColor(DgvPaletteMain.SelectedRows(0).Index, EditorGraphic.ColorPalette.Colors.Count - 1)
@@ -764,6 +853,11 @@ dBug:
 
     End Sub
 
+    ''' <summary>
+    ''' Handles clicking 'add color' in the palette menu.
+    ''' </summary>
+    ''' <param name="sender">Object</param>
+    ''' <param name="e">EventArgs</param>
     Private Sub MnuPal_Add_Click(sender As Object, e As EventArgs) Handles mnuPal_Add.Click
 
         ' Add after this entry
@@ -772,21 +866,23 @@ dBug:
     End Sub
 
 
+    ''' <summary>
+    ''' Handles toolbar button click to import a PNG image into the current frame (or a new one if right click)
+    ''' </summary>
+    ''' <param name="sender">Object</param>
+    ''' <param name="e">MouseEventArgs</param>
     Private Sub TsbFrame_ImportPNG_MouseDown(sender As Object, e As MouseEventArgs) Handles TsbFrame_ImportPNG.MouseDown
 
         ' Shortcut to create a new frame first, then import the PNG to it.
 
         If (e.Button = Windows.Forms.MouseButtons.Right) Then
             ' Add frame
-
-
 0:
-            Dim ZtFrame As New ClsFrame(EditorGraphic)
-2:
+            Dim ObjFrame As New ClsFrame(EditorGraphic)
 
 10:
             ' Add the frame after the existing one(s)
-            EditorGraphic.Frames.Insert(TbFrames.Value, ZtFrame)
+            EditorGraphic.Frames.Insert(TbFrames.Value, ObjFrame)
 
 15:
             ' not sure if this is right if an extra frame is applied?
@@ -795,6 +891,7 @@ dBug:
 16:
             TbFrames.Value += 1
 
+            ' Update current preview. Update frame info (offsets), GUI (button states, counts etc)
             MdlZTStudioUI.UpdatePreview(True, True, TbFrames.Value - 1)
 
         End If
@@ -807,11 +904,14 @@ dBug:
             .Title = "Pick a .PNG file"
             .DefaultExt = ""
             .Filter = "PNG files|*.png"
-            .InitialDirectory = System.IO.Path.GetDirectoryName(Cfg_path_recentPNG)
+
+            ' Suggest directory of most recently opened PNG
+            .InitialDirectory = New System.IO.FileInfo(Cfg_Path_RecentPNG).Directory.FullName
+
 
             ' If most recent directory does not exist anymore:
             If DlgOpen.InitialDirectory = vbNullString Or System.IO.Directory.Exists(DlgOpen.InitialDirectory) = False Then
-                .InitialDirectory = Cfg_path_Root
+                .InitialDirectory = Cfg_Path_Root
 
             End If
 
@@ -821,9 +921,13 @@ dBug:
                 If System.IO.File.Exists(DlgOpen.FileName) = True Then
 
                     If Path.GetExtension(DlgOpen.FileName).ToLower() <> ".png" Then
-                        MsgBox("You selected a file with the extension '" & Path.GetExtension(DlgOpen.FileName) & "'." & vbCrLf &
-                               "You need a file with a .PNG extension.",
-                               vbOKOnly + vbCritical, "Invalid file")
+
+                        Dim StrMessage As String = "" &
+                            "You selected a file with the extension '" & Path.GetExtension(DlgOpen.FileName) & "'." & vbCrLf &
+                            "You need a file with a .PNG extension."
+
+                        MdlZTStudio.HandledError(Me.GetType().FullName, "TsbFrame_ImportPNG_MouseDown", StrMessage)
+
                     Else
 
                         ' OK
@@ -839,16 +943,17 @@ dBug:
                         'editorBgGraphic.colorPalette.fillPaletteGrid(dgvPaletteMain)
 
                         ' Remember
-                        Cfg_path_recentPNG = New System.IO.FileInfo(DlgOpen.FileName).Directory.FullName
+                        Cfg_Path_RecentPNG = New System.IO.FileInfo(DlgOpen.FileName).Directory.FullName
                         MdlConfig.Write()
 
 
                     End If
                 Else
-                    MsgBox("File does not exist.", vbOKOnly + vbCritical, "Invalid file")
+                    MdlZTStudio.HandledError(Me.GetType().FullName, "TsbFrame_ImportPNG_MouseDown", "File does not exist.", False)
+
                 End If
 
-            End If ' End Cancel check
+            End If
 
 
         End With
@@ -858,6 +963,12 @@ dBug:
 
 
 
+
+    ''' <summary>
+    ''' Handles toolbar button click to import a PNG image into the current frame (or a new one if right click)
+    ''' </summary>
+    ''' <param name="sender">Object</param>
+    ''' <param name="e">EventArgs</param>
     Private Sub MnuPal_ExportPNG_Click(sender As Object, e As EventArgs) Handles mnuPal_ExportPNG.Click
 
         With DlgSave
@@ -865,18 +976,28 @@ dBug:
             .Title = "Save as a PNG Color Palette"
             .DefaultExt = ".png"
             .Filter = "PNG Color Palette files (*.png)|*.png|All files|*.*"
-            .InitialDirectory = System.IO.Path.GetDirectoryName(Cfg_path_recentZT1)
+
+            ' By default same directory as most recently picked ZT1 Graphic
+            .InitialDirectory = New System.IO.FileInfo(Cfg_Path_RecentZT1).Directory.FullName
 
             If .ShowDialog() <> Windows.Forms.DialogResult.Cancel Then
 
+                ' Export the frame to a PNG image
                 EditorGraphic.ColorPalette.ExportToPNG(DlgSave.FileName)
 
-            End If ' cancel check
+            End If
 
         End With
 
     End Sub
 
+
+
+    ''' <summary>
+    ''' Handles menu click to import a PNG image as a color palette
+    ''' </summary>
+    ''' <param name="sender">Object</param>
+    ''' <param name="e">EventArgs</param>
     Private Sub MnuPal_ImportPNG_Click(sender As Object, e As EventArgs) Handles mnuPal_ImportPNG.Click
 
 
@@ -886,7 +1007,9 @@ dBug:
             .Title = "Pick a PNG Color Palette"
             .DefaultExt = ".png"
             .Filter = "PNG Color Palette files (*.png)|*.png|All files|*.*"
-            .InitialDirectory = System.IO.Path.GetDirectoryName(Cfg_path_recentZT1)
+
+            ' By default, specify directory of last chosen PNG file
+            .InitialDirectory = New System.IO.FileInfo(Cfg_Path_RecentPNG).Directory.FullName
 
 
             If .ShowDialog() <> Windows.Forms.DialogResult.Cancel Then
@@ -902,16 +1025,18 @@ dBug:
                 ' Now after the color palette has been replaced, our preview must be updated
                 MdlZTStudioUI.UpdatePreview(True, True)
 
-            End If ' cancel check
+            End If
 
         End With
 
     End Sub
 
-    Private Sub Panel1_Paint(sender As Object, e As PaintEventArgs) Handles Panel1.Paint
 
-    End Sub
-
+    ''' <summary>
+    ''' Handles menu click to save as a ZT1 Color palette
+    ''' </summary>
+    ''' <param name="sender">Object</param>
+    ''' <param name="e">EventArgs</param>
     Private Sub MnuPal_SavePAL_Click(sender As Object, e As EventArgs) Handles mnuPal_SavePAL.Click
 
         With DlgSave
@@ -919,14 +1044,14 @@ dBug:
             .Title = "Save as a ZT1 Color Palette"
             .DefaultExt = ".pal"
             .Filter = "ZT1 Color Palette files (*.pal)|*.pal|All files|*.*"
-            .InitialDirectory = System.IO.Path.GetDirectoryName(Cfg_path_recentZT1)
+            .InitialDirectory = New System.IO.FileInfo(Cfg_Path_RecentZT1).Directory.FullName
 
-
+            ' If user didn't cancel, create ZT1 Color palette
             If .ShowDialog() <> Windows.Forms.DialogResult.Cancel Then
 
                 EditorGraphic.ColorPalette.WritePal(DlgSave.FileName, True)
 
-            End If ' cancel check
+            End If
 
 
         End With
@@ -934,10 +1059,10 @@ dBug:
     End Sub
 
     ''' <summary>
-    ''' Button triggers an action to import a GIMP Color Palette
+    ''' Handles menu click to import a GIMP Color Palette
     ''' </summary>
-    ''' <param name="sender"></param>
-    ''' <param name="e"></param>
+    ''' <param name="sender">Object</param>
+    ''' <param name="e">EventArgs</param>
     Private Sub MnuPal_ImportGimpPalette_Click(sender As Object, e As EventArgs) Handles mnuPal_ImportGimpPalette.Click
 
         With DlgOpen
@@ -945,8 +1070,11 @@ dBug:
             .Title = "Pick a GIMP Color Palette"
             .DefaultExt = ".gpl"
             .Filter = "GIMP Color Palette (*.gpl)|*.gpl|All files|*.*"
-            .InitialDirectory = System.IO.Path.GetDirectoryName(Cfg_path_recentZT1)
 
+            ' Uses most recent ZT1 Graphic path
+            .InitialDirectory = New System.IO.FileInfo(Cfg_Path_RecentZT1).Directory.FullName
+
+            ' If user didn't cancel, import GIMP Palette
             If .ShowDialog() <> Windows.Forms.DialogResult.Cancel Then
 
                 ' Replace palette file (should trigger a redraw of coreImageBitmap)
@@ -956,19 +1084,29 @@ dBug:
                 ' Update color list on the right
                 EditorGraphic.ColorPalette.FillPaletteGrid(DgvPaletteMain)
 
-            End If ' cancel check
+            End If
 
         End With
 
     End Sub
 
 
+    ''' <summary>
+    ''' Handles toolbar button click to batch rotation fix a set of graphics
+    ''' </summary>
+    ''' <param name="sender">Object</param>
+    ''' <param name="e">EventArgs</param>
     Private Sub TsbBatchRotFix_Click(sender As Object, e As EventArgs) Handles TsbBatchRotFix.Click
         FrmBatchOffsetFix.ShowDialog(Me)
 
     End Sub
 
 
+    ''' <summary>
+    ''' Handles toolbar button click to create a new ZT1 Graphic from scratch
+    ''' </summary>
+    ''' <param name="sender">Object</param>
+    ''' <param name="e">EventArgs</param>
 
     Private Sub TsbZT1New_Click(sender As Object, e As EventArgs) Handles TsbZT1New.Click
 
@@ -991,10 +1129,15 @@ dBug:
     End Sub
 
 
+    ''' <summary>
+    ''' Handles toolbar button click to save as a ZT1 Graphic
+    ''' </summary>
+    ''' <param name="sender">Object</param>
+    ''' <param name="e">MouseEventArgs</param>
     Private Sub TsbZT1Write_MouseDown(sender As Object, e As MouseEventArgs) Handles TsbZT1Write.MouseDown
 
         If EditorGraphic.Frames.Count = 0 Then
-            MdlZTStudio.ExpectedError(Me.GetType().FullName, "TsbZT1Write_MouseDown", "You can't create a ZT1 Graphic without adding a frame first.")
+            MdlZTStudio.HandledError(Me.GetType().FullName, "TsbZT1Write_MouseDown", "You can't create a ZT1 Graphic without adding a frame first.")
             Exit Sub
         End If
 
@@ -1003,6 +1146,7 @@ dBug:
             ' Shortcut to saving directly
             If File.Exists(EditorGraphic.FileName) = True Then
 
+                ' Save graphic (existing graphic, overwrite)
                 MdlTasks.Save_Graphic(EditorGraphic.FileName)
                 MdlConfig.Write()
 
@@ -1020,14 +1164,15 @@ dBug:
             .Title = "Save ZT1 Graphic"
             .DefaultExt = ""
             .AddExtension = True
-            .InitialDirectory = New FileInfo(Cfg_path_recentZT1).Directory.FullName
-            .FileName = Cfg_path_recentZT1
+            .FileName = Cfg_Path_RecentZT1
             .Filter = "ZT1 Graphics|*"
+
+            .InitialDirectory = New FileInfo(Cfg_Path_RecentZT1).Directory.FullName
 
             If .ShowDialog() <> Windows.Forms.DialogResult.Cancel Then
 
                 If Path.GetExtension(DlgSave.FileName).ToLower() <> "" Then
-                    MsgBox("A ZT1 Graphic file does not have a file extension.", vbOKOnly + vbCritical, "Invalid filename")
+                    MdlZTStudio.HandledError(Me.GetType().FullName, "TsbZT1Write_MouseDown", "A ZT1 Graphic file does not have a file extension.")
                     Exit Sub
 
                 End If
@@ -1037,7 +1182,7 @@ dBug:
 
 60:
                 ' Remember
-                Cfg_path_recentZT1 = DlgSave.FileName
+                Cfg_Path_RecentZT1 = DlgSave.FileName
                 MdlConfig.Write()
 
                 ' What has been opened, might need to be saved.
@@ -1055,16 +1200,27 @@ dBug:
 
 
 
+    ''' <summary>
+    ''' Handles check change to start/stop playing animation
+    ''' </summary>
+    ''' <param name="sender">Object</param>
+    ''' <param name="e">MouseEventArgs</param>
     Private Sub ChkPlayAnimation_CheckedChanged(sender As Object, e As EventArgs) Handles ChkPlayAnimation.CheckedChanged
 
+        ' Set timer to the specified graphic's animationspeed
+        ' Enable/disable timer
         TmrAnimation.Interval = EditorGraphic.AnimationSpeed
         TmrAnimation.Enabled = ChkPlayAnimation.Checked
-
 
     End Sub
 
 
 
+    ''' <summary>
+    ''' Handles selection of a graphic in the Explorer Pane
+    ''' </summary>
+    ''' <param name="sender">Object</param>
+    ''' <param name="e">TreeViewEventArgs</param>
     Private Sub TVExplorer_AfterSelect(sender As Object, e As TreeViewEventArgs) Handles TVExplorer.AfterSelect
 
         MdlZTStudio.Trace(Me.GetType().FullName, "TVExplorer_AfterSelect", "Selected node " & e.Node.Text & " -> " & e.Node.Name)
@@ -1099,8 +1255,8 @@ dBug:
     ''' <summary>
     ''' Handles confirmation of new offset (on Enter)
     ''' </summary>
-    ''' <param name="sender"></param>
-    ''' <param name="e"></param>
+    ''' <param name="sender">Object</param>
+    ''' <param name="e">KeyEventArgs</param>
     Private Sub TstOffsetX_KeyDown(sender As Object, e As KeyEventArgs) Handles TstOffsetX.KeyDown
 
         ' On enter
@@ -1112,10 +1268,10 @@ dBug:
             ' Suspend checking, user is most likely still busy changing this value
             Exit Sub
         ElseIf IsNumeric(TstOffsetX.Text) = False Then
-            MdlZTStudio.ExpectedError(Me.GetType().FullName, "TstOffsetX_TextChanged", "Offset should be a numerical value between -32767 and 32767")
+            MdlZTStudio.HandledError(Me.GetType().FullName, "TstOffsetX_TextChanged", "Offset should be a numerical value between -32767 and 32767")
             Exit Sub
         ElseIf CInt(TstOffsetX.Text) < -32767 Or CInt(TstOffsetX.Text) > 32767 Then
-            MdlZTStudio.ExpectedError(Me.GetType().FullName, "TstOffsetX_TextChanged", "Offset should be a numerical value between -32767 and 32767")
+            MdlZTStudio.HandledError(Me.GetType().FullName, "TstOffsetX_TextChanged", "Offset should be a numerical value between -32767 and 32767")
             Exit Sub
         End If
 
@@ -1134,8 +1290,8 @@ dBug:
     ''' <summary>
     ''' Handles confirmation of new offset (on Enter)
     ''' </summary>
-    ''' <param name="sender"></param>
-    ''' <param name="e"></param>
+    ''' <param name="sender">Object</param>
+    ''' <param name="e">KeyEventArgs</param>
     Private Sub TstOffsetY_KeyDown(sender As Object, e As KeyEventArgs) Handles TstOffsetY.KeyDown
 
         ' On enter
@@ -1147,10 +1303,10 @@ dBug:
             ' Suspend checking, user is most likely still busy changing this value
             Exit Sub
         ElseIf IsNumeric(TstOffsetY.Text) = False Then
-            MdlZTStudio.ExpectedError(Me.GetType().FullName, "TstOffsetY_TextChanged", "Offset should be a numerical value between -32767 and 32767")
+            MdlZTStudio.HandledError(Me.GetType().FullName, "TstOffsetY_TextChanged", "Offset should be a numerical value between -32767 and 32767")
             Exit Sub
         ElseIf CInt(TstOffsetY.Text) < -32767 Or CInt(TstOffsetY.Text) > 32767 Then
-            MdlZTStudio.ExpectedError(Me.GetType().FullName, "TstOffsetY_TextChanged", "Offset should be a numerical value between -32767 and 32767")
+            MdlZTStudio.HandledError(Me.GetType().FullName, "TstOffsetY_TextChanged", "Offset should be a numerical value between -32767 and 32767")
             Exit Sub
         End If
 
@@ -1212,14 +1368,14 @@ dBug:
         ElseIf IsNumeric(TstZT1_AnimSpeed.Text) = False Then
 
             ' Not numeric = invalid
-            MdlZTStudio.ExpectedError(Me.GetType().FullName, "TstZT1_AnimSpeed_TextChanged", "The animation speed should be a number of milliseconds.")
+            MdlZTStudio.HandledError(Me.GetType().FullName, "TstZT1_AnimSpeed_TextChanged", "The animation speed should be a number of milliseconds.")
             Exit Sub
 
         ElseIf CInt(TstZT1_AnimSpeed.Text) < 1 Or (CInt(TstZT1_AnimSpeed.Text) > 1000) Then
 
             ' Not in a valid range. Theoretically, the interval could be much higher.
             ' In practical ways, it should never be.
-            MdlZTStudio.ExpectedError(Me.GetType().FullName, "TstZT1_AnimSpeed_TextChanged", "Invalid value for animation speed. Expecting a value between 1 and 1000 milliseconds.")
+            MdlZTStudio.HandledError(Me.GetType().FullName, "TstZT1_AnimSpeed_TextChanged", "Invalid value for animation speed. Expecting a value between 1 and 1000 milliseconds.")
             Exit Sub
 
         End If
@@ -1259,7 +1415,4 @@ dBug:
 
     End Sub
 
-    Private Sub TsbZT1Write_Click(sender As Object, e As EventArgs) Handles TsbZT1Write.Click
-
-    End Sub
 End Class

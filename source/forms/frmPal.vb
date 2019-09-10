@@ -14,7 +14,7 @@ Public Class FrmPal
         ' If no main graphic has been loaded or created with at least 1 frame, there is nothing to replace.
         If IsNothing(EditorGraphic.Frames) Then
 
-            MdlZTStudio.ExpectedError(Me.GetType().FullName, "BtnUseInMainPal_Click", "You will need to open a ZT1 graphic file first before you can use this recolor feature.")
+            MdlZTStudio.HandledError(Me.GetType().FullName, "BtnUseInMainPal_Click", "You will need to open a ZT1 graphic file first before you can use this recolor feature.")
             Exit Sub
 
         End If
@@ -23,7 +23,7 @@ Public Class FrmPal
 
         ' Can't be negative (main color palette color count is smaller than the count of this palette)
         If IntMaxColorIndex < 1 Then
-            MdlZTStudio.ExpectedError(Me.GetType().FullName, "BtnUseInMainPal_Click", "The color palette in the main window has less colors than this palette. Replacing is not possible.")
+            MdlZTStudio.HandledError(Me.GetType().FullName, "BtnUseInMainPal_Click", "The color palette in the main window has less colors than this palette. Replacing is not possible.")
             Exit Sub
         End If
 
@@ -40,12 +40,12 @@ Public Class FrmPal
         ElseIf IsNumeric(strInput) = False Then
 
             ' Verify
-            MdlZTStudio.ExpectedError(Me.GetType().FullName, "BtnUseInMainPal_Click", "You need to specify a positive number, at least 1 and maximum " & intmaxcolorindex & ".")
+            MdlZTStudio.HandledError(Me.GetType().FullName, "BtnUseInMainPal_Click", "You need to specify a positive number, at least 1 and maximum " & IntMaxColorIndex & ".")
             Exit Sub
 
-        ElseIf Int(strInput) > intmaxcolorindex Then
+        ElseIf Int(strInput) > IntMaxColorIndex Then
 
-            MdlZTStudio.ExpectedError(Me.GetType().FullName, "BtnUseInMainPal_Click", "You need to specify a positive number, at least 1 and maximum " & intmaxcolorindex & ".")
+            MdlZTStudio.HandledError(Me.GetType().FullName, "BtnUseInMainPal_Click", "You need to specify a positive number, at least 1 and maximum " & IntMaxColorIndex & ".")
             Exit Sub
 
         End If

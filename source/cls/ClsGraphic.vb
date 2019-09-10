@@ -269,7 +269,7 @@ Public Class ClsGraphic
 
 dBg:
         ' Unexpected error
-        MdlZTStudio.UnexpectedError(Me.GetType().FullName, "Read", Information.Err)
+        MdlZTStudio.UnhandledError(Me.GetType().FullName, "Read", Information.Err)
 
     End Sub
 
@@ -314,12 +314,12 @@ dBg:
 
         Dim StrPalName As String = Me.ColorPalette.FileName
         StrPalName = Strings.Replace(StrPalName, "\", "/")
-        StrPalName = Strings.Replace(StrPalName, Strings.Replace(Cfg_path_Root, "\", "/") & "/", "", , , CompareMethod.Text)
+        StrPalName = Strings.Replace(StrPalName, Strings.Replace(Cfg_Path_Root, "\", "/") & "/", "", , , CompareMethod.Text)
 
         With LstHexGraphic
 
             ' === Always ZTAF? Or background frame ===
-            If (Me.HasBackgroundFrame = 1 Or Cfg_export_ZT1_AlwaysAddZTAFBytes = 1) Then
+            If (Me.HasBackgroundFrame = 1 Or Cfg_Export_ZT1_AlwaysAddZTAFBytes = 1) Then
 
                 ' "FATZ" - reversed hex for Zoo  Tycoon Animation File.
                 .Add("46", False)
@@ -343,10 +343,10 @@ dBg:
             End If
 
             ' === Animation speed ===
-            .AddRange(Strings.Split((Me.AnimationSpeed).ToString("X8").ReverseHEX(), " "), False)
+            .AddRange(Strings.Split((Me.AnimationSpeed).ToString("X8").ReverseHex(), " "), False)
 
             ' === Palette file name length ===
-            .AddRange(Strings.Split((StrPalName.Length + 1).ToString("X8").ReverseHEX(), " "), False)
+            .AddRange(Strings.Split((StrPalName.Length + 1).ToString("X8").ReverseHex(), " "), False)
 
             ' === Palette file name ===
             For Each StrChar As Char In StrPalName
@@ -356,7 +356,7 @@ dBg:
 
             ' === Number of frames ====
             ' Limit - todo: find out if the theoretical number of frames is 255 (FF - X2) or the number can be larger (other bytes?)
-            .AddRange(Strings.Split((Me.Frames.Count - Me.HasBackgroundFrame).ToString("X8").ReverseHEX(), " "), False)
+            .AddRange(Strings.Split((Me.Frames.Count - Me.HasBackgroundFrame).ToString("X8").ReverseHex(), " "), False)
 
             ' === Find out the total length. This could be a lot. Todo: determine limit. ===
 
@@ -375,7 +375,7 @@ dBg:
                 LstHexFrame = ObjFrame.CoreImageHex
 
                 ' Specify number of bytes of this frame first.
-                LstHexSub.AddRange(Strings.Split(LstHexFrame.Count.ToString("X8").ReverseHEX(), " "), False)
+                LstHexSub.AddRange(Strings.Split(LstHexFrame.Count.ToString("X8").ReverseHex(), " "), False)
 
                 ' Add those frame bytes.
                 LstHexSub.AddRange(LstHexFrame, False)
@@ -421,7 +421,7 @@ dBg:
         Exit Sub
 
 dBug:
-        MdlZTStudio.UnexpectedError(Me.GetType().FullName, "Write", Information.Err)
+        MdlZTStudio.UnhandledError(Me.GetType().FullName, "Write", Information.Err)
 
     End Sub
 

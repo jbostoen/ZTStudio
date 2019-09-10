@@ -66,11 +66,11 @@ Module MdlColorPalette
     Sub AddColor(IntIndexNow As Integer)
 
         If EditorGraphic.ColorPalette.Colors.Count = 256 Then
-            MdlZTStudio.ExpectedError("MdlColorPalette", "AddColor", "You can't add any more colors to this palette." & vbCrLf & "The maximum of 255 (+1 transparent) colors has been reached.")
+            MdlZTStudio.HandledError("MdlColorPalette", "AddColor", "You can't add any more colors to this palette." & vbCrLf & "The maximum of 255 (+1 transparent) colors has been reached.")
         End If
 
         ' Get color
-        Dim ObjColor As System.Drawing.Color = Cfg_grid_BackGroundColor
+        Dim ObjColor As System.Drawing.Color = Cfg_Grid_BackGroundColor
 
         With FrmMain.DlgColor
             .Color = ObjColor
@@ -103,13 +103,13 @@ Module MdlColorPalette
         If File.Exists(StrFileName) Then
 
             If Path.GetExtension(StrFileName) <> ".pal" Then
-                MdlZTStudio.ExpectedError("MdlColorPalette", "LoadPalette", "You did not select a ZT1 Color Palette (.pal file).")
+                MdlZTStudio.HandledError("MdlColorPalette", "LoadPalette", "You did not select a ZT1 Color Palette (.pal file).")
 
             Else
 
                 ' Show a dedicated window
                 Dim CpPallete As New ClsPalette(Nothing)
-                Dim FrmColPal As New frmPal
+                Dim FrmColPal As New FrmPal
 
                 ' Read the .pal file
                 CpPallete.ReadPal(StrFileName)
@@ -122,7 +122,7 @@ Module MdlColorPalette
             End If
 
         Else
-            MdlZTStudio.ExpectedError("MdlColorPalette", "LoadPalette", "Could not find '" & StrFileName & "'")
+            MdlZTStudio.HandledError("MdlColorPalette", "LoadPalette", "Could not find '" & StrFileName & "'")
         End If
 
     End Sub

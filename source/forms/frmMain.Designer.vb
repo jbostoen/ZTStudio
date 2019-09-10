@@ -105,19 +105,19 @@ Partial Class FrmMain
         Me.mnuPal_ExportPNG = New System.Windows.Forms.ToolStripMenuItem()
         Me.mnuPal_ImportPNG = New System.Windows.Forms.ToolStripMenuItem()
         Me.mnuPal_ImportGimpPalette = New System.Windows.Forms.ToolStripMenuItem()
-        CType(Me.PicBox, System.ComponentModel.ISupportInitialize).BeginInit
-        Me.TsZT1Graphic.SuspendLayout
-        Me.Panel1.SuspendLayout
-        Me.GBAnimation.SuspendLayout
-        CType(Me.TbFrames, System.ComponentModel.ISupportInitialize).BeginInit
-        Me.GBOtherViews.SuspendLayout
-        Me.GBColors.SuspendLayout
-        Me.SsBar.SuspendLayout
-        CType(Me.DgvPaletteMain, System.ComponentModel.ISupportInitialize).BeginInit
-        Me.TsFrame.SuspendLayout
-        Me.TsTools.SuspendLayout
-        Me.MnuPal.SuspendLayout
-        Me.SuspendLayout
+        CType(Me.PicBox, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.TsZT1Graphic.SuspendLayout()
+        Me.Panel1.SuspendLayout()
+        Me.GBAnimation.SuspendLayout()
+        CType(Me.TbFrames, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.GBOtherViews.SuspendLayout()
+        Me.GBColors.SuspendLayout()
+        Me.SsBar.SuspendLayout()
+        CType(Me.DgvPaletteMain, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.TsFrame.SuspendLayout()
+        Me.TsTools.SuspendLayout()
+        Me.MnuPal.SuspendLayout()
+        Me.SuspendLayout()
         '
         'PicBox
         '
@@ -668,7 +668,7 @@ Partial Class FrmMain
         Me.TsbDelete_ZT1Files.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.TsbDelete_ZT1Files.Name = "TsbDelete_ZT1Files"
         Me.TsbDelete_ZT1Files.Size = New System.Drawing.Size(36, 36)
-        Me.TsbDelete_ZT1Files.Text = "Delete all ZT1 Graphics and color palettes in the root folder"
+        Me.TsbDelete_ZT1Files.Text = "Delete all ZT1 Graphics, .ani-files and color palettes in the root folder"
         '
         'TsbDelete_PNG
         '
@@ -807,27 +807,27 @@ Partial Class FrmMain
         Me.Name = "FrmMain"
         Me.Text = "ZT Studio"
         Me.WindowState = System.Windows.Forms.FormWindowState.Maximized
-        CType(Me.PicBox, System.ComponentModel.ISupportInitialize).EndInit
+        CType(Me.PicBox, System.ComponentModel.ISupportInitialize).EndInit()
         Me.TsZT1Graphic.ResumeLayout(False)
-        Me.TsZT1Graphic.PerformLayout
+        Me.TsZT1Graphic.PerformLayout()
         Me.Panel1.ResumeLayout(False)
-        Me.Panel1.PerformLayout
+        Me.Panel1.PerformLayout()
         Me.GBAnimation.ResumeLayout(False)
-        Me.GBAnimation.PerformLayout
-        CType(Me.TbFrames, System.ComponentModel.ISupportInitialize).EndInit
+        Me.GBAnimation.PerformLayout()
+        CType(Me.TbFrames, System.ComponentModel.ISupportInitialize).EndInit()
         Me.GBOtherViews.ResumeLayout(False)
         Me.GBColors.ResumeLayout(False)
-        Me.GBColors.PerformLayout
+        Me.GBColors.PerformLayout()
         Me.SsBar.ResumeLayout(False)
-        Me.SsBar.PerformLayout
-        CType(Me.DgvPaletteMain, System.ComponentModel.ISupportInitialize).EndInit
+        Me.SsBar.PerformLayout()
+        CType(Me.DgvPaletteMain, System.ComponentModel.ISupportInitialize).EndInit()
         Me.TsFrame.ResumeLayout(False)
-        Me.TsFrame.PerformLayout
+        Me.TsFrame.PerformLayout()
         Me.TsTools.ResumeLayout(False)
-        Me.TsTools.PerformLayout
+        Me.TsTools.PerformLayout()
         Me.MnuPal.ResumeLayout(False)
         Me.ResumeLayout(False)
-        Me.PerformLayout
+        Me.PerformLayout()
 
     End Sub
     Friend WithEvents PicBox As System.Windows.Forms.PictureBox

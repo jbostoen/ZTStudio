@@ -170,7 +170,7 @@ Module MdlZTStudio
         Exit Sub
 
 dBug:
-        MdlZTStudio.UnexpectedError("MdlZTStudio", "StartUp", Information.Err)
+        MdlZTStudio.UnhandledError("MdlZTStudio", "StartUp", Information.Err)
 
 
     End Sub
@@ -183,7 +183,7 @@ dBug:
     ''' <param name="StrClass">Class </param>
     ''' <param name="StrMethod">Method</param>
     ''' <param name="ObjError">Error object (contains number and message)</param>
-    Sub UnexpectedError(StrClass As String, strMethod As String, ObjError As ErrObject)
+    Sub UnhandledError(StrClass As String, strMethod As String, ObjError As ErrObject)
 
         MdlZTStudio.Trace(StrClass, strMethod, "Unexpected error occurred in " & StrClass & "::" & strMethod & "()")
 
@@ -212,7 +212,7 @@ dBug:
     ''' <param name="StrMessage">Message</param>
     ''' <param name="BlnFatal">Fatal error. Defaults to false.</param>
     ''' <param name="ObjError">Error object (contains number and message). Defaults to Nothing.</param>
-    Sub ExpectedError(StrClass As String, strMethod As String, StrMessage As String, Optional BlnFatal As Boolean = False, Optional ObjError As ErrObject = Nothing)
+    Sub HandledError(StrClass As String, strMethod As String, StrMessage As String, Optional BlnFatal As Boolean = False, Optional ObjError As ErrObject = Nothing)
 
         If BlnFatal = True Then
             StrMessage = StrMessage & vbCrLf & vbCrLf & "Since this error may lead to other issues, " & Application.ProductName & " will now close completely."

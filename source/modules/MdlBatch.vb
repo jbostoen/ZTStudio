@@ -53,7 +53,7 @@ Module MdlBatch
         Exit Sub
 
 dBug:
-        MdlZTStudio.UnexpectedError("MdlBatch", "WriteAniFile", Information.Err)
+        MdlZTStudio.UnhandledError("MdlBatch", "WriteAniFile", Information.Err)
 
     End Sub
 

@@ -216,7 +216,7 @@ Public Class ClsFrame
         Exit Function
 
 dBug:
-        MdlZTStudio.UnexpectedError(Me.GetType().FullName, "GetCoreImageBitmap", Information.Err)
+        MdlZTStudio.UnhandledError(Me.GetType().FullName, "GetCoreImageBitmap", Information.Err)
 
     End Function
 
@@ -254,8 +254,8 @@ dBug:
                 ' Draw on transparent canvas (most common scenario)
                 ' It's important to keep in mind that the canvas is by default 2 * Cfg_grid_numPixels, both in width and in height.
                 ' So these variables will actually contain the top left pixel of the (four pixel) center.
-                IntWidth = Cfg_grid_numPixels
-                IntHeight = Cfg_grid_numPixels
+                IntWidth = Cfg_Grid_NumPixels
+                IntHeight = Cfg_Grid_NumPixels
             Case True
                 ' Convert everything relative to the center. Method contributed by HENDRIX.
                 ' The idea is to generate a canvas around the center. By adding some spacing to the left/right or top/bottom, 
@@ -301,7 +301,7 @@ dBug:
         Exit Function
 
 dBug:
-        MdlZTStudio.UnexpectedError(Me.GetType().FullName, "GetCoreImageBitmapOnTransparentCanvas", Information.Err)
+        MdlZTStudio.UnhandledError(Me.GetType().FullName, "GetCoreImageBitmapOnTransparentCanvas", Information.Err)
 
     End Function
 
@@ -327,13 +327,13 @@ dBug:
 
 11:
         ' Draw 'extra' background frame, e.g. restaurants?
-        If Me.Parent.HasBackgroundFrame = 1 And Cfg_export_PNG_RenderBGFrame = 1 Then
+        If Me.Parent.HasBackgroundFrame = 1 And Cfg_Export_PNG_RenderBGFrame = 1 Then
             BmOutput = MdlBitMap.CombineImages(Me.Parent.Frames(Me.Parent.Frames.Count - 1).GetCoreImageBitmapOnTransparentCanvas(BlnCentered), BmOutput)
         End If
 
 21:
         ' Optional background ZT1 Graphic frame, e.g. animal + toy?
-        If EditorBgGraphic.Frames.Count > 0 And Cfg_export_PNG_RenderBGZT1 = 1 Then
+        If EditorBgGraphic.Frames.Count > 0 And Cfg_Export_PNG_RenderBGZT1 = 1 Then
             ' Currently it's always the 
             BmOutput = MdlBitMap.CombineImages(EditorBgGraphic.Frames(0).GetCoreImageBitmapOnTransparentCanvas(BlnCentered), BmOutput)
         End If
@@ -351,7 +351,7 @@ dBug:
         Exit Function
 
 dBug:
-        MdlZTStudio.UnexpectedError(Me.GetType().FullName, "GetImage", Information.Err)
+        MdlZTStudio.UnhandledError(Me.GetType().FullName, "GetImage", Information.Err)
 
 
     End Function
@@ -637,7 +637,7 @@ dBug2:
         On Error GoTo dBug
 200:
         ' By default, this applies to all frames (config setting)
-        If Cfg_editor_rotFix_individualFrame <> 1 Or BlnBatchFix = True Then
+        If Cfg_Editor_RotFix_IndividualFrame <> 1 Or BlnBatchFix = True Then
 
             ' Process every frame
             For Each ztFrame As ClsFrame In Me.Parent.Frames
@@ -654,12 +654,12 @@ dBug2:
                     ' Valid offsets?
                     Dim StrHintOffset As String = "Problem with a frame. Valid {0} offset should (theoretically, still untested) be between -32768 and 32767."
                     If ztFrame.OffsetX < -32768 Or ztFrame.OffsetX > 32767 Then
-                        MdlZTStudio.ExpectedError(Me.GetType().FullName, "ClsFrame_UpdateOffsets", String.Format(StrHintOffset, "X"), True)
+                        MdlZTStudio.HandledError(Me.GetType().FullName, "ClsFrame_UpdateOffsets", String.Format(StrHintOffset, "X"), True)
                         Exit Sub
                     End If
 
                     If ztFrame.OffsetY < -32768 Or ztFrame.OffsetY > 32767 Then
-                        MdlZTStudio.ExpectedError(Me.GetType().FullName, "ClsFrame_UpdateOffsets", String.Format(StrHintOffset, "Y"), True)
+                        MdlZTStudio.HandledError(Me.GetType().FullName, "ClsFrame_UpdateOffsets", String.Format(StrHintOffset, "Y"), True)
                         Exit Sub
                     End If
 
@@ -731,7 +731,7 @@ dBug2:
         Exit Sub
 
 dBug:
-        MdlZTStudio.UnexpectedError(Me.GetType().FullName, "UpdateOffsets", Information.Err)
+        MdlZTStudio.UnhandledError(Me.GetType().FullName, "UpdateOffsets", Information.Err)
 
 
     End Sub
@@ -771,7 +771,7 @@ dBug:
 
 dBug:
 
-        MdlZTStudio.UnexpectedError(Me.GetType().FullName, "UpdateIndex", Information.Err)
+        MdlZTStudio.UnhandledError(Me.GetType().FullName, "UpdateIndex", Information.Err)
 
     End Sub
 
@@ -845,7 +845,7 @@ dBug:
         Exit Sub
 
 dBug:
-        MdlZTStudio.UnexpectedError(Me.GetType().FullName, "LoadPNG", Information.Err)
+        MdlZTStudio.UnhandledError(Me.GetType().FullName, "LoadPNG", Information.Err)
 
     End Sub
 
@@ -1093,7 +1093,7 @@ dBug:
         Exit Function
 
 dBug:
-        MdlZTStudio.UnexpectedError(Me.GetType().FullName, "BitMapToHex", Information.Err)
+        MdlZTStudio.UnhandledError(Me.GetType().FullName, "BitMapToHex", Information.Err)
 
 
     End Function
@@ -1115,7 +1115,7 @@ dBug:
         ' 2 = relevant pixel area of frame
         ' 3 = around the grid origin of frame
 
-        Select Case Cfg_export_PNG_CanvasSize
+        Select Case Cfg_Export_PNG_CanvasSize
 
 
             Case 0
@@ -1123,12 +1123,12 @@ dBug:
 21:
 
                 Dim ImgComb As Image
-                ImgComb = New Bitmap(Cfg_grid_numPixels * 2, Cfg_grid_numPixels * 2)
+                ImgComb = New Bitmap(Cfg_Grid_NumPixels * 2, Cfg_Grid_NumPixels * 2)
 
 32:
                 ' Use ZT Studio's main window background color (transparent) or export with an entirely transparent background (user's choice)
                 Using ObjGraphic As Graphics = Graphics.FromImage(ImgComb)
-                    ObjGraphic.Clear(IIf(Cfg_export_PNG_TransparentBG = 0, Cfg_grid_BackGroundColor, Color.Transparent))
+                    ObjGraphic.Clear(IIf(Cfg_Export_PNG_TransparentBG = 0, Cfg_Grid_BackGroundColor, Color.Transparent))
                 End Using
 
 35:
@@ -1142,12 +1142,12 @@ dBug:
                 ' Some caching might be in order in the future :)
 
                 Dim ImgComb As Image
-                ImgComb = New Bitmap(Cfg_grid_numPixels * 2, Cfg_grid_numPixels * 2)
+                ImgComb = New Bitmap(Cfg_Grid_NumPixels * 2, Cfg_Grid_NumPixels * 2)
 
 132:
                 ' Use ZT Studio's main window background color (transparent) or export with an entirely transparent background (user's choice)
                 Using ObjGraphic As Graphics = Graphics.FromImage(ImgComb)
-                    ObjGraphic.Clear(IIf(Cfg_export_PNG_TransparentBG = 0, Cfg_grid_BackGroundColor, Color.Transparent))
+                    ObjGraphic.Clear(IIf(Cfg_Export_PNG_TransparentBG = 0, Cfg_Grid_BackGroundColor, Color.Transparent))
                 End Using
 135:
 
@@ -1180,7 +1180,7 @@ dBug:
         Exit Sub
 
 dBug:
-        MdlZTStudio.UnexpectedError(Me.GetType().FullName, "SavePNG", Information.Err)
+        MdlZTStudio.UnhandledError(Me.GetType().FullName, "SavePNG", Information.Err)
 
 
     End Sub

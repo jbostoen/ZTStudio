@@ -183,7 +183,7 @@ Public Class ClsAniFile
         Exit Function
 
 dBug:
-        MdlZTStudio.UnexpectedError(Me.GetType().FullName, "Write", Information.Err)
+        MdlZTStudio.UnhandledError(Me.GetType().FullName, "Write", Information.Err)
 
 
     End Function
@@ -214,7 +214,7 @@ dBug:
         If Me.FileName = "" Then
 
             ' Is there any path which leads up to this error?
-            MdlZTStudio.ExpectedError(Me.GetType().FullName, "ClsAniFile", "Unexpected error: filename for .ani file is empty?", True, Information.Err)
+            MdlZTStudio.HandledError(Me.GetType().FullName, "ClsAniFile", "Unexpected error: filename for .ani file is empty?", True, Information.Err)
 
         Else
 
@@ -223,8 +223,8 @@ dBug:
             ' This is the full path and the relative path of the .ani file
             Dim StrPath As String = Path.GetDirectoryName(Me.FileName)
             Dim StrPathRelative As String
-            StrPathRelative = Strings.Replace(StrPath, Cfg_path_Root & "\", "")
-            StrPathRelative = Strings.Replace(StrPathRelative, Cfg_path_Root, "")
+            StrPathRelative = Strings.Replace(StrPath, Cfg_Path_Root & "\", "")
+            StrPathRelative = Strings.Replace(StrPathRelative, Cfg_Path_Root, "")
             Dim ObjGraphic As New ClsGraphic(Nothing)
 
             MdlZTStudio.Trace(Me.GetType().FullName, "CreateAniConfig", "Ani path: * " & StrPath & " -> " & StrPathRelative)
@@ -362,7 +362,7 @@ dBug:
         Exit Sub
 
 dBug:
-        MdlZTStudio.UnexpectedError(Me.GetType().FullName, "CreateAniConfig", Information.Err)
+        MdlZTStudio.UnhandledError(Me.GetType().FullName, "CreateAniConfig", Information.Err)
 
     End Sub
 

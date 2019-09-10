@@ -10,7 +10,7 @@ Imports System.Runtime.InteropServices
 Module MdlTasks
 
 
-    Public Function CleanUp_files(strPath As String, strExtension As String) As Integer
+    Public Function CleanUp_Files(strPath As String, strExtension As String) As Integer
 
         ' Expected as strExtension:
         ' ".png"
@@ -72,7 +72,6 @@ Module MdlTasks
             System.IO.File.Delete(f)
         Next
 
-        Return 0
 
 dBug:
 

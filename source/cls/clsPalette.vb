@@ -71,7 +71,7 @@ Public Class ClsPalette
         ' File does not exist.
         If File.Exists(Me.FileName) = False Then
             ' Fatal error if used for a graphic. Any further processing of graphics could lead to issues.
-            MdlZTStudio.ExpectedError(Me.GetType().FullName, "ReadPal", "Could not find '" & Pal_FileName & "'", (IsNothing(Me.Parent) = False))
+            MdlZTStudio.HandledError(Me.GetType().FullName, "ReadPal", "Could not find '" & Pal_FileName & "'", (IsNothing(Me.Parent) = False))
         End If
 
         ' Read full file.
@@ -96,7 +96,7 @@ Public Class ClsPalette
 
             MdlZTStudio.Trace(Me.GetType().FullName, "ReadPal", "Color is " & ObjColor.ToArgb().ToString())
 
-            Me.Colors.Add(objColor, False)
+            Me.Colors.Add(ObjColor, False)
 
             ' Remove these bytes
             ArrHex = ArrHex.Skip(4).ToArray()
@@ -165,7 +165,7 @@ Public Class ClsPalette
         If Me.Colors.Count = 0 Then
             ' This is a new color palette with no colors defined yet.
             ' Define the first color (transparent color) in this palette.
-            Me.Colors.Add(System.Drawing.Color.FromArgb(0, Cfg_grid_BackGroundColor), False)
+            Me.Colors.Add(System.Drawing.Color.FromArgb(0, Cfg_Grid_BackGroundColor), False)
         End If
 
         ' Store so we don't need to call both .Contains() and .LastIndexOf()
@@ -184,7 +184,7 @@ Public Class ClsPalette
             ' However, the .PNG contained a color with with alpha = 0 (transparent)
             Return 0
 
-        ElseIf ObjColor = Cfg_grid_BackGroundColor Then
+        ElseIf ObjColor = Cfg_Grid_BackGroundColor Then
 
             ' The images being imported use a color which has been explicitly set as the background (or transparent) color in ZT Studio.
             Return 0
@@ -210,7 +210,7 @@ Public Class ClsPalette
                 MdlZTStudio.Trace(Me.GetType().FullName, "GetColorIndex", "Reached maximum amount of colors.")
 
                 ' No decision made yet
-                If Cfg_palette_quantization = 0 Then
+                If Cfg_Palette_Quantization = 0 Then
 
                     If MsgBox("The current palette (" & Me.FileName & ") already contains the maximum amount of colors (" & Me.Colors.Count & ")." & vbCrLf & vbCrLf &
                            "Color: " & ObjColor.ToString() & vbCrLf &
@@ -221,7 +221,7 @@ Public Class ClsPalette
                            "Press [Yes] to ignore all warnings until you close ZT Studio." & vbCrLf &
                            "Press [No] to quit ZT Studio and fix things first.",
                            vbYesNo + vbCritical + vbApplicationModal, "Too many colors!") = vbYes Then
-                        Cfg_palette_quantization = 1
+                        Cfg_Palette_Quantization = 1
 
 
                         MdlZTStudio.Trace(Me.GetType().FullName, "GetColorIndex", "User opted to use color quantization.")
@@ -263,7 +263,7 @@ Public Class ClsPalette
                 Return LstDistances.LastIndexOf(LstDistances.Min())
 
             Else
-                MdlZTStudio.ExpectedError(Me.GetType().FullName, "GetColorIndex", "Unexpected case: not allowed to add colors, but only " & Me.Colors.Count & " colors in the palette?", True)
+                MdlZTStudio.HandledError(Me.GetType().FullName, "GetColorIndex", "Unexpected case: not allowed to add colors, but only " & Me.Colors.Count & " colors in the palette?", True)
 
             End If
 
@@ -288,7 +288,7 @@ Public Class ClsPalette
 1:
         ' This check is redundant as of now (24th of August 2019), but could be re-implemented in the future.
         If File.Exists(StrFileName) = True And BlnOverwrite = False Then
-            MdlZTStudio.ExpectedError(Me.GetType().FullName, "WritePal", "Can not overwrite the color palette file '" & StrFileName & "'.", True)
+            MdlZTStudio.HandledError(Me.GetType().FullName, "WritePal", "Can not overwrite the color palette file '" & StrFileName & "'.", True)
 
         End If
 
@@ -343,7 +343,7 @@ Public Class ClsPalette
         Exit Sub
 
 dBug:
-        MdlZTStudio.UnexpectedError(Me.GetType().FullName, "WritePal", Information.Err)
+        MdlZTStudio.UnhandledError(Me.GetType().FullName, "WritePal", Information.Err)
 
     End Sub
 
@@ -446,7 +446,7 @@ dBug:
 
         Dim BmpSource As Bitmap = Image.FromFile(StrFileName)
         MdlZTStudio.Trace(Me.GetType().FullName, "ImportFromPNG", "Importing color palette from .PNG: " & StrFileName)
-        MdlZTStudio.Trace(Me.GetType().FullName, "ImportFromPNG", "Forcefully add colors: " & Cfg_palette_import_png_force_add_colors)
+        MdlZTStudio.Trace(Me.GetType().FullName, "ImportFromPNG", "Forcefully add colors: " & Cfg_Palette_Import_PNG_Force_Add_Colors)
 
         Dim IntX As Integer = 0 ' Used to process bitmap from left to right
         Dim IntY As Integer = 0 ' Used to process bitmap from top to bottom
@@ -467,7 +467,7 @@ dBug:
                 ' Adding duplicate colors in that case causes least problems.
 
                 ' Color is unknown or it's forcefully added
-                If Me.Colors.IndexOf(BmpSource.GetPixel(IntX, IntY)) < 0 Or Cfg_palette_import_png_force_add_colors = 1 Then
+                If Me.Colors.IndexOf(BmpSource.GetPixel(IntX, IntY)) < 0 Or Cfg_Palette_Import_PNG_Force_Add_Colors = 1 Then
                     Me.Colors.Add(BmpSource.GetPixel(IntX, IntY), False)
                 End If
 
@@ -498,7 +498,7 @@ dBug:
         Exit Sub
 
 dBg:
-        MdlZTStudio.UnexpectedError(Me.GetType().FullName, "ImportFromGPL", Information.Err)
+        MdlZTStudio.UnhandledError(Me.GetType().FullName, "ImportFromGPL", Information.Err)
 
     End Sub
 
@@ -535,10 +535,10 @@ dBg:
         Me.Colors.Clear(False)
 
         ' Read file.
-        Do While objReader.Peek() <> -1
+        Do While ObjReader.Peek() <> -1
 
 11:
-            StrTextLine = objReader.ReadLine()
+            StrTextLine = ObjReader.ReadLine()
 
             ' Remove double white spaces etc 
             StrTextLine = Strings.Trim(System.Text.RegularExpressions.Regex.Replace(StrTextLine, "\s+", " "))
@@ -550,7 +550,7 @@ dBg:
                 ' Transparent color must be added manually, without looking up.
                 Me.Colors.Add(System.Drawing.Color.FromArgb(Split(StrTextLine, " ")(0), Split(StrTextLine, " ")(1), Split(StrTextLine, " ")(2)))
 
-            ElseIf IntLine > 5 And strtextLine <> "" Then
+            ElseIf IntLine > 5 And StrTextLine <> "" Then
 
 22:
                 ' Add to this color palette. Using GetColorIndex(color, True), it will prevent duplicates.
@@ -579,7 +579,7 @@ dBg:
         Exit Sub
 
 dBg:
-        MdlZTStudio.UnexpectedError(Me.GetType().FullName, "ImportFromGPL", Information.Err)
+        MdlZTStudio.UnhandledError(Me.GetType().FullName, "ImportFromGPL", Information.Err)
 
 
     End Sub

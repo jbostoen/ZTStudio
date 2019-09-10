@@ -20,7 +20,7 @@ Module MdlZTStudioUI
         If System.IO.File.Exists(StrFileName) = False Then
 
             Dim StrMessage As String = "File does not exist."
-            MdlZTStudio.ExpectedError("MdlZTStudioUI", "LoadGraphic", StrMessage)
+            MdlZTStudio.HandledError("MdlZTStudioUI", "LoadGraphic", StrMessage)
             Exit Sub
 
         Else
@@ -30,7 +30,7 @@ Module MdlZTStudioUI
                 Dim StrErrorMessage As String = "" &
                             "You selected a file with the extension '" & Path.GetExtension(StrFileName) & "'." & vbCrLf &
                             "ZT Studio expects you to select a ZT1 Graphic file, which shouldn't have a file extension."
-                MdlZTStudio.ExpectedError("MdlZTStudioUI", "LoadGraphic", StrErrorMessage)
+                MdlZTStudio.HandledError("MdlZTStudioUI", "LoadGraphic", StrErrorMessage)
 
                 Exit Sub
 

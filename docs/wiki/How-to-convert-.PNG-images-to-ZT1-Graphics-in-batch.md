@@ -1,10 +1,12 @@
 # How to convert .PNG images to ZT1 Graphics in batch
+
 Some preparations are in order, but you can save yourself quite some time and trouble. The batch conversion is a highly optimized workflow.
 
 For people who use 3D software to create animals, they can usually generate .PNG images in batch straight from their 3D model with a specific file name pattern. 
 But also other designers who use more common non-3D graphic manipulation tools (Paint, Paint.NET, GIMP, ...) can benefit from this.
 
 ## Preparing file and folder structure
+
 If you're unfamiliar with the ZT1 structures, take a look at existing objects, animals etc. 
 For animals, you typically have a **folder structure** like animals/panda/m/walk . 
 The animal name is usually shorted, each part of the path should be **up to 8 alphanumeric characters max**. 
@@ -27,6 +29,7 @@ Hint: in programming, things are often referred to by index, which usually start
 In ZT Studio's settings, you can specify whether you want to start numbering from 0 or from 1.
 
 ### Share a color palette or not?
+
 This is an **optional** and **advanced** step, but ZT Studio offers a unique feature.
 You can skip this step if you don't need/want it!
 
@@ -59,11 +62,13 @@ Before you start the conversion, you'd put the palette in the right folder. This
 For ZT Studio, the palette should have the name of the folder it's located in.
 
 Example with a .pal file (.png or .gpl will work the same way):
-| **Filename**                      | **What happens**                                                                                         |
-| --------------------------------- | ----------------                                                                                         |
-| **animals/redpanda/m/m.pal**      | ZT Studio will use this palette for all male animations (e.g. animations/redpanda/m/eat/NE, NW, SE, SW). |
-| **animals/redpanda/redpanda.pal** | ZT Studio will use this palette for all animations (also for female and/or young versions).              |
-| **bjects/myobj/myobj.pal**        | ZT Studio will use this palette for all animations NE, NW, SE, SW).                                      |
+
+| **Filename**                      | **ZT Studio will use the palette for ...**                           |
+| --------------------------------- | -------------------------------------------------------------------- |
+| **animals/redpanda/m/m.pal**      | all male animations (e.g. animations/redpanda/m/eat/NE, NW, SE, SW). |
+| **animals/redpanda/redpanda.pal** | all animations (also for female and/or young versions).              |
+| **objects/myobj/myobj.pal**       | all animations (NE, NW, SE, SW).                                     |
+| **objects/myobj/used/myobj.pal**  | all 'used' animations (NE, NW, SE, SW).                              |
 
 Hint: if both **animals/redpanda/m/m.pal** and **animals/redpanda/redpanda.pal** are available, the male animations will use m.pal; while female and/or young versions would use redpanda.pal
 
@@ -76,6 +81,7 @@ Summary:
 * If a folder only contains 1 graphic (such as an icon), the shared palette is ignored. 
   * This is done because an icon or plaque might include background colors which aren't used anywhere else. They would limit the amount of useful colors in the shared palette.
 
+* [How to create a color palette to share with several graphics (views, animations) using GIMP](How-to-create-a-color-palette-to-share-with-several-graphics-(views,-animations)-using-GIMP)
 
 ### Start the conversion
 * Start ZT Studio

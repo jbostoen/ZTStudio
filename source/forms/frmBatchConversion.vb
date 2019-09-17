@@ -26,6 +26,9 @@ Public Class FrmBatchConversion
 
         End If
 
+        ' After batch conversion, clean up of files may have happend; or new files created
+        MdlZTStudioUI.UpdateExplorerPane()
+
         Me.Enabled = True
 
         ZTStudio.InfoBox(Me.GetType().FullName, "Click", "Batch conversion finished successfully.")

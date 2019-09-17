@@ -9,6 +9,10 @@ Version 1.0
 
 # Build 2019.xx.yy:
 
+* Improvements
+  * Now automatically detects 'background frame' on loading graphics
+  * More intelligent loading of color palettes (no more reloading if same as previous graphic)
+  * Minor UI fixes
 
 # Build 2019.08.09:
 * Requirements

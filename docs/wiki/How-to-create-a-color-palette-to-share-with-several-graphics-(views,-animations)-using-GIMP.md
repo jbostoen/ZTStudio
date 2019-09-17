@@ -1,28 +1,41 @@
+# How to create a color palette to share with several graphics (views, animations) using GIMP
+
 Based on **GIMP 2.18** and the plugin **BIMP 1.17** (previous versions had bugs).
-GIMP is a free commonly used graphic editor, BIMP is a plugin to perform batch operations.
+GIMP is a free commonly used graphic editor.
+BIMP is a plugin to perform batch operations.
 
-**GIMP**
 
-_Preparation_
-* Create new image
-* Drag and drop all .PNGs of the animal on the new image canvas (or better: do these steps separately for male, female if different than male, young and icons). After GIMP has added each image as a new layer, you should see the total amount of your .PNGs + 1 (empty layer).
-* Hint: you can recover an additional color by removing the empty layer.
+**Preparation**
+* Create new image in GIMP
+* Drag and drop all PNG graphic files of the animal on the new image canvas
+  * Do this separately for icon(s) and plaque.
+  * If you're planning to have a different female (or young) color; also use a separate series of PNG graphic files to create a separate palette.
+* After GIMP has added each image as a new layer, the amount of layers is the same as the total amount of PNG Graphic files + 1 (empty layer).
 
-_Creating the color palette_
-* Go to menu Image -> Mode -> Indexed.
-* A dialog window opens. Choose _Color Palette_ and pick _Generate Optimum Palette_ . Assuming you rendered images with for example Blender or whatever, your background is not transparent, but it's a color (eg flashy green) which you'll want to turn into a transparent color at a later point. If this is the case, simply create a color palette of **256** colors.
+Hint: 
+* Remove the empty layer from the start.
 
-_Using the color palette_
-* You should now find a toolwindow named _Palettes_. It should contain something like _Colormap of Image #1 (untitled)_ . 
-* Right click to rename and/or save.
 
-_Batch process PNGs_
-* We are using a free GIMP plugin called BIMP (Batch Image Manipulation).
-* Add the folder containing only the graphics you're preparing (make sure to check it adds everything within that folder)
+**Creating the color palette**
+* In GIMP, go to menu Image -> Mode -> Indexed.
+* A dialog window opens. Choose _Color Palette_ and pick _Generate Optimum Palette_ . 
+  * If the background is not transparent, you'll want to turn into a transparent color at a later point. If this is the case, simply create a color palette of **256** colors.
+
+**Using the color palette**
+* In GIMP you should now find a toolwindow named _Palettes_. It should contain a palette named like _Colormap of Image #1 (untitled)_ . 
+* Right click to rename and/or save this palette.
+
+**Batch process PNGs**
+* There is a free GIMP plugin called BIMP (Batch Image Manipulation).
+* Add the folder containing only the specific graphics (make sure to check it adds everything within that folder)
 * Add a manipulation (action): _gimp-image-convert-indexed_ , choose CUSTOM_PALETTE and at the bottom specify the name of the color palette you've created/renamed/saved earlier
-* be careful to set your Output Folder correctly. You do need to specify it explicitly! (not very intuitive)
-* hit Apply 
+* Be careful to set the Output Folder correctly. You do need to specify it explicitly! (not very intuitive)
+* Hit Apply 
 
-**Hint:** set your background color in ZT Studio to the same one you're using in your images to be able to use the 255 (+1 transparent) color as intended!
+Hint:
+* Set the background color in ZT Studio to the same one used in the PNG Graphic files to be able to use the maximum of 255 (+1 transparent) colors as intended!
 
-Final note: if you are planning to simply use the generated GIMP Color Palette (.GPL) as the actual file / color palette to be used in the batch conversion feature of ZT Studio, you should make sure the background color (e.g. flashy green, the color you DON'T want to see in ZT1) is the first color in this palette!
+Final note: if you'll use the GIMP Color Palette(s) (saved as .GPL) generated during the first steps (Preparation) during the batch conversion with ZT Studio, then make sure the background color (e.g. flashy green, the color that should be transparent in ZT1) is the first color in this palette!
+
+Time to use these color palette(s)!
+* [How to convert .PNG images to ZT1 Graphics in batch](How-to-convert-.PNG-images-to-ZT1-Graphics-in-batch)

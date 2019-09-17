@@ -94,6 +94,7 @@
   <ItemGroup>
     <Compile Include="ApplicationEvents.vb" />
     <Compile Include="cls\ClsAniFile.vb" />
+    <Compile Include="cls\ClsDirectBitmap.vb" />
     <Compile Include="cls\ClsDrawingInstr.vb" />
     <Compile Include="cls\ClsFrame.vb" />
     <Compile Include="cls\ClsGraphic.vb" />

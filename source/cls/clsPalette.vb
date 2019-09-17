@@ -10,7 +10,6 @@ Public Class ClsPalette
     Dim Pal_Colors As New List(Of System.Drawing.Color) ' The actual list of colors. Should be 256 maximum, with the first one signifying the color that will be considered 'transparent'.
     Dim Pal_Parent As ClsGraphic = Nothing ' The graphic which is owner of this palette (not always set!)
 
-
     ''' <summary>
     ''' Creates a new instance of this class. Sets the parent graphic.
     ''' </summary>
@@ -57,6 +56,7 @@ Public Class ClsPalette
             Pal_Colors = value
         End Set
     End Property
+
 
     ''' <summary>
     ''' Reads a ZT1 Color palette (.pal file).

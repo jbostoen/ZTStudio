@@ -842,6 +842,10 @@ dBug:
         ' Generate hex from bitmap.
         Me.BitMapToHex(BmpCropped)
 
+31:
+        ' Force re-rendering based on HEX (offsets, image, ...)
+        Me.CoreImageBitmap = Nothing
+
         Exit Sub
 
 dBug:

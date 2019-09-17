@@ -72,7 +72,7 @@ ZT Studio
  </summary>
  <returns>Integer</returns>
 </member>
-<member name="P:ZTStudio.ClsAniFile.Dirs">
+<member name="P:ZTStudio.ClsAniFile.RelativeDirectories">
  <summary>
  List of directories (tree structure) relative to root
  </summary>
@@ -102,7 +102,12 @@ ZT Studio
  This sub tries to create a .ani-file. It does so based on the offsets of graphics it detects.
  This is experimental, but it should work for the majority of graphics.
  </summary>
- <param name="strFileName">Destination filename</param>
+ <param name="StrFileName">Destination filename</param>
+</member>
+<member name="T:ZTStudio.ClsDirectBitmap">
+ <summary>
+ Class DirectBitmap. Offers a faster alternative to native Bitmap's GetPixel() and SetPixel()
+ </summary>
 </member>
 <member name="T:ZTStudio.ClsDrawingInstr">
  <summary>
@@ -307,7 +312,7 @@ ZT Studio
 </member>
 <member name="P:ZTStudio.ClsGraphic.Frames">
  <summary>
- Array of frames (ClsFrame) in this graphic.
+ Array of frames (ClsFrame) in this graphic. Includes background frame (as last frame), if present.
  </summary>
  <returns>List(Of ClsFrame) - list of ZT1 frames</returns>
 </member>
@@ -357,7 +362,7 @@ ZT Studio
  </summary>
  <param name="StrProperty"></param>
 </member>
-<member name="M:ZTStudio.ClsGraphic.#ctor">
+<member name="M:ZTStudio.ClsGraphic.#ctor(ZTStudio.ClsPalette)">
  <summary>
  On initializing, set parent of color palette
  </summary>
@@ -655,7 +660,7 @@ ZT Studio
  Processes command line parameters
  </summary>
 </member>
-<member name="M:ZTStudio.MdlZTStudio.UnexpectedError(System.String,System.String,Microsoft.VisualBasic.ErrObject)">
+<member name="M:ZTStudio.MdlZTStudio.UnhandledError(System.String,System.String,Microsoft.VisualBasic.ErrObject)">
  <summary>
  To make unexpected errors look more generic, most of them are now handled by this method.
  </summary>
@@ -663,7 +668,7 @@ ZT Studio
  <param name="StrMethod">Method</param>
  <param name="ObjError">Error object (contains number and message)</param>
 </member>
-<member name="M:ZTStudio.MdlZTStudio.ExpectedError(System.String,System.String,System.String,System.Boolean,Microsoft.VisualBasic.ErrObject)">
+<member name="M:ZTStudio.MdlZTStudio.HandledError(System.String,System.String,System.String,System.Boolean,Microsoft.VisualBasic.ErrObject)">
  <summary>
  To make expected errors look more generic, most of them are now handled by this method. Some parameters are only meant for tracing details.
  </summary>
@@ -795,12 +800,292 @@ ZT Studio
  <param name="sender">Object</param>
  <param name="e">EventArgs</param>
 </member>
+<member name="M:ZTStudio.FrmMain.TsbCanvasBG_Click(System.Object,System.EventArgs)">
+ <summary>
+ Handles toolbar button click to change background color
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmMain.TsbZT1Open_Click(System.Object,System.EventArgs)">
+ <summary>
+ Handles toolbar button click to open ZT1 Graphic
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmMain.TbFrames_ValueChanged(System.Object,System.EventArgs)">
+ <summary>
+ Handles value change of trackbar (slider) and updates preview accordingly
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmMain.TsbAbout_Click(System.Object,System.EventArgs)">
+ <summary>
+ Handles toolbar button click to show about info (credits, version info)
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmMain.TsbFrame_ExportPNG_Click(System.Object,System.EventArgs)">
+ <summary>
+ Handles toolbar button click to export frame as PNG
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmMain.TsbZT1_OpenPal_Click(System.Object,System.EventArgs)">
+ <summary>
+ Handles toolbar button click to open ZT1 Color palette (.pal file)
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmMain.TsbSettings_Click(System.Object,System.EventArgs)">
+ <summary>
+ Handles toolbar button click to modify Settings
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmMain.TsbOpenPalBldg8_DropDownItemClicked(System.Object,System.Windows.Forms.ToolStripItemClickedEventArgs)">
+ <summary>
+ Handles clicking a menu item in the list of 8-color palettes
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">ToolStripItemClickedEventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmMain.TsbOpenPalBldg16_DropDownItemClicked(System.Object,System.Windows.Forms.ToolStripItemClickedEventArgs)">
+ <summary>
+ Handles clicking a menu item in the list of 16-color palettes
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">TooLStripItemClickedEventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmMain.TsbBatchConversion_Click(System.Object,System.EventArgs)">
+ <summary>
+ Handles toolbar button click to start batch conversion (ZT1 Graphic - PNG)
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmMain.TsbPreview_BGGraphic_Click(System.Object,System.EventArgs)">
+ <summary>
+ Handles toolbar button click to pick a ZT1 Graphic to use as background
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmMain.TsbFrame_Add_Click(System.Object,System.EventArgs)">
+ <summary>
+ Handles toolbar button click to add a new empty frame. (or on right click: to immediately add PNG as new frame)
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmMain.TsbFrame_Delete_Click(System.Object,System.EventArgs)">
+ <summary>
+ Handles toolbar button click to delete an existing frame
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmMain.TsbFrame_IndexIncrease_Click(System.Object,System.EventArgs)">
+ <summary>
+ Handles toolbar button click to show the next frame
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmMain.TsbFrame_OffsetUp_MouseDown(System.Object,System.Windows.Forms.MouseEventArgs)">
+ <summary>
+ Handles toolbar button click to move the frame contents up
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">MouseEventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmMain.TsbFrame_OffsetDown_MouseDown(System.Object,System.Windows.Forms.MouseEventArgs)">
+ <summary>
+ Handles toolbar button click to move the frame contents down
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">MouseEventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmMain.TsbFrame_OffsetLeft_MouseDown(System.Object,System.Windows.Forms.MouseEventArgs)">
+ <summary>
+ Handles toolbar button click to move the frame contents to the left
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">MouseEventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmMain.TsbFrame_OffsetRight_MouseDown(System.Object,System.Windows.Forms.MouseEventArgs)">
+ <summary>
+ Handles toolbar button click to move the frame contents to the right
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">MouseEventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmMain.TsbGraphic_ExtraFrame_Click(System.Object,System.EventArgs)">
+ <summary>
+ Handles toolbar button click to indicate whether this graphic has an extra frame or not
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmMain.TsbFrame_IndexDecrease_Click(System.Object,System.EventArgs)">
+ <summary>
+ Handles toolbar button click to show the previous frame
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmMain.TsbDelete_PNG_Click(System.Object,System.EventArgs)">
+ <summary>
+ Handles toolbar button click to delete PNG files in the root folder
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmMain.TsbDelete_ZT1Files_Click(System.Object,System.EventArgs)">
+ <summary>
+ Handles toolbar button click to delete ZT1 Graphic files and color palettes in the root folder
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmMain.TsbFrame_fpX_SelectedIndexChanged(System.Object,System.EventArgs)">
+ <summary>
+ Handles footprint (X) selection change
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmMain.TsbFrame_fpY_SelectedIndexChanged(System.Object,System.EventArgs)">
+ <summary>
+ Handles footprint (Y) selection change
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmMain.DgvPaletteMain_CellDoubleClick(System.Object,System.Windows.Forms.DataGridViewCellEventArgs)">
+ <summary>
+ Handles double clicking a color in the datagridview (color palette on the right)
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">DataGridViewCellEventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmMain.DgvPaletteMain_CellMouseClick(System.Object,System.Windows.Forms.DataGridViewCellMouseEventArgs)">
+ <summary>
+ Handles clicking a color in the datagridview (color palette on the right), triggers menu
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">DataGridViewCellEventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmMain.MnuPal_MoveUp_Click(System.Object,System.EventArgs)">
+ <summary>
+ Handles clicking 'move color up' in the palette menu.
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmMain.MnuPal_MoveDown_Click(System.Object,System.EventArgs)">
+ <summary>
+ Handles clicking 'move color down' in the palette menu.
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmMain.MnuPal_Replace_Click(System.Object,System.EventArgs)">
+ <summary>
+ Handles clicking 'replace color' in the palette menu.
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmMain.MnuPal_MoveEnd_Click(System.Object,System.EventArgs)">
+ <summary>
+ Handles clicking 'move color to the end' in the palette menu.
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmMain.MnuPal_Add_Click(System.Object,System.EventArgs)">
+ <summary>
+ Handles clicking 'add color' in the palette menu.
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmMain.TsbFrame_ImportPNG_MouseDown(System.Object,System.Windows.Forms.MouseEventArgs)">
+ <summary>
+ Handles toolbar button click to import a PNG image into the current frame (or a new one if right click)
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">MouseEventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmMain.MnuPal_ExportPNG_Click(System.Object,System.EventArgs)">
+ <summary>
+ Handles toolbar button click to import a PNG image into the current frame (or a new one if right click)
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmMain.MnuPal_ImportPNG_Click(System.Object,System.EventArgs)">
+ <summary>
+ Handles menu click to import a PNG image as a color palette
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmMain.MnuPal_SavePAL_Click(System.Object,System.EventArgs)">
+ <summary>
+ Handles menu click to save as a ZT1 Color palette
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
 <member name="M:ZTStudio.FrmMain.MnuPal_ImportGimpPalette_Click(System.Object,System.EventArgs)">
  <summary>
- Button triggers an action to import a GIMP Color Palette
+ Handles menu click to import a GIMP Color Palette
  </summary>
- <param name="sender"></param>
- <param name="e"></param>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmMain.TsbBatchRotFix_Click(System.Object,System.EventArgs)">
+ <summary>
+ Handles toolbar button click to batch rotation fix a set of graphics
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmMain.TsbZT1New_Click(System.Object,System.EventArgs)">
+ <summary>
+ Handles toolbar button click to create a new ZT1 Graphic from scratch
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmMain.TsbZT1Write_MouseDown(System.Object,System.Windows.Forms.MouseEventArgs)">
+ <summary>
+ Handles toolbar button click to save as a ZT1 Graphic
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">MouseEventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmMain.ChkPlayAnimation_CheckedChanged(System.Object,System.EventArgs)">
+ <summary>
+ Handles check change to start/stop playing animation
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">MouseEventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmMain.TVExplorer_AfterSelect(System.Object,System.Windows.Forms.TreeViewEventArgs)">
+ <summary>
+ Handles selection of a graphic in the Explorer Pane
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">TreeViewEventArgs</param>
 </member>
 <member name="M:ZTStudio.FrmMain.TstZT1_AnimSpeed_Leave(System.Object,System.EventArgs)">
  <summary>
@@ -813,15 +1098,15 @@ ZT Studio
  <summary>
  Handles confirmation of new offset (on Enter)
  </summary>
- <param name="sender"></param>
- <param name="e"></param>
+ <param name="sender">Object</param>
+ <param name="e">KeyEventArgs</param>
 </member>
 <member name="M:ZTStudio.FrmMain.TstOffsetY_KeyDown(System.Object,System.Windows.Forms.KeyEventArgs)">
  <summary>
  Handles confirmation of new offset (on Enter)
  </summary>
- <param name="sender"></param>
- <param name="e"></param>
+ <param name="sender">Object</param>
+ <param name="e">KeyEventArgs</param>
 </member>
 <member name="M:ZTStudio.FrmMain.TstOffsetX_Leave(System.Object,System.EventArgs)">
  <summary>
@@ -914,13 +1199,6 @@ ZT Studio
 <member name="M:ZTStudio.FrmSettings.CboPNGExport_Crop_SelectedValueChanged(System.Object,System.EventArgs)">
  <summary>
  Handles selection of different PNG Export method
- </summary>
- <param name="sender">Object</param>
- <param name="e">EventArgs</param>
-</member>
-<member name="M:ZTStudio.FrmSettings.ChkRenderFrame_RenderExtraFrame_CheckedChanged(System.Object,System.EventArgs)">
- <summary>
- Handles toggling of whether there's an extra frame to be rendered as background
  </summary>
  <param name="sender">Object</param>
  <param name="e">EventArgs</param>
@@ -1025,13 +1303,6 @@ ZT Studio
  <param name="e">EventArgs</param>
 </member>
 <member name="M:ZTStudio.FrmSettings.ChkRenderFrame_BGGraphic_MouseHover(System.Object,System.EventArgs)">
- <summary>
- Show help on mousehover
- </summary>
- <param name="sender">Object</param>
- <param name="e">EventArgs</param>
-</member>
-<member name="M:ZTStudio.FrmSettings.ChkRenderFrame_RenderExtraFrame_MouseHover(System.Object,System.EventArgs)">
  <summary>
  Show help on mousehover
  </summary>

@@ -330,10 +330,10 @@ dBug:
             ' Will only do something if views were detected, in a similar fashion to what's known.
             ' For instance, if one graphic (SE) is used for 4 sides, ZTStudio will NOT recognize it and do nothing.
             If Me.Views.Count > 0 Then
-                For Each sAni In Me.Views
+                For Each StrAni In Me.Views
 
                     ' We need to read every view for this graphic in the folder.
-                    ObjGraphic.Read(StrPath.Replace("\", "/") & "/" & sAni)
+                    ObjGraphic.Read(StrPath.Replace("\", "/") & "/" & StrAni)
 
                     For Each ObjFrame As ClsFrame In ObjGraphic.Frames
 

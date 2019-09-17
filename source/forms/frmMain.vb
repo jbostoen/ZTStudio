@@ -936,7 +936,7 @@ dBug:
                         ' Draw first frame 
                         MdlZTStudioUI.UpdatePreview(True, True)
 
-                        ' Show main color palette
+                        ' Show main color palette (new colors may have been added)
                         EditorFrame.Parent.ColorPalette.FillPaletteGrid(DgvPaletteMain)
 
                         ' Not sure why we had this. It's the color palette of the background graphic.

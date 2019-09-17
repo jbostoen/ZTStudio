@@ -53,7 +53,10 @@ $Filters = @(
     "^objects\/asirope\/.*",
     "^animals\/orngutan\/.*",
     "^animals\/dolphin\/.*",
-    "^objects\/cinema\/.*"
+    "^objects\/cinema\/.*",
+    "^objects\/swnglog\/.*",
+    "^guests\/(man|woman)\/putt.*",
+    "^objects\/dinoputt\/putt.*",
     )
      
 $Filter = "(" + ( $Filters -Join "|" ) + ")"

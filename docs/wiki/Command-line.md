@@ -66,6 +66,7 @@ Hint: might make more sense after reading [ZT1 Graphics Explained](ZT1-Graphics-
 |                                  | 1                        | Try using a shared color palette between graphics.                  |
 
 **editing**
+
 | Setting                          | Value                    | Explanation                                                         |
 | -------------------------------- | ------------------------ | ------------------------------------------------------------------- |
 | animationSpeed                   | 125-1000                 | Default animation speed for new graphics.                           |

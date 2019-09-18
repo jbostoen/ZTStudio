@@ -104,11 +104,6 @@ ZT Studio
  </summary>
  <param name="StrFileName">Destination filename</param>
 </member>
-<member name="T:ZTStudio.ClsDirectBitmap">
- <summary>
- Class DirectBitmap. Offers a faster alternative to native Bitmap's GetPixel() and SetPixel()
- </summary>
-</member>
 <member name="T:ZTStudio.ClsDrawingInstr">
  <summary>
  <para>ClsDrawingInstr is used to manage a drawing instruction.</para>

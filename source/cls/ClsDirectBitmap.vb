@@ -1,52 +1,39 @@
-﻿
-Imports System.Drawing.Imaging
+﻿Imports System.Drawing.Imaging
 Imports System.Runtime.InteropServices
 
-''' <summary>
-''' Class DirectBitmap. Offers a faster alternative to native Bitmap's GetPixel() and SetPixel()
-''' </summary>
 Public Class ClsDirectBitmap
     Implements IDisposable
 
-
-    Public Property DirectBitmap_Bitmap As Bitmap
-    Public Property DirectBitmap_Bits As Integer()
-    Public Property DirectBitmap_Disposed As Boolean
-    Public Property DirectBitmap_Height As Integer
-    Public Property DirectBitmap_Width As Integer
-    Protected Property DirectBitmap_BitsHandle As GCHandle
+    Private DirectBitMap_BitsHandle As GCHandle
+    Private DirectBitMap_Bits As Integer()
+    Private DirectBitmap_BitMap As Bitmap
+    Private DirectBitmap_Height As Integer
+    Private DirectBitMap_Width As Integer
+    Private DirectBitMap_Disposed As Boolean
+    Public Property Bitmap As Bitmap
+        Get
+            Return DirectBitmap_BitMap
+        End Get
+        Set(value As Bitmap)
+            DirectBitmap_BitMap = value
+        End Set
+    End Property
 
     Public Property Bits As Integer()
         Get
-            Return DirectBitmap_Bits
+            Return DirectBitMap_Bits
         End Get
         Set(value As Integer())
-            DirectBitmap_Bits = value
+            DirectBitMap_Bits = value
         End Set
     End Property
 
     Public Property Disposed As Boolean
         Get
-            Return DirectBitmap_Disposed
+            Return DirectBitMap_Disposed
         End Get
         Set(value As Boolean)
-            DirectBitmap_Disposed = True
-        End Set
-    End Property
-    Public Property BitsHandle As GCHandle
-        Get
-            Return DirectBitmap_BitsHandle
-        End Get
-        Set(value As GCHandle)
-            DirectBitmap_BitsHandle = value
-        End Set
-    End Property
-    Public Property Width As Integer
-        Get
-            Return DirectBitmap_Width
-        End Get
-        Set(value As Integer)
-            DirectBitmap_Width = value
+            DirectBitMap_Disposed = value
         End Set
     End Property
 
@@ -56,53 +43,60 @@ Public Class ClsDirectBitmap
         End Get
         Set(value As Integer)
             DirectBitmap_Height = value
-
         End Set
     End Property
 
-    Public Property Bitmap As Bitmap
+    Public Property Width As Integer
         Get
-            Return DirectBitmap_Bitmap
+            Return DirectBitMap_Width
+
         End Get
-        Set(value As Bitmap)
-            DirectBitmap_Bitmap = value
+        Set(value As Integer)
+            DirectBitMap_Width = value
         End Set
     End Property
 
+    Protected Property BitsHandle As GCHandle
+        Get
+            Return DirectBitMap_BitsHandle
+        End Get
+        Set(value As GCHandle)
+            DirectBitMap_BitsHandle = value
+        End Set
+    End Property
 
-    Public Sub New(ByVal IntWidth As Integer, ByVal IntHeight As Integer)
-        Me.Width = Width
-        Me.Height = Height
-        Me.Bits = New Integer(IntWidth * IntHeight - 1) {}
-        Me.BitsHandle = GCHandle.Alloc(Bits, GCHandleType.Pinned)
-        Me.Bitmap = New Bitmap(IntWidth, IntHeight, IntWidth * 4, PixelFormat.Format32bppPArgb, BitsHandle.AddrOfPinnedObject())
+    Public Sub New(ByVal width As Integer, ByVal height As Integer)
+        MyBase.New
+        Me.Width = width
+        Me.Height = height
+        Me.Bits = New Int32(((width * height)) - 1) {}
+        Me.BitsHandle = GCHandle.Alloc(Me.Bits, GCHandleType.Pinned)
+        Me.Bitmap = New Bitmap(width, height, (width * 4), PixelFormat.Format32bppPArgb, Me.BitsHandle.AddrOfPinnedObject)
     End Sub
 
-    Public Sub SetPixel(ByVal x As Integer, ByVal y As Integer, ByVal ObjColor As Color)
-        Dim IntIndex As Integer = x + (y * Me.Width)
-        Dim IntCol As Integer = ObjColor.ToArgb()
-        Me.Bits(IntIndex) = IntCol
+    Public Sub SetPixel(ByVal x As Integer, ByVal y As Integer, ByVal colour As Color)
+        Dim index As Integer = (x _
+                    + (y * Me.Width))
+        Dim col As Integer = colour.ToArgb
+        Me.Bits(index) = col
     End Sub
 
     Public Function GetPixel(ByVal x As Integer, ByVal y As Integer) As Color
-        Dim IntIndex As Integer = x + (y * Me.Width)
-        Dim IntCol As Integer = Bits(IntIndex)
-        Dim ObjColor As Color = Color.FromArgb(IntCol)
-        Return ObjColor
+        Dim index As Integer = (x _
+                    + (y * Me.Width))
+        Dim col As Integer = Me.Bits(index)
+        Dim result As Color = Color.FromArgb(col)
+        Return result
     End Function
 
-    Public Sub Dispose()
+    Sub Dispose() Implements IDisposable.Dispose
+
         If Me.Disposed = True Then
             Return
         End If
 
         Me.Disposed = True
-
         Me.Bitmap.Dispose()
         Me.BitsHandle.Free()
-    End Sub
-
-    Private Sub IDisposable_Dispose() Implements IDisposable.Dispose
-        Throw New NotImplementedException()
     End Sub
 End Class

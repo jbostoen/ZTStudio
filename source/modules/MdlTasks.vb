@@ -9,102 +9,102 @@ Imports System.Runtime.InteropServices
 
 Module MdlTasks
 
-
-    Public Function CleanUp_Files(strPath As String, strExtension As String) As Integer
-
-        ' Expected as strExtension:
-        ' ".png"
-        ' ".pal"
-        ' "" (ZT1 Graphics)
+    ''' <summary>
+    ''' Cleans up files in a path, based on extension.
+    ''' </summary>
+    ''' <remarks>
+    ''' Used to clean up .pal-files and files without a file extension (=ZT1 Graphic files)
+    ''' </remarks>
+    ''' <param name="StrPath"></param>
+    ''' <param name="StrExtension"></param>
+    ''' <returns></returns>
+    Public Function CleanUpFiles(StrPath As String, StrExtension As String) As Integer
 
         On Error GoTo dBug
 
 0:
 5:
-
-
-        ' First we will create a recursive list.
+        ' Creating a recursive list.
 
         ' This list stores the results.
-        Dim result As New List(Of String)
+        Dim LstResult As New List(Of String)
 
         ' This stack stores the directories within our <root> folder to process.
-        ' We'll go through each subdirectory.
+        ' Then process each subdirectory.
         Dim Stack As New Stack(Of String)
 
         ' Add the initial directory
-        Stack.Push(strPath)
+        Stack.Push(StrPath)
 
 10:
-
         ' Continue processing for each stacked directory
         Do While (Stack.Count > 0)
-            ' Get top directory string
 
 15:
-
-
-            Dim dir As String = Stack.Pop
+            ' Get top directory name
+            Dim StrDirectoryName As String = Stack.Pop
 
 20:
             ' Get all files and check if they match the extension (.pal, .png) or have no extension (ZT1 graphic)
-            For Each f As String In Directory.GetFiles(dir, "*")
-                If Path.GetExtension(f) = strExtension Then
-                    result.Add(f)
+            ' In this 'for' construction the wildcard '*' is used; which may also match other files WITH extension.
+            For Each f As String In Directory.GetFiles(StrDirectoryName, "*")
+                ' Does the extension match? (or for ZT1 Graphic files: this should match an empty string)
+                If Path.GetExtension(f) = StrExtension Then
+                    LstResult.Add(f)
                 End If
             Next
 
 25:
             ' Loop through all subdirectories and add them to the stack, so they're processed as well.
-            Dim directoryName As String
-            For Each directoryName In Directory.GetDirectories(dir)
-                Stack.Push(directoryName)
+            Dim StrSubDirectoryName As String
+            For Each StrSubDirectoryName In Directory.GetDirectories(StrDirectoryName)
+                Stack.Push(StrSubDirectoryName)
             Next
 
         Loop
 
-
-
 1000:
-        ' For each file that matches:
-        For Each f As String In result
-            Debug.Print("Delete: " & f)
-            System.IO.File.Delete(f)
+        ' For each file that matched the specified extension/pattern
+        For Each StrFileName As String In LstResult
+            MdlZTStudio.Trace("MdlTasks", "CleanUpFiles", "Delete file: " & StrFileName)
+            System.IO.File.Delete(StrFileName)
         Next
 
+        Exit Function
 
 dBug:
-
-        MsgBox("An error occured while trying to clean up ZT1 Graphic files in this folder: " & vbCrLf &
-            strPath & vbCrLf & vbCrLf & "Line: " & Erl() & vbCrLf & Err.Number & " - " & Err.Description,
-            vbOKOnly + vbCritical, "Error during clean up")
+        Dim StrMessage As String = "An error occured while trying to clean up ZT1 Graphic files in this folder: " & vbCrLf & StrPath
+        MdlZTStudio.HandledError("MdlTasks", "CleanUpFiles", StrMessage, False, Information.Err)
 
 
     End Function
 
+    ''' <summary>
+    ''' Converts a ZT1 Graphic file to one or more PNG files.
+    ''' </summary>
+    ''' <param name="StrFileName"></param>
+    Public Sub Convert_file_ZT1_to_PNG(StrFileName As String)
 
-    Public Sub Convert_file_ZT1_to_PNG(strFile As String)
+        BlnTaskRunning = True
 
-        ' This function will convert a ZT1 Graphic to a PNG file.
         ' It will first render the ZT1 Graphic and then it will export it to one or multiple .PNG-files.
-        ' DO NOT implement a clean up of ZT1 Graphic/ZT1 Color Palette here.
-        ' The color palette could be shared with other images, which would cause issues in a batch conversion!
-
+        ' Warning: do NOT implement a clean up of files here (ZT1 Graphic/ZT1 Color Palette).
+        ' Reason: The color palette could be shared with other images, which would cause issues in a batch conversion!
 
         On Error GoTo dBg
+        MdlZTStudio.Trace("MdlTasks", "Convert_file_ZT1_to_PNG", "Convert ZT1 to PNG: " & StrFileName)
 
 5:
         ' Create a new instance of a ZT1 Graphic object.
         Dim ObjGraphic As New ClsGraphic(Nothing)
 
         ' Read the ZT1 Graphic
-        ObjGraphic.Read(strFile)
+        ObjGraphic.Read(StrFileName)
 
-        ' We will render this set of frames within this ZT1 Graphic.
-        ' However, there are two main options:
-        ' - keep canvas size / to relevant frame area / to relevant graphic area
-        ' - render extra frame or not
-
+        ' Render the set of frames within this ZT1 Graphic.
+        ' There are some options when exporting.
+        ' - canvas size options
+        ' - render background frame or export it separately
 
 10:
         ' Loop over each frame of the ZT1 Graphic
@@ -112,8 +112,9 @@ dBug:
 
 11:
 
-            ' the bitmap's save function does not overwrite, nor warn 
-            System.IO.File.Delete(strFile & Cfg_Convert_FileNameDelimiter & (ObjGraphic.Frames.IndexOf(ObjFrame) + Cfg_Convert_StartIndex).ToString("0000") & ".png")
+            ' The bitmap's save function does not overwrite, nor warn that the file already exists.
+            ' So it is safer to delete any existing files.
+            System.IO.File.Delete(StrFileName & Cfg_Convert_FileNameDelimiter & (ObjGraphic.Frames.IndexOf(ObjFrame) + Cfg_Convert_StartIndex).ToString("0000") & ".png")
 
             ' Save frames as PNG, just autonumber the frames.
             ' Exception: if we have an extra frame which should be rendered separately rather than as background. 
@@ -123,18 +124,25 @@ dBug:
 
             ' RenderBGFrame: this is read as: 'render this as BG for every frame'
             If Cfg_Export_PNG_RenderBGFrame = 0 And ObjGraphic.HasBackgroundFrame = 1 Then
-                If ObjGraphic.Frames.IndexOf(ObjFrame) <> (ObjGraphic.Frames.Count - 1) Then
-                    ObjFrame.SavePNG(strFile & Cfg_Convert_FileNameDelimiter & (ObjGraphic.Frames.IndexOf(ObjFrame) + Cfg_Convert_StartIndex).ToString("0000") & ".png")
+                If ObjGraphic.Frames.IndexOf(ObjFrame) = (ObjGraphic.Frames.Count - 1) Then
+                    ObjFrame.SavePNG(StrFileName & Cfg_Convert_FileNameDelimiter & "extra.png")
                 Else
-                    ObjFrame.SavePNG(strFile & Cfg_Convert_FileNameDelimiter & "extra.png")
+                    ObjFrame.SavePNG(StrFileName & Cfg_Convert_FileNameDelimiter & (ObjGraphic.Frames.IndexOf(ObjFrame) + Cfg_Convert_StartIndex).ToString("0000") & ".png")
                 End If
             Else
-                ObjFrame.SavePNG(strFile & Cfg_Convert_FileNameDelimiter & (ObjGraphic.Frames.IndexOf(ObjFrame) + Cfg_Convert_StartIndex).ToString("0000") & ".png")
+                ObjFrame.SavePNG(StrFileName & Cfg_Convert_FileNameDelimiter & (ObjGraphic.Frames.IndexOf(ObjFrame) + Cfg_Convert_StartIndex).ToString("0000") & ".png")
 
             End If
 
 12:
-
+            ' Experimental. Export info such as offsets, height, width, mystery bytes...
+            If Cfg_Convert_Write_Graphic_Data_To_Text_File = 1 Then
+                IniWrite(StrFileName & ".txt", "Frame" & ObjGraphic.Frames.IndexOf(ObjFrame), "width", ObjFrame.CoreImageBitmap.Width)
+                IniWrite(StrFileName & ".txt", "Frame" & ObjGraphic.Frames.IndexOf(ObjFrame), "height", ObjFrame.CoreImageBitmap.Height)
+                IniWrite(StrFileName & ".txt", "Frame" & ObjGraphic.Frames.IndexOf(ObjFrame), "offsetX", ObjFrame.OffsetX)
+                IniWrite(StrFileName & ".txt", "Frame" & ObjGraphic.Frames.IndexOf(ObjFrame), "offsetY", ObjFrame.OffsetY)
+                IniWrite(StrFileName & ".txt", "Frame" & ObjGraphic.Frames.IndexOf(ObjFrame), "mysteryBytes", String.Join(" ", ObjFrame.MysteryHEX))
+            End If
 
 
         Next
@@ -142,20 +150,24 @@ dBug:
 13:
 
 
-        Debug.Print("Converted file from ZT1 to PNG.")
+        MdlZTStudio.Trace("MdlTasks", "Convert_file_ZT1_to_PNG", "Conversion finished.")
+
+        BlnTaskRunning = False
 
         Exit Sub
 
 dBg:
-        MsgBox("Error occured in convert_file_ZT1_to_PNG:" & vbCrLf & "Line: " & Erl() & vbCrLf &
-            Err.Number & " - " & Err.Description, vbOKOnly + vbCritical, "Error in conversion ZT1 -> PNG")
+        Dim StrMessage As String = "An error occurred while converting a ZT1 Graphics file to PNG files:" & vbCrLf & StrFileName
+        MdlZTStudio.HandledError("MdlTasks", "Convert_file_ZT1_to_PNG", StrMessage, False, Information.Err)
 
+        BlnTaskRunning = False
 
     End Sub
     Public Function Convert_file_PNG_to_ZT1(strPath As String, Optional blnSingleConversion As Boolean = True) As Integer
 
         On Error GoTo dBg
 
+        BlnTaskRunning = True
 
         ' In this sub, we get the file name of a PNG image we'll convert.
         ' But the filename should NOT be that of the  .PNG, but rather the one for the final ZT1 graphic. 
@@ -255,7 +267,7 @@ dBg:
                     ObjGraphic.HasBackgroundFrame = 1
 
 125:
-                ElseIf IsNumeric(strpngName) = True Then
+                ElseIf IsNumeric(StrPngName) = True Then
 
                     ' Here we check whether the pattern is still appropriate.
                     ' The specification is that - depending on a variable to see if we start counting from 0 or 1 - 
@@ -276,7 +288,7 @@ dBg:
 
 140:
 
-                ElseIf strpngName = Path.GetFileName(StrPathDir) Then
+                ElseIf StrPngName = Path.GetFileName(StrPathDir) Then
 
                     ' This checks the last part of the directory path of this graphic.
                     ' One exception which we could accept, is an extremely uncommon one.
@@ -316,7 +328,7 @@ dBg:
 
 202:
 
-                If Cfg_convert_sharedPalette = 1 And blnSingleConversion = False Then
+                If Cfg_Convert_SharedPalette = 1 And blnSingleConversion = False Then
 
                     ' 20170513: changed behavior for even more flexibility. 
                     ' ZT Studio tries to detect a color palette:
@@ -437,7 +449,7 @@ paletteReady:
         'Debug.Print("After write: " & Now.ToString("HH:mm:ss"))
 
 1555:
-        If Cfg_export_ZT1_Ani = 1 And blnSingleConversion = True Then
+        If Cfg_Export_ZT1_Ani = 1 And blnSingleConversion = True Then
             Debug.Print(Now.ToString() & ": convert_file_PNG_to_ZT1: Generate .ani file (single conversion)")
 
             ' Only 1 graphic file is being generated. This is the case for icons, for example.
@@ -458,6 +470,7 @@ paletteReady:
 
 
 
+        BlnTaskRunning = False
 
         Return 0
 
@@ -466,6 +479,7 @@ dBg:
         MsgBox("Error occured in convert_file_PNG_to_ZT1:" & vbCrLf & "Line: " & Erl() & vbCrLf &
             Err.Number & " - " & Err.Description, vbOKOnly + vbCritical, "Error in conversion PNG -> ZT1")
 
+        BlnTaskRunning = False
 
     End Function
     Public Sub Convert_folder_ZT1_to_PNG(strPath As String, Optional PB As ProgressBar = Nothing)
@@ -477,11 +491,10 @@ dBg:
         On Error GoTo dBug
 
 0:
-
         ' First we will create a recursive list.
 
         ' This list stores the results.
-        Dim result As New List(Of String)
+        Dim LstResult As New List(Of String)
 
         ' This stack stores the directories to process.
         Dim Stack As New Stack(Of String)
@@ -496,23 +509,21 @@ dBg:
             ' Get top directory string
 
 15:
-
-
-            Dim dir As String = Stack.Pop
+            Dim StrDirectoryName As String = Stack.Pop
 
 20:
-            For Each f As String In Directory.GetFiles(dir, "*")
+            For Each StrFileName As String In Directory.GetFiles(StrDirectoryName, "*")
                 ' Only ZT1 files
-                If Path.GetExtension(f) = vbNullString Then
-                    result.Add(f)
+                If Path.GetExtension(StrFileName) = vbNullString Then
+                    LstResult.Add(StrFileName)
                 End If
             Next
 
 25:
             ' Loop through all subdirectories and add them to the stack.
-            Dim directoryName As String
-            For Each directoryName In Directory.GetDirectories(dir)
-                Stack.Push(directoryName)
+            Dim StrSubDirectoryName As String
+            For Each StrSubDirectoryName In Directory.GetDirectories(StrDirectoryName)
+                Stack.Push(StrSubDirectoryName)
             Next
 
         Loop
@@ -522,14 +533,13 @@ dBg:
         If IsNothing(PB) = False Then
             PB.Minimum = 0
             PB.Value = 0
-            PB.Maximum = result.Count
+            PB.Maximum = LstResult.Count
         End If
 
 1000:
         ' For each file that is a ZT1 Graphic:
-        For Each f As String In result
-            Debug.Print(f)
-            MdlTasks.Convert_file_ZT1_to_PNG(f)
+        For Each StrFileName As String In LstResult
+            MdlTasks.Convert_file_ZT1_to_PNG(StrFileName)
             If IsNothing(PB) = False Then
                 PB.Value += 1
             End If
@@ -537,21 +547,20 @@ dBg:
 
 
 1050:
-        ' Should we do a clean up?
-        If Cfg_convert_deleteOriginal = 1 Then
+        ' Clean up original ZT1 Graphic files? (includes palette, does not include .ani file for now!)
+        If Cfg_Convert_DeleteOriginal = 1 Then
             ' Currently ZT1 Graphics and ZT1 Color palettes have their own sub in which the files get deleted.
             ' It might be possible to merge them at some point and you could even gain a small performance boost.
-            MdlTasks.CleanUp_files(strPath, "")
-            MdlTasks.CleanUp_files(strPath, ".pal")
+            MdlTasks.CleanUpFiles(strPath, "")
+            MdlTasks.CleanUpFiles(strPath, ".pal")
         End If
 
         Exit Sub
 
 dBug:
 
-        MsgBox("An error occured while trying to list and convert ZT1 Graphic files in this folder: " & vbCrLf &
-            strPath & vbCrLf & vbCrLf & "Line: " & Erl() & vbCrLf & Err.Number & " - " & Err.Description,
-            vbOKOnly + vbCritical, "Error during ZT1 to PNG batch conversion")
+        MdlZTStudio.UnhandledError("MdlTasks", "Convert_folder_ZT1_to_PNG", Information.Err)
+
 
     End Sub
     Public Sub Convert_folder_PNG_to_ZT1(strPath As String, Optional PB As ProgressBar = Nothing)
@@ -598,12 +607,12 @@ dBug:
                 If Strings.Right(Path.GetFileNameWithoutExtension(f).ToLower, 5) = "extra" Then
                     ' 5 (extra) + 4 (.png) = 9 chars.
                     ' eg objects/yourobj/NE_extra.png 
-                    StrGraphicName = Strings.Left(f, Len(f) - 9 - Len(Cfg_convert_fileNameDelimiter))
+                    StrGraphicName = Strings.Left(f, Len(f) - 9 - Len(Cfg_Convert_FileNameDelimiter))
                     ' Debug.Print("strgraphicname extra='" & strGraphicName & "'")
                 Else
                     ' 4 (0000) + 4 (.png) = 8 chars. 
                     ' eg objects/yourobj/NE_0001.png 
-                    StrGraphicName = Strings.Left(f, Len(f) - 8 - Len(Cfg_convert_fileNameDelimiter))
+                    StrGraphicName = Strings.Left(f, Len(f) - 8 - Len(Cfg_Convert_FileNameDelimiter))
                     ' Debug.Print("strgraphicname='" & strGraphicName & "'")
                 End If
 
@@ -669,8 +678,8 @@ dBug:
 
 1150:
         ' Do a clean up of our .PNG files if we had a successful conversion.
-        If Cfg_convert_deleteOriginal = 1 Then
-            MdlTasks.CleanUp_files(strPath, ".png")
+        If Cfg_Convert_DeleteOriginal = 1 Then
+            MdlTasks.CleanUpFiles(strPath, ".png")
         End If
 
         Exit Sub
@@ -695,28 +704,28 @@ dBug:
     ''' Saves the main graphic as a ZT1 Graphic file.
     ''' Saves as the specified filename.
     ''' </summary>
-    ''' <param name="sFileName">Filename</param>
-    Sub Save_Graphic(sFileName As String)
+    ''' <param name="StrFileName">Filename</param>
+    Sub Save_Graphic(StrFileName As String)
 
         ' 20150624. We have <filename>.pal here. 
         ' We do this to avoid issues with shared color palettes, if users are NOT familiar with them.
         ' We are assuming pro users will only tweak and use the batch conversion.
         With EditorGraphic
-            .FileName = sFileName
+            .FileName = StrFileName
             .ColorPalette.FileName = EditorGraphic.FileName & ".pal"
-            .Write(sFileName, True)
+            .Write(StrFileName, True)
         End With
 
 50:
-        If Cfg_export_ZT1_Ani = 1 Then
+        If Cfg_Export_ZT1_Ani = 1 Then
             Debug.Print("Try .ani")
             ' Get the folder + name of the folder + .ani
-            Dim CAni As New ClsAniFile(Path.GetDirectoryName(sFileName) & "\" & Path.GetFileName(Path.GetDirectoryName(sFileName)) & ".ani")
+            Dim CAni As New ClsAniFile(Path.GetDirectoryName(StrFileName) & "\" & Path.GetFileName(Path.GetDirectoryName(StrFileName)) & ".ani")
             CAni.CreateAniConfig()
         End If
 
 60:
-        FrmMain.ssFileName.Text = Now.ToString("yyyy-MM-dd HH:mm:ss") & ": saved " & sFileName
+        FrmMain.ssFileName.Text = Now.ToString("yyyy-MM-dd HH:mm:ss") & ": saved " & StrFileName
 
 
     End Sub

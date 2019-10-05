@@ -24,7 +24,7 @@ In the game, these two colors may not even be shown at all. They will be replace
 You can also choose to only use one color palette. I’m not 100% sure if you can choose whether you use only the large or only the small version. You might also be able to use 2 color palettes of 16 colors.
 And last but not least, very important: all your 4 views will have to share one .pal file.
 
-To sum up:
+Summarized:
 * A graphic can contain maximum 2 color ranges of which the color can be replaced.
 * A custom color palette consists of either 8 or 16 colors. This is the number of colors that need to be defined in a color range in the graphic’s color palette. However, it's not required to use all of them!
 * Highly recommended: make sure all views use the same .pal file

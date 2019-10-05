@@ -235,7 +235,7 @@ ZT Studio
  <para>If a background graphic has been set, it will also be rendered if enabled. (for example: Orang Utan toy)</para>
  </summary>
  <param name="BlnDrawGrid">Add grid. Defaults to false.</param>
- <param name="BlnCentered"></param>
+ <param name="BlnCentered">Centered</param>
  <returns>Bitmap</returns>
 </member>
 <member name="M:ZTStudio.ClsFrame.RenderCoreImageFromHex">
@@ -429,7 +429,7 @@ ZT Studio
 </member>
 <member name="M:ZTStudio.MdlBitMap.CombineImages(System.Drawing.Image,System.Drawing.Image)">
  <summary>
- Combines two images into one
+ Combines two images into one. Always centers the images on each other, if different size. (For instance: grid + actual graphic)
  </summary>
  <param name="ImgBack">Image background</param>
  <param name="ImgFront">Image on top</param>
@@ -470,14 +470,6 @@ ZT Studio
  </summary>
  <param name="BmInput">Bitmap image</param>
  <returns>Rectangle - dimensions of relevant part</returns>
-</member>
-<member name="M:ZTStudio.MdlBitMap.Bitmap_GetDefiningRectangle_old(System.Drawing.Bitmap)">
- <summary>
- Deprecated! Previous version of determining the relevant rectangle.
- Only left here in case a regression is spotted.
- </summary>
- <param name="bmInput">Bitmap image</param>
- <returns>Rectangle</returns>
 </member>
 <member name="T:ZTStudio.MdlColorPalette">
  <summary>
@@ -525,14 +517,30 @@ ZT Studio
  <summary>
  Saves configuration to .INI file
  </summary>
+</member>
+<member name="M:ZTStudio.MdlTasks.CleanUpFiles(System.String,System.String)">
+ <summary>
+ Cleans up files in a path, based on extension.
+ </summary>
+ <remarks>
+ Used to clean up .pal-files and files without a file extension (=ZT1 Graphic files)
+ </remarks>
+ <param name="StrPath"></param>
+ <param name="StrExtension"></param>
  <returns></returns>
+</member>
+<member name="M:ZTStudio.MdlTasks.Convert_file_ZT1_to_PNG(System.String)">
+ <summary>
+ Converts a ZT1 Graphic file to one or more PNG files.
+ </summary>
+ <param name="StrFileName"></param>
 </member>
 <member name="M:ZTStudio.MdlTasks.Save_Graphic(System.String)">
  <summary>
  Saves the main graphic as a ZT1 Graphic file.
  Saves as the specified filename.
  </summary>
- <param name="sFileName">Filename</param>
+ <param name="StrFileName">Filename</param>
 </member>
 <member name="M:ZTStudio.MdlTasks.Batch_RotationFix_Folder_ZT1(System.String,System.Drawing.Point,System.Windows.Forms.ProgressBar)">
  <summary>
@@ -1261,6 +1269,13 @@ ZT Studio
  <param name="sender">Object</param>
  <param name="e">EventArgs</param>
 </member>
+<member name="M:ZTStudio.FrmSettings.ChkPNGRenderBGFrame_CheckedChanged(System.Object,System.EventArgs)">
+ <summary>
+ Handles toggling of whether PNGs should be exported with the last ("extra") frame as background
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
 <member name="M:ZTStudio.FrmSettings.NumFrameAnimSpeed_ValueChanged(System.Object,System.EventArgs)">
  <summary>
  Handles changes in the default animation speed for new graphics
@@ -1347,6 +1362,13 @@ ZT Studio
  <param name="e">EventArgs</param>
 </member>
 <member name="M:ZTStudio.FrmSettings.ChkPNGTransparentBG_MouseHover(System.Object,System.EventArgs)">
+ <summary>
+ Show help on mousehover
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmSettings.ChkPNGRenderBGFrame_MouseHover(System.Object,System.EventArgs)">
  <summary>
  Show help on mousehover
  </summary>

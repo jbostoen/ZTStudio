@@ -207,7 +207,7 @@ Public Class ClsFrame
         Else
 13:
 
-            MdlZTStudio.Trace(Me.GetType().FullName, "GetCoreImageBitmap", "Using cached bitmap...")
+            MdlZTStudio.Trace(Me.GetType().FullName, "GetCoreImageBitmap", "Using cached bitmap, w = " & Me.CoreImageBitmap.Width & ", h = " & Me.CoreImageBitmap.Height & "...")
             Return Me.CoreImageBitmap
         End If
 
@@ -241,7 +241,7 @@ dBug:
         Dim BmCoreImageBitMap = Me.GetCoreImageBitmap()
 
 3:
-        If IsNothing(Me.GetCoreImageBitmap) = True Then
+        If IsNothing(BmCoreImageBitMap) = True Then
             Return Nothing
         End If
 
@@ -275,11 +275,17 @@ dBug:
 
                 ' It seems the + and -1 are needed to avoid changing the image size
                 ' Keep in mind this is multiplied by 2 further in the code!
-                IntWidth = Math.Max(Math.Abs(Me.OffsetX), Math.Abs(Me.OffsetX - BmCoreImageBitMap.Width)) + 1
-                IntHeight = Math.Max(Math.Abs(Me.OffsetY), Math.Abs(Me.OffsetY - BmCoreImageBitMap.Height)) - 1
+
+                ' 20191005: 
+                ' Why would + 1 And -1 be needed here? They cause a bug with the 1x1 canvas of objects/restrant/idle/NE. 
+                ' Removed.If anything; both should be +1
+                IntWidth = Math.Max(Math.Abs(Me.OffsetX), Math.Abs(Me.OffsetX - BmCoreImageBitMap.Width))
+                IntHeight = Math.Max(Math.Abs(Me.OffsetY), Math.Abs(Me.OffsetY - BmCoreImageBitMap.Height))
         End Select
 
 5:
+
+        MdlZTStudio.Trace(Me.GetType().FullName, "GetCoreImageBitmapOnTransparentCanvas", "Create bitmap: w = " & IntWidth & " * 2, h = " & IntHeight & " * 2")
 
         ' Draw this retrieved bitmap on a transparent canvas
         Dim BmOutput As New Bitmap(IntWidth * 2, IntHeight * 2) ' Creating the output canvas
@@ -311,7 +317,7 @@ dBug:
     ''' <para>If a background graphic has been set, it will also be rendered if enabled. (for example: Orang Utan toy)</para>
     ''' </summary>
     ''' <param name="BlnDrawGrid">Add grid. Defaults to false.</param>
-    ''' <param name="BlnCentered"></param>
+    ''' <param name="BlnCentered">Centered</param>
     ''' <returns>Bitmap</returns>
     Function GetImage(Optional BlnDrawGrid As Boolean = False, Optional BlnCentered As Boolean = False) As Bitmap
 
@@ -323,25 +329,33 @@ dBug:
 1:
         ' Draw frame.
         Dim BmOutput As Bitmap = Me.GetCoreImageBitmapOnTransparentCanvas(BlnCentered)
-
+        Dim BmFront As Bitmap
 
 11:
         ' Draw 'extra' background frame, e.g. restaurants?
         If Me.Parent.HasBackgroundFrame = 1 And Cfg_Export_PNG_RenderBGFrame = 1 Then
-            BmOutput = MdlBitMap.CombineImages(Me.Parent.Frames(Me.Parent.Frames.Count - 1).GetCoreImageBitmapOnTransparentCanvas(BlnCentered), BmOutput)
+            BmFront = Me.Parent.Frames(Me.Parent.Frames.Count - 1).GetCoreImageBitmapOnTransparentCanvas(BlnCentered)
+12:
+            MdlZTStudio.Trace(Me.GetType().FullName, "GetImage", "Combine core bitmap with background frame")
+            BmOutput = MdlBitMap.CombineImages(BmFront, BmOutput)
         End If
 
 21:
         ' Optional background ZT1 Graphic frame, e.g. animal + toy?
         If EditorBgGraphic.Frames.Count > 0 And Cfg_Export_PNG_RenderBGZT1 = 1 Then
-            ' Currently it's always the 
-            BmOutput = MdlBitMap.CombineImages(EditorBgGraphic.Frames(0).GetCoreImageBitmapOnTransparentCanvas(BlnCentered), BmOutput)
+            BmFront = EditorBgGraphic.Frames(0).GetCoreImageBitmapOnTransparentCanvas(BlnCentered)
+22:
+            MdlZTStudio.Trace(Me.GetType().FullName, "GetImage", "Combine core bitmap with optional ZT1 Graphic backround")
+            BmOutput = MdlBitMap.CombineImages(BmFront, BmOutput)
         End If
 
 31:
         ' Draw grid?
         If BlnDrawGrid = True Then
-            BmOutput = MdlBitMap.CombineImages(MdlBitMap.DrawGridFootPrintXY(Cfg_grid_footPrintX, Cfg_grid_footPrintY), BmOutput)
+            BmFront = MdlBitMap.DrawGridFootPrintXY(Cfg_grid_footPrintX, Cfg_grid_footPrintY)
+32:
+            MdlZTStudio.Trace(Me.GetType().FullName, "GetImage", "Combine core bitmap with grid")
+            BmOutput = MdlBitMap.CombineImages(BmFront, BmOutput)
         End If
 
 41:
@@ -351,6 +365,7 @@ dBug:
         Exit Function
 
 dBug:
+        ' Not expecting an error here
         MdlZTStudio.UnhandledError(Me.GetType().FullName, "GetImage", Information.Err)
 
 
@@ -373,7 +388,7 @@ dBug:
         ' Only one thing matters: do we actually have HEX?
         If Me.CoreImageHex.Count = 0 Then
 
-            MdlZTStudio.Trace(Me.GetType().FullName, "RenderCoreImageFromHex", "There is no hex! Returning Nothing instead of Bitmap")
+            MdlZTStudio.Trace(Me.GetType().FullName, "RenderCoreImageFromHex", "There Is no hex! Returning Nothing instead of Bitmap")
             Me.CoreImageBitmap = Nothing
             Return Nothing
 
@@ -389,8 +404,8 @@ dBug:
         Dim ZtPal As ClsPalette = Me.Parent.ColorPalette
         Dim BlnIsShadow As Boolean = False
 
-        ' This case is really weird. It's for the Restaurant.
-        ' The idle animation's views (eg NE) contain 10 bytes: (00 00) (00 00) (00 00) (00 00) (D0 10)
+        ' This case is weird. It's for the Restaurant (objects/restrant/idle/NE).
+        ' Some views contain 10 bytes: (00 00) (00 00) (00 00) (00 00) (D0 10)
         ' The idle view supposedly uses an extraFrame
         ' Which means no height/width, no offsets, and yet some weird mystery bytes.
         ' The mystery bytes might be the same for similar graphics, which have an empty first frame and an extra frame as background?
@@ -405,8 +420,20 @@ dBug:
 
                 ' It should actually be 0, 0 (empty); but this is a work around.
                 Me.CoreImageBitmap = New Bitmap(1, 1)
+                Me.OffsetX = 0 ' Overrule default offset of -9999
+                Me.OffsetY = 0 ' Overrule default offset of -9999
+
+                ' Still fetch mystery bytes
+                With Me.MysteryHEX
+                    .Clear(False)
+                    .Add(LstFrameHex(8), False)
+                    .Add(LstFrameHex(9), False)
+                End With
+
                 Return Me.CoreImageBitmap
+
             End If
+
         End If
 
 32:
@@ -417,7 +444,7 @@ dBug:
         ' Probably due to HEX 80 00 being -32678, which is very unlikely to happen?
         If LstFrameHex(1) = "80" Then
 
-            MdlZTStudio.Trace(Me.GetType().FullName, "RenderCoreImageFromHex", "Byte index 1 = 80 -> assuming this is the compressed shadow format (Marine Mania)")
+            MdlZTStudio.Trace(Me.GetType().FullName, "RenderCoreImageFromHex", "Byte index 1 = 80 -> assuming this Is the compressed shadow format (Marine Mania)")
             MdlZTStudio.Trace(Me.GetType().FullName, "RenderCoreImageFromHex", "Byte index 2 = " & LstFrameHex(2) & " -> still signifies height")
 
             BlnIsShadow = True

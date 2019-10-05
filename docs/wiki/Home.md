@@ -29,7 +29,7 @@ Some more detailed information on features
 There is no support for this program. Bug reports, feature requests or pull requests may be processed at some point; but it's not guaranteed at all.
 
 * [Report issues/request features](https://github.com/jbostoen/ZTStudio/issues)
-* Be as detailed as possible when reporting bugs; preferably include the files causing the problem you’re experiencing.
+* Be as detailed as possible when reporting bugs; preferably include the files causing the problem.
 
 # Other interesting info
 * [ZT1 Sprites Script by Hendrix](https://github.com/HENDRIX-ZT2/ZT1-Sprites)

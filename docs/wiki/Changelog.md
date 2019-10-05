@@ -7,12 +7,25 @@ E.g. 1.0.2015.0511 = version 1.0, last updated 11th of May 2015
 
 Version 1.0
 
-# Build 2019.xx.yy:
+# Build 2019.10.05:
 
 * Improvements
-  * Now automatically detects 'background frame' on loading graphics
   * More intelligent loading of color palettes (no more reloading if same as previous graphic)
   * Minor UI fixes
+  * Faster method of handling bitmaps (GetPixel() and SetPixel())
+  
+* Fixes
+  * Preview not re-rendered when replacing an existing frame with a PNG image
+  * Incorrect offsets in UI (after using increase, decrease buttons or slider control)
+  * Updates of frame info should not have been called during tasks (initiated by batch or command line operations)
+  * Sets offsets to 0 for empty images (objects/restrant/idle/NE)
+  * Conversion issue with objects/restrant/idle/NE when using the experimental 'crop around center' method
+  * Restore setting for PNG export: render background frame in each frame and don't export; or don't render and export as 'extra'
+  * Undo non-published change where rendering of background frame was automatically enabled upon loading that sort of ZT1 Graphic
+    * This had the unwanted consequence of also being applied in tasks, making the extra frame not separately exportable in batch operations
+  
+* Experimental
+  * ZT1 to PNG now generates a text file per graphic with some data about each frame (offsets, width, height, mystery bytes)
 
 # Build 2019.08.09:
 * Requirements

@@ -15,6 +15,7 @@ Public Class FrmSettings
         ' Just re-load the settings here to apply them.
         MdlConfig.write()
 
+        ' 20191005 Not recalling why reloading is necessary? Likely redundant.
         MdlConfig.load()
 
 
@@ -43,6 +44,7 @@ Public Class FrmSettings
 
         ' Export stuff (to PNG)
         ChkRenderFrame_BGGraphic.Checked = CBool(Cfg_Export_PNG_RenderBGZT1)
+        ChkPNGRenderBGFrame.Checked = (Cfg_Export_PNG_RenderBGFrame = 1)
         CboPNGExport_Crop.SelectedIndex = Cfg_export_PNG_CanvasSize
 
         ' Export to ZT1
@@ -53,8 +55,11 @@ Public Class FrmSettings
         ChkConvert_DeleteOriginal.Checked = (Cfg_convert_deleteOriginal = 1)
         ChkConvert_SharedColorPalette.Checked = (Cfg_convert_sharedPalette = 1)
         ChkConvert_Overwrite.Checked = (Cfg_convert_overwrite = 1)
-        NumConvert_PNGStartIndex.Value = Cfg_convert_startIndex
-        ChkPNGTransparentBG.Checked = (Cfg_export_PNG_TransparentBG = 1)
+        NumConvert_PNGStartIndex.Value = Cfg_Convert_StartIndex
+
+        ' exportOptions PNG
+        ChkPNGTransparentBG.Checked = (Cfg_Export_PNG_TransparentBG = 1)
+        ChkPNGRenderBGFrame.Checked = (Cfg_Export_PNG_RenderBGFrame = 1)
 
         ' Graphic
         numFrameDefaultAnimSpeed.Value = Cfg_frame_defaultAnimSpeed
@@ -293,6 +298,21 @@ Public Class FrmSettings
     End Sub
 
     ''' <summary>
+    ''' Handles toggling of whether PNGs should be exported with the last ("extra") frame as background
+    ''' </summary>
+    ''' <param name="sender">Object</param>
+    ''' <param name="e">EventArgs</param>
+    Private Sub ChkPNGRenderBGFrame_CheckedChanged(sender As Object, e As EventArgs) Handles ChkPNGRenderBGFrame.CheckedChanged
+
+        If ChkPNGRenderBGFrame.IsHandleCreated = False Then
+            Exit Sub
+        End If
+        Cfg_Export_PNG_RenderBGFrame = CByte(CInt(ChkPNGRenderBGFrame.Checked) * -1)
+
+    End Sub
+
+
+    ''' <summary>
     ''' Handles changes in the default animation speed for new graphics
     ''' </summary>
     ''' <param name="sender">Object</param>
@@ -378,8 +398,8 @@ Public Class FrmSettings
     ''' <param name="e">EventArgs</param>
     Private Sub ChkConvert_DeleteOriginal_MouseHover(sender As Object, e As EventArgs) Handles ChkConvert_DeleteOriginal.MouseHover
         MdlZTStudioUI.ShowToolTip(ChkConvert_DeleteOriginal, "If enabled, the source files of any conversion will be deleted." & vbCrLf &
-                                  "When converting from PNG to ZT1 Graphics, the PNG files will be deleted." & vbCrLf &
-                                  "When converting from ZT1 Graphics to PNG, the ZT1 Graphics will be deleted.")
+            "When converting from PNG to ZT1 Graphics, the PNG files will be deleted." & vbCrLf &
+            "When converting from ZT1 Graphics to PNG, the ZT1 Graphics will be deleted.")
     End Sub
 
     ''' <summary>
@@ -422,8 +442,8 @@ Public Class FrmSettings
     ''' <param name="e">EventArgs</param>
     Private Sub ChkExportZT1_AddZTAFBytes_MouseHover(sender As Object, e As EventArgs) Handles ChkExportZT1_AddZTAFBytes.MouseHover
         MdlZTStudioUI.ShowToolTip(ChkExportZT1_AddZTAFBytes, "Always adds 'ZTAF' bytes at beginning of graphic file." & vbCrLf &
-                                  "ZTAF-bytes are usually found at the beginning of graphic files which contain a background frame." & vbCrLf &
-                                  "They don't seem to have any real function.")
+            "ZTAF-bytes are usually found at the beginning of graphic files which contain a background frame." & vbCrLf &
+            "They don't seem to have any real function.")
 
     End Sub
 
@@ -434,12 +454,12 @@ Public Class FrmSettings
     ''' <param name="e">EventArgs</param>
     Private Sub ChkExportZT1_Ani_MouseHover(sender As Object, e As EventArgs) Handles ChkExportZT1_Ani.MouseHover
         MdlZTStudioUI.ShowToolTip(ChkExportZT1_Ani, "Tries to generate a .ani file containing information related to offsets." & vbCrLf &
-                                  "It will do so based on the most commonly found filenames and try to determine the object type." & vbCrLf &
-                                  "It should work for most graphics, although there are exceptions (such as dustcloud)" & vbCrLf &
-                                  "Finds 'N': assumes icon" & vbCrLf &
-                                  "Finds 'NE', 'SE', 'SW', 'NW': assumes object (foliage, scenery, building, ...)" & vbCrLf &
-                                  "Finds 'N', 'NE', 'E', 'SE', 'S': assumes moving creature (animal, guest, staff, ...)" & vbCrLf &
-                                  "Finds '1' , '2', ... , '20': assumes path")
+            "It will do so based on the most commonly found filenames and try to determine the object type." & vbCrLf &
+            "It should work for most graphics, although there are exceptions (such as dustcloud)" & vbCrLf &
+            "Finds 'N': assumes icon" & vbCrLf &
+            "Finds 'NE', 'SE', 'SW', 'NW': assumes object (foliage, scenery, building, ...)" & vbCrLf &
+            "Finds 'N', 'NE', 'E', 'SE', 'S': assumes moving creature (animal, guest, staff, ...)" & vbCrLf &
+            "Finds '1' , '2', ... , '20': assumes path")
 
     End Sub
 
@@ -450,7 +470,20 @@ Public Class FrmSettings
     ''' <param name="e">EventArgs</param>
     Private Sub ChkPNGTransparentBG_MouseHover(sender As Object, e As EventArgs) Handles ChkPNGTransparentBG.MouseHover
         MdlZTStudioUI.ShowToolTip(ChkPNGTransparentBG, "Rather than exporting PNGs with the chosen background color in ZT Studio," & vbCrLf &
-                                  "PNG files will be created with a transparent (invisible) background.")
+            "PNG files will be created with a transparent (invisible) background.")
+    End Sub
+
+    ''' <summary>
+    ''' Show help on mousehover
+    ''' </summary>
+    ''' <param name="sender">Object</param>
+    ''' <param name="e">EventArgs</param>
+    Private Sub ChkPNGRenderBGFrame_MouseHover(sender As Object, e As EventArgs) Handles ChkPNGRenderBGFrame.MouseHover
+        MdlZTStudioUI.ShowToolTip(ChkPNGRenderBGFrame,
+            "Some images (such as the Restaurant) have one frame which serves as background in all other frames." & vbCrLf &
+            "Toggling this option will either render this background in each frame and NOT export the background frame;" & vbCrLf &
+            "or it will NOT render the background and export this background frame as 'extra'")
+
     End Sub
 
     ''' <summary>
@@ -460,10 +493,10 @@ Public Class FrmSettings
     ''' <param name="e">EventArgs</param> 
     Private Sub LblHowToExportPNG_MouseHover(sender As Object, e As EventArgs) Handles LblHowToExportPNG.MouseHover
         MdlZTStudioUI.ShowToolTip(LblHowToExportPNG, "Each of these methods has benefits and downsides." & vbCrLf &
-                                  "Keep canvas size (" & (Cfg_grid_numPixels * 2) & " x " & (Cfg_grid_numPixels * 2) & "): slower export; keeps offsets on re-import; easy to animate in other programs" & vbCrLf &
-                                  "Crop to largest relevant width / height in this graphic: faster export; offsets lost on re-import; easy to animate in other programs" & vbCrLf &
-                                  "Crop to relevant pixels of this frame: fastest export; offsets lost on re-import; more difficult to animate in other programs" & vbCrLf &
-                                  "Crop around center (fast but experimental) : fast export; keeps offsets on re-import; easy to animate in other programs")
+            "Keep canvas size (" & (Cfg_Grid_NumPixels * 2) & " x " & (Cfg_Grid_NumPixels * 2) & "): slower export; keeps offsets on re-import; easy to animate in other programs" & vbCrLf &
+            "Crop to largest relevant width / height in this graphic: faster export; offsets lost on re-import; easy to animate in other programs" & vbCrLf &
+            "Crop to relevant pixels of this frame: fastest export; offsets lost on re-import; more difficult to animate in other programs" & vbCrLf &
+            "Crop around center (fast but experimental) : fast export; keeps offsets on re-import; easy to animate in other programs")
 
 
 
@@ -477,7 +510,7 @@ Public Class FrmSettings
     Private Sub ChkPalImportPNGForceAddAll_MouseHover(sender As Object, e As EventArgs) Handles ChkPalImportPNGForceAddAll.MouseHover
         MdlZTStudioUI.ShowToolTip(ChkPalImportPNGForceAddAll, "Sometimes there may be duplicates in the color palette." & vbCrLf &
             "Usually only unique colors are added." & vbCrLf &
-            "In some cases (such as recolors), it is desired at some points to forcefully add them to the color palette.")
+            "In some cases (such as recolors), it may be desired to forcefully add them to the color palette anyway.")
 
     End Sub
 
@@ -498,6 +531,10 @@ Public Class FrmSettings
     ''' <param name="e">EventArgs</param>
     Private Sub LblDefaultAnimSpeed_MouseHover(sender As Object, e As EventArgs) Handles LblDefaultAnimSpeed.MouseHover
         MdlZTStudioUI.ShowToolTip(LblDefaultAnimSpeed, "The animation speed (in milliseconds) determines the interval before the next frame is shown.")
+
+    End Sub
+
+    Private Sub tpWritePNG_Click(sender As Object, e As EventArgs) Handles tpWritePNG.Click
 
     End Sub
 End Class

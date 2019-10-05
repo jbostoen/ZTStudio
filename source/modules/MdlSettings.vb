@@ -20,7 +20,8 @@ Module MdlSettings
 
     Public EditorGraphic As ClsGraphic             ' The ClsGraphic object we use.
     Public EditorBgGraphic As ClsGraphic           ' The background graphic, e.g. toy
-    Public EditorFrame As ClsFrame                 ' The clsFrame we are currently viewing/editing
+    Public EditorFrame As ClsFrame                 ' The ClsFrame we are currently viewing/editing
+    Public BlnTaskRunning As Boolean = False          ' Prevents certain UI updates if a task is running
 
     Public Cfg_Grid_BackGroundColor As Color = Color.White ' The default background color?
     Public Cfg_Grid_ForeGroundColor As Color = Color.Black ' The default foreground color for the grid lines?
@@ -51,6 +52,8 @@ Module MdlSettings
     Public Cfg_Convert_SharedPalette As Byte = 1 ' Do we (try to) share a color palette?
     Public Cfg_Convert_FileNameDelimiter As String = "_" ' The file name delimiter. eg _ in NE_0000.png
 
+    ' Experimental
+    Public Cfg_Convert_Write_Graphic_Data_To_Text_File = 1 ' Should a text file be created? Contains info on frames (offsets, mystery bytes, width, height...)
 
     ' Frame
     Public Cfg_Editor_RotFix_IndividualFrame As Byte = 0 ' determines whether we are fixing the position of an object in 1 frame or in the entire graphic
@@ -70,6 +73,7 @@ Module MdlSettings
     ' Recent files
     Public Cfg_Path_RecentZT1 As String = "" ' Most recent path to select a ZT1 Graphic (file!)
     Public Cfg_Path_RecentPNG As String = "" ' Most recent path to select a PNG graphic (file!)
+
 
     ' GitHub
     Public Cfg_GitHub_URL As String = "https://github.com/jbostoen/ZTStudio"

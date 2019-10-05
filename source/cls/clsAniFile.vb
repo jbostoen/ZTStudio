@@ -214,7 +214,7 @@ dBug:
         If Me.FileName = "" Then
 
             ' Is there any path which leads up to this error?
-            MdlZTStudio.HandledError(Me.GetType().FullName, "ClsAniFile", "Unexpected error: filename for .ani file is empty?", True, Information.Err)
+            MdlZTStudio.HandledError(Me.GetType().FullName, "CreateAniConfig", "Unexpected error: filename for .ani file is empty?", True, Information.Err)
 
         Else
 

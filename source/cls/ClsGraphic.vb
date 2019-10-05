@@ -148,7 +148,6 @@ Public Class ClsGraphic
             ' 46 41 54 5A 00 | 00 00 00 01
             MdlZTStudio.Trace(Me.GetType().FullName, "Read", "Background frame: " & LstHexValues(8))
             Me.HasBackgroundFrame = LstHexValues(8)
-            Cfg_Export_PNG_RenderBGFrame = CByte(LstHexValues(8))
             LstHexValues.Skip(9)
         Else
             MdlZTStudio.Trace(Me.GetType().FullName, "Read", "Basic graphic format")
@@ -455,8 +454,10 @@ dBug:
             Exit Sub
         End If
 
-        ' This will trigger a refresh.
-        MdlZTStudioUI.UpdateFrameInfo("Property of graphic changed: " & StrProperty)
+        ' This will trigger a refresh if it's the main graphic
+        If BlnTaskRunning = False Then
+            MdlZTStudioUI.UpdateFrameInfo("Property of graphic changed: " & StrProperty)
+        End If
 
         'RaiseEvent PropertyChanged(Me, New PropertyChangedEventArgs(info))
     End Sub

@@ -297,11 +297,14 @@ dBug:
     ''' <param name="e">EventArgs</param>
     Private Sub TbFrames_ValueChanged(sender As Object, e As EventArgs) Handles TbFrames.ValueChanged
 
-        ' Update preview in UI
-        MdlZTStudioUI.UpdatePreview(True, False, TbFrames.Value - 1)
-
         ' Update current editor frame value
+        ' Do this before anything else or offsets might appear incorrectly!
         EditorFrame = EditorGraphic.Frames(TbFrames.Value - 1)
+
+        ' Sometimes called because of buttons changing the TbFrames value (increase, decrease)
+        ' Update preview in UI
+        ' Frame info should also be updated at this point
+        MdlZTStudioUI.UpdatePreview(True, True, TbFrames.Value - 1)
 
     End Sub
 
@@ -573,10 +576,8 @@ dBug:
     ''' <param name="e">EventArgs</param>
     Private Sub TsbFrame_IndexIncrease_Click(sender As Object, e As EventArgs) Handles TsbFrame_IndexIncrease.Click
 
-        ' Change handled in slider control
+        ' Change handled in slider control (will trigger GUI and frameinfo updates)
         TbFrames.Value += 1
-
-        MdlZTStudioUI.UpdateGUI("TsbFrame_IndexIncrease_Click")
 
     End Sub
 
@@ -687,11 +688,8 @@ dBug:
     ''' <param name="e">EventArgs</param>
     Private Sub TsbFrame_IndexDecrease_Click(sender As Object, e As EventArgs) Handles TsbFrame_IndexDecrease.Click
 
-        ' Change handled in slider control
+        ' Change handled in slider control (will trigger GUI and frameinfo updates)
         TbFrames.Value -= 1
-
-        ' Update preview
-        MdlZTStudioUI.UpdateGUI("TsbFrame_IndexDecrease_Click")
 
     End Sub
 
@@ -704,8 +702,8 @@ dBug:
     Private Sub TsbDelete_PNG_Click(sender As Object, e As EventArgs) Handles TsbDelete_PNG.Click
 
         ' Clean up files is generic, hence the specific messagebox needs to be shown here
-        MdlTasks.CleanUp_Files(Cfg_Path_Root, ".png")
-        MdlZTStudio.InfoBox("MdlTasks", "CleanUp_Files", "Deleted all .PNG files in the root folder.")
+        MdlTasks.CleanUpFiles(Cfg_Path_Root, ".png")
+        MdlZTStudio.InfoBox("MdlTasks", "CleanUpFiles", "Deleted all .PNG files in the root folder.")
 
     End Sub
 
@@ -717,10 +715,10 @@ dBug:
     Private Sub TsbDelete_ZT1Files_Click(sender As Object, e As EventArgs) Handles TsbDelete_ZT1Files.Click
 
         ' Cleanup ZT1 Graphics and color palettes
-        MdlTasks.CleanUp_Files(Cfg_Path_Root, "")
-        MdlTasks.CleanUp_Files(Cfg_Path_Root, ".pal")
-        MdlTasks.CleanUp_Files(Cfg_Path_Root, ".ani")
-        MdlZTStudio.InfoBox("MdlTasks", "CleanUp_Files", "Deleted all ZT1 Graphic files (including .ani and .pal) in the root folder.")
+        MdlTasks.CleanUpFiles(Cfg_Path_Root, "")
+        MdlTasks.CleanUpFiles(Cfg_Path_Root, ".pal")
+        MdlTasks.CleanUpFiles(Cfg_Path_Root, ".ani")
+        MdlZTStudio.InfoBox("MdlTasks", "CleanUpFiles", "Deleted all ZT1 Graphic files (including .ani and .pal) in the root folder.")
 
     End Sub
 
@@ -1415,4 +1413,10 @@ dBug:
 
     End Sub
 
+    Private Sub FrmMain_FormClosing(sender As Object, e As FormClosingEventArgs) Handles Me.FormClosing
+
+        ' Due to new implementations, some processes might still be running
+        End
+
+    End Sub
 End Class

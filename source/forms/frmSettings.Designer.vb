@@ -58,16 +58,17 @@ Partial Class FrmSettings
         Me.TCSettings = New System.Windows.Forms.TabControl()
         Me.LblHelp = New System.Windows.Forms.Label()
         Me.LblHelpTopic = New System.Windows.Forms.Label()
-        Me.tpPalette.SuspendLayout
-        Me.tpWritePNG.SuspendLayout
-        Me.tpWriteZT1.SuspendLayout
-        Me.tpRenderingFrames.SuspendLayout
-        CType(Me.numFrameDefaultAnimSpeed, System.ComponentModel.ISupportInitialize).BeginInit
-        Me.tpConversions.SuspendLayout
-        CType(Me.NumConvert_PNGStartIndex, System.ComponentModel.ISupportInitialize).BeginInit
-        Me.tpFolders.SuspendLayout
-        Me.TCSettings.SuspendLayout
-        Me.SuspendLayout
+        Me.ChkPNGRenderBGFrame = New System.Windows.Forms.CheckBox()
+        Me.tpPalette.SuspendLayout()
+        Me.tpWritePNG.SuspendLayout()
+        Me.tpWriteZT1.SuspendLayout()
+        Me.tpRenderingFrames.SuspendLayout()
+        CType(Me.numFrameDefaultAnimSpeed, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.tpConversions.SuspendLayout()
+        CType(Me.NumConvert_PNGStartIndex, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.tpFolders.SuspendLayout()
+        Me.TCSettings.SuspendLayout()
+        Me.SuspendLayout()
         '
         'tpPalette
         '
@@ -167,6 +168,7 @@ Partial Class FrmSettings
         '
         'tpRenderingFrames
         '
+        Me.tpRenderingFrames.Controls.Add(Me.ChkPNGRenderBGFrame)
         Me.tpRenderingFrames.Controls.Add(Me.Label3)
         Me.tpRenderingFrames.Controls.Add(Me.numFrameDefaultAnimSpeed)
         Me.tpRenderingFrames.Controls.Add(Me.LblDefaultAnimSpeed)
@@ -449,6 +451,17 @@ Partial Class FrmSettings
         Me.LblHelpTopic.TabIndex = 31
         Me.LblHelpTopic.Text = "Need help?"
         '
+        'ChkPNGRenderBGFrame
+        '
+        Me.ChkPNGRenderBGFrame.AutoSize = True
+        Me.ChkPNGRenderBGFrame.Location = New System.Drawing.Point(24, 102)
+        Me.ChkPNGRenderBGFrame.Name = "ChkPNGRenderBGFrame"
+        Me.ChkPNGRenderBGFrame.Size = New System.Drawing.Size(512, 17)
+        Me.ChkPNGRenderBGFrame.TabIndex = 38
+        Me.ChkPNGRenderBGFrame.Text = "Render last frame as background in all PNG images (and do not export background s" &
+    "eparately)"
+        Me.ChkPNGRenderBGFrame.UseVisualStyleBackColor = True
+        '
         'FrmSettings
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -462,22 +475,22 @@ Partial Class FrmSettings
         Me.Name = "FrmSettings"
         Me.Text = "Settings"
         Me.tpPalette.ResumeLayout(False)
-        Me.tpPalette.PerformLayout
+        Me.tpPalette.PerformLayout()
         Me.tpWritePNG.ResumeLayout(False)
-        Me.tpWritePNG.PerformLayout
+        Me.tpWritePNG.PerformLayout()
         Me.tpWriteZT1.ResumeLayout(False)
-        Me.tpWriteZT1.PerformLayout
+        Me.tpWriteZT1.PerformLayout()
         Me.tpRenderingFrames.ResumeLayout(False)
-        Me.tpRenderingFrames.PerformLayout
-        CType(Me.numFrameDefaultAnimSpeed, System.ComponentModel.ISupportInitialize).EndInit
+        Me.tpRenderingFrames.PerformLayout()
+        CType(Me.numFrameDefaultAnimSpeed, System.ComponentModel.ISupportInitialize).EndInit()
         Me.tpConversions.ResumeLayout(False)
-        Me.tpConversions.PerformLayout
-        CType(Me.NumConvert_PNGStartIndex, System.ComponentModel.ISupportInitialize).EndInit
+        Me.tpConversions.PerformLayout()
+        CType(Me.NumConvert_PNGStartIndex, System.ComponentModel.ISupportInitialize).EndInit()
         Me.tpFolders.ResumeLayout(False)
-        Me.tpFolders.PerformLayout
+        Me.tpFolders.PerformLayout()
         Me.TCSettings.ResumeLayout(False)
         Me.ResumeLayout(False)
-        Me.PerformLayout
+        Me.PerformLayout()
 
     End Sub
     Friend WithEvents dlgBrowseFolder As System.Windows.Forms.FolderBrowserDialog
@@ -516,4 +529,5 @@ Partial Class FrmSettings
     Friend WithEvents Label3 As Label
     Friend WithEvents LblHelp As Label
     Friend WithEvents LblHelpTopic As Label
+    Friend WithEvents ChkPNGRenderBGFrame As CheckBox
 End Class

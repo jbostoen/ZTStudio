@@ -28,8 +28,9 @@ Module MdlZTStudioUI
             If Path.GetExtension(StrFileName) <> vbNullString Then
 
                 Dim StrErrorMessage As String = "" &
-                            "You selected a file with the extension '" & Path.GetExtension(StrFileName) & "'." & vbCrLf &
-                            "ZT Studio expects you to select a ZT1 Graphic file, which shouldn't have a file extension."
+                    "You selected a file with the extension '" & Path.GetExtension(StrFileName) & "'." & vbCrLf &
+                    "ZT Studio expects you to select a ZT1 Graphic file, which shouldn't have a file extension."
+
                 MdlZTStudio.HandledError("MdlZTStudioUI", "LoadGraphic", StrErrorMessage)
 
                 Exit Sub
@@ -37,9 +38,10 @@ Module MdlZTStudioUI
 
             ElseIf StrFileName.ToLower().Contains(Cfg_path_Root.ToLower()) = False Then
 
-                Dim StrErrorMessage As String = "Only select a file in the root directory, which is currently:" & vbCrLf &
-                               Cfg_path_Root & vbCrLf & vbCrLf &
-                               "Would you like to change the root directory?"
+                Dim StrErrorMessage As String = "" &
+                    "Only select a file in the root directory, which is currently:" & vbCrLf &
+                    Cfg_Path_Root & vbCrLf & vbCrLf &
+                    "Would you like to change the root directory?"
 
                 If MsgBox(StrErrorMessage, MsgBoxStyle.YesNo + MsgBoxStyle.Critical + MsgBoxStyle.ApplicationModal, "ZT1 Graphic not within root folder") = MsgBoxResult.Yes Then
 
@@ -279,6 +281,7 @@ Module MdlZTStudioUI
 
         'MsgBox(IntFrameIndex)
 
+        ' Debug.Print("index is " & EditorGraphic.Frames.IndexOf(EditorFrame))
 
         With FrmMain
 

@@ -154,6 +154,10 @@ dBug:
 
         BlnTaskRunning = False
 
+        ' Paint job
+        Application.DoEvents()
+
+
         Exit Sub
 
 dBg:

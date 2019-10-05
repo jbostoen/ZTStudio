@@ -187,6 +187,12 @@ ZT Studio
  </summary>
  <returns>Timestamp</returns>
 </member>
+<member name="P:ZTStudio.ClsFrame.IsShadowFormat">
+ <summary>
+ Whether this is the Marine Mania shadow format or not
+ </summary>
+ <returns>Boolean</returns>
+</member>
 <member name="P:ZTStudio.ClsFrame.MysteryHEX">
  <summary>
  <para>Mystery bytes/hex is the term used in this project to refer to two bytes present in the hex values of each frame.</para>

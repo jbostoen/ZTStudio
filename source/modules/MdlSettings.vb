@@ -53,7 +53,7 @@ Module MdlSettings
     Public Cfg_Convert_FileNameDelimiter As String = "_" ' The file name delimiter. eg _ in NE_0000.png
 
     ' Experimental
-    Public Cfg_Convert_Write_Graphic_Data_To_Text_File = 1 ' Should a text file be created? Contains info on frames (offsets, mystery bytes, width, height...)
+    Public Cfg_Convert_Write_Graphic_Data_To_Text_File = 0 ' Should a text file be created? Contains info on frames (offsets, mystery bytes, width, height...)
 
     ' Frame
     Public Cfg_Editor_RotFix_IndividualFrame As Byte = 0 ' determines whether we are fixing the position of an object in 1 frame or in the entire graphic

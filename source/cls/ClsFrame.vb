@@ -17,18 +17,19 @@ Public Class ClsFrame
 
     ' CoreImage means the actual frame's content. No background canvas, no grid, no 'extra frame'.
     ' The bitmap also implictly contains the width and height of this 'core' image. 
-    Private fr_coreImageBitmap As Bitmap = Nothing
-    Private fr_coreImageHex As New List(Of String) ' contains height/width and offsets after all.
+    Private fr_CoreImageBitmap As Bitmap = Nothing
+    Private fr_CoreImageHex As New List(Of String) ' contains height/width and offsets after all.
 
-    Private fr_offsetX As Integer = -9999
-    Private fr_offsetY As Integer = -9999
+    Private fr_OffsetX As Integer = -9999
+    Private fr_OffsetY As Integer = -9999
 
-    Private fr_parent As New ClsGraphic(Nothing)
+    Private fr_Parent As New ClsGraphic(Nothing)
 
     Private fr_MysteryHEX As New List(Of String)
 
-    Private fr_lastUpdated As String = Now.ToString("yyyyMMddHHmmss")                ' for caching purposes.
+    Private fr_LastUpdated As String = Now.ToString("yyyyMMddHHmmss")                ' for caching purposes.
 
+    Private fr_IsShadowFormat As Boolean = False
 
 
 
@@ -135,6 +136,19 @@ Public Class ClsFrame
         Set(value As String)
             fr_lastUpdated = value
             'NotifyPropertyChanged("LastUpdated") -> would cause a loop
+        End Set
+    End Property
+
+    ''' <summary>
+    ''' Whether this is the Marine Mania shadow format or not
+    ''' </summary>
+    ''' <returns>Boolean</returns>
+    Public Property IsShadowFormat As Boolean
+        Get
+            Return fr_IsShadowFormat
+        End Get
+        Set(value As Boolean)
+            fr_IsShadowFormat = value
         End Set
     End Property
 
@@ -402,7 +416,6 @@ dBug:
         Dim ObjFrameCoreImageBitmap As ClsDirectBitmap ' Contains the core image that will be rendered
 
         Dim ZtPal As ClsPalette = Me.Parent.ColorPalette
-        Dim BlnIsShadow As Boolean = False
 
         ' This case is weird. It's for the Restaurant (objects/restrant/idle/NE).
         ' Some views contain 10 bytes: (00 00) (00 00) (00 00) (00 00) (D0 10)
@@ -444,15 +457,16 @@ dBug:
         ' Probably due to HEX 80 00 being -32678, which is very unlikely to happen?
         If LstFrameHex(1) = "80" Then
 
-            MdlZTStudio.Trace(Me.GetType().FullName, "RenderCoreImageFromHex", "Byte index 1 = 80 -> assuming this Is the compressed shadow format (Marine Mania)")
+            MdlZTStudio.Trace(Me.GetType().FullName, "RenderCoreImageFromHex", "Byte index 1 = 80 -> assuming this is the compressed shadow format (Marine Mania)")
             MdlZTStudio.Trace(Me.GetType().FullName, "RenderCoreImageFromHex", "Byte index 2 = " & LstFrameHex(2) & " -> still signifies height")
 
-            BlnIsShadow = True
+            Me.IsShadowFormat = True
 
             ' Of course, 80 doesn't make any sense here. Ignore byte index 1.
             ' Also ignoring byte index 3 to be consistent, although it could probably work?
+            ' 20191005: actually animals/dolphin/m/swatring has a larger width than 255 pixels, so index 3 is needed in this width!
             ObjFrameCoreImageBitmap = New ClsDirectBitmap(
-                CInt("&H" & LstFrameHex(2)),
+                CInt("&H" & LstFrameHex(3) & LstFrameHex(2)),
                 CInt("&H" & LstFrameHex(0))
             )
 
@@ -500,6 +514,7 @@ dBug:
         ' Entire ZT1 Graphic format is documented, EXCEPT for these 2 bytes.
         ' APE usually sets them to 00 00 (or was it 00 01? Needs verification).
         ' Anyhow, in ZT1 you will see that these mysterious bytes may vary.
+        ' In the swinglog graphics (idle, used) (likely one of the earliest animations since the shadow is lacking), it's always 00 01
         With Me.MysteryHEX
             .Clear(False)
             .Add(LstFrameHex(8), False)
@@ -573,7 +588,7 @@ dBug:
                 For IntNumDrawingInstructions_colors_current = 0 To (IntNumDrawingInstructions_colors - 1)
 
 1410:
-                    If BlnIsShadow = True Then
+                    If Me.IsShadowFormat = True Then
                         ' Marine Mania's underwater shadow format (compressed ZT1 Graphic)
                         ' It does not rely on the palette.
                         ObjColor = Color.Black
@@ -595,7 +610,7 @@ dBug:
                 Next IntNumDrawingInstructions_colors_current
 1455:
                 ' Rather than individually deleting those colors one by one from the bytes that still need to be processed, do it at once now.
-                If BlnIsShadow = False Then
+                If Me.IsShadowFormat = False Then
                     LstFrameHex.Skip(IntNumDrawingInstructions_colors_current)
                 End If
 
@@ -641,7 +656,7 @@ dBug2:
         FrmMain.PicBox.Image = MdlSettings.BMEmpty
 
 
-        MsgBox("Error in ClsFrame.renderCoreImageFromHex()" & vbCrLf &
+        MsgBox("Error in " & Me.GetType().FullName & "::RenderCoreImageFromHex()" & vbCrLf &
                "Line " & Erl() & vbCrLf &
                "Width, height: " & ObjFrameCoreImageBitmap.Width & ", " & ObjFrameCoreImageBitmap.Height & vbCrLf &
             "Offset x, y: " & Me.OffsetX & ", " & Me.OffsetY & vbCrLf &

@@ -21,6 +21,7 @@ Version 1.0
   * Sets offsets to 0 for empty images (objects/restrant/idle/NE)
   * Conversion issue with objects/restrant/idle/NE when using the experimental 'crop around center' method
   * Restore setting for PNG export: render background frame in each frame and don't export; or don't render and export as 'extra'
+  * Fix for animals/dolphin/m/swatring (Marine Mania shadow format with larger width than 255px)
   * Undo non-published change where rendering of background frame was automatically enabled upon loading that sort of ZT1 Graphic
     * This had the unwanted consequence of also being applied in tasks, making the extra frame not separately exportable in batch operations
   

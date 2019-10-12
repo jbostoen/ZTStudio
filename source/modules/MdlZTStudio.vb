@@ -122,21 +122,21 @@ Module MdlZTStudio
             Case "convertfile.topng"
                 ' Do conversion.
                 ' Then exit.
-                MdlTasks.Convert_file_ZT1_to_PNG(StrArgActionValue)
+                MdlTasks.ConvertFileZT1ToPNG(StrArgActionValue)
                 Application.DoEvents()
                 End
 
             Case "convertfile.tozt1"
                 ' Do conversion.
                 ' Then exit.
-                MdlTasks.Convert_file_PNG_to_ZT1(StrArgActionValue)
+                MdlTasks.ConvertFilePNGToZT1(StrArgActionValue)
                 Application.DoEvents()
                 End
 
             Case "convertfolder.topng"
                 ' Do conversion.
                 ' Then exit.
-                MdlTasks.Convert_folder_ZT1_to_PNG(StrArgActionValue)
+                MdlTasks.ConvertFolderZT1ToPNG(StrArgActionValue)
                 Application.DoEvents()
                 End
 
@@ -144,7 +144,7 @@ Module MdlZTStudio
 
                 ' Do conversion.
                 ' Then exit.
-                MdlTasks.Convert_folder_PNG_to_ZT1(StrArgActionValue)
+                MdlTasks.ConvertFolderPNGToZT1(StrArgActionValue)
                 Application.DoEvents()
                 End
 
@@ -183,12 +183,12 @@ dBug:
     ''' <param name="StrClass">Class </param>
     ''' <param name="StrMethod">Method</param>
     ''' <param name="ObjError">Error object (contains number and message)</param>
-    Sub UnhandledError(StrClass As String, strMethod As String, ObjError As ErrObject)
+    Sub UnhandledError(StrClass As String, StrMethod As String, ObjError As ErrObject)
 
-        MdlZTStudio.Trace(StrClass, strMethod, "Unexpected error occurred in " & StrClass & "::" & strMethod & "()")
+        MdlZTStudio.Trace(StrClass, StrMethod, "Unexpected error occurred in " & StrClass & "::" & StrMethod & "()")
 
         Dim StrMessage As String = "" &
-            "Sorry, but an unexpected error occurred in " & StrClass & "::" & strMethod & "() at line " & Information.Erl.ToString() & vbCrLf &
+            "Sorry, but an unexpected error occurred in " & StrClass & "::" & StrMethod & "() at line " & ObjError.Erl.ToString() & vbCrLf &
             "Error code: " & ObjError.Number.ToString() & vbCrLf &
             ObjError.Description & vbCrLf & vbCrLf &
             "------------------------------------" & vbCrLf &
@@ -239,7 +239,10 @@ dBug:
     ''' <param name="StrMethod">Method</param>
     ''' <param name="StrMessage">Message</param>
     Sub Trace(StrClass As String, StrMethod As String, StrMessage As String)
-        Debug.Print(Now.ToString("yyyy-MM-dd HH:mm:ss") & ": " & StrClass & "::" & StrMethod & "(): " & StrMessage)
+        If cfg_trace = 1 Then
+            Debug.Print(Now.ToString("yyyy-MM-dd HH:mm:ss") & ": " & StrClass & "::" & StrMethod & "(): " & StrMessage)
+        End If
+
     End Sub
 
 
@@ -249,9 +252,9 @@ dBug:
     ''' <param name="StrClass">Class </param>
     ''' <param name="StrMethod">Method</param>
     ''' <param name="StrMessage">Message</param>
-    Sub InfoBox(StrClass As String, strMethod As String, StrMessage As String)
+    Sub InfoBox(StrClass As String, StrMethod As String, StrMessage As String)
 
-        MdlZTStudio.Trace(StrClass, strMethod, "Information shown by " & StrClass & "::" & strMethod & "()")
+        MdlZTStudio.Trace(StrClass, StrMethod, "Information shown by " & StrClass & "::" & StrMethod & "()")
         MsgBox(StrMessage, MsgBoxStyle.Information + MsgBoxStyle.ApplicationModal + MsgBoxStyle.OkOnly, "ZT Studio")
 
     End Sub

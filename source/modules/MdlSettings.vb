@@ -16,7 +16,7 @@ Module MdlSettings
     ByVal lpReturnedString As String, ByVal nSize As Int32,
     ByVal lpFileName As String) As Int32
 
-    Public BMEmpty As Bitmap ' Empty bitmap on initializing. PictureBox's image sometimes gets reset to this. Todo: review if actually needed...
+    Public BMEmpty As ClsDirectBitmap ' Empty bitmap on initializing. PictureBox's image sometimes gets reset to this. Todo: review if actually needed...
 
     Public EditorGraphic As ClsGraphic             ' The ClsGraphic object we use.
     Public EditorBgGraphic As ClsGraphic           ' The background graphic, e.g. toy
@@ -78,6 +78,9 @@ Module MdlSettings
     ' GitHub
     Public Cfg_GitHub_URL As String = "https://github.com/jbostoen/ZTStudio"
 
+    ' Debugging
+    Public Cfg_Trace As Integer = 1 ' Set to 1 for detailed logging
+
 
     ' Todo:
     ' - on load png frame (either UI or conversion): check max size. = 00 00 ? = 256 + 256 ?
@@ -100,11 +103,12 @@ Module MdlSettings
 
 
 
-    Public Sub DoubleBuffered(ByVal dgv As DataGridView, ByVal setting As Boolean)
-        Dim dgvType As Type = dgv.[GetType]()
-        Dim pi As PropertyInfo = dgvType.GetProperty("DoubleBuffered", BindingFlags.Instance Or BindingFlags.NonPublic)
-        pi.SetValue(dgv, setting, Nothing)
-    End Sub
+    'Public Sub DoubleBuffered(ByVal Obj As Object, ByVal setting As Boolean)
+    'Dim ObjType As Type = Obj.[GetType]()
+    'Dim pi As PropertyInfo = ObjType.GetProperty("DoubleBuffered", BindingFlags.Instance Or BindingFlags.NonPublic)
+    '    pi.SetValue(Obj, setting, Nothing)
+    'End Sub
+
 
 
     Public Function IniWrite(ByVal iniFileName As String, ByVal Section As String, ByVal ParamName As String, ByVal ParamVal As String) As Integer

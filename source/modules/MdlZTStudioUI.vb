@@ -189,12 +189,15 @@ Module MdlZTStudioUI
         StackDirectories.Push(Cfg_path_Root)
 
         Dim ObjImageList = New ImageList
+        Dim ObjNodeCollection As TreeNodeCollection = TVExplorer.Nodes
         ObjImageList.Images.Add(My.Resources.icon_ZT1_Graphic)
         ObjImageList.Images.Add(My.Resources.icon_folder)
         ObjImageList.Images.Add(My.Resources.icon_file)
         ObjImageList.Images.Add(My.Resources.icon_ZT1_palette)
         TVExplorer.ImageList = ObjImageList
 
+
+        TVExplorer.BeginUpdate()
         TVExplorer.Nodes.Clear()
 
 
@@ -218,12 +221,12 @@ Module MdlZTStudioUI
 
                 ' Parent node?
                 Dim StrParentDirectory = Regex.Replace(ObjNode.Name, "\\(?=[^\\]*$).*$", "")
-                Dim ObjParentNode() As TreeNode = TVExplorer.Nodes.Find(StrParentDirectory, True)
+                Dim ObjParentNode() As TreeNode = ObjNodeCollection.Find(StrParentDirectory, True)
 
                 If ObjParentNode.Count = 1 Then
                     ObjParentNode(0).Nodes.Add(ObjNode)
                 Else
-                    TVExplorer.Nodes.Add(ObjNode)
+                    ObjNodeCollection.Add(ObjNode)
                 End If
 
             End If
@@ -265,7 +268,7 @@ Module MdlZTStudioUI
         Loop
 
 
-
+        TVExplorer.EndUpdate()
 
     End Sub
 
@@ -364,13 +367,16 @@ Module MdlZTStudioUI
         ' The sub gets triggered when a new frame has been added, but no .PNG has been loaded yet, so frame contains no data.
         ' However, the picbox may need to be cleared (previous frame would still be shown otherwise)
         If EditorGraphic.Frames(IntIndexFrameNumber).CoreImageHex.Count = 0 Then
-            FrmMain.PicBox.Image = MdlBitMap.DrawGridFootPrintXY(Cfg_grid_footPrintX, Cfg_grid_footPrintY)
-            Exit Sub
-        End If
+
+310:
+            FrmMain.PicBox.Image = MdlBitMap.DrawGridFootPrintXY(Cfg_grid_footPrintX, Cfg_grid_footPrintY).Bitmap
+
+        Else
 
 320:
-        FrmMain.PicBox.Image = EditorGraphic.Frames(IntIndexFrameNumber).GetImage(True)
+            FrmMain.PicBox.Image = EditorGraphic.Frames(IntIndexFrameNumber).GetImage(True).Bitmap
 
+        End If
 
 
     End Sub

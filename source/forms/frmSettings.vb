@@ -28,6 +28,8 @@ Public Class FrmSettings
     ''' <param name="e">EventArgs</param>
     Private Sub FrmSettings_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
+        Me.Icon = FrmMain.Icon
+
         ' Dynamically sets size.
         With CboPNGExport_Crop.Items
             .Clear()
@@ -309,6 +311,9 @@ Public Class FrmSettings
         End If
         Cfg_Export_PNG_RenderBGFrame = CByte(CInt(ChkPNGRenderBGFrame.Checked) * -1)
 
+        ' Update preview in main window instantly
+        MdlZTStudioUI.UpdatePreview(True, True)
+
     End Sub
 
 
@@ -534,7 +539,4 @@ Public Class FrmSettings
 
     End Sub
 
-    Private Sub tpWritePNG_Click(sender As Object, e As EventArgs) Handles tpWritePNG.Click
-
-    End Sub
 End Class

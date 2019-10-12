@@ -18,6 +18,9 @@ Public Class FrmBatchOffsetFix
     ''' <param name="e">EventArgs</param>
     Private Sub FrmBatchRotationFix_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
+        ' Take icon from main screen
+        Me.Icon = FrmMain.Icon
+
         ' Assume default folder
         If TxtFolder.Text = "" Then
             TxtFolder.Text = Cfg_path_Root
@@ -33,7 +36,7 @@ Public Class FrmBatchOffsetFix
     Private Sub BtnBatchOffsetting_Click(sender As Object, e As EventArgs) Handles BtnBatchOffsettFix.Click
 
         ' Runs procedure
-        MdlTasks.Batch_RotationFix_Folder_ZT1(TxtFolder.Text, New Point(numLeftRight.Value, numUpDown.Value), PBProgress)
+        MdlTasks.BatchOffsetFixFolderZT1(TxtFolder.Text, New Point(numLeftRight.Value, numUpDown.Value), PBProgress)
 
     End Sub
 

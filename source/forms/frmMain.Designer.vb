@@ -105,6 +105,7 @@ Partial Class FrmMain
         Me.mnuPal_ExportPNG = New System.Windows.Forms.ToolStripMenuItem()
         Me.mnuPal_ImportPNG = New System.Windows.Forms.ToolStripMenuItem()
         Me.mnuPal_ImportGimpPalette = New System.Windows.Forms.ToolStripMenuItem()
+        Me.CmdUpdateExplorerPane = New System.Windows.Forms.Button()
         CType(Me.PicBox, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.TsZT1Graphic.SuspendLayout()
         Me.Panel1.SuspendLayout()
@@ -300,6 +301,7 @@ Partial Class FrmMain
         'GBOtherViews
         '
         Me.GBOtherViews.Controls.Add(Me.TVExplorer)
+        Me.GBOtherViews.Controls.Add(Me.CmdUpdateExplorerPane)
         Me.GBOtherViews.Dock = System.Windows.Forms.DockStyle.Left
         Me.GBOtherViews.Font = New System.Drawing.Font("Segoe UI", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.GBOtherViews.Location = New System.Drawing.Point(240, 0)
@@ -314,7 +316,7 @@ Partial Class FrmMain
         Me.TVExplorer.Dock = System.Windows.Forms.DockStyle.Fill
         Me.TVExplorer.Location = New System.Drawing.Point(3, 18)
         Me.TVExplorer.Name = "TVExplorer"
-        Me.TVExplorer.Size = New System.Drawing.Size(303, 108)
+        Me.TVExplorer.Size = New System.Drawing.Size(303, 85)
         Me.TVExplorer.TabIndex = 0
         '
         'GBColors
@@ -678,7 +680,7 @@ Partial Class FrmMain
         Me.TsbDelete_PNG.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.TsbDelete_PNG.Name = "TsbDelete_PNG"
         Me.TsbDelete_PNG.Size = New System.Drawing.Size(36, 36)
-        Me.TsbDelete_PNG.Text = "Delete all .PNG files in the root directory"
+        Me.TsbDelete_PNG.Text = "Delete all .PNG files in the root folder"
         '
         'Tss_Misc_3
         '
@@ -791,6 +793,16 @@ Partial Class FrmMain
         Me.mnuPal_ImportGimpPalette.Name = "mnuPal_ImportGimpPalette"
         Me.mnuPal_ImportGimpPalette.Size = New System.Drawing.Size(244, 22)
         Me.mnuPal_ImportGimpPalette.Text = "Replace with GIMP Color palette"
+        '
+        'CmdUpdateExplorerPane
+        '
+        Me.CmdUpdateExplorerPane.Dock = System.Windows.Forms.DockStyle.Bottom
+        Me.CmdUpdateExplorerPane.Location = New System.Drawing.Point(3, 103)
+        Me.CmdUpdateExplorerPane.Name = "CmdUpdateExplorerPane"
+        Me.CmdUpdateExplorerPane.Size = New System.Drawing.Size(303, 23)
+        Me.CmdUpdateExplorerPane.TabIndex = 1
+        Me.CmdUpdateExplorerPane.Text = "Refresh"
+        Me.CmdUpdateExplorerPane.UseVisualStyleBackColor = True
         '
         'FrmMain
         '
@@ -911,4 +923,5 @@ Partial Class FrmMain
     Friend WithEvents TsbFrame_fpX As ToolStripComboBox
     Friend WithEvents TsbFrame_fpY As ToolStripComboBox
     Friend WithEvents TsbFrame_OffsetAll As ToolStripButton
+    Friend WithEvents CmdUpdateExplorerPane As Button
 End Class

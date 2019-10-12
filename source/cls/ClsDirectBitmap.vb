@@ -74,16 +74,29 @@ Public Class ClsDirectBitmap
         Me.Bitmap = New Bitmap(width, height, (width * 4), PixelFormat.Format32bppPArgb, Me.BitsHandle.AddrOfPinnedObject)
     End Sub
 
+
+    Public Sub New(ByVal ObjBitMap As Bitmap)
+        MyBase.New
+        Me.Width = ObjBitMap.Width
+        Me.Height = ObjBitMap.Height
+        Me.Bits = New Int32(((ObjBitMap.Width * ObjBitMap.Height)) - 1) {}
+        Me.Bitmap = New Bitmap(ObjBitMap.Width, ObjBitMap.Height, (ObjBitMap.Width * 4), PixelFormat.Format32bppPArgb, Me.BitsHandle.AddrOfPinnedObject)
+
+        ' Set on bitmap
+        Dim ObjGraphic As Graphics = Graphics.FromImage(Me.Bitmap)
+        ObjGraphic.DrawImage(Me.Bitmap, 0, 0)
+
+
+    End Sub
+
     Public Sub SetPixel(ByVal x As Integer, ByVal y As Integer, ByVal colour As Color)
-        Dim index As Integer = (x _
-                    + (y * Me.Width))
+        Dim index As Integer = (x + (y * Me.Width))
         Dim col As Integer = colour.ToArgb
         Me.Bits(index) = col
     End Sub
 
     Public Function GetPixel(ByVal x As Integer, ByVal y As Integer) As Color
-        Dim index As Integer = (x _
-                    + (y * Me.Width))
+        Dim index As Integer = (x + (y * Me.Width))
         Dim col As Integer = Me.Bits(index)
         Dim result As Color = Color.FromArgb(col)
         Return result

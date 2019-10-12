@@ -17,7 +17,7 @@ Public Class ClsFrame
 
     ' CoreImage means the actual frame's content. No background canvas, no grid, no 'extra frame'.
     ' The bitmap also implictly contains the width and height of this 'core' image. 
-    Private fr_CoreImageBitmap As Bitmap = Nothing
+    Private fr_CoreImageBitmap As ClsDirectBitmap = Nothing
     Private fr_CoreImageHex As New List(Of String) ' contains height/width and offsets after all.
 
     Private fr_OffsetX As Integer = -9999
@@ -67,13 +67,13 @@ Public Class ClsFrame
     ''' Image bitmap (if set)
     ''' </summary>
     ''' <returns>Bitmap</returns>
-    Public Property CoreImageBitmap As Bitmap
+    Public Property CoreImageBitmap As ClsDirectBitmap
         ' What is the core image bitmap?
         Get
-            Return fr_coreImageBitmap
+            Return fr_CoreImageBitmap
         End Get
-        Set(value As Bitmap)
-            fr_coreImageBitmap = value
+        Set(value As ClsDirectBitmap)
+            fr_CoreImageBitmap = value
             NotifyPropertyChanged("CoreImageBitmap")
         End Set
     End Property
@@ -205,8 +205,8 @@ Public Class ClsFrame
     ''' <para>If the ZT1 Graphic has been rendered (CoreImageBitmap is set), it returns this cached version.</para>
     ''' <para>If the ZT1 Graphic hasn't been rendered yet, it renders the ZT1 Graphic from the hex values.</para>
     ''' </summary>
-    ''' <returns>Bitmap</returns>
-    Function GetCoreImageBitmap() As Bitmap
+    ''' <returns>ClsDirectBitmap</returns>
+    Function GetCoreImageBitmap() As ClsDirectBitmap
 
         On Error GoTo dBug
 
@@ -241,8 +241,8 @@ dBug:
     ''' Todo: this needs more documentation. Take the time again to see how blnDrawInCenter works.
     ''' </remarks>
     ''' <param name="BlnDrawInCenter">Boolean</param>
-    ''' <returns>Bitmap</returns>
-    Function GetCoreImageBitmapOnTransparentCanvas(Optional BlnDrawInCenter As Boolean = False) As Bitmap
+    ''' <returns>ClsDirectBitmap</returns>
+    Function GetCoreImageBitmapOnTransparentCanvas(Optional BlnDrawInCenter As Boolean = False) As ClsDirectBitmap
 
         On Error GoTo dBug
 1:
@@ -302,8 +302,8 @@ dBug:
         MdlZTStudio.Trace(Me.GetType().FullName, "GetCoreImageBitmapOnTransparentCanvas", "Create bitmap: w = " & IntWidth & " * 2, h = " & IntHeight & " * 2")
 
         ' Draw this retrieved bitmap on a transparent canvas
-        Dim BmOutput As New Bitmap(IntWidth * 2, IntHeight * 2) ' Creating the output canvas
-        Dim ObjGraphic As Graphics = Graphics.FromImage(BmOutput) ' Preparing to manipulate this empty canvas
+        Dim BmOutput As New ClsDirectBitmap(IntWidth * 2, IntHeight * 2) ' Creating the output canvas
+        Dim ObjGraphic As Graphics = Graphics.FromImage(BmOutput.Bitmap) ' Preparing to manipulate this empty canvas
 
 25:
         ObjGraphic.InterpolationMode = Drawing2D.InterpolationMode.NearestNeighbor ' Prevent softening: set InterpolationMode to NearestNeighbour
@@ -312,7 +312,7 @@ dBug:
         ' Onto this canvas, draw the CoreImageBitmap of this frame.
         Dim IntStartingPointX As Integer = IntWidth - Me.OffsetX + 1
         Dim IntStartingPointY As Integer = IntHeight - Me.OffsetY + 1
-        ObjGraphic.DrawImage(BmCoreImageBitMap, IntStartingPointX, IntStartingPointY, BmCoreImageBitMap.Width, BmCoreImageBitMap.Height)
+        ObjGraphic.DrawImage(BmCoreImageBitMap.Bitmap, IntStartingPointX, IntStartingPointY, BmCoreImageBitMap.Width, BmCoreImageBitMap.Height)
 31:
         ObjGraphic.Dispose() 'Dispose as recommended. Output has been stored in BmOutput anyway.
 
@@ -332,8 +332,9 @@ dBug:
     ''' </summary>
     ''' <param name="BlnDrawGrid">Add grid. Defaults to false.</param>
     ''' <param name="BlnCentered">Centered</param>
-    ''' <returns>Bitmap</returns>
-    Function GetImage(Optional BlnDrawGrid As Boolean = False, Optional BlnCentered As Boolean = False) As Bitmap
+    ''' <returns>ClsDirectBitmap</returns>
+    Function GetImage(Optional BlnDrawGrid As Boolean = False, Optional BlnCentered As Boolean = False) As ClsDirectBitmap
+
 
         ' It will render the core image in this frame; and then add backgrounds.
         ' There's an option to render the image on top of a visible grid (as you have in ZT1).
@@ -342,8 +343,8 @@ dBug:
 
 1:
         ' Draw frame.
-        Dim BmOutput As Bitmap = Me.GetCoreImageBitmapOnTransparentCanvas(BlnCentered)
-        Dim BmFront As Bitmap
+        Dim BmOutput As ClsDirectBitmap = Me.GetCoreImageBitmapOnTransparentCanvas(BlnCentered)
+        Dim BmFront As ClsDirectBitmap
 
 11:
         ' Draw 'extra' background frame, e.g. restaurants?
@@ -392,7 +393,7 @@ dBug:
     ''' <para>For other renderings, use another render method.</para>
     ''' </summary>
     ''' <returns>Bitmap or Nothing</returns>
-    Function RenderCoreImageFromHex() As Bitmap
+    Function RenderCoreImageFromHex() As ClsDirectBitmap
 
         On Error GoTo dBug2
 
@@ -417,76 +418,14 @@ dBug:
 
         Dim ZtPal As ClsPalette = Me.Parent.ColorPalette
 
-        ' This case is weird. It's for the Restaurant (objects/restrant/idle/NE).
-        ' Some views contain 10 bytes: (00 00) (00 00) (00 00) (00 00) (D0 10)
-        ' The idle view supposedly uses an extraFrame
-        ' Which means no height/width, no offsets, and yet some weird mystery bytes.
-        ' The mystery bytes might be the same for similar graphics, which have an empty first frame and an extra frame as background?
-
-        ' Perhaps it could be identified by mystery bytes?
-        If LstFrameHex.Count = 10 Then
-
-            MdlZTStudio.Trace(Me.GetType().FullName, "RenderCoreImageFromHex", "Weird hex: " & String.Join(" ", LstFrameHex.ToArray()))
-
-            ' Basically height = width = 0.
-            If LstFrameHex(0) = 0 And LstFrameHex(1) = 0 And LstFrameHex(2) = 0 And LstFrameHex(3) = 0 Then
-
-                ' It should actually be 0, 0 (empty); but this is a work around.
-                Me.CoreImageBitmap = New Bitmap(1, 1)
-                Me.OffsetX = 0 ' Overrule default offset of -9999
-                Me.OffsetY = 0 ' Overrule default offset of -9999
-
-                ' Still fetch mystery bytes
-                With Me.MysteryHEX
-                    .Clear(False)
-                    .Add(LstFrameHex(8), False)
-                    .Add(LstFrameHex(9), False)
-                End With
-
-                Return Me.CoreImageBitmap
-
-            End If
-
-        End If
-
-32:
-
-        ' Usually hex(1) = 00. But sometimes, it is "80". This seems to be an indicator introduced in Marine Mania.
-        ' Example: dolphin's "ssurfswi"-animations. The frames are actually compressed. For shadows, it's only offsets and black.
-        ' Surprisingly enough, not all shadow animations (even of the dolphin) use this format.
-        ' Probably due to HEX 80 00 being -32678, which is very unlikely to happen?
-        If LstFrameHex(1) = "80" Then
-
-            MdlZTStudio.Trace(Me.GetType().FullName, "RenderCoreImageFromHex", "Byte index 1 = 80 -> assuming this is the compressed shadow format (Marine Mania)")
-            MdlZTStudio.Trace(Me.GetType().FullName, "RenderCoreImageFromHex", "Byte index 2 = " & LstFrameHex(2) & " -> still signifies height")
-
-            Me.IsShadowFormat = True
-
-            ' Of course, 80 doesn't make any sense here. Ignore byte index 1.
-            ' Also ignoring byte index 3 to be consistent, although it could probably work?
-            ' 20191005: actually animals/dolphin/m/swatring has a larger width than 255 pixels, so index 3 is needed in this width!
-            ObjFrameCoreImageBitmap = New ClsDirectBitmap(
-                CInt("&H" & LstFrameHex(3) & LstFrameHex(2)),
-                CInt("&H" & LstFrameHex(0))
-            )
-
-        Else
-
-            MdlZTStudio.Trace(Me.GetType().FullName, "RenderCoreImageFromHex", "Dealing with a regular sized graphic")
-            ' All normal cases
-            ' Canvas size determined: height and width are specified in the first few bytes (reversed).
-            ObjFrameCoreImageBitmap = New ClsDirectBitmap(
-                 CInt("&H" & LstFrameHex(3) & LstFrameHex(2)),
-                 CInt("&H" & LstFrameHex(1) & LstFrameHex(0))
-                 )
-
-        End If
+        ' 20191006
+        ' Height, width is now processed further on; 
+        ' since this allows the code to simply set offsets to 0 And still detect mystery bytes in case of a short transparent frame.
 
 
 41:
-        ' Offsets. 
-        ' In case of unknown offsets 
-        ' If Me.offsetY = -9999 Then
+        ' Offsets.
+        ' In case of unknown offsets
         If LstFrameHex(5) = "FF" Then
             ' Large size images. Needs some adjustment.
             ' Todo: add an example image here.
@@ -499,7 +438,6 @@ dBug:
 
 42:
         ' In case of unknown offsets and HEX = FF (large size image)
-        'If Me.offsetX = -9999 Then
         If LstFrameHex(7) = "FF" Then
             ' Large size images. Needs some adjustment.
             MdlZTStudio.Trace(Me.GetType().FullName, "RenderCoreImageFromHex", "Byte index 7 = FF -> This graphic should be large in size (offset X). Add this as an example in the code!")
@@ -525,6 +463,74 @@ dBug:
 
 
 46:
+
+        ' This case is weird. It's for the Restaurant (objects/restrant/idle/NE).
+        ' Some views contain 10 bytes: (00 00) (00 00) (00 00) (00 00) (D0 10)
+        ' The idle view supposedly uses an extraFrame
+        ' Which means no height/width, no offsets, and yet some weird mystery bytes.
+        ' The mystery bytes might be the same for similar graphics, which have an empty first frame and an extra frame as background?
+
+        ' Perhaps it could be identified by mystery bytes?
+        If LstFrameHex.Count = 10 Then
+
+
+            ' Basically height = width = 0.
+            If LstFrameHex(0) = 0 And LstFrameHex(1) = 0 And LstFrameHex(2) = 0 And LstFrameHex(3) = 0 Then
+
+                MdlZTStudio.Trace(Me.GetType().FullName, "RenderCoreImageFromHex", "Short transparent frame: " & String.Join(" ", LstFrameHex.ToArray()))
+
+                ' It should actually be 0, 0 (empty/nothing); but this is a work around.
+                Me.CoreImageBitmap = New ClsDirectBitmap(1, 1)
+                Return Me.CoreImageBitmap
+
+            Else
+
+                ' Unexpected/unknown so far: dimensions but still a "short" frame?
+                MdlZTStudio.Trace(Me.GetType().FullName, "RenderCoreImageFromHex", "Short transparent frame look-alike (unhandled): " & String.Join(" ", LstFrameHex.ToArray()))
+                Exit Function
+
+            End If
+
+
+        Else
+
+            ' Regular height, width
+
+            ' Usually hex(1) = 00. But sometimes, it is "80". This seems to be an indicator introduced in Marine Mania.
+            ' Example: dolphin's "ssurfswi"-animations. The frames are actually compressed. For shadows, it's only offsets and black.
+            ' Surprisingly enough, not all shadow animations (even of the dolphin) use this format.
+            ' Probably due to HEX 80 00 being -32678, which is very unlikely to happen?
+            If LstFrameHex(1) = "80" Then
+
+                MdlZTStudio.Trace(Me.GetType().FullName, "RenderCoreImageFromHex", "Byte index 1 = 80 -> assuming this is the compressed shadow format (Marine Mania)")
+                MdlZTStudio.Trace(Me.GetType().FullName, "RenderCoreImageFromHex", "Byte index 2 = " & LstFrameHex(2) & " -> still signifies height")
+
+                Me.IsShadowFormat = True
+
+                ' Of course, 80 doesn't make any sense here. Ignore byte index 1.
+                ' Also ignoring byte index 3 to be consistent, although it could probably work?
+                ' 20191005: actually animals/dolphin/m/swatring has a larger width than 255 pixels, so index 3 is needed in this width!
+                ObjFrameCoreImageBitmap = New ClsDirectBitmap(
+                    CInt("&H" & LstFrameHex(3) & LstFrameHex(2)),
+                    CInt("&H" & LstFrameHex(0))
+                )
+
+            Else
+
+                MdlZTStudio.Trace(Me.GetType().FullName, "RenderCoreImageFromHex", "Dealing with a regular sized graphic")
+                ' All normal cases
+                ' Canvas size determined: height and width are specified in the first few bytes (reversed).
+                ObjFrameCoreImageBitmap = New ClsDirectBitmap(
+                     CInt("&H" & LstFrameHex(3) & LstFrameHex(2)),
+                     CInt("&H" & LstFrameHex(1) & LstFrameHex(0))
+                     )
+
+            End If
+
+        End If
+
+
+51:
         ' Above covered the first 10 bytes (height, width, offset Y, offset X, mystery bytes). 
         ' Remove them now to speed up further processing. 
         ' This is something which will be done a couple of times later.
@@ -563,9 +569,7 @@ dBug:
             LstFrameHex.Skip(1)
 
 1120:
-            ' Process this set of drawing instructions.
-            ' Todo: replace this SetPixel() part with a faster method (LockBits). First implement a way to check if output graphics are still the same.
-
+            ' Process this set of drawing instructions
             For IntNumDrawingInstructions_current = 0 To (IntNumDrawingInstructions - 1)
 
 1300:
@@ -641,7 +645,7 @@ dBug:
         ' The actual bitmap won't be changed unless a .PNG is loaded.
         ' If a .PNG is loaded, this frame's CoreImageHex should be updated as well
         'Me.CoreImageBitmap = ObjFrameCoreImageBitmap.Bitmap
-        Me.CoreImageBitmap = ObjFrameCoreImageBitmap.Bitmap
+        Me.CoreImageBitmap = ObjFrameCoreImageBitmap
 
 
         MdlZTStudio.Trace(Me.GetType().FullName, "RenderCoreImageFromHex", "Finished frame rendering.")
@@ -652,10 +656,6 @@ dBug:
         Exit Function
 
 dBug2:
-        ' Not sure if this is really useful
-        FrmMain.PicBox.Image = MdlSettings.BMEmpty
-
-
         MsgBox("Error in " & Me.GetType().FullName & "::RenderCoreImageFromHex()" & vbCrLf &
                "Line " & Erl() & vbCrLf &
                "Width, height: " & ObjFrameCoreImageBitmap.Width & ", " & ObjFrameCoreImageBitmap.Height & vbCrLf &
@@ -698,12 +698,12 @@ dBug2:
                     ' Valid offsets?
                     Dim StrHintOffset As String = "Problem with a frame. Valid {0} offset should (theoretically, still untested) be between -32768 and 32767."
                     If ztFrame.OffsetX < -32768 Or ztFrame.OffsetX > 32767 Then
-                        MdlZTStudio.HandledError(Me.GetType().FullName, "ClsFrame_UpdateOffsets", String.Format(StrHintOffset, "X"), True)
+                        MdlZTStudio.HandledError(Me.GetType().FullName, "UpdateOffsets", String.Format(StrHintOffset, "X"), True)
                         Exit Sub
                     End If
 
                     If ztFrame.OffsetY < -32768 Or ztFrame.OffsetY > 32767 Then
-                        MdlZTStudio.HandledError(Me.GetType().FullName, "ClsFrame_UpdateOffsets", String.Format(StrHintOffset, "Y"), True)
+                        MdlZTStudio.HandledError(Me.GetType().FullName, "UpdateOffsets", String.Format(StrHintOffset, "Y"), True)
                         Exit Sub
                     End If
 
@@ -829,13 +829,13 @@ dBug:
 
 5:
         Dim BmpDrawTemp As Bitmap = Bitmap.FromFile(StrFileName)
-        Dim BmpDraw As Bitmap
+        Dim BmpDraw As ClsDirectBitmap
 
 10:
         ' Prevent a file lock on .PNG files.
         ' If files are locked, the files can't be automatically deleted after batch conversion.
         Using BmpDrawTemp
-            BmpDraw = New Bitmap(BmpDrawTemp)
+            BmpDraw = New ClsDirectBitmap(BmpDrawTemp)
             BmpDrawTemp = Nothing
         End Using
 
@@ -858,7 +858,7 @@ dBug:
 
 22:
         ' Get cropped version of bitmap based on this rectangle
-        Dim BmpCropped As Bitmap = MdlBitMap.GetCroppedVersion(BmpDraw, RectCrop)
+        Dim BmpCropped As New ClsDirectBitmap(MdlBitMap.GetCroppedVersion(BmpDraw, RectCrop))
 
 23:
         ' Improvement: by cropping to the relevant area, the offset should in most cases be better.
@@ -905,9 +905,9 @@ dBug:
     ''' According to the comments, it was much faster than the old method.
     ''' Could this also be applied here?
     ''' </remarks>
-    ''' <param name="BmImage">Bitmap. Defaults to CoreImageBitmap</param>
+    ''' <param name="BmImage">ClsDirectBitmap. Defaults to CoreImageBitmap</param>
     ''' <returns>List(Of String) - Hex values for the ZT1 rendering engine (single frame)</returns>
-    Public Function BitMapToHex(Optional BmImage As Bitmap = Nothing) As List(Of String)
+    Public Function BitMapToHex(Optional BmImage As ClsDirectBitmap = Nothing) As List(Of String)
 
         On Error GoTo dBug
 
@@ -920,10 +920,8 @@ dBug:
             ' Fall back to CoreImageBitmap, if available.
             If IsNothing(Me.CoreImageBitmap) = True Then
                 ' Can this happen?
-                MsgBox("ClsFrame::GetHexFromBitmap(): no bitmap was given as input. A fallback to ClsFrame::CoreImageBitmap was impossible.",
-                    vbOKOnly + vbCritical + vbApplicationModal,
-                    "Error while generating HEX for this frame")
-                Return LstGeneratedHex ' exits further processing
+                MdlZTStudio.HandledError(Me.GetType().FullName, "BitMapToHex", "Not bitmap given Async input. Fallback TypeOf CoreImageBitmap was impossible.", False, Information.Err)
+                Return LstGeneratedHex ' Prevents further processing
 
             Else
                 BmImage = Me.CoreImageBitmap
@@ -1170,18 +1168,17 @@ dBug:
                 ' Save PNG image. Complete canvas size.
 21:
 
-                Dim ImgComb As Image
-                ImgComb = New Bitmap(Cfg_Grid_NumPixels * 2, Cfg_Grid_NumPixels * 2)
+                Dim ImgComb As ClsDirectBitmap = New ClsDirectBitmap(Cfg_Grid_NumPixels * 2, Cfg_Grid_NumPixels * 2)
 
 32:
                 ' Use ZT Studio's main window background color (transparent) or export with an entirely transparent background (user's choice)
-                Using ObjGraphic As Graphics = Graphics.FromImage(ImgComb)
+                Using ObjGraphic As Graphics = Graphics.FromImage(ImgComb.Bitmap)
                     ObjGraphic.Clear(IIf(Cfg_Export_PNG_TransparentBG = 0, Cfg_Grid_BackGroundColor, Color.Transparent))
                 End Using
 
 35:
                 ImgComb = MdlBitMap.CombineImages(ImgComb, Me.GetImage())
-                ImgComb.Save(StrFileName, System.Drawing.Imaging.ImageFormat.Png)
+                ImgComb.Bitmap.Save(StrFileName, System.Drawing.Imaging.ImageFormat.Png)
 
             Case 1
                 ' Save PNG image. Relevant pixel area of graphic
@@ -1189,12 +1186,11 @@ dBug:
                 ' Cheap trick: combine all images into 1, then get the relevant rectangle.
                 ' Some caching might be in order in the future :)
 
-                Dim ImgComb As Image
-                ImgComb = New Bitmap(Cfg_Grid_NumPixels * 2, Cfg_Grid_NumPixels * 2)
+                Dim ImgComb As New ClsDirectBitmap(Cfg_Grid_NumPixels * 2, Cfg_Grid_NumPixels * 2)
 
 132:
                 ' Use ZT Studio's main window background color (transparent) or export with an entirely transparent background (user's choice)
-                Using ObjGraphic As Graphics = Graphics.FromImage(ImgComb)
+                Using ObjGraphic As Graphics = Graphics.FromImage(ImgComb.Bitmap)
                     ObjGraphic.Clear(IIf(Cfg_Export_PNG_TransparentBG = 0, Cfg_Grid_BackGroundColor, Color.Transparent))
                 End Using
 135:
@@ -1221,7 +1217,7 @@ dBug:
             Case 3
                 ' Center around the origin. This method has been contributed by HENDRIX
                 ' This is much faster and avoids all cropping, but preserves the offset
-                Me.GetImage(False, True).Save(StrFileName, System.Drawing.Imaging.ImageFormat.Png)
+                Me.GetImage(False, True).Bitmap.Save(StrFileName, System.Drawing.Imaging.ImageFormat.Png)
 
         End Select
 
@@ -1232,5 +1228,57 @@ dBug:
 
 
     End Sub
+
+    ''' <summary>
+    ''' Writes details of frame (width, height, offsetX, offsetY, mystery bytes) to a text file.
+    ''' The text file has the name of the ZT1 Graphic and a .txt extension.
+    ''' </summary>
+    Public Function WriteDetailsToTextFile()
+
+        On Error GoTo dBug
+
+1:
+        If Me.Parent.FileName <> "" Then
+
+11:
+            Me.CoreImageBitmap = Me.GetCoreImageBitmap()
+
+
+21:
+            IniWrite(Me.Parent.FileName & ".txt", "Frame" & Me.Parent.Frames.IndexOf(Me), "width", Me.CoreImageBitmap.Width)
+
+22:
+            IniWrite(Me.Parent.FileName & ".txt", "Frame" & Me.Parent.Frames.IndexOf(Me), "height", Me.CoreImageBitmap.Height)
+                IniWrite(Me.Parent.FileName & ".txt", "Frame" & Me.Parent.Frames.IndexOf(Me), "offsetX", Me.OffsetX)
+                IniWrite(Me.Parent.FileName & ".txt", "Frame" & Me.Parent.Frames.IndexOf(Me), "offsetY", Me.OffsetY)
+                IniWrite(Me.Parent.FileName & ".txt", "Frame" & Me.Parent.Frames.IndexOf(Me), "numberOfBytes", Me.CoreImageHex.Count)
+                IniWrite(Me.Parent.FileName & ".txt", "Frame" & Me.Parent.Frames.IndexOf(Me), "mysteryBytes", String.Join(" ", Me.MysteryHEX))
+
+25:
+            'MsgBox(Me.MysteryHEX(1) & Me.MysteryHEX(0))
+            'MsgBox(IntMysteryValue)
+
+30:
+            IniWrite(Me.Parent.FileName & ".txt", "Frame" & Me.Parent.Frames.IndexOf(Me), "mysteryByte0_Integer", CInt("&H" & Me.MysteryHEX(0)).ToString())
+            IniWrite(Me.Parent.FileName & ".txt", "Frame" & Me.Parent.Frames.IndexOf(Me), "mysteryByte1_Integer", CInt("&H" & Me.MysteryHEX(1)).ToString())
+            IniWrite(Me.Parent.FileName & ".txt", "Frame" & Me.Parent.Frames.IndexOf(Me), "mysteryBytes_Integer", CInt("&H" & Me.MysteryHEX(1) & Me.MysteryHEX(0)).ToString())
+
+        Else
+
+                Dim StrMessage As String = "" &
+                "Filename of graphic has not been determined yet." & vbCrLf &
+                "Can't write details of one of its frames to a file."
+
+            MdlZTStudio.HandledError(Me.GetType().FullName, "WriteDetailsToTextFile", StrMessage, True, Nothing)
+
+        End If
+
+        Exit Function
+
+dBug:
+        MsgBox(Err.Number & " - " & Err.Description & vbCrLf & Erl())
+
+
+    End Function
 
 End Class

@@ -17,12 +17,12 @@ Public Class FrmBatchConversion
         If RbPNG_to_ZT1.Checked = True Then
 
             ' Convert entire folder containing PNG-files to ZT1-graphics
-            MdlTasks.Convert_folder_PNG_to_ZT1(Cfg_path_Root, PBBatchProgress)
+            MdlTasks.ConvertFolderPNGToZT1(Cfg_Path_Root, PBBatchProgress)
 
         Else
 
             ' Convert entire folder containing ZT1-graphics to PNG-files
-            MdlTasks.Convert_folder_ZT1_to_PNG(Cfg_path_Root, PBBatchProgress)
+            MdlTasks.ConvertFolderZT1ToPNG(Cfg_Path_Root, PBBatchProgress)
 
         End If
 
@@ -43,6 +43,8 @@ Public Class FrmBatchConversion
     End Sub
 
     Private Sub FrmBatchConversion_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+
+        Me.Icon = FrmMain.Icon
 
     End Sub
 End Class

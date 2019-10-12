@@ -23,7 +23,7 @@ Public Class FrmMain
         EditorGraphic.Frames.Add(EditorFrame)
 
         ' Starting with an empty canvas
-        MdlSettings.BMEmpty = New Bitmap(Cfg_grid_numPixels * 2, Cfg_grid_numPixels * 2)
+        MdlSettings.BMEmpty = New ClsDirectBitmap(Cfg_Grid_NumPixels * 2, Cfg_Grid_NumPixels * 2)
         With PicBox
             .Width = Cfg_grid_numPixels * 2
             .Height = Cfg_grid_numPixels * 2
@@ -1145,7 +1145,7 @@ dBug:
             If File.Exists(EditorGraphic.FileName) = True Then
 
                 ' Save graphic (existing graphic, overwrite)
-                MdlTasks.Save_Graphic(EditorGraphic.FileName)
+                MdlTasks.SaveGraphic(EditorGraphic.FileName)
                 MdlConfig.Write()
 
                 'No need to continue
@@ -1176,7 +1176,7 @@ dBug:
                 End If
 
 51:
-                MdlTasks.Save_Graphic(DlgSave.FileName)
+                MdlTasks.SaveGraphic(DlgSave.FileName)
 
 60:
                 ' Remember
@@ -1406,17 +1406,35 @@ dBug:
     ''' <param name="e">EventArgs</param>
     Private Sub TVExplorer_DoubleClick(sender As Object, e As EventArgs) Handles TVExplorer.DoubleClick
 
-        ' Open .pal file
-        If Regex.IsMatch(TVExplorer.SelectedNode.Name, ".*\.pal$", RegexOptions.IgnoreCase) = True Then
-            MdlColorPalette.LoadPalette(Cfg_path_Root & "\" & TVExplorer.SelectedNode.Name)
+        If IsNothing(TVExplorer.SelectedNode) = False Then
+
+            ' Open .pal file
+            If Regex.IsMatch(TVExplorer.SelectedNode.Name, ".*\.pal$", RegexOptions.IgnoreCase) = True Then
+                MdlColorPalette.LoadPalette(Cfg_path_Root & "\" & TVExplorer.SelectedNode.Name)
+            End If
+
         End If
 
     End Sub
 
+    ''' <summary>
+    ''' Events on form closing (ZT Studio exiting)
+    ''' </summary>
+    ''' <param name="sender">Object</param>
+    ''' <param name="e">FormClosingEventArgs</param>
     Private Sub FrmMain_FormClosing(sender As Object, e As FormClosingEventArgs) Handles Me.FormClosing
 
         ' Due to new implementations, some processes might still be running
         End
 
+    End Sub
+
+    ''' <summary>
+    ''' Handles manual refreshing of Explorer Pane
+    ''' </summary>
+    ''' <param name="sender">Object</param>
+    ''' <param name="e">EventArgs</param>
+    Private Sub CmdUpdateExplorerPane_Click(sender As Object, e As EventArgs) Handles CmdUpdateExplorerPane.Click
+        MdlZTStudioUI.UpdateExplorerPane()
     End Sub
 End Class

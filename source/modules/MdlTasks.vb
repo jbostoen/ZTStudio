@@ -83,7 +83,7 @@ dBug:
     ''' Converts a ZT1 Graphic file to one or more PNG files.
     ''' </summary>
     ''' <param name="StrFileName"></param>
-    Public Sub Convert_file_ZT1_to_PNG(StrFileName As String)
+    Public Sub ConvertFileZT1ToPNG(StrFileName As String)
 
         BlnTaskRunning = True
 
@@ -92,7 +92,7 @@ dBug:
         ' Reason: The color palette could be shared with other images, which would cause issues in a batch conversion!
 
         On Error GoTo dBg
-        MdlZTStudio.Trace("MdlTasks", "Convert_file_ZT1_to_PNG", "Convert ZT1 to PNG: " & StrFileName)
+        MdlZTStudio.Trace("MdlTasks", "ConvertFileZT1ToPNG", "Convert ZT1 to PNG: " & StrFileName)
 
 5:
         ' Create a new instance of a ZT1 Graphic object.
@@ -111,6 +111,8 @@ dBug:
         For Each ObjFrame As ClsFrame In ObjGraphic.Frames
 
 11:
+            GoTo 12
+
 
             ' The bitmap's save function does not overwrite, nor warn that the file already exists.
             ' So it is safer to delete any existing files.
@@ -137,20 +139,15 @@ dBug:
 12:
             ' Experimental. Export info such as offsets, height, width, mystery bytes...
             If Cfg_Convert_Write_Graphic_Data_To_Text_File = 1 Then
-                IniWrite(StrFileName & ".txt", "Frame" & ObjGraphic.Frames.IndexOf(ObjFrame), "width", ObjFrame.CoreImageBitmap.Width)
-                IniWrite(StrFileName & ".txt", "Frame" & ObjGraphic.Frames.IndexOf(ObjFrame), "height", ObjFrame.CoreImageBitmap.Height)
-                IniWrite(StrFileName & ".txt", "Frame" & ObjGraphic.Frames.IndexOf(ObjFrame), "offsetX", ObjFrame.OffsetX)
-                IniWrite(StrFileName & ".txt", "Frame" & ObjGraphic.Frames.IndexOf(ObjFrame), "offsetY", ObjFrame.OffsetY)
-                IniWrite(StrFileName & ".txt", "Frame" & ObjGraphic.Frames.IndexOf(ObjFrame), "mysteryBytes", String.Join(" ", ObjFrame.MysteryHEX))
+                ObjFrame.WriteDetailsToTextFile()
             End If
-
 
         Next
 
 13:
 
 
-        MdlZTStudio.Trace("MdlTasks", "Convert_file_ZT1_to_PNG", "Conversion finished.")
+        MdlZTStudio.Trace("MdlTasks", "ConvertFileZT1ToPNG", "Conversion finished.")
 
         BlnTaskRunning = False
 
@@ -162,331 +159,265 @@ dBug:
 
 dBg:
         Dim StrMessage As String = "An error occurred while converting a ZT1 Graphics file to PNG files:" & vbCrLf & StrFileName
-        MdlZTStudio.HandledError("MdlTasks", "Convert_file_ZT1_to_PNG", StrMessage, False, Information.Err)
+        MdlZTStudio.HandledError("MdlTasks", "ConvertFileZT1ToPNG", StrMessage, False, Information.Err)
 
         BlnTaskRunning = False
 
     End Sub
-    Public Function Convert_file_PNG_to_ZT1(strPath As String, Optional blnSingleConversion As Boolean = True) As Integer
+
+    ''' <summary>
+    ''' Task to convert one or more PNG files to one ZT1 Graphic
+    ''' </summary>
+    ''' <param name="StrDestinationFileName"></param>
+    ''' <param name="BlnSingleConversion"></param>
+    Public Sub ConvertFilePNGToZT1(StrDestinationFileName As String, Optional BlnSingleConversion As Boolean = True)
 
         On Error GoTo dBg
 
         BlnTaskRunning = True
 
-        ' In this sub, we get the file name of a PNG image we'll convert.
-        ' But the filename should NOT be that of the  .PNG, but rather the one for the final ZT1 graphic. 
-        ' That's why it's named strPath for now. This functoin will find others in the same series.  
-        ' Advise: Cleanup of .PNG files only happens automatically in batch conversions.
+        ' Get the name(s) of the PNG file(s) that will be combined into the ZT1 Graphic.
+        ' Find out what the final name of the ZT1 Graphic will be.
+        ' Note: Cleanup of .PNG files only happens automatically in batch conversions (if enabled in Settings)
 
 0:
+        ' Convert to lower (force similar filenames everywhere)
+        StrDestinationFileName = Strings.LCase(StrDestinationFileName)
 
-        strPath = Strings.LCase(strPath)
-
-        Dim StrPathDir As String = Path.GetDirectoryName(strPath)
-
-
-        Dim paths As New List(Of String)
+        Dim StrPathDir As String = Path.GetDirectoryName(StrDestinationFileName) ' Gets the path where the graphic is stored
+        Dim LstPNGFiles As String() ' Will be used to build a list of the filenames of all the frames (PNG set)
         Dim ObjGraphic As New ClsGraphic(Nothing)
         Dim ObjFrame As ClsFrame
-        Dim StrGraphicName As String = System.IO.Path.GetFileName(strPath)
-        Dim StrFrameGraphicPath As String = Strings.Left(strPath, strPath.Length - StrGraphicName.Length)
+        Dim StrGraphicName As String = System.IO.Path.GetFileName(StrDestinationFileName)
+        Dim StrFrameGraphicPath As String = Strings.Left(StrDestinationFileName, StrDestinationFileName.Length - StrGraphicName.Length)
 
-
+        Dim StrErrorMessage As String ' For error details
         Dim StrPngName As String
 
-
 10:
-        Debug.Print("Convert PNG to ZT1: " & strPath & " (" & StrGraphicName & ") " & Now.ToString("HH:mm:ss"))
-
-
+        MdlZTStudio.Trace("MdlTasks", "ConvertFilePNGToZT1", "Path: " & StrFrameGraphicPath)
+        MdlZTStudio.Trace("MdlTasks", "ConvertFilePNGToZT1", "Graphic name: " & StrGraphicName)
 
         ' Get the entire list of .PNG files matching the naming convention for this graphic.
-        ' Anything else is irrelevant to process.
-        paths.AddRange(System.IO.Directory.GetFiles(StrFrameGraphicPath, StrGraphicName & Cfg_Convert_FileNameDelimiter & "????.png"))
+        ' Any filename not matching this pattern is irrelevant to process.
+        LstPNGFiles = System.IO.Directory.GetFiles(StrFrameGraphicPath, StrGraphicName & Cfg_Convert_FileNameDelimiter & "????.png")
 
-        ' Fix for graphic_extra.PNG (legacy)
+11:
+        ' Check if files match the expected pattern, so far
+        Dim IntIndex As Integer = 0
+        For Each StrPNGFile As String In LstPNGFiles
+            If StrPNGFile.ToLower() <> (StrFrameGraphicPath & StrGraphicName & Cfg_Convert_FileNameDelimiter & (IntIndex - 1 + Cfg_Convert_StartIndex).ToString("0000") & ".png").ToLower() Then
+
+                StrErrorMessage =
+                    "The numbering in the PNG file(s) does not seem to be consecutive." & vbCrLf &
+                    "Your settings specify that the first PNG file should be " & StrGraphicName & Cfg_Convert_FileNameDelimiter & Cfg_Convert_StartIndex.ToString("0000") & " .png" & vbCrLf &
+                    "Avoid storing any other PNG files in the directory (except for " & StrGraphicName & Cfg_Convert_FileNameDelimiter & "_extra.png if required)."
+                MdlZTStudio.HandledError("MdlTasks", "ConvertFilePNGToZT1", StrErrorMessage, False)
+                Exit Sub
+            End If
+        Next
+
+20:
+
+        ' Now if there is a background frame (ends in extra.png), add this as well.
         If File.Exists(StrFrameGraphicPath & StrGraphicName & Cfg_Convert_FileNameDelimiter & "extra.png") = True Then
-            paths.Add(StrFrameGraphicPath & StrGraphicName & Cfg_Convert_FileNameDelimiter & "extra.png")
+            LstPNGFiles.Append(StrFrameGraphicPath & StrGraphicName & Cfg_Convert_FileNameDelimiter & "extra.png")
             ObjGraphic.HasBackgroundFrame = 1
         End If
 
-20:
-        ' 20150624 : this should be done automatically when writing (?)
-        ' We're creating the image from scratch.
-        ' This means we need to start defining a color palette.
-        ' The lazy approach is to just take the graphic's name and add a .pal-extension.
-        ' The benefit of this is that you can use more than 255 colors *in total* - although you're still limited to those for views.
-        '  g.colorPalette.fileName = strPath & ".pal"
 
+21:
+        ' There should be at least two frames if a background frame is specified
+        If ObjGraphic.HasBackgroundFrame = 1 Then
+
+            If LstPNGFiles.Count = 1 Then
+                MdlZTStudio.HandledError("MdlTasks", "ConvertFilePNGToZT1", "A ZT1 Graphic needs at least one frame, if a background frame (extra.png) is specified.", False, Nothing)
+                Exit Sub
+            End If
+
+        End If
 
 100:
 
-        Debug.Print("Before going over each PNG: " & Now.ToString("HH:mm:ss"))
-        For Each s As String In paths
-
-            'Debug.Print(s)
-
-
-            ' The order is alphabetical.
-            ' We could implement a way to check if the filename matches the expected frame.
-            ' We should also check if there's at least 2 frames when someone starts to use <name>_extra.PNG
-            ' We should also keep track of the numbering, although this shouldn't cause too many issues.
+        For Each StrPNGFile As String In LstPNGFiles
 
 105:
-            ' Extract the number of the frame (or _extra) from the filename
-            'pngName = Split(System.IO.Path.GetFileNameWithoutExtension(s), "_")(1)
-            ' 20161007 - changed this to adapt to different filename delimiters, including an empty one.
-            If Strings.Right(System.IO.Path.GetFileName(s).ToLower(), 9) = "extra.png" Then
+            ' Extract the index of the frame (or _extra) from the filename
+            If Strings.Right(System.IO.Path.GetFileName(StrPNGFile).ToLower(), 9) = "extra.png" Then
                 StrPngName = "extra"
             Else
-                StrPngName = Strings.Right(System.IO.Path.GetFileNameWithoutExtension(s), 4)
+                StrPngName = Strings.Right(System.IO.Path.GetFileNameWithoutExtension(StrPNGFile), 4)
             End If
-
-
-
-110:
-
-
-            If StrPngName.Length <> 4 And StrPngName <> "extra" Then
-
-                ' This could occur if for some reason we have for instance a ne.png file instead of the expected ne[delimiter]0000.png file
-                MsgBox("A .PNG-file has been detected which does not match the pattern expected." & vbCrLf &
-                    "The files should be named something similar to: " & vbCrLf &
-                    StrGraphicName & Cfg_Convert_FileNameDelimiter & "000" & Cfg_Convert_StartIndex & ".png (number increases)" & vbCrLf &
-                    "or " & StrGraphicName & Cfg_Convert_FileNameDelimiter & "extra.png (for the extra frame in certain ZT1 Graphics." & vbCrLf & vbCrLf &
-                    "File which caused this error: " & vbCrLf & "'" & s & "'" & vbCrLf &
-                       "ZT Studio will close to prevent program or game crashes.",
-                        vbOKOnly + vbCritical + vbApplicationModal,
-                        "Invalid filename (pattern)")
-
-                End
-
-
-            Else
 
 120:
 
-                If StrPngName = "extra" Then
-                    ' There's an extra background frame.
-                    ObjGraphic.HasBackgroundFrame = 1
+            If StrPngName = "extra" Then
+                ' There's an extra background frame.
+                ObjGraphic.HasBackgroundFrame = 1
 
-125:
-                ElseIf IsNumeric(StrPngName) = True Then
-
-                    ' Here we check whether the pattern is still appropriate.
-                    ' The specification is that - depending on a variable to see if we start counting from 0 or 1 - 
-                    ' the user should have PNGs named <graphicName><delimiter>0000.png, <graphicName><delimiter>0001.png, ... 
-                    ' This checks if no number is skipped or invalid.
-                    If (CInt(StrPngName) - Cfg_Convert_StartIndex) <> ObjGraphic.Frames.Count Then
-
-135:
-                        ' Check if file name pattern is okay
-                        MsgBox("The file name ('" & StrFrameGraphicPath & StrGraphicName & Cfg_Convert_FileNameDelimiter & (CInt(StrPngName)).ToString("0000") & ".png') does not match the expected name " &
-                               "('" & StrFrameGraphicPath & StrGraphicName & Cfg_Convert_FileNameDelimiter & (ObjGraphic.Frames.Count + Cfg_Convert_StartIndex).ToString("0000") & ".png')" & vbCrLf & vbCrLf &
-                               "Your current starting index is: " & Cfg_Convert_StartIndex & vbCrLf &
-                               "Do not store other .png-files starting with '" & StrFrameGraphicPath & StrGraphicName & "' in that folder.", vbOKOnly + vbCritical, "Error")
-
-                        Return -1
-
-                    End If
-
-140:
-
-                ElseIf StrPngName = Path.GetFileName(StrPathDir) Then
-
-                    ' This checks the last part of the directory path of this graphic.
-                    ' One exception which we could accept, is an extremely uncommon one.
-                    ' if it's a .PNG palette file, it could be a coincidence.
-                    ' Difficult to come up with such an example at the moment.
-
-145:
-                Else
-
-                    ' Non-numeric.
-                    ' Non-extra.
-                    ' This PNG is quite unexpected...
-
-
-                    ' Check if file name pattern is okay
-                    MsgBox("The file name ('" & StrFrameGraphicPath & StrGraphicName & Cfg_Convert_FileNameDelimiter & StrPngName & ".png') does not match the expected name " &
-                           "('" & StrFrameGraphicPath & StrGraphicName & Cfg_Convert_FileNameDelimiter & (ObjGraphic.Frames.Count + Cfg_Convert_StartIndex).ToString("0000") & ".png')" & vbCrLf & vbCrLf &
-                           "Your current starting index is: " & Cfg_Convert_StartIndex & vbCrLf &
-                           "Do not store other .png-files starting with '" & StrFrameGraphicPath & StrGraphicName & "' in that folder.", vbOKOnly + vbCritical, "Error")
-
-                    Return -1
-
-                End If
+            End If
 
 200:
-                ObjFrame = New ClsFrame(ObjGraphic)
-
+            ObjFrame = New ClsFrame(ObjGraphic)
 
 201:
-                ' In case of a batch conversion, we might rely on a shared .PAL file 
-                ' usually, this would be objects/restrant/restrant.pal
-                ' animals/ibex/ibex.pal 
+            ' In case of a batch conversion, it's possible a shared color palette (.pal) is enforced.
+            ' usually, this would be something like this:
+            ' objects/restrant/restrant.pal
+            ' animals/ibex/ibex.pal 
 
-                ' to make it a bit more simple, and to allow for easier recoloring of baby (working on Red Panda now), 
-                ' it would be better if the palette is not under animals/redpanda/redpanda.pal but animals/redpanda/m/redpanda.pal
-                ' this should work for fences etc as well.
+            ' To make it a bit more simple for the users of ZT Studio and to allow for easier recoloring 
+            ' (for example: lighter graphics of Red Panda will be used for the female), 
+            ' it would be better if the palette is not under animals/redpanda/redpanda.pal but animals/redpanda/m/redpanda.pal
+            ' This should work for fences etc as well.
 
 202:
 
-                If Cfg_Convert_SharedPalette = 1 And blnSingleConversion = False Then
+            If Cfg_Convert_SharedPalette = 1 And BlnSingleConversion = False Then
 
-                    ' 20170513: changed behavior for even more flexibility. 
-                    ' ZT Studio tries to detect a color palette:
-                    ' - in the same folder as the graphic (animals/redpanda/m/walk - walk.pal) - in case this animation uses colors not used anywhere else.
-                    ' - in the folder one level up (animals/redpanda/m - m.pal) - in case a palette is shared for the gender (male, female, young)
-                    ' - in the folder two levels up (animals/redpanda - redpanda.pal) - in case a palette is shared for (most of) the animal
-                    ' This method should also work just fine for objects.
+                ' 20170513: changed behavior for even more flexibility. 
+                ' ZT Studio tries to detect a color palette:
+                ' - in the same folder as the graphic (animals/redpanda/m/walk - walk.pal) - in case this animation uses colors not used anywhere else.
+                ' - in the folder one level up (animals/redpanda/m - m.pal) - in case a palette is shared for the gender (male, female, young)
+                ' - in the folder two levels up (animals/redpanda - redpanda.pal) - in case a palette is shared for (most of) the animal
+                ' This method should also work just fine for objects.
 
-                    Dim SPath0 As String
-                    Dim SPath1 As String
-                    Dim SPath2 As String
+                Dim StrPath0 As String
+                Dim StrPath1 As String
+                Dim StrPath2 As String
 
-                    SPath0 = Path.GetDirectoryName(StrPathDir)
-                    SPath1 = Path.GetDirectoryName(SPath0)
-                    SPath2 = Path.GetDirectoryName(SPath1)
+                StrPath0 = Path.GetDirectoryName(StrPathDir)
+                StrPath1 = Path.GetDirectoryName(StrPath0)
+                StrPath2 = Path.GetDirectoryName(StrPath1)
 
-                    SPath0 = SPath0 & "\" & Path.GetFileName(SPath0)
-                    SPath1 = SPath1 & "\" & Path.GetFileName(SPath1)
-                    SPath2 = SPath2 & "\" & Path.GetFileName(SPath2)
+                ' Basically the filename also reflects the name of the folder the graphic is in.
+                ' Using .NETs Path.GetFileName() method, the last part of the directory derived above is retrieved and appended.
+                ' Only thing missing for a full filename, is the extension (see below)
+                StrPath0 = StrPath0 & "\" & Path.GetFileName(StrPath0)
+                StrPath1 = StrPath1 & "\" & Path.GetFileName(StrPath1)
+                StrPath2 = StrPath2 & "\" & Path.GetFileName(StrPath2)
 
-                    ' N should not be the only view (icon etc) in this folder.
-                    ' If it does seem to be the only view, this method should NOT fall back on higher level.
-                    ' An icon is NOT animated and often contains very different colors (plaque, icon in menu). 
-                    ' An exception to this rule could be the list icon, but it's not worth making an exception for it.
+                ' The current graphic should not be the only view (icon etc) in this processed folder.
+                ' If it does seem to be the only view (for instance an icon/graphic 'N'), this method should NOT fall back on higher level.
+                ' An icon is NOT animated and often contains very different colors (plaque, icon in menu) than the actual animations.
+                ' An exception to this rule could be the list icon, but it's not worth making an exception for it in this code.
+                ' One way to find out, is if there are any other PNG files in this folder and not just for this particular graphic.
+                If LstPNGFiles.Count <> Directory.GetFiles(StrPathDir, "*.png").Count Then
 
-                    ' 20190904, remark, no code change:
-                    ' Is this meant as a way to check if this is the sole PNG graphic in this folder? 
-                    ' Why not length = 1?
-                    If Directory.GetFiles(StrPathDir, StrGraphicName & "*.png").Length <> Directory.GetFiles(StrPathDir, "*.png").Length Then
+                    ' 20170502 Optimized by Hendrix.
+                    Dim StrColorPaletteFileNamesWithoutExt() As String = {StrPath0, StrPath1, StrPath2}
+                    Dim StrExtensions() As String = {".pal", ".gpl", ".png"}
 
-                        ' 20170502 Optimized by Hendrix.
-                        Dim InPaths() As String = {SPath0, SPath1, SPath2}
-                        Dim exts() As String = {".pal", ".gpl", ".png"}
+                    ' No palette has been saved/set yet for this graphic.
+                    If ObjGraphic.FileName = vbNullString Then
 
-                        ' No palette has been saved/set yet for this graphic.
-                        If ObjFrame.Parent.ColorPalette.FileName = vbNullString Then
+                        ' Figure out if there is a preferred palette (perhaps already prepared by the user) to be used.
+                        ' Two ideas come to mind here:
+                        '
+                        ' (1) Palette at deeper level folder gets priority over palette in higher level folder
+                        '     For example: an animal might use one palette for nearly all animations, except one
+                        '   
+                        ' (2) Palette of certain type (file extension) gets priority over another one.
+                        '     Order: .pal(ZT1 Graphic) > .gpl (GIMP Palette) > .png
 
-                            ' Figure out if there is a preferred palette (perhaps already prepared by the user) to be used.
-                            ' Two ideas come to mind here:
-                            '
-                            ' (1) Palette at lower level folder gets priority over palette in higher level folder
-                            '     For example: an animal might use one palette for nearly all animations, except one
-                            '   
-                            ' (2) Palette of certain type (file extension) gets priority over another one.
-                            '     Order: .pal(ZT1 Graphic) > .gpl (GIMP Palette) > .png
+                        MdlZTStudio.Trace("MdlTasks", "ConvertFilePNGToZT1", "Batch conversion and shared palette = 1. Trying to find existing palette.")
 
-                            MdlZTStudio.Trace("MdlTasks", "Convert_file_PNG_to_ZT1", "Batch conversion and shared palette = 1. Trying to find proper palette.")
+                        Do
+                            For Each StrColorPaletteFileNameWithoutExt As String In StrColorPaletteFileNamesWithoutExt
+                                For Each StrExtension As String In StrExtensions
 
-                            For Each inPath As String In InPaths
-                                For Each ext As String In exts
-
-                                    If File.Exists(inPath & ext) = True Then
-                                        With ObjFrame.Parent.ColorPalette
+                                    If File.Exists(StrColorPaletteFileNameWithoutExt & StrExtension) = True Then
+                                        With ObjGraphic.ColorPalette
                                             ' Read a new palette once
                                             ' Ignore different extensions, so reloading within the loop is skipped
 
                                             ' Set filename.
-                                            .FileName = inPath & ".pal"
+                                            .FileName = StrColorPaletteFileNameWithoutExt & ".pal"
 
                                             ' Now go by priority.
                                             ' Go-to is usually a bad practice, but it's good here to break out of our 2 (!) loops.
-                                            Select Case ext
+                                            Select Case StrExtension
                                                 Case ".pal"
                                                     .ReadPal(.FileName)
-                                                    GoTo paletteReady
+                                                    Exit Do
                                                 Case ".gpl"
-                                                    .ImportFromGIMPPalette(inPath & ext)
+                                                    .ImportFromGIMPPalette(StrColorPaletteFileNameWithoutExt & StrExtension)
                                                     .WritePal(.FileName, True)
-                                                    GoTo paletteReady
+                                                    Exit Do
                                                 Case ".png"
-                                                    .ImportFromPNG(inPath & ext)
+                                                    .ImportFromPNG(StrColorPaletteFileNameWithoutExt & StrExtension)
                                                     .WritePal(.FileName, True)
-                                                    GoTo paletteReady
+                                                    Exit Do
                                             End Select
 
                                         End With
                                     End If
-                                Next ext
-                            Next inPath
+                                Next StrExtension
+                            Next StrColorPaletteFileNameWithoutExt
 
                             ' Todo: does this lead to issues?
-                            MdlZTStudio.Trace("MdlTasks", "Convert_file_PNG_to_ZT1", "Warning: no shared palette found for " & ObjFrame.Parent.FileName)
+                            MdlZTStudio.Trace("MdlTasks", "ConvertFilePNGToZT1", "Warning: no shared palette found.")
+                            MdlZTStudio.Trace("MdlTasks", "ConvertFilePNGToZT1", "Procedure will continue and use specific stand-alone palette.")
 
-                        Else
-                            ' Color palette has already been set for this graphic.
-                            ' No further action needed.
-                            MdlZTStudio.Trace("MdlTasks", "Convert_file_PNG_to_ZT1", "Skip. Specific color palette defined for " & ObjFrame.Parent.FileName)
-                        End If
+                        Loop While False
 
+                    Else
+                        ' Color palette has already been set for this graphic.
+                        ' No further action needed.
+                        MdlZTStudio.Trace("MdlTasks", "ConvertFilePNGToZT1", "Skip. Specific color stand-alone palette defined.")
                     End If
-
-
-
 
                 End If
 
-paletteReady:
+            End If
+
 
 245:
-                ' Add this frame to our parent graphic's frame collection 
-                ObjGraphic.Frames.Add(ObjFrame)
+            ' Add this frame to the graphic's frame collection 
+            ObjGraphic.Frames.Add(ObjFrame)
 
 250:
-                ' Create a frame from the .PNG-file
-                ObjFrame.LoadPNG(s)
+            ' Create a frame from the .PNG-file
+            ObjFrame.LoadPNG(StrPNGFile)
 
-            End If
-        Next
-
-        Debug.Print("Before write: " & Now.ToString("HH:mm:ss"))
-
+        Next StrPNGFile
 
 1530:
-        ' Create our ZT1 Graphic. 
-        ObjGraphic.Write(strPath)
+        MdlZTStudio.Trace("MdlTasks", "ConvertFilePNGToZT1", "Write graphic...")
 
-
-        'Debug.Print("After write: " & Now.ToString("HH:mm:ss"))
+        ' Create the ZT1 Graphic. 
+        ObjGraphic.Write(StrDestinationFileName)
 
 1555:
-        If Cfg_Export_ZT1_Ani = 1 And blnSingleConversion = True Then
-            Debug.Print(Now.ToString() & ": convert_file_PNG_to_ZT1: Generate .ani file (single conversion)")
+        If Cfg_Export_ZT1_Ani = 1 And BlnSingleConversion = True Then
 
-            ' Only 1 graphic file is being generated. This is the case for icons, for example.
+            MdlZTStudio.Trace("MdlTasks", "ConvertFilePNGToZT1", "Generate .ani file")
+
+            ' Only 1 graphic file is being generated (example: icon)
             ' A .ani-file can be generated automatically.       
             ' [folder path] + \ + [folder name] + .ani
-            Dim CAni As New ClsAniFile(StrPathDir & "\" & Path.GetFileName(StrPathDir) & ".ani")
-            CAni.CreateAniConfig()
+            Dim ObjAniFile As New ClsAniFile(StrPathDir & "\" & Path.GetFileName(StrPathDir) & ".ani")
+            ObjAniFile.CreateAniConfig()
 
         End If
 
-
-
-        Debug.Print("Graphic converted: " & strPath & " (" & StrGraphicName & ") " & Now.ToString("HH:mm:ss"))
+        MdlZTStudio.Trace("MdlTasks", "ConvertFilePNGToZT1", "Converted PNG-set to ZT1 Graphic")
 
 9999:
         ' Clear everything.
         ObjGraphic = Nothing
 
-
-
         BlnTaskRunning = False
 
-        Return 0
-
+        Exit Sub
 
 dBg:
-        MsgBox("Error occured in convert_file_PNG_to_ZT1:" & vbCrLf & "Line: " & Erl() & vbCrLf &
-            Err.Number & " - " & Err.Description, vbOKOnly + vbCritical, "Error in conversion PNG -> ZT1")
+        StrErrorMessage = "Unexpected error while converting a PNG set to ZT1 Graphic"
+        MdlZTStudio.HandledError("MdlTasks", "ConvertFilePNGToZT1", StrErrorMessage, True, Information.Err)
 
-        BlnTaskRunning = False
 
-    End Function
-    Public Sub Convert_folder_ZT1_to_PNG(strPath As String, Optional PB As ProgressBar = Nothing)
+    End Sub
+    Public Sub ConvertFolderZT1ToPNG(strPath As String, Optional PB As ProgressBar = Nothing)
 
         ' This will find all ZT1 Graphics in a folder and generate PNGs from it. It works recursively.
         ' The progress can be shown in a progress bar.
@@ -543,7 +474,7 @@ dBg:
 1000:
         ' For each file that is a ZT1 Graphic:
         For Each StrFileName As String In LstResult
-            MdlTasks.Convert_file_ZT1_to_PNG(StrFileName)
+            MdlTasks.ConvertFileZT1ToPNG(StrFileName)
             If IsNothing(PB) = False Then
                 PB.Value += 1
             End If
@@ -563,11 +494,11 @@ dBg:
 
 dBug:
 
-        MdlZTStudio.UnhandledError("MdlTasks", "Convert_folder_ZT1_to_PNG", Information.Err)
+        MdlZTStudio.UnhandledError("MdlTasks", "ConvertFolderZT1ToPNG", Information.Err)
 
 
     End Sub
-    Public Sub Convert_folder_PNG_to_ZT1(strPath As String, Optional PB As ProgressBar = Nothing)
+    Public Sub ConvertFolderPNGToZT1(strPath As String, Optional PB As ProgressBar = Nothing)
 
         ' We have the path containing .PNG-files which need to be converted into a ZT1 Graphic.
         ' We should get the unique prefixes. (eg. e_0001.png => e is the prefix. So 'e' should be the name of the view.
@@ -664,7 +595,7 @@ dBug:
         For Each f As String In result
 
             'Debug.Print("Convert file PNG to ZT1: " & f)
-            MdlTasks.Convert_file_PNG_to_ZT1(f, False)
+            MdlTasks.ConvertFilePNGToZT1(f, False)
             If IsNothing(PB) = False Then
                 PB.Value += 1
             End If
@@ -705,15 +636,15 @@ dBug:
     ' === Extra ===
 
     ''' <summary>
-    ''' Saves the main graphic as a ZT1 Graphic file.
+    ''' Saves the main graphic as a ZT1 Graphic file (simple, using UI)
     ''' Saves as the specified filename.
     ''' </summary>
     ''' <param name="StrFileName">Filename</param>
-    Sub Save_Graphic(StrFileName As String)
+    Sub SaveGraphic(StrFileName As String)
 
-        ' 20150624. We have <filename>.pal here. 
-        ' We do this to avoid issues with shared color palettes, if users are NOT familiar with them.
-        ' We are assuming pro users will only tweak and use the batch conversion.
+        ' 20150624. Assume having <filename>.pal here. 
+        ' This was done to avoid issues with shared color palettes, if users are NOT familiar with them.
+        ' Pro users will only tweak and use the batch conversion.
         With EditorGraphic
             .FileName = StrFileName
             .ColorPalette.FileName = EditorGraphic.FileName & ".pal"
@@ -745,7 +676,7 @@ dBug:
     ''' <param name="StrPath">Path to folder</param>
     ''' <param name="PntOffset">The offsets to apply</param>
     ''' <param name="ObjProgressBar">The bar which will indicate progress</param>
-    Public Sub Batch_RotationFix_Folder_ZT1(StrPath As String, PntOffset As Point, Optional ObjProgressBar As ProgressBar = Nothing)
+    Public Sub BatchOffsetFixFolderZT1(StrPath As String, PntOffset As Point, Optional ObjProgressBar As ProgressBar = Nothing)
 
         ' Todo: check needed to see if strPath is subfolder of Cfg_Path_Root ?
 
@@ -803,7 +734,7 @@ dBug:
         ' For each file that is a ZT1 Graphic:
         For Each StrCurrentFile As String In LstFiles
 
-            MdlZTStudio.Trace("MdlTasks", "Batch_RotationFix_Folder_ZT1", "Processing file " & StrCurrentFile)
+            MdlZTStudio.Trace("MdlTasks", "BatchOffsetFixFolderZT1", "Processing file " & StrCurrentFile)
 
 
             ' Read graphic, update offsets of frames, save.

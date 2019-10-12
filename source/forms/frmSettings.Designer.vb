@@ -33,6 +33,7 @@ Partial Class FrmSettings
         Me.ChkExportZT1_Ani = New System.Windows.Forms.CheckBox()
         Me.ChkExportZT1_AddZTAFBytes = New System.Windows.Forms.CheckBox()
         Me.tpRenderingFrames = New System.Windows.Forms.TabPage()
+        Me.ChkPNGRenderBGFrame = New System.Windows.Forms.CheckBox()
         Me.Label3 = New System.Windows.Forms.Label()
         Me.numFrameDefaultAnimSpeed = New System.Windows.Forms.NumericUpDown()
         Me.LblDefaultAnimSpeed = New System.Windows.Forms.Label()
@@ -58,7 +59,6 @@ Partial Class FrmSettings
         Me.TCSettings = New System.Windows.Forms.TabControl()
         Me.LblHelp = New System.Windows.Forms.Label()
         Me.LblHelpTopic = New System.Windows.Forms.Label()
-        Me.ChkPNGRenderBGFrame = New System.Windows.Forms.CheckBox()
         Me.tpPalette.SuspendLayout()
         Me.tpWritePNG.SuspendLayout()
         Me.tpWriteZT1.SuspendLayout()
@@ -180,6 +180,17 @@ Partial Class FrmSettings
         Me.tpRenderingFrames.TabIndex = 2
         Me.tpRenderingFrames.Text = "Rendering frames"
         Me.tpRenderingFrames.UseVisualStyleBackColor = True
+        '
+        'ChkPNGRenderBGFrame
+        '
+        Me.ChkPNGRenderBGFrame.AutoSize = True
+        Me.ChkPNGRenderBGFrame.Location = New System.Drawing.Point(24, 102)
+        Me.ChkPNGRenderBGFrame.Name = "ChkPNGRenderBGFrame"
+        Me.ChkPNGRenderBGFrame.Size = New System.Drawing.Size(485, 17)
+        Me.ChkPNGRenderBGFrame.TabIndex = 38
+        Me.ChkPNGRenderBGFrame.Text = "Render last frame as background in all frames (and do not export background separ" &
+    "ately)"
+        Me.ChkPNGRenderBGFrame.UseVisualStyleBackColor = True
         '
         'Label3
         '
@@ -450,17 +461,6 @@ Partial Class FrmSettings
         Me.LblHelpTopic.Size = New System.Drawing.Size(66, 13)
         Me.LblHelpTopic.TabIndex = 31
         Me.LblHelpTopic.Text = "Need help?"
-        '
-        'ChkPNGRenderBGFrame
-        '
-        Me.ChkPNGRenderBGFrame.AutoSize = True
-        Me.ChkPNGRenderBGFrame.Location = New System.Drawing.Point(24, 102)
-        Me.ChkPNGRenderBGFrame.Name = "ChkPNGRenderBGFrame"
-        Me.ChkPNGRenderBGFrame.Size = New System.Drawing.Size(512, 17)
-        Me.ChkPNGRenderBGFrame.TabIndex = 38
-        Me.ChkPNGRenderBGFrame.Text = "Render last frame as background in all PNG images (and do not export background s" &
-    "eparately)"
-        Me.ChkPNGRenderBGFrame.UseVisualStyleBackColor = True
         '
         'FrmSettings
         '

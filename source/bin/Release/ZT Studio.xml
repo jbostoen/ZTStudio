@@ -294,6 +294,12 @@ ZT Studio
  </summary>
  <param name="StrFileName">Destination filename</param>
 </member>
+<member name="M:ZTStudio.ClsFrame.WriteDetailsToTextFile">
+ <summary>
+ Writes details of frame (width, height, offsetX, offsetY, mystery bytes) to a text file.
+ The text file has the name of the ZT1 Graphic and a .txt extension.
+ </summary>
+</member>
 <member name="T:ZTStudio.ClsGraphic">
  <summary>
  Class to handle the main graphic, which consist of one or multiple frames which share the same color palette.

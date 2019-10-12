@@ -7,14 +7,19 @@ Module MdlBitMap
     ''' <summary>
     ''' Combines two images into one. Always centers the images on each other, if different size. (For instance: grid + actual graphic)
     ''' </summary>
-    ''' <param name="ImgBack">Image background</param>
-    ''' <param name="ImgFront">Image on top</param>
-    ''' <returns>Image (Bitmap)</returns>
-    Public Function CombineImages(ByVal ImgBack As Image, ByVal ImgFront As Image) As Image
+    ''' <param name="BitMapBack">ClsDirectBitmap background</param>
+    ''' <param name="BitMapFront">ClsDirectBitmap on top</param>
+    ''' <returns>ClsDirectBitmap</returns>
+    Public Function CombineImages(ByVal BitMapBack As ClsDirectBitmap, ByVal BitMapFront As ClsDirectBitmap) As ClsDirectBitmap
 
         On Error GoTo dBg
 
 1:
+
+        Dim ImgBack As Image = BitMapBack.Bitmap
+        Dim ImgFront As Image = BitMapFront.Bitmap
+
+
         Dim IntMaxWidth As Integer = Math.Max(ImgBack.Width, ImgFront.Width)
         Dim IntMaxHeight As Integer = Math.Max(ImgBack.Height, ImgFront.Height)
 
@@ -22,11 +27,10 @@ Module MdlBitMap
 
 
 2:
-        Debug.Print(IntMaxWidth & " - " & IntMaxHeight)
-        Dim BmpOutput As New Bitmap(IntMaxWidth, IntMaxHeight)
+        Dim BmpOutput As New ClsDirectBitmap(IntMaxWidth, IntMaxHeight)
 
 3:
-        Dim ObjGraphic As Graphics = Graphics.FromImage(BmpOutput)
+        Dim ObjGraphic As Graphics = Graphics.FromImage(BmpOutput.Bitmap)
 
 11:
         ObjGraphic.InterpolationMode = Drawing2D.InterpolationMode.NearestNeighbor ' Prevent softening
@@ -39,6 +43,7 @@ Module MdlBitMap
 
 41:
         ObjGraphic.Dispose()
+
 
         Return BmpOutput
 
@@ -57,7 +62,7 @@ dBg:
     ''' Could be simplified: IntFootPrintX and IntFootPrintY are always simply the config parameters up till now.
     ''' However, for future use, do not change this.
     ''' </remarks>
-    Function DrawGridFootPrintXY(IntFootPrintX As Integer, IntFootPrintY As Integer) As Bitmap
+    Function DrawGridFootPrintXY(IntFootPrintX As Integer, IntFootPrintY As Integer) As ClsDirectBitmap
 
         ' Draws a certain amount of squares.
         ' ZT1 uses either 1/4th of a square, or complete squares from there on. 
@@ -80,7 +85,7 @@ dBg:
         ' Every grid square adds this much for X and Y - consider both directions to be efficient!
         Dim x_dim As Integer = IntFootPrintX * 16 + IntFootPrintY * 16
         Dim y_dim As Integer = IntFootPrintY * 8 + IntFootPrintX * 8
-        Dim BmInput As New Bitmap(x_dim * 2, y_dim * 2)
+        Dim BmInput As New ClsDirectBitmap(x_dim * 2, y_dim * 2)
 
         ' Iirst point of the generated grid: intFootprintX * 32, +16px Y (center), 
 
@@ -129,10 +134,10 @@ dBg:
     ''' <summary>
     ''' Draws a square (for a grid)
     ''' </summary>
-    ''' <param name="CoordTopLeft">The top left coordinate</param>
-    ''' <param name="BmInput">The bitmap to drawn on. If not specified</param>
-    ''' <returns>Bitmap of a full square</returns>
-    Function DrawGridSquare(CoordTopLeft As Point, Optional BmInput As Bitmap = Nothing) As Bitmap
+    ''' <param name="ObjCoordTopLeft">The top left coordinate</param>
+    ''' <param name="BmInput">The ClsDirectBitmap to drawn on. If not specified</param>
+    ''' <returns>ClsDirectBitmap of a full square</returns>
+    Function DrawGridSquare(ObjCoordTopLeft As Point, Optional BmInput As ClsDirectBitmap = Nothing) As ClsDirectBitmap
 
         ' Todo: replace SetPixel()?
 
@@ -146,14 +151,14 @@ dBg:
         ' === Top left
         For IntX = -31 To 0
 
-            BmInput.SetPixel(CoordTopLeft.X + IntX, CoordTopLeft.Y + IntY, Cfg_grid_ForeGroundColor)
+            BmInput.SetPixel(ObjCoordTopLeft.X + IntX, ObjCoordTopLeft.Y + IntY, Cfg_Grid_ForeGroundColor)
 
             ' Mirror to the right
-            BmInput.SetPixel(CoordTopLeft.X + 1 - IntX, CoordTopLeft.Y + IntY, Cfg_grid_ForeGroundColor)
+            BmInput.SetPixel(ObjCoordTopLeft.X + 1 - IntX, ObjCoordTopLeft.Y + IntY, Cfg_Grid_ForeGroundColor)
 
             ' Mirror bottom part for bottom
-            BmInput.SetPixel(CoordTopLeft.X + IntX, CoordTopLeft.Y - IntY + 1, Cfg_grid_ForeGroundColor)
-            BmInput.SetPixel(CoordTopLeft.X + 1 - IntX, CoordTopLeft.Y - IntY + 1, Cfg_grid_ForeGroundColor)
+            BmInput.SetPixel(ObjCoordTopLeft.X + IntX, ObjCoordTopLeft.Y - IntY + 1, Cfg_Grid_ForeGroundColor)
+            BmInput.SetPixel(ObjCoordTopLeft.X + 1 - IntX, ObjCoordTopLeft.Y - IntY + 1, Cfg_Grid_ForeGroundColor)
 
             ' Width = 32; height = 16
             ' This means the height decreases slower
@@ -164,12 +169,11 @@ dBg:
         Next
 
         ' Center consists of 4px
-        BmInput.SetPixel(CoordTopLeft.X, CoordTopLeft.Y, Cfg_grid_ForeGroundColor)
-        BmInput.SetPixel(CoordTopLeft.X, CoordTopLeft.Y + 1, Cfg_grid_ForeGroundColor)
-        BmInput.SetPixel(CoordTopLeft.X + 1, CoordTopLeft.Y, Cfg_grid_ForeGroundColor)
-        BmInput.SetPixel(CoordTopLeft.X + 1, CoordTopLeft.Y + 1, Cfg_grid_ForeGroundColor)
+        BmInput.SetPixel(ObjCoordTopLeft.X, ObjCoordTopLeft.Y, Cfg_Grid_ForeGroundColor)
+        BmInput.SetPixel(ObjCoordTopLeft.X, ObjCoordTopLeft.Y + 1, Cfg_Grid_ForeGroundColor)
+        BmInput.SetPixel(ObjCoordTopLeft.X + 1, ObjCoordTopLeft.Y, Cfg_Grid_ForeGroundColor)
+        BmInput.SetPixel(ObjCoordTopLeft.X + 1, ObjCoordTopLeft.Y + 1, Cfg_Grid_ForeGroundColor)
 
-        'picBox.Image = bmInput
 
         Return BmInput
 
@@ -183,9 +187,9 @@ dBg:
     ''' <param name="BmInput">Bitmap image</param>
     ''' <param name="RectCropArea">Rectangle used to crop the bitmap</param>
     ''' <returns>Bitmap</returns>
-    Function GetCroppedVersion(BmInput As Bitmap, RectCropArea As Rectangle) As Bitmap
+    Function GetCroppedVersion(BmInput As ClsDirectBitmap, RectCropArea As Rectangle) As Bitmap
 
-        Return BmInput.Clone(RectCropArea, BmInput.PixelFormat)
+        Return BmInput.Bitmap.Clone(RectCropArea, BmInput.Bitmap.PixelFormat)
 
     End Function
 
@@ -193,9 +197,9 @@ dBg:
     ''' Returns the defining rectangle for this bitmap.
     ''' This means the rectangle which contains all colored (non-transparent) pixels
     ''' </summary>
-    ''' <param name="BmInput">Bitmap image</param>
+    ''' <param name="BmInput">ClsDirectBitmap image</param>
     ''' <returns>Rectangle - dimensions of relevant part</returns>
-    Function GetDefiningRectangle(BmInput As Bitmap) As Rectangle
+    Function GetDefiningRectangle(BmInput As ClsDirectBitmap) As Rectangle
 
         On Error GoTo dBug
 
@@ -211,37 +215,20 @@ dBg:
         Dim ObjCoordBottomRight As New Point(0, 0)
         Dim ObjCurrentTransparentColor As System.Drawing.Color = BmInput.GetPixel(0, 0)
 
-
-102:
-        Dim BoundsF As RectangleF = BmInput.GetBounds(GraphicsUnit.Pixel)
-        Dim Bounds As New Rectangle(New Point(CInt(BoundsF.X), CInt(BoundsF.Y)), New Size(CInt(BoundsF.Width), CInt(BoundsF.Height)))
-        Dim ObjBitmapClone As Bitmap = BmInput.Clone(Bounds, Imaging.PixelFormat.Format32bppArgb)
-        Dim ObjBitmapData As System.Drawing.Imaging.BitmapData = ObjBitmapClone.LockBits(Bounds, Imaging.ImageLockMode.ReadWrite, ObjBitmapClone.PixelFormat)
-        Dim offsetToFirstPixel As IntPtr = ObjBitmapData.Scan0
-        Dim IntByteCount As Integer = Math.Abs(ObjBitmapData.Stride) * ObjBitmapClone.Height
-        Dim BitmapBytes(IntByteCount - 1) As Byte
-        System.Runtime.InteropServices.Marshal.Copy(offsetToFirstPixel, BitmapBytes, 0, IntByteCount)
-
-110:
-        ' rectangle = bounds ?
-        Dim IntStartOffset As Integer = (0 * ObjBitmapData.Stride)
-        Dim IntEndOffset As Integer = IntStartOffset + ((BmInput.Height) * ObjBitmapData.Stride) - 1
-        Dim IntRectLeftOffset As Integer = (0 * 4)
-        Dim IntRectRightOffset As Integer = (0 + (BmInput.Width) * 4) - 1
         Dim IntX As Integer = 0
         Dim IntY As Integer = 0
 
-
 251:
-        For FirstOffsetInEachLine As Integer = IntStartOffset To IntEndOffset Step ObjBitmapData.Stride
-            IntX = 0
-            For PixelOffset As Integer = IntRectLeftOffset To IntRectRightOffset Step 4 ' 4 because there are 4 bytes for the color: Blue, Green, Red, Alpha
+        While IntY < BmInput.Height
+            While IntX < BmInput.Width
+
+                Dim ObjColor As System.Drawing.Color = BmInput.GetPixel(IntX,IntY)
 
                 ' Non-transparent
-                If BitmapBytes(FirstOffsetInEachLine + PixelOffset + 3) = 255 And
-                    BitmapBytes(FirstOffsetInEachLine + PixelOffset) <> ObjCurrentTransparentColor.B And
-                    BitmapBytes(FirstOffsetInEachLine + PixelOffset + 1) <> ObjCurrentTransparentColor.G And
-                    BitmapBytes(FirstOffsetInEachLine + PixelOffset + 2) <> ObjCurrentTransparentColor.R Then
+                If ObjColor.A = 255 And
+                        ObjColor.B <> ObjCurrentTransparentColor.B And
+                        ObjColor.G <> ObjCurrentTransparentColor.G And
+                         ObjColor.R <> ObjCurrentTransparentColor.R Then
 
                     ' Detected a non-transparent color
                     If IntX < ObjCoordTopLeft.X Then ObjCoordTopLeft.X = IntX ' Topleft: move to left
@@ -253,13 +240,12 @@ dBg:
                 End If
 
                 IntX += 1
-            Next
-            IntY += 1
-        Next
 
-        ' Unlock
-        System.Runtime.InteropServices.Marshal.Copy(BitmapBytes, 0, offsetToFirstPixel, IntByteCount)
-        ObjBitmapClone.UnlockBits(ObjBitmapData)
+            End While
+
+            IntY += 1
+        End While
+
 
 901:
         ' The width/height are +1.
@@ -272,10 +258,10 @@ dBg:
         ' This is a simple fix: it seems that a 1x1 frame is valid in ZT1, even if it's transparent.
         If ObjCoordTopLeft.X = BmInput.Width And ObjCoordTopLeft.Y = BmInput.Height Then
             ObjCoordTopLeft = New Point(0, 0)
-            objCoordBottomRight = New Point(1, 1)
+            ObjCoordBottomRight = New Point(1, 1)
         End If
 
-        Return New Rectangle(ObjCoordTopLeft.X, ObjCoordTopLeft.Y, objCoordBottomRight.X - ObjCoordTopLeft.X, objCoordBottomRight.Y - ObjCoordTopLeft.Y)
+        Return New Rectangle(ObjCoordTopLeft.X, ObjCoordTopLeft.Y, ObjCoordBottomRight.X - ObjCoordTopLeft.X, ObjCoordBottomRight.Y - ObjCoordTopLeft.Y)
 
         Exit Function
 

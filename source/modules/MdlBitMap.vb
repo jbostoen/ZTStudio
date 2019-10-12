@@ -218,11 +218,13 @@ dBg:
         Dim IntX As Integer = 0
         Dim IntY As Integer = 0
 
-251:
-        While IntY < BmInput.Height
-            While IntX < BmInput.Width
 
-                Dim ObjColor As System.Drawing.Color = BmInput.GetPixel(IntX,IntY)
+251:
+        For IntY = 0 To (BmInput.Height - 1)
+
+            For IntX = 0 To (BmInput.Width - 1)
+
+                Dim ObjColor As System.Drawing.Color = BmInput.GetPixel(IntX, IntY)
 
                 ' Non-transparent
                 If ObjColor.A = 255 And
@@ -237,14 +239,14 @@ dBg:
                     If IntY > ObjCoordBottomRight.Y Then ObjCoordBottomRight.Y = IntY ' Bottomright: move to bottom 
                     If IntX > ObjCoordBottomRight.X Then ObjCoordBottomRight.X = IntX ' Bottomright: move to right
 
+
                 End If
 
-                IntX += 1
 
-            End While
+            Next IntX
 
-            IntY += 1
-        End While
+        Next IntY
+
 
 
 901:

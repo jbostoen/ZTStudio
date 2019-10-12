@@ -23,15 +23,14 @@ Module MdlConfig
 
         If System.IO.File.Exists(StrSettingsFile) = False Then
 
-            Dim StrMessage As String = "" &
+            Dim StrErrorMessage As String = "" &
                 "ZT Studio is missing the settings.cfg file." & vbCrLf &
                 "It should be in the same folder as ZTStudio.exe" & vbCrLf & vbCrLf &
                 "Get the file at:" & vbCrLf &
                 Cfg_GitHub_URL
 
-            If MsgBox(StrMessage, MsgBoxStyle.OkOnly + MsgBoxStyle.Critical + MsgBoxStyle.ApplicationModal) = MsgBoxResult.Ok Then
-                End
-            End If
+            MdlZTStudio.HandledError("MdlConfig", "Load", StrErrorMessage, True, Nothing)
+
 
         End If
         'On Error Resume Next

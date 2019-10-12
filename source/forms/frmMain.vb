@@ -315,7 +315,8 @@ dBug:
     ''' <param name="e">EventArgs</param>
     Private Sub TsbAbout_Click(sender As Object, e As EventArgs) Handles TsbAbout.Click
 
-        MsgBox("About " & Application.ProductName & " " & Application.ProductVersion & vbCrLf &
+        Dim StrMessage As String =
+            "About " & Application.ProductName & " " & Application.ProductVersion & vbCrLf &
             Strings.StrDup(50, "_") & vbCrLf &
             "© since 2015 by Jeffrey Bostoen" & vbCrLf &
             Cfg_GitHub_URL & vbCrLf &
@@ -334,8 +335,10 @@ dBug:
             "- Rapan Studios for the animal designs." & vbCrLf &
             "- MadScientist and Jay for explaining the file format." & vbCrLf &
             "- Vondell for providing new PNG graphics to experiment with." & vbCrLf &
-            "- HENDRIX for some contributions to the source code.",
-            MsgBoxStyle.OkOnly + MsgBoxStyle.Information, "About ZT Studio")
+            "- HENDRIX for some contributions to the source code."
+
+        MdlZTStudio.InfoBox(Me.GetType().FullName, "TsbAbout_Click", StrMessage)
+
 
 
     End Sub

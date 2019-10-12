@@ -78,7 +78,8 @@ Module MdlTests
                 HashGenerator = SHA256.Create()
 
             Case Else
-                MsgBox("Unknown type of hash: " & StrHashType, MsgBoxStyle.Critical, "Unknown hash type")
+
+                MdlZTStudio.HandledError("MdlTests", "GenerateHash", "Unknown type of hash: " & StrHashType, False, Nothing)
                 Return Nothing
 
         End Select

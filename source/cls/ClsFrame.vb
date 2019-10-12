@@ -656,17 +656,15 @@ dBug:
         Exit Function
 
 dBug2:
-        MsgBox("Error in " & Me.GetType().FullName & "::RenderCoreImageFromHex()" & vbCrLf &
-               "Line " & Erl() & vbCrLf &
-               "Width, height: " & ObjFrameCoreImageBitmap.Width & ", " & ObjFrameCoreImageBitmap.Height & vbCrLf &
+        Dim StrErrorMessage As String =
+            "Width, height: " & ObjFrameCoreImageBitmap.Width & ", " & ObjFrameCoreImageBitmap.Height & vbCrLf &
             "Offset x, y: " & Me.OffsetX & ", " & Me.OffsetY & vbCrLf &
             "Colors: Currently at drawing instruction " & IntNumDrawingInstructions_current & "/" & IntNumDrawingInstructions & ", color " & IntNumDrawingInstructions_colors_current & "/" & IntNumDrawingInstructions_colors & vbCrLf &
             "Last referenced x, y: " & IntX & ", " & IntY & vbCrLf &
             "Current length of LstFrameHex: " & LstFrameHex.Count & vbCrLf &
-            "Current length of colors: " & ZtPal.Colors.Count & vbCrLf &
-             vbCrLf & Err.Number & " - " & Err.Description &
-            vbCrLf & "Line: " & Erl(), vbOKOnly + vbCritical, "Error")
+            "Current length of colors: " & ZtPal.Colors.Count
 
+        MdlZTStudio.HandledError(Me.GetType().FullName, "RenderCoreImageFromHex", StrErrorMessage, False, Nothing)
 
 
     End Function
@@ -835,7 +833,9 @@ dBug:
         ' Prevent a file lock on .PNG files.
         ' If files are locked, the files can't be automatically deleted after batch conversion.
         Using BmpDrawTemp
+11:
             BmpDraw = New ClsDirectBitmap(BmpDrawTemp)
+12:
             BmpDrawTemp = Nothing
         End Using
 
@@ -855,6 +855,7 @@ dBug:
 21:
         ' Get defining rectangle (dimensions)
         Dim RectCrop As Rectangle = MdlBitMap.GetDefiningRectangle(BmpDraw)
+
 
 22:
         ' Get cropped version of bitmap based on this rectangle
@@ -1255,8 +1256,7 @@ dBug:
                 IniWrite(Me.Parent.FileName & ".txt", "Frame" & Me.Parent.Frames.IndexOf(Me), "mysteryBytes", String.Join(" ", Me.MysteryHEX))
 
 25:
-            'MsgBox(Me.MysteryHEX(1) & Me.MysteryHEX(0))
-            'MsgBox(IntMysteryValue)
+
 
 30:
             IniWrite(Me.Parent.FileName & ".txt", "Frame" & Me.Parent.Frames.IndexOf(Me), "mysteryByte0_Integer", CInt("&H" & Me.MysteryHEX(0)).ToString())
@@ -1276,7 +1276,8 @@ dBug:
         Exit Function
 
 dBug:
-        MsgBox(Err.Number & " - " & Err.Description & vbCrLf & Erl())
+        MdlZTStudio.HandledError(Me.GetType().FullName, "WriteDetailsToTextFile", "Unexpected error.", False, Nothing)
+
 
 
     End Function

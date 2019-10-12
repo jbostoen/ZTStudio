@@ -300,10 +300,14 @@ dBg:
 
 5:
         If File.Exists(StrFileName) = True And BlnOverwrite = False Then
-            MsgBox("Error: could Not create ZT1 Graphic." & vbCrLf &
-                "There Is already a file at this location:  " & vbCrLf &
-                "'" & StrFileName & "'", MsgBoxStyle.OkOnly + MsgBoxStyle.Critical + MsgBoxStyle.ApplicationModal, "Failed to create ZT1 Graphic")
+
+            Dim StrErrorMessage As String =
+                "Error: could Not create ZT1 Graphic." & vbCrLf &
+                "There is already a file at this location:  " & vbCrLf &
+                "'" & StrFileName & "'"
+            MdlZTStudio.HandledError(Me.GetType().FullName, "Write", StrerrorMessage, False, Nothing)
             Exit Sub
+
         End If
 
 10:

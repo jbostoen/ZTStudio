@@ -6,8 +6,8 @@ Public Class FrmBatchConversion
     ''' <summary>
     ''' Handles what happens when the user clicks the Convert button.
     ''' </summary>
-    ''' <param name="sender"></param>
-    ''' <param name="e"></param>
+    ''' <param name="sender">Object</param>
+    ''' <param name="e">EventArgs</param>
     Private Sub BtnConvert_Click(sender As Object, e As EventArgs) Handles BtnConvert.Click
 
         ' Prevent double click, clicking too fast etc. 
@@ -35,6 +35,11 @@ Public Class FrmBatchConversion
 
     End Sub
 
+    ''' <summary>
+    ''' Handles clicking on "Settings" button and shows the Settings window
+    ''' </summary>
+    ''' <param name="sender">Object</param>
+    ''' <param name="e">EventArgs</param>
     Private Sub BtnSettings_Click(sender As Object, e As EventArgs) Handles BtnSettings.Click
 
         ' Show Settings form (shortcut)
@@ -42,9 +47,20 @@ Public Class FrmBatchConversion
 
     End Sub
 
+    ''' <summary>
+    ''' Handles form loading
+    ''' </summary>
+    ''' <param name="sender">Object</param>
+    ''' <param name="e">EventArgs</param>
     Private Sub FrmBatchConversion_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
         Me.Icon = FrmMain.Icon
+
+    End Sub
+
+    Private Sub FrmBatchConversion_FormClosing(sender As Object, e As FormClosingEventArgs) Handles Me.FormClosing
+
+        Me.Dispose()
 
     End Sub
 End Class

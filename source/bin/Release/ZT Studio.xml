@@ -104,6 +104,81 @@ ZT Studio
  </summary>
  <param name="StrFileName">Destination filename</param>
 </member>
+<member name="T:ZTStudio.ClsDirectBitmap">
+ <summary>
+ Custom class to perform faster bitmap operations
+ </summary>
+</member>
+<member name="P:ZTStudio.ClsDirectBitmap.Bitmap">
+ <summary>
+ Bitmap object
+ </summary>
+ <returns>Bitmap</returns>
+</member>
+<member name="P:ZTStudio.ClsDirectBitmap.Bits">
+ <summary>
+ Bits
+ </summary>
+ <returns>Integer()</returns>
+</member>
+<member name="P:ZTStudio.ClsDirectBitmap.Disposed">
+ <summary>
+ Disposed
+ </summary>
+ <returns>Boolean</returns>
+</member>
+<member name="P:ZTStudio.ClsDirectBitmap.Height">
+ <summary>
+ Height
+ </summary>
+ <returns>Integer</returns>
+</member>
+<member name="P:ZTStudio.ClsDirectBitmap.Width">
+ <summary>
+ Width
+ </summary>
+ <returns>Integer</returns>
+</member>
+<member name="P:ZTStudio.ClsDirectBitmap.BitsHandle">
+ <summary>
+ Bitshandle
+ </summary>
+ <returns>GCHandle</returns>
+</member>
+<member name="M:ZTStudio.ClsDirectBitmap.#ctor(System.Int32,System.Int32)">
+ <summary>
+ Initializes new instance
+ </summary>
+ <param name="IntWidth">Width</param>
+ <param name="IntHeight">Height</param>
+</member>
+<member name="M:ZTStudio.ClsDirectBitmap.#ctor(System.Drawing.Bitmap)">
+ <summary>
+ Initializes new instance
+ </summary>
+ <param name="ObjBitMap">Bitmap</param>
+</member>
+<member name="M:ZTStudio.ClsDirectBitmap.SetPixel(System.Int32,System.Int32,System.Drawing.Color)">
+ <summary>
+ Sets pixel on ClsDirectBitmap
+ </summary>
+ <param name="IntX">X Integer</param>
+ <param name="IntY">Y Integer</param>
+ <param name="ObjColor">Color</param>
+</member>
+<member name="M:ZTStudio.ClsDirectBitmap.GetPixel(System.Int32,System.Int32)">
+ <summary>
+ Sets pixel on ClsDirectBitmap
+ </summary>
+ <param name="IntX">X Integer</param>
+ <param name="IntY">Y Integer</param>
+ <returns>Color</returns>
+</member>
+<member name="M:ZTStudio.ClsDirectBitmap.Dispose">
+ <summary>
+ Disposes object
+ </summary>
+</member>
 <member name="T:ZTStudio.ClsDrawingInstr">
  <summary>
  <para>ClsDrawingInstr is used to manage a drawing instruction.</para>
@@ -222,7 +297,7 @@ ZT Studio
  <para>If the ZT1 Graphic has been rendered (CoreImageBitmap is set), it returns this cached version.</para>
  <para>If the ZT1 Graphic hasn't been rendered yet, it renders the ZT1 Graphic from the hex values.</para>
  </summary>
- <returns>Bitmap</returns>
+ <returns>ClsDirectBitmap</returns>
 </member>
 <member name="M:ZTStudio.ClsFrame.GetCoreImageBitmapOnTransparentCanvas(System.Boolean)">
  <summary>
@@ -232,7 +307,7 @@ ZT Studio
  Todo: this needs more documentation. Take the time again to see how blnDrawInCenter works.
  </remarks>
  <param name="BlnDrawInCenter">Boolean</param>
- <returns>Bitmap</returns>
+ <returns>ClsDirectBitmap</returns>
 </member>
 <member name="M:ZTStudio.ClsFrame.GetImage(System.Boolean,System.Boolean)">
  <summary>
@@ -242,7 +317,7 @@ ZT Studio
  </summary>
  <param name="BlnDrawGrid">Add grid. Defaults to false.</param>
  <param name="BlnCentered">Centered</param>
- <returns>Bitmap</returns>
+ <returns>ClsDirectBitmap</returns>
 </member>
 <member name="M:ZTStudio.ClsFrame.RenderCoreImageFromHex">
  <summary>
@@ -276,7 +351,7 @@ ZT Studio
  </summary>
  <param name="StrFileName">File name of PNG to load</param>
 </member>
-<member name="M:ZTStudio.ClsFrame.BitMapToHex(System.Drawing.Bitmap)">
+<member name="M:ZTStudio.ClsFrame.BitMapToHex(ZTStudio.ClsDirectBitmap)">
  <summary>
  Converts a bitmap to hex values. Important: offsets should have been set already!
  </summary>
@@ -285,7 +360,7 @@ ZT Studio
  According to the comments, it was much faster than the old method.
  Could this also be applied here?
  </remarks>
- <param name="BmImage">Bitmap. Defaults to CoreImageBitmap</param>
+ <param name="BmImage">ClsDirectBitmap. Defaults to CoreImageBitmap</param>
  <returns>List(Of String) - Hex values for the ZT1 rendering engine (single frame)</returns>
 </member>
 <member name="M:ZTStudio.ClsFrame.SavePNG(System.String)">
@@ -439,13 +514,13 @@ ZT Studio
  Contains functions related to bitmap operations
  </summary>
 </member>
-<member name="M:ZTStudio.MdlBitMap.CombineImages(System.Drawing.Image,System.Drawing.Image)">
+<member name="M:ZTStudio.MdlBitMap.CombineImages(ZTStudio.ClsDirectBitmap,ZTStudio.ClsDirectBitmap)">
  <summary>
  Combines two images into one. Always centers the images on each other, if different size. (For instance: grid + actual graphic)
  </summary>
- <param name="ImgBack">Image background</param>
- <param name="ImgFront">Image on top</param>
- <returns>Image (Bitmap)</returns>
+ <param name="BitMapBack">ClsDirectBitmap background</param>
+ <param name="BitMapFront">ClsDirectBitmap on top</param>
+ <returns>ClsDirectBitmap</returns>
 </member>
 <member name="M:ZTStudio.MdlBitMap.DrawGridFootPrintXY(System.Int32,System.Int32)">
  <summary>
@@ -459,15 +534,15 @@ ZT Studio
  However, for future use, do not change this.
  </remarks>
 </member>
-<member name="M:ZTStudio.MdlBitMap.DrawGridSquare(System.Drawing.Point,System.Drawing.Bitmap)">
+<member name="M:ZTStudio.MdlBitMap.DrawGridSquare(System.Drawing.Point,ZTStudio.ClsDirectBitmap)">
  <summary>
  Draws a square (for a grid)
  </summary>
- <param name="CoordTopLeft">The top left coordinate</param>
- <param name="BmInput">The bitmap to drawn on. If not specified</param>
- <returns>Bitmap of a full square</returns>
+ <param name="ObjCoordTopLeft">The top left coordinate</param>
+ <param name="BmInput">The ClsDirectBitmap to drawn on. If not specified</param>
+ <returns>ClsDirectBitmap of a full square</returns>
 </member>
-<member name="M:ZTStudio.MdlBitMap.GetCroppedVersion(System.Drawing.Bitmap,System.Drawing.Rectangle)">
+<member name="M:ZTStudio.MdlBitMap.GetCroppedVersion(ZTStudio.ClsDirectBitmap,System.Drawing.Rectangle)">
  <summary>
  Returns a cropped version of the given bitmap
  </summary>
@@ -475,12 +550,12 @@ ZT Studio
  <param name="RectCropArea">Rectangle used to crop the bitmap</param>
  <returns>Bitmap</returns>
 </member>
-<member name="M:ZTStudio.MdlBitMap.GetDefiningRectangle(System.Drawing.Bitmap)">
+<member name="M:ZTStudio.MdlBitMap.GetDefiningRectangle(ZTStudio.ClsDirectBitmap)">
  <summary>
  Returns the defining rectangle for this bitmap.
  This means the rectangle which contains all colored (non-transparent) pixels
  </summary>
- <param name="BmInput">Bitmap image</param>
+ <param name="BmInput">ClsDirectBitmap image</param>
  <returns>Rectangle - dimensions of relevant part</returns>
 </member>
 <member name="T:ZTStudio.MdlColorPalette">
@@ -541,20 +616,41 @@ ZT Studio
  <param name="StrExtension"></param>
  <returns></returns>
 </member>
-<member name="M:ZTStudio.MdlTasks.Convert_file_ZT1_to_PNG(System.String)">
+<member name="M:ZTStudio.MdlTasks.ConvertFileZT1ToPNG(System.String)">
  <summary>
- Converts a ZT1 Graphic file to one or more PNG files.
+ Task to convert a ZT1 Graphic file to one or more PNG files.
  </summary>
- <param name="StrFileName"></param>
+ <param name="StrSourceFileName">Filename of ZT1 Graphic</param>
 </member>
-<member name="M:ZTStudio.MdlTasks.Save_Graphic(System.String)">
+<member name="M:ZTStudio.MdlTasks.ConvertFilePNGToZT1(System.String,System.Boolean)">
  <summary>
- Saves the main graphic as a ZT1 Graphic file.
+ Task to convert one or more PNG files to one ZT1 Graphic
+ </summary>
+ <param name="StrDestinationFileName"></param>
+ <param name="BlnSingleConversion"></param>
+</member>
+<member name="M:ZTStudio.MdlTasks.ConvertFolderZT1ToPNG(System.String,System.Windows.Forms.ProgressBar)">
+ <summary>
+ Task to convert a whole set of folders containing ZT1 Graphics to PNG sets
+ </summary>
+ <param name="StrPath">Path to search recursively for ZT1 Graphics</param>
+ <param name="ObjProgressBar">Progress bar to show progress in</param>
+</member>
+<member name="M:ZTStudio.MdlTasks.ConvertFolderPNGToZT1(System.String,System.Windows.Forms.ProgressBar)">
+ <summary>
+ Task to convert files in a folder (recursively) from PNG sets to ZT1 Graphics
+ </summary>
+ <param name="StrSourcePath">Folder (recursive) containing PNG sets</param>
+ <param name="ObjProgressBar">ProgressBar</param>
+</member>
+<member name="M:ZTStudio.MdlTasks.SaveGraphic(System.String)">
+ <summary>
+ Saves the main graphic as a ZT1 Graphic file (simple, using UI)
  Saves as the specified filename.
  </summary>
  <param name="StrFileName">Filename</param>
 </member>
-<member name="M:ZTStudio.MdlTasks.Batch_RotationFix_Folder_ZT1(System.String,System.Drawing.Point,System.Windows.Forms.ProgressBar)">
+<member name="M:ZTStudio.MdlTasks.BatchOffsetFixFolderZT1(System.String,System.Drawing.Point,System.Windows.Forms.ProgressBar)">
  <summary>
  Batch rotation fixes all animations in a selected folder.
  This sub will find all ZT1 Graphics in the folder and adjust the offsets of each frame.
@@ -740,8 +836,22 @@ ZT Studio
  <summary>
  Handles what happens when the user clicks the Convert button.
  </summary>
- <param name="sender"></param>
- <param name="e"></param>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmBatchConversion.BtnSettings_Click(System.Object,System.EventArgs)">
+ <summary>
+ Handles clicking on "Settings" button and shows the Settings window
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmBatchConversion.FrmBatchConversion_Load(System.Object,System.EventArgs)">
+ <summary>
+ Handles form loading
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
 </member>
 <member name="T:ZTStudio.FrmBatchOffsetFix">
  <summary>
@@ -1154,6 +1264,20 @@ ZT Studio
 <member name="M:ZTStudio.FrmMain.TVExplorer_DoubleClick(System.Object,System.EventArgs)">
  <summary>
  Doubleclick on Explorer Pane may open .pal file
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmMain.FrmMain_FormClosing(System.Object,System.Windows.Forms.FormClosingEventArgs)">
+ <summary>
+ Events on form closing (ZT Studio exiting)
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">FormClosingEventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmMain.CmdUpdateExplorerPane_Click(System.Object,System.EventArgs)">
+ <summary>
+ Handles manual refreshing of Explorer Pane
  </summary>
  <param name="sender">Object</param>
  <param name="e">EventArgs</param>

@@ -1,6 +1,9 @@
 ﻿Imports System.Drawing.Imaging
 Imports System.Runtime.InteropServices
 
+''' <summary>
+''' Custom class to perform faster bitmap operations
+''' </summary>
 Public Class ClsDirectBitmap
     Implements IDisposable
 
@@ -10,6 +13,11 @@ Public Class ClsDirectBitmap
     Private DirectBitmap_Height As Integer
     Private DirectBitMap_Width As Integer
     Private DirectBitMap_Disposed As Boolean
+
+    ''' <summary>
+    ''' Bitmap object
+    ''' </summary>
+    ''' <returns>Bitmap</returns>
     Public Property Bitmap As Bitmap
         Get
             Return DirectBitmap_BitMap
@@ -19,6 +27,10 @@ Public Class ClsDirectBitmap
         End Set
     End Property
 
+    ''' <summary>
+    ''' Bits
+    ''' </summary>
+    ''' <returns>Integer()</returns>
     Public Property Bits As Integer()
         Get
             Return DirectBitMap_Bits
@@ -28,6 +40,10 @@ Public Class ClsDirectBitmap
         End Set
     End Property
 
+    ''' <summary>
+    ''' Disposed
+    ''' </summary>
+    ''' <returns>Boolean</returns>
     Public Property Disposed As Boolean
         Get
             Return DirectBitMap_Disposed
@@ -37,6 +53,10 @@ Public Class ClsDirectBitmap
         End Set
     End Property
 
+    ''' <summary>
+    ''' Height
+    ''' </summary>
+    ''' <returns>Integer</returns>
     Public Property Height As Integer
         Get
             Return DirectBitmap_Height
@@ -46,6 +66,10 @@ Public Class ClsDirectBitmap
         End Set
     End Property
 
+    ''' <summary>
+    ''' Width
+    ''' </summary>
+    ''' <returns>Integer</returns>
     Public Property Width As Integer
         Get
             Return DirectBitMap_Width
@@ -56,6 +80,10 @@ Public Class ClsDirectBitmap
         End Set
     End Property
 
+    ''' <summary>
+    ''' Bitshandle
+    ''' </summary>
+    ''' <returns>GCHandle</returns>
     Protected Property BitsHandle As GCHandle
         Get
             Return DirectBitMap_BitsHandle
@@ -65,43 +93,79 @@ Public Class ClsDirectBitmap
         End Set
     End Property
 
-    Public Sub New(ByVal width As Integer, ByVal height As Integer)
+    ''' <summary>
+    ''' Initializes new instance
+    ''' </summary>
+    ''' <param name="IntWidth">Width</param>
+    ''' <param name="IntHeight">Height</param>
+    Public Sub New(ByVal IntWidth As Integer, ByVal IntHeight As Integer)
+
         MyBase.New
-        Me.Width = width
-        Me.Height = height
-        Me.Bits = New Int32(((width * height)) - 1) {}
+        Me.Width = IntWidth
+        Me.Height = IntHeight
+
+        Me.Bits = New Int32(((IntWidth * IntHeight)) - 1) {}
         Me.BitsHandle = GCHandle.Alloc(Me.Bits, GCHandleType.Pinned)
-        Me.Bitmap = New Bitmap(width, height, (width * 4), PixelFormat.Format32bppPArgb, Me.BitsHandle.AddrOfPinnedObject)
+        Me.Bitmap = New Bitmap(IntWidth, IntHeight, (IntWidth * 4), PixelFormat.Format32bppPArgb, Me.BitsHandle.AddrOfPinnedObject)
+
     End Sub
 
-
+    ''' <summary>
+    ''' Initializes new instance
+    ''' </summary>
+    ''' <param name="ObjBitMap">Bitmap</param>
     Public Sub New(ByVal ObjBitMap As Bitmap)
+
         MyBase.New
         Me.Width = ObjBitMap.Width
         Me.Height = ObjBitMap.Height
+
         Me.Bits = New Int32(((ObjBitMap.Width * ObjBitMap.Height)) - 1) {}
+        Me.BitsHandle = GCHandle.Alloc(Me.Bits, GCHandleType.Pinned)
         Me.Bitmap = New Bitmap(ObjBitMap.Width, ObjBitMap.Height, (ObjBitMap.Width * 4), PixelFormat.Format32bppPArgb, Me.BitsHandle.AddrOfPinnedObject)
 
-        ' Set on bitmap
-        Dim ObjGraphic As Graphics = Graphics.FromImage(Me.Bitmap)
-        ObjGraphic.DrawImage(Me.Bitmap, 0, 0)
+        ' Stupid workaround for now; can this be done more efficiently?
+        ' Only for loading PNGs. Better method to use this here is greatly appreciated! (contribute a pull request)
+        Dim IntX As Integer
+        Dim IntY As Integer
 
+        For IntY = 0 To (ObjBitMap.Height - 1)
+            IntX = 0 'reset every loop
+            For IntX = 0 To (ObjBitMap.Width - 1)
+                Me.SetPixel(IntX, IntY, ObjBitMap.GetPixel(IntX, IntY))
+            Next intx
+        Next inty
 
     End Sub
 
-    Public Sub SetPixel(ByVal x As Integer, ByVal y As Integer, ByVal colour As Color)
-        Dim index As Integer = (x + (y * Me.Width))
-        Dim col As Integer = colour.ToArgb
-        Me.Bits(index) = col
+    ''' <summary>
+    ''' Sets pixel on ClsDirectBitmap
+    ''' </summary>
+    ''' <param name="IntX">X Integer</param>
+    ''' <param name="IntY">Y Integer</param>
+    ''' <param name="ObjColor">Color</param>
+    Public Sub SetPixel(ByVal IntX As Integer, ByVal IntY As Integer, ByVal ObjColor As Color)
+        Dim IntIndex As Integer = (IntX + (IntY * Me.Width))
+        Dim IntCol As Integer = ObjColor.ToArgb
+        Me.Bits(IntIndex) = IntCol
     End Sub
 
-    Public Function GetPixel(ByVal x As Integer, ByVal y As Integer) As Color
-        Dim index As Integer = (x + (y * Me.Width))
-        Dim col As Integer = Me.Bits(index)
-        Dim result As Color = Color.FromArgb(col)
-        Return result
+    ''' <summary>
+    ''' Sets pixel on ClsDirectBitmap
+    ''' </summary>
+    ''' <param name="IntX">X Integer</param>
+    ''' <param name="IntY">Y Integer</param>
+    ''' <returns>Color</returns>
+    Public Function GetPixel(ByVal IntX As Integer, ByVal IntY As Integer) As Color
+        Dim IntIndex As Integer = (IntX + (IntY * Me.Width))
+        Dim IntCol As Integer = Me.Bits(IntIndex)
+        Dim ObjColor As Color = Color.FromArgb(IntCol)
+        Return ObjColor
     End Function
 
+    ''' <summary>
+    ''' Disposes object
+    ''' </summary>
     Sub Dispose() Implements IDisposable.Dispose
 
         If Me.Disposed = True Then

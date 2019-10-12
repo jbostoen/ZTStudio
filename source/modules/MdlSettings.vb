@@ -27,7 +27,7 @@ Module MdlSettings
     Public Cfg_Grid_ForeGroundColor As Color = Color.Black ' The default foreground color for the grid lines?
 
     Public Cfg_Grid_NumPixels As Integer = 256 ' 256 - The maximum number of pixels
-    Public Cfg_Grid_zoom As Integer = 1 ' Default zoom level
+    Public Cfg_Grid_Zoom As Integer = 1 ' Default zoom level
 
     Public Cfg_Path_Root As String = "C:\Program Files (x86)\Microsoft Games\Zoo Tycoon" ' Default location of our project folder. The user should select a <root>folder with contents similar to <root>/animals/ibex/m/
     Public Cfg_Path_ColorPals8 As String = "C:\Users\root\Documents\GitHub\ZTStudio\source\bin\Release\pal8" ' Location of color palettes (for color replacement) - 8 shades
@@ -66,8 +66,8 @@ Module MdlSettings
 
 
     ' Grid
-    Public Cfg_grid_footPrintX As Byte = 2 ' the X-footprint in Zoo Tycoon.
-    Public Cfg_grid_footPrintY As Byte = 2 ' the Y-footprint in Zoo Tycoon.
+    Public Cfg_Grid_FootPrintX As Byte = 2 ' the X-footprint in Zoo Tycoon.
+    Public Cfg_Grid_FootPrintY As Byte = 2 ' the Y-footprint in Zoo Tycoon.
 
 
     ' Recent files
@@ -79,7 +79,7 @@ Module MdlSettings
     Public Cfg_GitHub_URL As String = "https://github.com/jbostoen/ZTStudio"
 
     ' Debugging
-    Public Cfg_Trace As Integer = 1 ' Set to 1 for detailed logging
+    Public Cfg_Trace As Integer = 0 ' Set to 1 for detailed logging
 
 
     ' Todo:

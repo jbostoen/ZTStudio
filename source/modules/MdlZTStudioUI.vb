@@ -282,10 +282,6 @@ Module MdlZTStudioUI
 
         Dim IntFrameIndex As Integer = FrmMain.TbFrames.Value - 1
 
-        'MsgBox(IntFrameIndex)
-
-        ' Debug.Print("index is " & EditorGraphic.Frames.IndexOf(EditorFrame))
-
         With FrmMain
 
             ' NOT using a 0-based frame index visual indication, to avoid confusing

@@ -7,6 +7,17 @@ E.g. 1.0.2015.0511 = version 1.0, last updated 11th of May 2015
 
 Version 1.0
 
+# Build 2019.xx.yy:
+
+* Improvements
+  * Immediate update on toggling 'render extra frame as background frame' in Settings window
+  * Implementation of Direct Bitmap where possible (faster rendering)
+    * Loading PNG will probably be slightly slower; but then processing will be lots faster
+  * Explorer pane
+    * Add refresh button
+	* Less flickering, loads folder hierarchy at once
+	
+
 # Build 2019.10.05:
 
 * Improvements

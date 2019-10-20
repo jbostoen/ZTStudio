@@ -268,7 +268,7 @@ Public Class ClsGraphic
 
 dBg:
         ' Unexpected error
-        MdlZTStudio.UnhandledError(Me.GetType().FullName, "Read", Information.Err)
+        MdlZTStudio.UnhandledError(Me.GetType().FullName, "Read", Information.Err, True)
 
     End Sub
 
@@ -424,7 +424,7 @@ dBg:
         Exit Sub
 
 dBug:
-        MdlZTStudio.UnhandledError(Me.GetType().FullName, "Write", Information.Err)
+        MdlZTStudio.UnhandledError(Me.GetType().FullName, "Write", Information.Err, True)
 
     End Sub
 

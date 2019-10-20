@@ -75,7 +75,7 @@ Public Class ClsDrawingInstr
         Exit Function
 
 dBg:
-        MdlZTStudio.UnhandledError(Me.GetType().FullName, "GetHex", Information.Err)
+        MdlZTStudio.UnhandledError(Me.GetType().FullName, "GetHex", Information.Err, True)
 
     End Function
 

@@ -230,7 +230,7 @@ Public Class ClsFrame
         Exit Function
 
 dBug:
-        MdlZTStudio.UnhandledError(Me.GetType().FullName, "GetCoreImageBitmap", Information.Err)
+        MdlZTStudio.UnhandledError(Me.GetType().FullName, "GetCoreImageBitmap", Information.Err, True)
 
     End Function
 
@@ -321,7 +321,7 @@ dBug:
         Exit Function
 
 dBug:
-        MdlZTStudio.UnhandledError(Me.GetType().FullName, "GetCoreImageBitmapOnTransparentCanvas", Information.Err)
+        MdlZTStudio.UnhandledError(Me.GetType().FullName, "GetCoreImageBitmapOnTransparentCanvas", Information.Err, True)
 
     End Function
 
@@ -381,7 +381,7 @@ dBug:
 
 dBug:
         ' Not expecting an error here
-        MdlZTStudio.UnhandledError(Me.GetType().FullName, "GetImage", Information.Err)
+        MdlZTStudio.UnhandledError(Me.GetType().FullName, "GetImage", Information.Err, True)
 
 
     End Function
@@ -773,7 +773,7 @@ dBug2:
         Exit Sub
 
 dBug:
-        MdlZTStudio.UnhandledError(Me.GetType().FullName, "UpdateOffsets", Information.Err)
+        MdlZTStudio.UnhandledError(Me.GetType().FullName, "UpdateOffsets", Information.Err, True)
 
 
     End Sub
@@ -813,7 +813,7 @@ dBug:
 
 dBug:
 
-        MdlZTStudio.UnhandledError(Me.GetType().FullName, "UpdateIndex", Information.Err)
+        MdlZTStudio.UnhandledError(Me.GetType().FullName, "UpdateIndex", Information.Err, True)
 
     End Sub
 
@@ -894,7 +894,7 @@ dBug:
         Exit Sub
 
 dBug:
-        MdlZTStudio.UnhandledError(Me.GetType().FullName, "LoadPNG", Information.Err)
+        MdlZTStudio.UnhandledError(Me.GetType().FullName, "LoadPNG", Information.Err, True)
 
     End Sub
 
@@ -1140,7 +1140,7 @@ dBug:
         Exit Function
 
 dBug:
-        MdlZTStudio.UnhandledError(Me.GetType().FullName, "BitMapToHex", Information.Err)
+        MdlZTStudio.UnhandledError(Me.GetType().FullName, "BitMapToHex", Information.Err, True)
 
 
     End Function
@@ -1225,7 +1225,7 @@ dBug:
         Exit Sub
 
 dBug:
-        MdlZTStudio.UnhandledError(Me.GetType().FullName, "SavePNG", Information.Err)
+        MdlZTStudio.UnhandledError(Me.GetType().FullName, "SavePNG", Information.Err, True)
 
 
     End Sub

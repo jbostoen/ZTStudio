@@ -170,7 +170,7 @@ Module MdlZTStudio
         Exit Sub
 
 dBug:
-        MdlZTStudio.UnhandledError("MdlZTStudio", "StartUp", Information.Err)
+        MdlZTStudio.UnhandledError("MdlZTStudio", "StartUp", Information.Err, True)
 
 
     End Sub
@@ -183,7 +183,8 @@ dBug:
     ''' <param name="StrClass">Class </param>
     ''' <param name="StrMethod">Method</param>
     ''' <param name="ObjError">Error object (contains number and message)</param>
-    Sub UnhandledError(StrClass As String, StrMethod As String, ObjError As ErrObject)
+    ''' <param name="BlnRaiseException">Boolean</param>
+    Sub UnhandledError(StrClass As String, StrMethod As String, ObjError As ErrObject, BlnRaiseException As Boolean)
 
         MdlZTStudio.Trace(StrClass, StrMethod, "Unexpected error occurred in " & StrClass & "::" & StrMethod & "()")
 
@@ -198,7 +199,10 @@ dBug:
 
         If MsgBox(StrMessage, MsgBoxStyle.ApplicationModal + MsgBoxStyle.OkOnly + MsgBoxStyle.Critical, "Unexpected error occurred") = MsgBoxResult.Ok Then
             End
+        End If
 
+        If BlnRaiseException = True Then
+            Throw New ZTStudioException(StrClass, StrMethod, ObjError)
         End If
 
     End Sub

@@ -48,7 +48,7 @@ Module MdlBitMap
         Return BmpOutput
 
 dBg:
-        MdlZTStudio.UnhandledError("MdlBitMap", "CombineImages", Information.Err)
+        MdlZTStudio.UnhandledError("MdlBitMap", "CombineImages", Information.Err, True)
 
     End Function
 
@@ -268,7 +268,7 @@ dBg:
         Exit Function
 
 dBug:
-        MdlZTStudio.UnhandledError("MdlBitMap", "GetDefiningRectangle", Information.Err)
+        MdlZTStudio.UnhandledError("MdlBitMap", "GetDefiningRectangle", Information.Err, True)
 
     End Function
 

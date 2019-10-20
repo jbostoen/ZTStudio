@@ -343,7 +343,7 @@ Public Class ClsPalette
         Exit Sub
 
 dBug:
-        MdlZTStudio.UnhandledError(Me.GetType().FullName, "WritePal", Information.Err)
+        MdlZTStudio.UnhandledError(Me.GetType().FullName, "WritePal", Information.Err, True)
 
     End Sub
 
@@ -498,7 +498,7 @@ dBug:
         Exit Sub
 
 dBg:
-        MdlZTStudio.UnhandledError(Me.GetType().FullName, "ImportFromGPL", Information.Err)
+        MdlZTStudio.UnhandledError(Me.GetType().FullName, "ImportFromGPL", Information.Err, True)
 
     End Sub
 
@@ -579,7 +579,7 @@ dBg:
         Exit Sub
 
 dBg:
-        MdlZTStudio.UnhandledError(Me.GetType().FullName, "ImportFromGPL", Information.Err)
+        MdlZTStudio.UnhandledError(Me.GetType().FullName, "ImportFromGPL", Information.Err, True)
 
 
     End Sub

@@ -417,7 +417,7 @@ dBg:
         Exit Sub
 
 dBg:
-        MdlZTStudio.UnhandledError("MdlTasks", "ConvertFolderPNGToZT1", Information.Err)
+        MdlZTStudio.UnhandledError("MdlTasks", "ConvertFolderPNGToZT1", Information.Err, True)
 
 
     End Sub
@@ -621,7 +621,7 @@ dBug:
         Exit Sub
 
 dBug:
-        MdlZTStudio.UnhandledError("MdlTasks", "ConvertFolderPNGToZT1", Information.Err)
+        MdlZTStudio.UnhandledError("MdlTasks", "ConvertFolderPNGToZT1", Information.Err, True)
 
 
     End Sub

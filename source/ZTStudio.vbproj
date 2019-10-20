@@ -140,6 +140,7 @@
     <Compile Include="forms\FrmSettings.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="cls\ClsZTStudioException.vb" />
     <Compile Include="modules\MdlZTStudioUI.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">

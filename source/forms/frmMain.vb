@@ -152,7 +152,7 @@ Public Class FrmMain
         Exit Sub
 
 dBug:
-        MdlZTStudio.UnhandledError(Me.GetType().FullName, "PicBox_MouseMove", Information.Err)
+        MdlZTStudio.UnhandledError(Me.GetType().FullName, "PicBox_MouseMove", Information.Err, True)
 
     End Sub
 
@@ -549,7 +549,7 @@ dBug:
         Exit Sub
 
 dBug:
-        MdlZTStudio.UnhandledError(Me.GetType().FullName, "TsbFrame_Add_Click", Information.Err)
+        MdlZTStudio.UnhandledError(Me.GetType().FullName, "TsbFrame_Add_Click", Information.Err, True)
 
 
 

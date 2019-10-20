@@ -771,13 +771,14 @@ ZT Studio
  Processes command line parameters
  </summary>
 </member>
-<member name="M:ZTStudio.MdlZTStudio.UnhandledError(System.String,System.String,Microsoft.VisualBasic.ErrObject)">
+<member name="M:ZTStudio.MdlZTStudio.UnhandledError(System.String,System.String,Microsoft.VisualBasic.ErrObject,System.Boolean)">
  <summary>
  To make unexpected errors look more generic, most of them are now handled by this method.
  </summary>
  <param name="StrClass">Class </param>
  <param name="StrMethod">Method</param>
  <param name="ObjError">Error object (contains number and message)</param>
+ <param name="BlnRaiseException">Boolean</param>
 </member>
 <member name="M:ZTStudio.MdlZTStudio.HandledError(System.String,System.String,System.String,System.Boolean,Microsoft.VisualBasic.ErrObject)">
  <summary>

@@ -183,7 +183,7 @@ Public Class ClsAniFile
         Exit Function
 
 dBug:
-        MdlZTStudio.UnhandledError(Me.GetType().FullName, "Write", Information.Err)
+        MdlZTStudio.UnhandledError(Me.GetType().FullName, "Write", Information.Err, False)
 
 
     End Function
@@ -319,7 +319,25 @@ dBug:
 
                 MdlZTStudio.Trace(Me.GetType().FullName, "CreateAniConfig", "Determination: 'path'")
 
+
 15:
+
+            ElseIf File.Exists(StrPath & "\N") = True And
+                File.Exists(StrPath & "\H") = True And
+                File.Exists(StrPath & "\S") = True And
+                File.Exists(StrPath & "\G") = True Then
+
+                ' This is typical for objects
+                With Me.Views
+                    .Add("N", False)
+                    .Add("H", False)
+                    .Add("S", False)
+                    .Add("G", False)
+                End With
+
+                MdlZTStudio.Trace(Me.GetType().FullName, "CreateAniConfig", "Determination: 'ui button'")
+
+99:
             Else
 
                 MdlZTStudio.Trace(Me.GetType().FullName, "CreateAniConfig", "Determination: unable to determine type of graphic in " & Path.GetDirectoryName(Me.FileName))
@@ -362,7 +380,7 @@ dBug:
         Exit Sub
 
 dBug:
-        MdlZTStudio.UnhandledError(Me.GetType().FullName, "CreateAniConfig", Information.Err)
+        MdlZTStudio.UnhandledError(Me.GetType().FullName, "CreateAniConfig", Information.Err, True)
 
     End Sub
 

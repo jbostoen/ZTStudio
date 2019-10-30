@@ -645,7 +645,7 @@ dBug:
 
 50:
         If Cfg_Export_ZT1_Ani = 1 Then
-            Debug.Print("Try .ani")
+            MdlZTStudio.Trace("MdlTasks", "SaveGraphic", "Try .ani")
             ' Get the folder + name of the folder + .ani
             Dim CAni As New ClsAniFile(Path.GetDirectoryName(StrFileName) & "\" & Path.GetFileName(Path.GetDirectoryName(StrFileName)) & ".ani")
             CAni.CreateAniConfig()

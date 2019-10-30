@@ -223,10 +223,11 @@ dBug:
             ' This is the full path and the relative path of the .ani file
             Dim StrPath As String = Path.GetDirectoryName(Me.FileName)
             Dim StrPathRelative As String
-            StrPathRelative = Strings.Replace(StrPath, Cfg_Path_Root & "\", "")
-            StrPathRelative = Strings.Replace(StrPathRelative, Cfg_Path_Root, "")
+            StrPathRelative = System.Text.RegularExpressions.Regex.Replace(StrPath, System.Text.RegularExpressions.Regex.Escape(Cfg_Path_Root) & "(\\|)", "", System.Text.RegularExpressions.RegexOptions.IgnoreCase)
+
             Dim ObjGraphic As New ClsGraphic(Nothing)
 
+            MdlZTStudio.Trace(Me.GetType().FullName, "CreateAniConfig", "Root path: * " & Cfg_Path_Root)
             MdlZTStudio.Trace(Me.GetType().FullName, "CreateAniConfig", "Ani path: * " & StrPath & " -> " & StrPathRelative)
 
             ' Set dirs. If this function is called multiple times, it won't do any harm.

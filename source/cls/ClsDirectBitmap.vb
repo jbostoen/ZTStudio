@@ -124,17 +124,44 @@ Public Class ClsDirectBitmap
         Me.BitsHandle = GCHandle.Alloc(Me.Bits, GCHandleType.Pinned)
         Me.Bitmap = New Bitmap(ObjBitMap.Width, ObjBitMap.Height, (ObjBitMap.Width * 4), PixelFormat.Format32bppPArgb, Me.BitsHandle.AddrOfPinnedObject)
 
-        ' Stupid workaround for now; can this be done more efficiently?
-        ' Only for loading PNGs. Better method to use this here is greatly appreciated! (contribute a pull request)
-        Dim IntX As Integer
-        Dim IntY As Integer
+        ' Bulk-copy pixels via LockBits instead of GetPixel()/SetPixel() per pixel.
+        ' GetPixel() re-validates/re-locks the whole bitmap on every single call, which used to make
+        ' importing larger PNGs (e.g. 512x512 canvases) drastically slower than necessary.
+        ' Source pixels are normalized to 32bppArgb first, since imported PNGs can arrive in a variety
+        ' of pixel formats (indexed, 24bpp, etc.) that can't be copied directly.
+        Dim BlnClonedSource As Boolean = (ObjBitMap.PixelFormat <> PixelFormat.Format32bppArgb)
+        Dim BmpSourceArgb As Bitmap = ObjBitMap
+        If BlnClonedSource = True Then
+            BmpSourceArgb = ObjBitMap.Clone(New Rectangle(0, 0, ObjBitMap.Width, ObjBitMap.Height), PixelFormat.Format32bppArgb)
+        End If
 
-        For IntY = 0 To (ObjBitMap.Height - 1)
-            IntX = 0 'reset every loop
-            For IntX = 0 To (ObjBitMap.Width - 1)
-                Me.SetPixel(IntX, IntY, ObjBitMap.GetPixel(IntX, IntY))
-            Next intx
-        Next inty
+        Try
+            Dim BmpData As BitmapData = BmpSourceArgb.LockBits(
+                New Rectangle(0, 0, BmpSourceArgb.Width, BmpSourceArgb.Height),
+                ImageLockMode.ReadOnly,
+                PixelFormat.Format32bppArgb)
+
+            Try
+                If BmpData.Stride = BmpSourceArgb.Width * 4 Then
+                    ' No row padding: the whole buffer is contiguous, copy it in one go.
+                    Marshal.Copy(BmpData.Scan0, Me.Bits, 0, BmpSourceArgb.Width * BmpSourceArgb.Height)
+                Else
+                    ' Row padding present (stride > width * 4): copy row by row.
+                    Dim IntY As Integer
+                    For IntY = 0 To (BmpSourceArgb.Height - 1)
+                        Dim PtrRow As IntPtr = IntPtr.Add(BmpData.Scan0, IntY * BmpData.Stride)
+                        Marshal.Copy(PtrRow, Me.Bits, IntY * BmpSourceArgb.Width, BmpSourceArgb.Width)
+                    Next
+
+                End If
+            Finally
+                BmpSourceArgb.UnlockBits(BmpData)
+            End Try
+        Finally
+            If BlnClonedSource = True Then
+                BmpSourceArgb.Dispose()
+            End If
+        End Try
 
     End Sub
 

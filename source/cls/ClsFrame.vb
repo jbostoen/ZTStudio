@@ -750,18 +750,18 @@ dBug2:
                 ' Simply change the hex
                 If Me.OffsetY >= 0 Then
                     Me.CoreImageHex(4) = Strings.Split(Me.OffsetY.ToString("X4").ReverseHex())(0)
-                    Me.CoreImageHex(5) = Strings.Split(Me.OffsetY.ToString("X4").ReverseHex())(0)
+                    Me.CoreImageHex(5) = Strings.Split(Me.OffsetY.ToString("X4").ReverseHex())(1)
                 Else
                     Me.CoreImageHex(4) = Strings.Split((256 * 256 + Me.OffsetY).ToString("X4").ReverseHex())(0)
-                    Me.CoreImageHex(5) = Strings.Split((256 * 256 + Me.OffsetY).ToString("X4").ReverseHex())(0)
+                    Me.CoreImageHex(5) = Strings.Split((256 * 256 + Me.OffsetY).ToString("X4").ReverseHex())(1)
                 End If
 
                 If Me.OffsetX >= 0 Then
                     Me.CoreImageHex(6) = Strings.Split(Me.OffsetX.ToString("X4").ReverseHex())(0)
-                    Me.CoreImageHex(7) = Strings.Split(Me.OffsetX.ToString("X4").ReverseHex())(0)
+                    Me.CoreImageHex(7) = Strings.Split(Me.OffsetX.ToString("X4").ReverseHex())(1)
                 Else
                     Me.CoreImageHex(6) = Strings.Split((256 * 256 + Me.OffsetX).ToString("X4").ReverseHex())(0)
-                    Me.CoreImageHex(7) = Strings.Split((256 * 256 + Me.OffsetX).ToString("X4").ReverseHex())(0)
+                    Me.CoreImageHex(7) = Strings.Split((256 * 256 + Me.OffsetX).ToString("X4").ReverseHex())(1)
                 End If
 
             End If

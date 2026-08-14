@@ -4,10 +4,65 @@
 Imports System.IO
 Imports System.Drawing.Imaging
 Imports System.Runtime.InteropServices
+Imports System.Threading
+Imports System.Threading.Tasks
 
 ' This module contains several methods.
 
 Module MdlTasks
+
+    ''' <summary>
+    ''' Resets a ProgressBar's range and value. Marshals to the UI thread if called from a background thread (e.g. a batch task).
+    ''' </summary>
+    ''' <param name="ObjProgressBar">Progress bar to reset. No action taken if Nothing.</param>
+    ''' <param name="IntMaximum">Maximum value to configure on the progress bar.</param>
+    Private Sub ResetProgressBar(ObjProgressBar As ProgressBar, IntMaximum As Integer)
+
+        If IsNothing(ObjProgressBar) = True Then
+            Exit Sub
+        End If
+
+        Try
+            If ObjProgressBar.IsHandleCreated = True AndAlso ObjProgressBar.InvokeRequired = True Then
+                ObjProgressBar.Invoke(Sub()
+                                           ObjProgressBar.Minimum = 0
+                                           ObjProgressBar.Value = 0
+                                           ObjProgressBar.Maximum = IntMaximum
+                                       End Sub)
+            Else
+                ObjProgressBar.Minimum = 0
+                ObjProgressBar.Value = 0
+                ObjProgressBar.Maximum = IntMaximum
+            End If
+        Catch ex As ObjectDisposedException
+            ' The owning form (and its ProgressBar) may already have been disposed if the user closed
+            ' the form while this batch was still running in the background. Nothing left to update.
+        End Try
+
+    End Sub
+
+    ''' <summary>
+    ''' Advances a ProgressBar by one step. Marshals to the UI thread if called from a background thread (e.g. a batch task).
+    ''' </summary>
+    ''' <param name="ObjProgressBar">Progress bar to update. No action taken if Nothing.</param>
+    Private Sub StepProgressBar(ObjProgressBar As ProgressBar)
+
+        If IsNothing(ObjProgressBar) = True Then
+            Exit Sub
+        End If
+
+        Try
+            If ObjProgressBar.IsHandleCreated = True AndAlso ObjProgressBar.InvokeRequired = True Then
+                ObjProgressBar.Invoke(Sub() ObjProgressBar.Value += 1)
+            Else
+                ObjProgressBar.Value += 1
+            End If
+        Catch ex As ObjectDisposedException
+            ' The owning form (and its ProgressBar) may already have been disposed if the user closed
+            ' the form while this batch was still running in the background. Nothing left to update.
+        End Try
+
+    End Sub
 
     ''' <summary>
     ''' Cleans up files in a path, based on extension.
@@ -70,10 +125,14 @@ Module MdlTasks
             System.IO.File.Delete(StrFileName)
         Next
 
-        Application.DoEvents()
-
 1010:
-        MdlZTStudioUI.UpdateExplorerPane()
+        ' UpdateExplorerPane touches the TVExplorer control, so this needs to be marshaled to the UI thread
+        ' when this method is called from a background thread (e.g. from a folder batch task).
+        If FrmMain.IsHandleCreated = True AndAlso FrmMain.InvokeRequired = True Then
+            FrmMain.Invoke(Sub() MdlZTStudioUI.UpdateExplorerPane())
+        Else
+            MdlZTStudioUI.UpdateExplorerPane()
+        End If
 
         Exit Function
 
@@ -427,7 +486,24 @@ dBg:
     ''' </summary>
     ''' <param name="StrPath">Path to search recursively for ZT1 Graphics</param>
     ''' <param name="ObjProgressBar">Progress bar to show progress in</param>
-    Public Sub ConvertFolderZT1ToPNG(StrPath As String, Optional ObjProgressBar As ProgressBar = Nothing)
+    ''' <param name="ObjCancellationToken">Token which allows cancelling the batch between files</param>
+    Public Function ConvertFolderZT1ToPNG(StrPath As String, Optional ObjProgressBar As ProgressBar = Nothing, Optional ObjCancellationToken As CancellationToken = Nothing) As Task
+
+        ' The actual folder walk and per-file conversion run on a background thread, so the UI thread is not blocked.
+        ' The unstructured error handling below (On Error Goto) is not valid inside a lambda expression,
+        ' so the actual work is delegated to a private Sub instead of being written inline here.
+        Return Task.Run(Sub() ConvertFolderZT1ToPNGCore(StrPath, ObjProgressBar, ObjCancellationToken), ObjCancellationToken)
+
+    End Function
+
+    ''' <summary>
+    ''' Contains the actual folder walk/conversion logic for <see cref="ConvertFolderZT1ToPNG"/>.
+    ''' Runs on whatever thread it is invoked from (a background thread, when called via ConvertFolderZT1ToPNG).
+    ''' </summary>
+    ''' <param name="StrPath">Path to search recursively for ZT1 Graphics</param>
+    ''' <param name="ObjProgressBar">Progress bar to show progress in</param>
+    ''' <param name="ObjCancellationToken">Token which allows cancelling the batch between files</param>
+    Private Sub ConvertFolderZT1ToPNGCore(StrPath As String, ObjProgressBar As ProgressBar, ObjCancellationToken As CancellationToken)
 
         On Error GoTo dBug
 
@@ -470,25 +546,28 @@ dBg:
 
         ' Set the initial configuration for a (optional) progress bar.
         ' Max value should be the number of ZT1 Graphics found.
-        If IsNothing(ObjProgressBar) = False Then
-            ObjProgressBar.Minimum = 0
-            ObjProgressBar.Value = 0
-            ObjProgressBar.Maximum = LstResult.Count
-        End If
+        ResetProgressBar(ObjProgressBar, LstResult.Count)
 
 1000:
         ' For each file that is a ZT1 Graphic:
+        Dim BlnCancelled As Boolean = False
         For Each StrZT1GraphicFileName As String In LstResult
-            MdlTasks.ConvertFileZT1ToPNG(StrZT1GraphicFileName)
-            If IsNothing(ObjProgressBar) = False Then
-                ObjProgressBar.Value += 1
+
+            ' Allow the batch to be cancelled cleanly between files.
+            If ObjCancellationToken.IsCancellationRequested = True Then
+                BlnCancelled = True
+                Exit For
             End If
+
+            MdlTasks.ConvertFileZT1ToPNG(StrZT1GraphicFileName)
+            StepProgressBar(ObjProgressBar)
         Next
 
 
 1050:
         ' Clean up original ZT1 Graphic files? (includes palette, does not include .ani file for now!)
-        If Cfg_Convert_DeleteOriginal = 1 Then
+        ' Skipped if the batch was cancelled, to avoid deleting source files that were never actually converted.
+        If BlnCancelled = False And Cfg_Convert_DeleteOriginal = 1 Then
             ' Currently clean up of ZT1 Graphics and ZT1 Color palettes is called seperately.
             ' It might be possible to merge them at some point and you could even gain a small performance boost.
             MdlTasks.CleanUpFiles(StrPath, "")
@@ -509,7 +588,24 @@ dBug:
     ''' </summary>
     ''' <param name="StrSourcePath">Folder (recursive) containing PNG sets</param>
     ''' <param name="ObjProgressBar">ProgressBar</param>
-    Public Sub ConvertFolderPNGToZT1(StrSourcePath As String, Optional ObjProgressBar As ProgressBar = Nothing)
+    ''' <param name="ObjCancellationToken">Token which allows cancelling the batch between files</param>
+    Public Function ConvertFolderPNGToZT1(StrSourcePath As String, Optional ObjProgressBar As ProgressBar = Nothing, Optional ObjCancellationToken As CancellationToken = Nothing) As Task
+
+        ' The actual folder walk and per-file conversion run on a background thread, so the UI thread is not blocked.
+        ' The unstructured error handling below (On Error Goto) is not valid inside a lambda expression,
+        ' so the actual work is delegated to a private Sub instead of being written inline here.
+        Return Task.Run(Sub() ConvertFolderPNGToZT1Core(StrSourcePath, ObjProgressBar, ObjCancellationToken), ObjCancellationToken)
+
+    End Function
+
+    ''' <summary>
+    ''' Contains the actual folder walk/conversion logic for <see cref="ConvertFolderPNGToZT1"/>.
+    ''' Runs on whatever thread it is invoked from (a background thread, when called via ConvertFolderPNGToZT1).
+    ''' </summary>
+    ''' <param name="StrSourcePath">Folder (recursive) containing PNG sets</param>
+    ''' <param name="ObjProgressBar">ProgressBar</param>
+    ''' <param name="ObjCancellationToken">Token which allows cancelling the batch between files</param>
+    Private Sub ConvertFolderPNGToZT1Core(StrSourcePath As String, ObjProgressBar As ProgressBar, ObjCancellationToken As CancellationToken)
 
         On Error GoTo dBug
 
@@ -586,35 +682,37 @@ dBug:
 
 
 101:
-        If IsNothing(ObjProgressBar) = False Then
-            ObjProgressBar.Minimum = 0
-            ObjProgressBar.Value = 0
-            ObjProgressBar.Maximum = LstFiles.Count
-        End If
+        ResetProgressBar(ObjProgressBar, LstFiles.Count)
 
 1000:
         ' For each file that is a ZT1 Graphic:
+        Dim BlnCancelled As Boolean = False
         For Each StrDestinationGraphicName As String In LstFiles
 
-            MdlTasks.ConvertFilePNGToZT1(StrDestinationGraphicName, False)
-            If IsNothing(ObjProgressBar) = False Then
-                ObjProgressBar.Value += 1
+            ' Allow the batch to be cancelled cleanly between files.
+            If ObjCancellationToken.IsCancellationRequested = True Then
+                BlnCancelled = True
+                Exit For
             End If
 
-            Application.DoEvents()
+            MdlTasks.ConvertFilePNGToZT1(StrDestinationGraphicName, False)
+            StepProgressBar(ObjProgressBar)
 
         Next
 
 
 1100:
-        ' Generate a .ani-file in each directory. 
+        ' Generate a .ani-file in each directory, unless the batch was cancelled (partial results only).
         ' Add the initial directory
-        MdlBatch.WriteAniFile(StrSourcePath)
+        If BlnCancelled = False Then
+            MdlBatch.WriteAniFile(StrSourcePath)
+        End If
 
 
 1150:
-        ' Do a clean up of .PNG files if conversion was successful and setting is enabled
-        If Cfg_Convert_DeleteOriginal = 1 Then
+        ' Do a clean up of .PNG files if conversion was successful and setting is enabled.
+        ' Skipped if the batch was cancelled, to avoid deleting source files that were never actually converted.
+        If BlnCancelled = False And Cfg_Convert_DeleteOriginal = 1 Then
             MdlTasks.CleanUpFiles(StrSourcePath, ".png")
         End If
 
@@ -668,7 +766,25 @@ dBug:
     ''' <param name="StrPath">Path to folder</param>
     ''' <param name="PntOffset">The offsets to apply</param>
     ''' <param name="ObjProgressBar">The bar which will indicate progress</param>
-    Public Sub BatchOffsetFixFolderZT1(StrPath As String, PntOffset As Point, Optional ObjProgressBar As ProgressBar = Nothing)
+    ''' <param name="ObjCancellationToken">Token which allows cancelling the batch between files</param>
+    Public Function BatchOffsetFixFolderZT1(StrPath As String, PntOffset As Point, Optional ObjProgressBar As ProgressBar = Nothing, Optional ObjCancellationToken As CancellationToken = Nothing) As Task
+
+        ' The actual folder walk and per-file processing run on a background thread, so the UI thread is not blocked.
+        ' The unstructured error handling below (On Error Goto) is not valid inside a lambda expression,
+        ' so the actual work is delegated to a private Sub instead of being written inline here.
+        Return Task.Run(Sub() BatchOffsetFixFolderZT1Core(StrPath, PntOffset, ObjProgressBar, ObjCancellationToken), ObjCancellationToken)
+
+    End Function
+
+    ''' <summary>
+    ''' Contains the actual folder walk/offset-fix logic for <see cref="BatchOffsetFixFolderZT1"/>.
+    ''' Runs on whatever thread it is invoked from (a background thread, when called via BatchOffsetFixFolderZT1).
+    ''' </summary>
+    ''' <param name="StrPath">Path to folder</param>
+    ''' <param name="PntOffset">The offsets to apply</param>
+    ''' <param name="ObjProgressBar">The bar which will indicate progress</param>
+    ''' <param name="ObjCancellationToken">Token which allows cancelling the batch between files</param>
+    Private Sub BatchOffsetFixFolderZT1Core(StrPath As String, PntOffset As Point, ObjProgressBar As ProgressBar, ObjCancellationToken As CancellationToken)
 
         ' Todo: check needed to see if strPath is subfolder of Cfg_Path_Root ?
 
@@ -716,15 +832,18 @@ dBug:
 
         ' Set the initial configuration for a (optional) progress bar.
         ' The max value should be the number of ZT1 Graphics
-        If IsNothing(ObjProgressBar) = False Then
-            ObjProgressBar.Minimum = 0
-            ObjProgressBar.Value = 0
-            ObjProgressBar.Maximum = LstFiles.Count
-        End If
+        ResetProgressBar(ObjProgressBar, LstFiles.Count)
 
 1000:
         ' For each file that is a ZT1 Graphic:
+        Dim BlnCancelled As Boolean = False
         For Each StrCurrentFile As String In LstFiles
+
+            ' Allow the batch to be cancelled cleanly between files.
+            If ObjCancellationToken.IsCancellationRequested = True Then
+                BlnCancelled = True
+                Exit For
+            End If
 
             MdlZTStudio.Trace("MdlTasks", "BatchOffsetFixFolderZT1", "Processing file " & StrCurrentFile)
 
@@ -740,18 +859,20 @@ dBug:
 1110:
             ObjGraphic.Write(StrCurrentFile)
 
-            If IsNothing(ObjProgressBar) = False Then
-                ObjProgressBar.Value += 1
-            End If
+            StepProgressBar(ObjProgressBar)
         Next
 
 1200:
-        ' Generate a .ani-file in each directory. 
+        ' Generate a .ani-file in each directory, unless the batch was cancelled (partial results only).
         ' Add the initial directory
-        MdlBatch.WriteAniFile(StrPath)
+        If BlnCancelled = False Then
+            MdlBatch.WriteAniFile(StrPath)
+        End If
 
 1950:
-        MdlZTStudio.InfoBox("MdlTasks", "BatchOffsetFixFolderZT1", "Finished batch rotation fixing.")
+        If BlnCancelled = False Then
+            MdlZTStudio.InfoBox("MdlTasks", "BatchOffsetFixFolderZT1", "Finished batch rotation fixing.")
+        End If
 
         Exit Sub
 

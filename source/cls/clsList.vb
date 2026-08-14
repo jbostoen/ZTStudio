@@ -85,7 +85,8 @@ Public Class List(Of T)
     ''' Number of items to remove (from the start)
     ''' </summary>
     ''' <param name="IntItems">Number of items to remove (from the start)</param>
-    Public Overloads Sub Skip(ByVal IntItems As Integer)
+    ''' <remarks>Mutates the list in place by removing items; unlike LINQ's Skip(), it does not return a filtered sequence.</remarks>
+    Public Sub RemoveFirst(ByVal IntItems As Integer)
 
         MyBase.RemoveRange(0, IntItems)
 

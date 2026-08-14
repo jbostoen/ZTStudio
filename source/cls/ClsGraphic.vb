@@ -148,7 +148,7 @@ Public Class ClsGraphic
             ' 46 41 54 5A 00 | 00 00 00 01
             MdlZTStudio.Trace(Me.GetType().FullName, "Read", "Background frame: " & LstHexValues(8))
             Me.HasBackgroundFrame = LstHexValues(8)
-            LstHexValues.Skip(9)
+            LstHexValues.RemoveFirst(9)
         Else
             MdlZTStudio.Trace(Me.GetType().FullName, "Read", "Basic graphic format")
         End If
@@ -178,7 +178,7 @@ Public Class ClsGraphic
 
 35:
         ' Remove all processed bytes
-        LstHexValues.Skip(8 + IntTemplength + 1)
+        LstHexValues.RemoveFirst(8 + IntTemplength + 1)
 
 
 40:
@@ -209,7 +209,7 @@ Public Class ClsGraphic
         MdlZTStudio.Trace(Me.GetType().FullName, "Read", "Number of frames: " & IntNumberOfFrames)
 
         ' Remove all processed bytes
-        LstHexValues.Skip(4)
+        LstHexValues.RemoveFirst(4)
 
 
 100:
@@ -227,7 +227,7 @@ Public Class ClsGraphic
             IntFrameBytes = CInt("&H" & LstHexValues(IntCurByte + 3) & LstHexValues(IntCurByte + 2) & LstHexValues(IntCurByte + 1) & LstHexValues(IntCurByte))
 
             ' Remove all processed bytes.
-            LstHexValues.Skip(4)
+            LstHexValues.RemoveFirst(4)
 
             MdlZTStudio.Trace(Me.GetType().FullName, "Read", "Number of bytes for frame " & Me.Frames.Count & ":  " & IntFrameBytes)
 102:
@@ -254,7 +254,7 @@ Public Class ClsGraphic
 
 110:
             ' Remove all processed bytes.
-            LstHexValues.Skip(IntFrameBytes)
+            LstHexValues.RemoveFirst(IntFrameBytes)
 
 155:
             IntCurrentFrame += 1

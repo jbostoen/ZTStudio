@@ -50,32 +50,26 @@ Public Class ClsDrawingInstr
     Public Function GetHex() As List(Of String)
 
         ' Returns the hex code for this drawing block.
-        On Error GoTo dBg
+        Try
 
-0:
-        Dim opHex As New List(Of String)
+            Dim opHex As New List(Of String)
 
-1:
-        ' Offset.
-        opHex.Add(Me.Offset.ToString("X2"), False)
+            ' Offset.
+            opHex.Add(Me.Offset.ToString("X2"), False)
 
-2:
-        ' Number of colors. 0 - 255
-        opHex.Add(Me.di_lstColors.Count.ToString("X2"), False)
+            ' Number of colors. 0 - 255
+            opHex.Add(Me.di_lstColors.Count.ToString("X2"), False)
 
-3:
-        ' Indexes of colors (~ colorpalette)
-        For Each c As Integer In di_lstColors
-            opHex.Add(c.ToString("X2"), False)
-        Next
+            ' Indexes of colors (~ colorpalette)
+            For Each c As Integer In di_lstColors
+                opHex.Add(c.ToString("X2"), False)
+            Next
 
-5:
-        Return opHex
+            Return opHex
 
-        Exit Function
-
-dBg:
-        MdlZTStudio.UnhandledError(Me.GetType().FullName, "GetHex", Information.Err, True)
+        Catch ex As Exception
+            MdlZTStudio.UnhandledError(Me.GetType().FullName, "GetHex", ex, True)
+        End Try
 
     End Function
 

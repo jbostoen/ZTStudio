@@ -15,10 +15,8 @@ Module MdlConfig
         ' This tasks reads all settings from the .INI-file.
         ' For an explanation of these parameters: check mMlSettings.vb
 
-        On Error GoTo dBug
+        Try
 
-
-10:
         Dim StrSettingsFile As String = System.IO.Path.GetFullPath(Application.StartupPath) & "\settings.cfg"
 
         If System.IO.File.Exists(StrSettingsFile) = False Then
@@ -33,10 +31,7 @@ Module MdlConfig
 
 
         End If
-        'On Error Resume Next
 
-
-20:
         ' Preview
         Cfg_Grid_BackGroundColor = System.Drawing.Color.FromArgb(CInt(IniRead(StrSettingsFile, "preview", "bgColor", "")))
         Cfg_Grid_ForeGroundColor = System.Drawing.Color.FromArgb(CInt(IniRead(StrSettingsFile, "preview", "fgColor", "")))
@@ -45,7 +40,6 @@ Module MdlConfig
         Cfg_grid_footPrintX = CByte(IniRead(StrSettingsFile, "preview", "footPrintX", ""))
         Cfg_grid_footPrintY = CByte(IniRead(StrSettingsFile, "preview", "footPrintY", ""))
 
-30:
         ' Reads from ini and configures all.
         Cfg_Path_Root = IniRead(StrSettingsFile, "paths", "root", "")
         Cfg_Path_RecentPNG = IniRead(StrSettingsFile, "paths", "recentPNG", "")
@@ -53,7 +47,6 @@ Module MdlConfig
         Cfg_Path_ColorPals8 = System.IO.Path.GetFullPath(Application.StartupPath) & "\pal8"
         Cfg_Path_ColorPals16 = System.IO.Path.GetFullPath(Application.StartupPath) & "\pal16"
 
-40:
         ' Export (PNG)
         Cfg_Export_PNG_CanvasSize = CInt(IniRead(StrSettingsFile, "exportOptions", "pngCrop", ""))
         Cfg_Export_PNG_RenderBGZT1 = CByte(IniRead(StrSettingsFile, "exportOptions", "pngRenderExtraGraphic", ""))
@@ -64,7 +57,6 @@ Module MdlConfig
         Cfg_Export_ZT1_Ani = CByte(IniRead(StrSettingsFile, "exportOptions", "zt1Ani", "1"))
         Cfg_Export_ZT1_AlwaysAddZTAFBytes = CByte(IniRead(StrSettingsFile, "exportOptions", "zt1AlwaysAddZTAFBytes", ""))
 
-50:
         ' Convert ( ZT1 <=> PNG, other way around )
         Cfg_Convert_StartIndex = CInt(IniRead(StrSettingsFile, "conversionOptions", "pngFilesIndex", ""))
         Cfg_Convert_DeleteOriginal = CByte(IniRead(StrSettingsFile, "conversionOptions", "deleteOriginal", ""))
@@ -72,21 +64,15 @@ Module MdlConfig
         Cfg_Convert_SharedPalette = CByte(IniRead(StrSettingsFile, "conversionOptions", "sharedPalette", ""))
         Cfg_Convert_FileNameDelimiter = CStr(IniRead(StrSettingsFile, "conversionOptions", "fileNameDelimiter", ""))
 
-60:
         ' Frame editing
         Cfg_Editor_RotFix_IndividualFrame = CByte(IniRead(StrSettingsFile, "editing", "individualRotationFix", ""))
         Cfg_Frame_DefaultAnimSpeed = CInt(IniRead(StrSettingsFile, "editing", "animationSpeed", ""))
 
-70:
         ' Palette
         Cfg_Palette_Import_PNG_Force_Add_Colors = CByte(IniRead(StrSettingsFile, "palette", "importPNGForceAddColors", ""))
 
-
-100:
-
         ' Now, if our path is no longer valid, pop up 'Settings'-window automatically
         If System.IO.Directory.Exists(Cfg_Path_Root) = False Then
-
 
             ' But let's give some suggestions.
             Cfg_Path_Root = System.IO.Path.GetFullPath(Application.StartupPath)
@@ -104,8 +90,6 @@ Module MdlConfig
 
         End If
 
-200:
-
         ' No recent paths yet?
         If Cfg_Path_RecentPNG = "" Then
             Cfg_Path_RecentPNG = Cfg_Path_Root
@@ -122,9 +106,6 @@ Module MdlConfig
             Cfg_Path_RecentZT1 = Cfg_Path_Root
         End If
 
-205:
-
-
         ' Only now should the objects be created, if they don't exist yet
         ' 20190817: wait, there were no conditions here. So on saving settings, editorGraphic and editorBgGraphic were reset?
         If IsNothing(EditorGraphic) = True Then
@@ -134,11 +115,9 @@ Module MdlConfig
             EditorBgGraphic = New ClsGraphic(Nothing) ' The background graphic, e.g. toy
         End If
 
-        Exit Sub
-
-dBug:
-        MdlZTStudio.HandledError("MdlConfig", "Load", "Error while processing ZT Studio Settings", True, Information.Err)
-
+        Catch ex As Exception
+            MdlZTStudio.HandledError("MdlConfig", "Load", "Error while processing ZT Studio Settings", True, ex)
+        End Try
 
     End Sub
 

@@ -290,8 +290,8 @@ Public Class ClsPalette
     ''' </remarks>
     Public Sub WritePal(StrFileName As String, BlnOverwrite As Boolean)
 
-        On Error GoTo dBug
-1:
+        Try
+
         ' This check is redundant as of now (24th of August 2019), but could be re-implemented in the future.
         If File.Exists(StrFileName) = True And BlnOverwrite = False Then
             MdlZTStudio.HandledError(Me.GetType().FullName, "WritePal", "Can not overwrite the color palette file '" & StrFileName & "'.", True)
@@ -301,8 +301,6 @@ Public Class ClsPalette
         Me.FileName = StrFileName
 
         MdlZTStudio.Trace(Me.GetType().FullName, "WritePal", "Writing color palette of " & Me.Colors.Count & " colors to " & Me.FileName)
-
-10:
 
         Dim LstOutputHexValues As New List(Of String) ' output hex
         Dim IntX As Integer ' used to loop through the colors
@@ -316,7 +314,6 @@ Public Class ClsPalette
 
         End With
 
-20:
         For IntX = 0 To (Me.Colors.Count - 1)
 
             With LstOutputHexValues
@@ -335,7 +332,6 @@ Public Class ClsPalette
 
         Next
 
-1000:
         Dim ObjFileStream As New FileStream(StrFileName, FileMode.OpenOrCreate, FileAccess.Write)
         For Each StrHexValue As String In LstOutputHexValues
             ObjFileStream.WriteByte(CByte("&H" & StrHexValue))
@@ -346,10 +342,9 @@ Public Class ClsPalette
 
         MdlZTStudio.Trace(Me.GetType().FullName, "WritePal", "Finished writing .pal file")
 
-        Exit Sub
-
-dBug:
-        MdlZTStudio.UnhandledError(Me.GetType().FullName, "WritePal", Information.Err, True)
+        Catch ex As Exception
+            MdlZTStudio.UnhandledError(Me.GetType().FullName, "WritePal", ex, True)
+        End Try
 
     End Sub
 
@@ -448,7 +443,7 @@ dBug:
     ''' <param name="StrFileName">Source file name</param>
     Sub ImportFromPNG(StrFileName As String)
 
-        On Error GoTo dBg
+        Try
 
         Dim BmpSource As Bitmap = Image.FromFile(StrFileName)
         MdlZTStudio.Trace(Me.GetType().FullName, "ImportFromPNG", "Importing color palette from .PNG: " & StrFileName)
@@ -487,11 +482,9 @@ dBug:
 
         End While
 
-200:
-
         ' There's actually two possibilities here.
         ' Either regenerate the list of hex values for each frame in the parent graphic, since colors might have switched places.
-        ' Or regenerate the image, since it might just be a recolor (relying on this option for now) 
+        ' Or regenerate the image, since it might just be a recolor (relying on this option for now)
         If IsNothing(Me.Parent) = False Then
             For Each ObjFrame As ClsFrame In Me.Parent.Frames
                 ObjFrame.CoreImageBitmap = Nothing
@@ -501,10 +494,9 @@ dBug:
 
         MdlZTStudio.Trace(Me.GetType().FullName, "ImportFromPNG", "Finished importing color palette from .PNG")
 
-        Exit Sub
-
-dBg:
-        MdlZTStudio.UnhandledError(Me.GetType().FullName, "ImportFromGPL", Information.Err, True)
+        Catch ex As Exception
+            MdlZTStudio.UnhandledError(Me.GetType().FullName, "ImportFromGPL", ex, True)
+        End Try
 
     End Sub
 
@@ -518,10 +510,9 @@ dBg:
     ''' <param name="StrFileName">Source filename</param>
     Sub ImportFromGIMPPalette(StrFileName As String)
 
-        On Error GoTo dBg
+        Try
 
-0:
-        ' Typical file contents of a .GPL file: 
+        ' Typical file contents of a .GPL file:
 
         ' GIMP Palette
         ' Name:   NameOfPaletteGoesHere
@@ -530,8 +521,6 @@ dBg:
         ' 0   1   0	#0
         ' <line for each color>
         ' 254 255 252	#254
-
-10:
 
         Dim ObjReader As New System.IO.StreamReader(StrFileName)
         Dim StrTextLine As String = ""
@@ -543,22 +532,19 @@ dBg:
         ' Read file.
         Do While ObjReader.Peek() <> -1
 
-11:
             StrTextLine = ObjReader.ReadLine()
 
-            ' Remove double white spaces etc 
+            ' Remove double white spaces etc
             StrTextLine = Strings.Trim(System.Text.RegularExpressions.Regex.Replace(StrTextLine, "\s+", " "))
 
             ' Ignore the first few lines of the GPL file (5 in that GIMP version) AND the transparent color
             If IntLine = 5 And StrTextLine <> "" Then
-21:
                 ' The GetColorIndex() method would add a transparent color if called.
                 ' Transparent color must be added manually, without looking up.
                 Me.Colors.Add(System.Drawing.Color.FromArgb(Split(StrTextLine, " ")(0), Split(StrTextLine, " ")(1), Split(StrTextLine, " ")(2)))
 
             ElseIf IntLine > 5 And StrTextLine <> "" Then
 
-22:
                 ' Add to this color palette. Using GetColorIndex(color, True), it will prevent duplicates.
                 Me.GetColorIndex(System.Drawing.Color.FromArgb(Split(StrTextLine, " ")(0), Split(StrTextLine, " ")(1), Split(StrTextLine, " ")(2)), True)
 
@@ -569,10 +555,9 @@ dBg:
 
         Loop
 
-200:
         ' There's actually two possibilities here.
         ' Either regenerate the list of hex values for each frame in the parent graphic, since colors might have switched places.
-        ' Or regenerate the image, since it might just be a recolor (relying on this option for now) 
+        ' Or regenerate the image, since it might just be a recolor (relying on this option for now)
         If IsNothing(Me.Parent) = False Then
             For Each ObjFrame As ClsFrame In Me.Parent.Frames
                 ObjFrame.CoreImageBitmap = Nothing
@@ -582,11 +567,9 @@ dBg:
 
         MdlZTStudio.Trace(Me.GetType().FullName, "ImportFromPNG", "Finished importing color palette from .GPL")
 
-        Exit Sub
-
-dBg:
-        MdlZTStudio.UnhandledError(Me.GetType().FullName, "ImportFromGPL", Information.Err, True)
-
+        Catch ex As Exception
+            MdlZTStudio.UnhandledError(Me.GetType().FullName, "ImportFromGPL", ex, True)
+        End Try
 
     End Sub
 

@@ -23,16 +23,12 @@ Module MdlTests
         ' Add the initial directory
         StackDirectories.Push(StrPath)
 
-10:
-
         ' Continue processing for each stacked directory
         Do While (StackDirectories.Count > 0)
             ' Get top directory string
 
-15:
             Dim StrCurrentDirectory As String = StackDirectories.Pop
 
-20:
             For Each StrCurrentFile As String In Directory.GetFiles(StrCurrentDirectory, "*")
 
                 Dim ObjHash As String = MdlTests.GenerateHash("sha256", StrCurrentFile)
@@ -40,10 +36,6 @@ Module MdlTests
                 'ObjHash.dispose()
 
             Next
-
-29:
-
-30:
 
             ' Loop through all subdirectories and add them to the stack.
             Dim StrSubDirectoryName As String

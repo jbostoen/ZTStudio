@@ -156,14 +156,10 @@ Module MdlZTStudioUI
 
         End With
 
-
-105:
-
         ' Add time indication
         FrmMain.LblAnimTime.Text = ((EditorGraphic.Frames.Count - EditorGraphic.HasBackgroundFrame) * EditorGraphic.AnimationSpeed) & " ms "
         FrmMain.LblFrames.Text = (EditorGraphic.Frames.Count - EditorGraphic.HasBackgroundFrame) & " frames. "
 
-205:
         If EditorGraphic.FileName <> vbNullString Then
 
             ' Get path
@@ -324,9 +320,6 @@ Module MdlZTStudioUI
     ''' <param name="IntIndexFrameNumber">Optional frame index number. Defaults to value of slider in main window.</param>
     Public Sub UpdatePreview(BlnUpdateFrameInfo As Boolean, BlnUpdateUI As Boolean, Optional IntIndexFrameNumber As Integer = -1)
 
-
-
-10:
         ' Can't update if there are no frames.
         If EditorGraphic.Frames.Count = 0 Then
             ' Add time indication
@@ -335,14 +328,11 @@ Module MdlZTStudioUI
             Exit Sub
         End If
 
-20:
         ' Shortcut. If no index number for the frame was specified, assume the currently visible frame needs to be updated.
         If IntIndexFrameNumber = -1 Then
             IntIndexFrameNumber = FrmMain.TbFrames.Value - 1
         End If
 
-
-125:
         ' 20190816: some aspects weren't managed properly, for instance when toggling extra frame or adding/removing frames.
         ' Previous/next frame; current And max value of progress bar, ...
         ' Update preview is called from lots of places, so this may be a bit of an overkill, but better safe.
@@ -350,26 +340,20 @@ Module MdlZTStudioUI
             MdlZTStudioUI.UpdateFrameInfo("MdlZTStudioUI_UpdatePreview()")
         End If
 
-126:
         If BlnUpdateUI = True Then
             MdlZTStudioUI.UpdateGUI("MdlZTStudioUI_UpdatePreview()")
         End If
 
-
-130:
         EditorFrame = EditorGraphic.Frames(IntIndexFrameNumber)
 
-300:
         ' The sub gets triggered when a new frame has been added, but no .PNG has been loaded yet, so frame contains no data.
         ' However, the picbox may need to be cleared (previous frame would still be shown otherwise)
         If EditorGraphic.Frames(IntIndexFrameNumber).CoreImageHex.Count = 0 Then
 
-310:
             FrmMain.PicBox.Image = MdlBitMap.DrawGridFootPrintXY(Cfg_grid_footPrintX, Cfg_grid_footPrintY).Bitmap
 
         Else
 
-320:
             FrmMain.PicBox.Image = EditorGraphic.Frames(IntIndexFrameNumber).GetImage(True).Bitmap
 
         End If

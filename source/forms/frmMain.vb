@@ -76,83 +76,72 @@ Public Class FrmMain
     ''' <param name="e">MouseEventArgs</param>
     Private Sub PicBox_MouseMove(sender As Object, e As MouseEventArgs) Handles PicBox.MouseMove
 
-        On Error GoTo dBug
+        Try
 
-1:
-        ' Canvas is still entirely empty
-        If IsNothing(PicBox.Image) = True Then
-            MdlZTStudio.Trace(Me.GetType().FullName, "MouseMove", "Picture box empty")
-            Exit Sub
-        End If
+            ' Canvas is still entirely empty
+            If IsNothing(PicBox.Image) = True Then
+                MdlZTStudio.Trace(Me.GetType().FullName, "MouseMove", "Picture box empty")
+                Exit Sub
+            End If
 
-2:
-        ' Frame might have been just initiated
-        If IsNothing(EditorFrame.CoreImageBitmap) And IsNothing(EditorFrame.CoreImageHex) Then
-            MdlZTStudio.Trace(Me.GetType().FullName, "MouseMove", "EditorFrame has no CoreImageBitmap or CoreImageHex")
-            Exit Sub
-        End If
-3:
-        ' This is a bit of a dilemma. 
-        ' If using PicBox.image, it also shows the grid color on hovering. Ignoring the grid color is a bad idea since the color may be present in the image too.
-        ' If just using editorFrame.GetImage(), it won't show colors of any background graphic (toy for Orang Utan).
-        ' Todo: combining them makes more sense but is more intensive. Should be cached somewhere.
-        ' Images_Combine(editorFrame.GetImage(), editorBgGraphic.getimage())
-        Dim BmTmp As Bitmap
-        BmTmp = PicBox.Image ' Used to be EditorFrame.GetImage()
+            ' Frame might have been just initiated
+            If IsNothing(EditorFrame.CoreImageBitmap) And IsNothing(EditorFrame.CoreImageHex) Then
+                MdlZTStudio.Trace(Me.GetType().FullName, "MouseMove", "EditorFrame has no CoreImageBitmap or CoreImageHex")
+                Exit Sub
+            End If
 
+            ' This is a bit of a dilemma.
+            ' If using PicBox.image, it also shows the grid color on hovering. Ignoring the grid color is a bad idea since the color may be present in the image too.
+            ' If just using editorFrame.GetImage(), it won't show colors of any background graphic (toy for Orang Utan).
+            ' Todo: combining them makes more sense but is more intensive. Should be cached somewhere.
+            ' Images_Combine(editorFrame.GetImage(), editorBgGraphic.getimage())
+            Dim BmTmp As Bitmap
+            BmTmp = PicBox.Image ' Used to be EditorFrame.GetImage()
 
-20:
-        ' Find out which pixel area matters within the PicBox
-        ' Offset compared to PicBox Left/Top
-        ' Keep in mind: BmTmp is NOT necessarily the entire PicBox (adjusts to window)
-        Dim IntOffsetX As Integer = (PicBox.Width - BmTmp.Width) / 2 ' Left = positive; right = negative
-        Dim IntOffsetY As Integer = (PicBox.Height - BmTmp.Height) / 2 ' Top = positive; bottom = negative
+            ' Find out which pixel area matters within the PicBox
+            ' Offset compared to PicBox Left/Top
+            ' Keep in mind: BmTmp is NOT necessarily the entire PicBox (adjusts to window)
+            Dim IntOffsetX As Integer = (PicBox.Width - BmTmp.Width) / 2 ' Left = positive; right = negative
+            Dim IntOffsetY As Integer = (PicBox.Height - BmTmp.Height) / 2 ' Top = positive; bottom = negative
 
-100:
+            MdlZTStudio.Trace(Me.GetType().FullName, "MouseMove", "e.X = " & e.X & ", Y = " & e.Y)
+            MdlZTStudio.Trace(Me.GetType().FullName, "MouseMove", "Offset X = " & IntOffsetX & ", Y = " & IntOffsetY)
+            MdlZTStudio.Trace(Me.GetType().FullName, "MouseMove", "Bmp width = " & BmTmp.Width & ", Height = " & BmTmp.Height)
 
-        MdlZTStudio.Trace(Me.GetType().FullName, "MouseMove", "e.X = " & e.X & ", Y = " & e.Y)
-        MdlZTStudio.Trace(Me.GetType().FullName, "MouseMove", "Offset X = " & IntOffsetX & ", Y = " & IntOffsetY)
-        MdlZTStudio.Trace(Me.GetType().FullName, "MouseMove", "Bmp width = " & BmTmp.Width & ", Height = " & BmTmp.Height)
+            If e.X > IntOffsetX And e.X < (BmTmp.Width + IntOffsetX) And e.Y > IntOffsetY And e.Y < (BmTmp.Height + IntOffsetY) Then
 
-        If e.X > IntOffsetX And e.X < (BmTmp.Width + IntOffsetX) And e.Y > IntOffsetY And e.Y < (BmTmp.Height + IntOffsetY) Then
+                ' Image might be smaller, while PicBox appears larger due to background color.
+                Dim ObjColor As System.Drawing.Color = BmTmp.GetPixel(e.X - IntOffsetX, e.Y - IntOffsetY)
 
-101:
-            ' Image might be smaller, while PicBox appears larger due to background color.
-            Dim ObjColor As System.Drawing.Color = BmTmp.GetPixel(e.X - IntOffsetX, e.Y - IntOffsetY)
+                ' Alpha channel is not set to 0 (transparent). This check is still from when using BmpTmp = EditorFrame.GetImage()
+                ' Display color info
+                If ObjColor.A <> 0 Then
 
-            ' Alpha channel is not set to 0 (transparent). This check is still from when using BmpTmp = EditorFrame.GetImage()
-            ' Display color info
-            If ObjColor.A <> 0 Then
+                    LblColor.BackColor = ObjColor
+                    LblColorDetails.Text = "" &
+                        "Coordinates: x: " & e.X - IntOffsetX & " , y: " & e.Y - IntOffsetY & vbCrLf &
+                        "RGB: " & ObjColor.R & "," & ObjColor.G & "," & ObjColor.B & vbCrLf &
+                        "Index in .pal file: # " & EditorGraphic.ColorPalette.Colors.IndexOf(ObjColor) & vbCrLf &
+                        "VB.Net: " & ObjColor.ToArgb()
 
-102:
-                LblColor.BackColor = ObjColor
-                LblColorDetails.Text = "" &
-                    "Coordinates: x: " & e.X - IntOffsetX & " , y: " & e.Y - IntOffsetY & vbCrLf &
-                    "RGB: " & ObjColor.R & "," & ObjColor.G & "," & ObjColor.B & vbCrLf &
-                    "Index in .pal file: # " & EditorGraphic.ColorPalette.Colors.IndexOf(ObjColor) & vbCrLf &
-                    "VB.Net: " & ObjColor.ToArgb()
+                Else
+
+                    ' Definitely just the background color.
+                    LblColor.BackColor = PicBox.BackColor
+                    LblColorDetails.Text = vbNullString
+
+                End If
 
             Else
 
-112:
-                ' Definitely just the background color.
                 LblColor.BackColor = PicBox.BackColor
                 LblColorDetails.Text = vbNullString
 
             End If
 
-        Else
-
-122:
-            LblColor.BackColor = PicBox.BackColor
-            LblColorDetails.Text = vbNullString
-
-        End If
-
-        Exit Sub
-
-dBug:
-        MdlZTStudio.UnhandledError(Me.GetType().FullName, "PicBox_MouseMove", Information.Err, True)
+        Catch ex As Exception
+            MdlZTStudio.UnhandledError(Me.GetType().FullName, "PicBox_MouseMove", ex, True)
+        End Try
 
     End Sub
 
@@ -531,27 +520,20 @@ dBug:
     ''' <param name="e">EventArgs</param>
     Private Sub TsbFrame_Add_Click(sender As Object, e As EventArgs) Handles TsbFrame_Add.Click
 
-        On Error GoTo dBug
+        Try
 
-0:
-        ' New ClsFrame
-        Dim ObjFrame As New ClsFrame(EditorGraphic)
-2:
+            ' New ClsFrame
+            Dim ObjFrame As New ClsFrame(EditorGraphic)
 
-10:
-        ' Add it to the list of frames (after the currently displayed one)
-        EditorGraphic.Frames.Insert(TbFrames.Value, ObjFrame)
+            ' Add it to the list of frames (after the currently displayed one)
+            EditorGraphic.Frames.Insert(TbFrames.Value, ObjFrame)
 
+            ' Update preview. Update frame info and other GUI elements (button states, offsets, ...)
+            MdlZTStudioUI.UpdatePreview(True, True, TbFrames.Value)
 
-        ' Update preview. Update frame info and other GUI elements (button states, offsets, ...)
-        MdlZTStudioUI.UpdatePreview(True, True, TbFrames.Value)
-
-        Exit Sub
-
-dBug:
-        MdlZTStudio.UnhandledError(Me.GetType().FullName, "TsbFrame_Add_Click", Information.Err, True)
-
-
+        Catch ex As Exception
+            MdlZTStudio.UnhandledError(Me.GetType().FullName, "TsbFrame_Add_Click", ex, True)
+        End Try
 
     End Sub
 
@@ -878,28 +860,20 @@ dBug:
 
         If (e.Button = Windows.Forms.MouseButtons.Right) Then
             ' Add frame
-0:
             Dim ObjFrame As New ClsFrame(EditorGraphic)
 
-10:
             ' Add the frame after the existing one(s)
             EditorGraphic.Frames.Insert(TbFrames.Value, ObjFrame)
 
-15:
             ' not sure if this is right if an extra frame is applied?
             TbFrames.Maximum = EditorGraphic.Frames.Count - EditorGraphic.HasBackgroundFrame
 
-16:
             TbFrames.Value += 1
 
             ' Update current preview. Update frame info (offsets), GUI (button states, counts etc)
             MdlZTStudioUI.UpdatePreview(True, True, TbFrames.Value - 1)
 
         End If
-
-
-
-100:
 
         With DlgOpen
             .Title = "Pick a .PNG file"
@@ -1178,10 +1152,8 @@ dBug:
 
                 End If
 
-51:
                 MdlTasks.SaveGraphic(DlgSave.FileName)
 
-60:
                 ' Remember
                 Cfg_Path_RecentZT1 = DlgSave.FileName
                 MdlConfig.Write()
@@ -1189,7 +1161,6 @@ dBug:
                 ' What has been opened, might need to be saved.
                 DlgOpen.FileName = DlgSave.FileName
 
-65:
                 ' Might be a new file, so update root folder and select this.
                 MdlZTStudioUI.UpdateExplorerPane()
 

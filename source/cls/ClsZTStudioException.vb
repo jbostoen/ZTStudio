@@ -1,10 +1,9 @@
-﻿
+
 Public Class ZTStudioException
     Inherits System.ApplicationException
 
     Dim StrException_Class As String = ""
     Dim StrException_Method As String = ""
-    Dim ObjException_ErrObject As ErrObject = Nothing
 
     Public Property ClassName As String
         Get
@@ -26,24 +25,12 @@ Public Class ZTStudioException
         End Set
     End Property
 
-    Public Property ErrObject As ErrObject
-        Get
-            Return ObjException_ErrObject
+    Public Sub New(ByVal StrClass As String, ByVal StrMethod As String, ByVal ObjError As Exception)
 
-        End Get
-        Set(value As ErrObject)
-            ObjException_ErrObject = value
-        End Set
-    End Property
-
-    Public Sub New(ByVal StrClass As String, ByVal StrMethod As String, ByVal ObjError As ErrObject)
-
-        MyBase.New(StrClass & "::" & StrMethod & "() - " & ObjError.Number & " - " & ObjError.Description & " at line " & ObjError.Erl)
-
+        MyBase.New(StrClass & "::" & StrMethod & "() - " & ObjError.Message, ObjError)
 
         Me.ClassName = StrClass
         Me.MethodName = StrMethod
-        Me.ErrObject = ObjError
 
     End Sub
 

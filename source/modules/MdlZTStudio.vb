@@ -1,4 +1,6 @@
-﻿''' <summary>
+﻿Imports System.IO
+
+''' <summary>
 ''' Handles various tasks related to the program
 ''' </summary>
 Module MdlZTStudio
@@ -10,17 +12,14 @@ Module MdlZTStudio
     ''' </summary>
     Sub StartUp()
 
-        On Error GoTo dBug
+        Try
 
-10:
-        ' Load the initial config. 
-        ' settings.cfg contains the default values.
-        ' Some parameters can be overwritten by the command line parameters; but they are not stored permanently.
-        MdlConfig.Load()
+            ' Load the initial config.
+            ' settings.cfg contains the default values.
+            ' Some parameters can be overwritten by the command line parameters; but they are not stored permanently.
+            MdlConfig.Load()
 
-20:
-
-        ' Configure parameters.
+            ' Configure parameters.
         Dim StrArgAction = vbNullString
         Dim StrArgActionValue = vbNullString
         Dim argK As String
@@ -35,7 +34,6 @@ Module MdlZTStudio
             argK = Strings.Split(arg.ToLower & ":", ":")(0)
             argV = Strings.Replace(arg, argK & ":", "", , , CompareMethod.Text)
 
-25:
             ' set arguments etc
             Select Case argK
 
@@ -110,7 +108,6 @@ Module MdlZTStudio
 
         Next
 
-30:
         ' See which action was specified and only do the conversion now.
         ' Users could assume the order of parameters doesn't matter, for instance:
         ' ZTStudio.exe /convertFolder:<path> /ZTAF:1 -> would have been converted already while not respecting this configuration option. 
@@ -167,11 +164,9 @@ Module MdlZTStudio
 
         End Select
 
-        Exit Sub
-
-dBug:
-        MdlZTStudio.UnhandledError("MdlZTStudio", "StartUp", Information.Err, True)
-
+        Catch ex As Exception
+            MdlZTStudio.UnhandledError("MdlZTStudio", "StartUp", ex, True)
+        End Try
 
     End Sub
 
@@ -182,27 +177,36 @@ dBug:
     ''' </summary>
     ''' <param name="StrClass">Class </param>
     ''' <param name="StrMethod">Method</param>
-    ''' <param name="ObjError">Error object (contains number and message)</param>
+    ''' <param name="ObjException">Exception that occurred</param>
     ''' <param name="BlnRaiseException">Boolean</param>
-    Sub UnhandledError(StrClass As String, StrMethod As String, ObjError As ErrObject, BlnRaiseException As Boolean)
+    Sub UnhandledError(StrClass As String, StrMethod As String, ObjException As Exception, BlnRaiseException As Boolean)
 
         MdlZTStudio.Trace(StrClass, StrMethod, "Unexpected error occurred in " & StrClass & "::" & StrMethod & "()")
+        MdlZTStudio.LogError(StrClass, StrMethod, "Unhandled error", ObjException)
+
+        If BlnBatchOperationRunning = True Then
+            ' Running as part of a batch operation (folder conversion/offset fix): do not block
+            ' with a dialog, and do not terminate the whole application over a single file.
+            ' Raise instead, so the batch loop's per-file Try/Catch can log the failure (with
+            ' the filename) and continue with the next file.
+            Throw New ZTStudioException(StrClass, StrMethod, ObjException)
+        End If
 
         Dim StrMessage As String = "" &
-            "Sorry, but an unexpected error occurred in " & StrClass & "::" & StrMethod & "() at line " & ObjError.Erl.ToString() & vbCrLf &
-            "Error code: " & ObjError.Number.ToString() & vbCrLf &
-            ObjError.Description & vbCrLf & vbCrLf &
+            "Sorry, but an unexpected error occurred in " & StrClass & "::" & StrMethod & "()" & vbCrLf &
+            ObjException.Message & vbCrLf & vbCrLf &
             "------------------------------------" & vbCrLf &
             "As a precaution, " & Application.ProductName & " will close." & vbCrLf &
             "If you can repeat this error, feel free to report it at " & Cfg_GitHub_URL & "." & vbCrLf &
-            "Add as many details (steps to reproduce) as possible, include relevant files in your report."
+            "Add as many details (steps to reproduce) as possible, include relevant files in your report." & vbCrLf & vbCrLf &
+            "A detailed log entry was written to " & MdlZTStudio.StrLogFilePath & "."
 
         If MsgBox(StrMessage, MsgBoxStyle.ApplicationModal + MsgBoxStyle.OkOnly + MsgBoxStyle.Critical, "Unexpected error occurred") = MsgBoxResult.Ok Then
             End
         End If
 
         If BlnRaiseException = True Then
-            Throw New ZTStudioException(StrClass, StrMethod, ObjError)
+            Throw New ZTStudioException(StrClass, StrMethod, ObjException)
         End If
 
     End Sub
@@ -215,24 +219,79 @@ dBug:
     ''' <param name="StrMethod">Method</param>
     ''' <param name="StrMessage">Message</param>
     ''' <param name="BlnFatal">Fatal error. Defaults to false.</param>
-    ''' <param name="ObjError">Error object (contains number and message). Defaults to Nothing.</param>
-    Sub HandledError(StrClass As String, strMethod As String, StrMessage As String, Optional BlnFatal As Boolean = False, Optional ObjError As ErrObject = Nothing)
-
-        If BlnFatal = True Then
-            StrMessage = StrMessage & vbCrLf & vbCrLf & "Since this error may lead to other issues, " & Application.ProductName & " will now close completely."
-        End If
+    ''' <param name="ObjException">Exception that occurred, if any. Defaults to Nothing.</param>
+    Sub HandledError(StrClass As String, StrMethod As String, StrMessage As String, Optional BlnFatal As Boolean = False, Optional ObjException As Exception = Nothing)
 
         ' Tracing info was provided
-        If IsNothing(ObjError) = False Then
-            MdlZTStudio.Trace(StrClass, strMethod, "Expected error occurred in " & StrClass & "::" & strMethod & "()")
+        If IsNothing(ObjException) = False Then
+            MdlZTStudio.Trace(StrClass, StrMethod, "Expected error occurred in " & StrClass & "::" & StrMethod & "()")
         End If
 
-        If MsgBox(StrMessage, MsgBoxStyle.ApplicationModal + MsgBoxStyle.OkOnly + MsgBoxStyle.Critical, "Error occurred") = MsgBoxResult.Ok Then
+        MdlZTStudio.LogError(StrClass, StrMethod, StrMessage, ObjException)
+
+        If BlnBatchOperationRunning = True Then
+            ' Running as part of a batch operation (folder conversion/offset fix): the failure was
+            ' already logged above. Skip the blocking dialog (it would stall an unattended batch)
+            ' and skip the fatal End (it would abort the whole batch over a single file). Raise
+            ' instead, so the batch loop's per-file Try/Catch can record the failure and continue.
+            Throw New ZTStudioException(StrClass, StrMethod, If(ObjException, New Exception(StrMessage)))
+        End If
+
+        Dim StrDisplayMessage As String = StrMessage
+
+        If BlnFatal = True Then
+            StrDisplayMessage = StrDisplayMessage & vbCrLf & vbCrLf & "Since this error may lead to other issues, " & Application.ProductName & " will now close completely."
+        End If
+
+        If MsgBox(StrDisplayMessage, MsgBoxStyle.ApplicationModal + MsgBoxStyle.OkOnly + MsgBoxStyle.Critical, "Error occurred") = MsgBoxResult.Ok Then
             If BlnFatal = True Then
                 End
             End If
         End If
 
+    End Sub
+
+
+    ''' <summary>
+    ''' Full path to the error log file, alongside the executable.
+    ''' </summary>
+    ReadOnly Property StrLogFilePath As String
+        Get
+            Return Path.Combine(Application.StartupPath, "ZTStudio_errors.log")
+        End Get
+    End Property
+
+
+    ''' <summary>
+    ''' Appends a structured entry to the error log file. Failures while logging are swallowed;
+    ''' logging must never be a source of crashes itself.
+    ''' </summary>
+    ''' <param name="StrClass">Class</param>
+    ''' <param name="StrMethod">Method</param>
+    ''' <param name="StrMessage">Contextual message, e.g. which file was being processed</param>
+    ''' <param name="ObjException">Exception that occurred, if any. Defaults to Nothing.</param>
+    Sub LogError(StrClass As String, StrMethod As String, StrMessage As String, Optional ObjException As Exception = Nothing)
+
+        Try
+
+            Dim StrEntry As String = "" &
+                "----------------------------------------" & vbCrLf &
+                DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fff") & " UTC" & vbCrLf &
+                "Class: " & StrClass & vbCrLf &
+                "Method: " & StrMethod & vbCrLf &
+                "Message: " & StrMessage & vbCrLf
+
+            If IsNothing(ObjException) = False Then
+                StrEntry = StrEntry &
+                    "Exception: " & ObjException.GetType().FullName & ": " & ObjException.Message & vbCrLf &
+                    "StackTrace: " & ObjException.StackTrace & vbCrLf
+            End If
+
+            File.AppendAllText(MdlZTStudio.StrLogFilePath, StrEntry)
+
+        Catch
+            ' Logging itself must never crash the application; failures here are intentionally ignored.
+        End Try
 
     End Sub
 

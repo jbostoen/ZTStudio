@@ -656,8 +656,19 @@ dBug:
         Exit Function
 
 dBug2:
+        ' ObjFrameCoreImageBitmap is only assigned partway through this function.
+        ' If the original error happened before that point, it would still be Nothing here,
+        ' and referencing .Width/.Height would throw a second, unhandled NullReferenceException
+        ' that masks the original error. Guard against that.
+        Dim StrWidthHeight As String
+        If IsNothing(ObjFrameCoreImageBitmap) = True Then
+            StrWidthHeight = "(not yet determined)"
+        Else
+            StrWidthHeight = ObjFrameCoreImageBitmap.Width & ", " & ObjFrameCoreImageBitmap.Height
+        End If
+
         Dim StrErrorMessage As String =
-            "Width, height: " & ObjFrameCoreImageBitmap.Width & ", " & ObjFrameCoreImageBitmap.Height & vbCrLf &
+            "Width, height: " & StrWidthHeight & vbCrLf &
             "Offset x, y: " & Me.OffsetX & ", " & Me.OffsetY & vbCrLf &
             "Colors: Currently at drawing instruction " & IntNumDrawingInstructions_current & "/" & IntNumDrawingInstructions & ", color " & IntNumDrawingInstructions_colors_current & "/" & IntNumDrawingInstructions_colors & vbCrLf &
             "Last referenced x, y: " & IntX & ", " & IntY & vbCrLf &

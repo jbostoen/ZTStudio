@@ -144,7 +144,7 @@ Public Class ClsGraphic
                 ' 46 41 54 5A 00 | 00 00 00 01
                 MdlZTStudio.Trace(Me.GetType().FullName, "Read", "Background frame: " & LstHexValues(8))
                 Me.HasBackgroundFrame = LstHexValues(8)
-                LstHexValues.Skip(9)
+                LstHexValues.RemoveFirst(9)
             Else
                 MdlZTStudio.Trace(Me.GetType().FullName, "Read", "Basic graphic format")
             End If
@@ -166,7 +166,7 @@ Public Class ClsGraphic
             MdlZTStudio.Trace(Me.GetType().FullName, "Read", "Color palette filename '" & Me.ColorPalette.FileName & "' (length: " & IntTemplength & ")")
 
             ' Remove all processed bytes
-            LstHexValues.Skip(8 + IntTemplength + 1)
+            LstHexValues.RemoveFirst(8 + IntTemplength + 1)
 
             ' === READ COLOR PALETTE ===
 
@@ -194,7 +194,7 @@ Public Class ClsGraphic
             MdlZTStudio.Trace(Me.GetType().FullName, "Read", "Number of frames: " & IntNumberOfFrames)
 
             ' Remove all processed bytes
-            LstHexValues.Skip(4)
+            LstHexValues.RemoveFirst(4)
 
             ' ==================================== FOR EACH FRAME... ===================================
             Dim IntCurrentFrame As Integer = 0
@@ -209,7 +209,7 @@ Public Class ClsGraphic
                 IntFrameBytes = CInt("&H" & LstHexValues(IntCurByte + 3) & LstHexValues(IntCurByte + 2) & LstHexValues(IntCurByte + 1) & LstHexValues(IntCurByte))
 
                 ' Remove all processed bytes.
-                LstHexValues.Skip(4)
+                LstHexValues.RemoveFirst(4)
 
                 MdlZTStudio.Trace(Me.GetType().FullName, "Read", "Number of bytes for frame " & Me.Frames.Count & ":  " & IntFrameBytes)
 
@@ -231,7 +231,7 @@ Public Class ClsGraphic
                 Me.Frames.Add(ObjFrame, False)
 
                 ' Remove all processed bytes.
-                LstHexValues.Skip(IntFrameBytes)
+                LstHexValues.RemoveFirst(IntFrameBytes)
 
                 IntCurrentFrame += 1
 

@@ -25,6 +25,10 @@ Module MdlColorPalette
 
         EditorGraphic.ColorPalette.Colors(IntIndex) = FrmMain.DlgColor.Color
 
+        ' Colors was mutated in place; its Count didn't change, so the color index cache
+        ' would not otherwise notice this color changed. Force a rebuild.
+        EditorGraphic.ColorPalette.InvalidateColorIndexCache()
+
         'Update entire palette (easy)
         EditorGraphic.ColorPalette.FillPaletteGrid(FrmMain.DgvPaletteMain)
 
@@ -46,6 +50,10 @@ Module MdlColorPalette
 
         ' We had the color. Insert it at the position we want.
         EditorGraphic.ColorPalette.Colors.Insert(IntIndexDest, ObjColorToMove)
+
+        ' The remove/insert pair leaves Count unchanged, so the color index cache
+        ' would not otherwise notice the colors shifted position. Force a rebuild.
+        EditorGraphic.ColorPalette.InvalidateColorIndexCache()
 
         ' Refresh
         EditorGraphic.ColorPalette.FillPaletteGrid(FrmMain.DgvPaletteMain)

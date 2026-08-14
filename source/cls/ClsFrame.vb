@@ -506,7 +506,7 @@ Public Class ClsFrame
         ' Remove them now to speed up further processing.
         ' This is something which will be done a couple of times later.
         ' No worries, this is on a copy of the bytes.
-        LstFrameHex.Skip(10)
+        LstFrameHex.RemoveFirst(10)
 
         ' === Color instructions ===
         ' For clarity, declarations only happen here.
@@ -527,7 +527,7 @@ Public Class ClsFrame
             ' Number of drawing instructions. How many are there for this 'row' of pixels?
             ' Limitation: theoretically: 0 to 255 drawing instructions per row
             IntNumDrawingInstructions = CInt("&H" & LstFrameHex(0))
-            LstFrameHex.Skip(1)
+            LstFrameHex.RemoveFirst(1)
 
             ' Process this set of drawing instructions
             For IntNumDrawingInstructions_current = 0 To (IntNumDrawingInstructions - 1)
@@ -542,7 +542,7 @@ Public Class ClsFrame
                 IntNumDrawingInstructions_colors = CInt("&H" & LstFrameHex(1))
 
                 ' Remove [offset] and [num of pixels to draw] instructions.
-                LstFrameHex.Skip(2)
+                LstFrameHex.RemoveFirst(2)
 
                 ' The hex code mentioned how many colors there will be
                 For IntNumDrawingInstructions_colors_current = 0 To (IntNumDrawingInstructions_colors - 1)
@@ -566,7 +566,7 @@ Public Class ClsFrame
                 Next IntNumDrawingInstructions_colors_current
                 ' Rather than individually deleting those colors one by one from the bytes that still need to be processed, do it at once now.
                 If Me.IsShadowFormat = False Then
-                    LstFrameHex.Skip(IntNumDrawingInstructions_colors_current)
+                    LstFrameHex.RemoveFirst(IntNumDrawingInstructions_colors_current)
                 End If
 
             Next IntNumDrawingInstructions_current

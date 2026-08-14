@@ -81,11 +81,17 @@ Public Class ClsPalette
         ' Now, the first bytes tell us how many colors there are.
         ' ZT1 Graphics only support a limited amount of colors (255?)
         ' So only the first 2 bytes (rather than the first 4) signal how many blocks of 4 bytes will follow.
-        Dim Pal_NumberOfColors As Integer = CInt("&H" & Hex(1) & Hex(0)) '- 1 
+        Dim Pal_NumberOfColors As Integer = CInt("&H" & ArrHex(1) & ArrHex(0))
 
         ' Jump to what matters.
         ArrHex = ArrHex.Skip(4).ToArray()
         Me.Colors = New List(Of System.Drawing.Color)
+
+        ' Validate the file actually contains as many 4-byte color blocks as declared.
+        ' A truncated/corrupt .pal file would otherwise silently be read with fewer colors than expected.
+        If ArrHex.Length <> Pal_NumberOfColors * 4 Then
+            MdlZTStudio.HandledError(Me.GetType().FullName, "ReadPal", "Color palette '" & Me.FileName & "' declares " & Pal_NumberOfColors & " colors, but contains " & (ArrHex.Length \ 4) & " (file may be truncated or corrupt).", (IsNothing(Me.Parent) = False))
+        End If
 
         ' Read number of colors. Only 3 bytes per color are relevant. So starting from byte 8, then 12, 16, 20...
         ' One byte can be ignored safely as it is nearly always (FF). Refers to opacity of a color, but unused in the game.

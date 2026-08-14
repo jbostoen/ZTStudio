@@ -9,6 +9,8 @@ Public Class ClsPalette
     Dim Pal_FileName As String = vbNullString ' The filename
     Dim Pal_Colors As New List(Of System.Drawing.Color) ' The actual list of colors. Should be 256 maximum, with the first one signifying the color that will be considered 'transparent'.
     Dim Pal_Parent As ClsGraphic = Nothing ' The graphic which is owner of this palette (not always set!)
+    Dim Pal_ColorIndexCache As New Dictionary(Of System.Drawing.Color, Integer) ' Maps a color to its index in Pal_Colors, rebuilt whenever Pal_Colors' count changes. Avoids a linear scan per lookup.
+    Dim Pal_ColorIndexCacheCount As Integer = 0 ' The value of Pal_Colors.Count for which Pal_ColorIndexCache was last built.
 
     ''' <summary>
     ''' Creates a new instance of this class. Sets the parent graphic.
@@ -16,6 +18,16 @@ Public Class ClsPalette
     ''' <param name="ObjParent">ClsGraphic or Nothing. The parent of this color palette.</param>
     Public Sub New(ObjParent As ClsGraphic)
         Pal_Parent = ObjParent
+    End Sub
+
+    ''' <summary>
+    ''' Forces the color index cache used by GetColorIndex() to rebuild on its next call.
+    ''' Needed after any change to Colors that does not change its Count (e.g. reordering
+    ''' or replacing an existing entry in place), since the cache is otherwise only
+    ''' invalidated by a Count mismatch.
+    ''' </summary>
+    Public Sub InvalidateColorIndexCache()
+        Pal_ColorIndexCacheCount = -1
     End Sub
 
     ''' <summary>
@@ -168,14 +180,28 @@ Public Class ClsPalette
     ''' <returns></returns>
     Public Function GetColorIndex(ObjColor As System.Drawing.Color, Optional BlnAddToPalette As Boolean = True) As Integer
 
+        ' Rebuild the color index cache if the palette's color count has changed since it was last built.
+        ' Colors are iterated from index 0 forward, so a later duplicate overwrites an earlier one in the cache,
+        ' matching the "last matching index wins" behavior of LastIndexOf (relied upon by e.g. restrant.pal, which lists one color twice).
+        If Pal_ColorIndexCacheCount <> Me.Colors.Count Then
+            Pal_ColorIndexCache.Clear()
+            For IntIndex As Integer = 0 To Me.Colors.Count - 1
+                Pal_ColorIndexCache(Me.Colors(IntIndex)) = IntIndex
+            Next
+            Pal_ColorIndexCacheCount = Me.Colors.Count
+        End If
+
         If Me.Colors.Count = 0 Then
             ' This is a new color palette with no colors defined yet.
             ' Define the first color (transparent color) in this palette.
             Me.Colors.Add(System.Drawing.Color.FromArgb(0, Cfg_Grid_BackGroundColor), False)
         End If
 
-        ' Store so we don't need to call both .Contains() and .LastIndexOf()
-        Dim IntColorIndex As Integer = Me.Colors.LastIndexOf(ObjColor)
+        ' Look up the color's index via the cache instead of scanning the list linearly.
+        Dim IntColorIndex As Integer
+        If Pal_ColorIndexCache.TryGetValue(ObjColor, IntColorIndex) = False Then
+            IntColorIndex = -1
+        End If
 
         If IntColorIndex >= 0 Then
 

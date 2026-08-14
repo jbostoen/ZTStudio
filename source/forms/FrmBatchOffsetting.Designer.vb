@@ -34,6 +34,7 @@ Partial Class FrmBatchOffsetFix
         Me.btnSelect = New System.Windows.Forms.Button()
         Me.lblHint = New System.Windows.Forms.Label()
         Me.PBProgress = New System.Windows.Forms.ProgressBar()
+        Me.BtnCancel = New System.Windows.Forms.Button()
         CType(Me.numUpDown, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.numLeftRight, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
@@ -86,10 +87,20 @@ Partial Class FrmBatchOffsetFix
         '
         Me.BtnBatchOffsettFix.Location = New System.Drawing.Point(32, 257)
         Me.BtnBatchOffsettFix.Name = "BtnBatchOffsettFix"
-        Me.BtnBatchOffsettFix.Size = New System.Drawing.Size(561, 43)
+        Me.BtnBatchOffsettFix.Size = New System.Drawing.Size(460, 43)
         Me.BtnBatchOffsettFix.TabIndex = 5
         Me.BtnBatchOffsettFix.Text = "Process entire folder"
         Me.BtnBatchOffsettFix.UseVisualStyleBackColor = True
+        '
+        'BtnCancel
+        '
+        Me.BtnCancel.Enabled = False
+        Me.BtnCancel.Location = New System.Drawing.Point(500, 257)
+        Me.BtnCancel.Name = "BtnCancel"
+        Me.BtnCancel.Size = New System.Drawing.Size(93, 43)
+        Me.BtnCancel.TabIndex = 10
+        Me.BtnCancel.Text = "Cancel"
+        Me.BtnCancel.UseVisualStyleBackColor = True
         '
         'TxtFolder
         '
@@ -129,6 +140,7 @@ Partial Class FrmBatchOffsetFix
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(623, 384)
+        Me.Controls.Add(Me.BtnCancel)
         Me.Controls.Add(Me.PBProgress)
         Me.Controls.Add(Me.lblHint)
         Me.Controls.Add(Me.btnSelect)
@@ -160,4 +172,5 @@ Partial Class FrmBatchOffsetFix
     Friend WithEvents btnSelect As System.Windows.Forms.Button
     Friend WithEvents lblHint As System.Windows.Forms.Label
     Friend WithEvents PBProgress As System.Windows.Forms.ProgressBar
+    Friend WithEvents BtnCancel As System.Windows.Forms.Button
 End Class

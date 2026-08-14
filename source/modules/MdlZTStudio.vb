@@ -136,7 +136,8 @@ Module MdlZTStudio
             Case "convertfolder.topng"
                 ' Do conversion.
                 ' Then exit.
-                MdlTasks.ConvertFolderZT1ToPNG(StrArgActionValue)
+                ' There is no UI to keep responsive on this command-line path, so simply block until the batch finishes.
+                MdlTasks.ConvertFolderZT1ToPNG(StrArgActionValue).Wait()
                 Application.DoEvents()
                 End
 
@@ -144,7 +145,8 @@ Module MdlZTStudio
 
                 ' Do conversion.
                 ' Then exit.
-                MdlTasks.ConvertFolderPNGToZT1(StrArgActionValue)
+                ' There is no UI to keep responsive on this command-line path, so simply block until the batch finishes.
+                MdlTasks.ConvertFolderPNGToZT1(StrArgActionValue).Wait()
                 Application.DoEvents()
                 End
 

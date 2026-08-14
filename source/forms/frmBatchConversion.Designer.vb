@@ -30,6 +30,7 @@ Partial Class FrmBatchConversion
         Me.LblInfo = New System.Windows.Forms.Label()
         Me.BtnSettings = New System.Windows.Forms.Button()
         Me.PBBatchProgress = New System.Windows.Forms.ProgressBar()
+        Me.BtnCancel = New System.Windows.Forms.Button()
         Me.gbType.SuspendLayout()
         Me.SuspendLayout()
         '
@@ -71,10 +72,20 @@ Partial Class FrmBatchConversion
         Me.BtnConvert.Font = New System.Drawing.Font("Segoe UI", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.BtnConvert.Location = New System.Drawing.Point(47, 294)
         Me.BtnConvert.Name = "BtnConvert"
-        Me.BtnConvert.Size = New System.Drawing.Size(498, 32)
+        Me.BtnConvert.Size = New System.Drawing.Size(400, 32)
         Me.BtnConvert.TabIndex = 15
         Me.BtnConvert.Text = "Start batch conversion"
         Me.BtnConvert.UseVisualStyleBackColor = True
+        '
+        'BtnCancel
+        '
+        Me.BtnCancel.Enabled = False
+        Me.BtnCancel.Location = New System.Drawing.Point(455, 294)
+        Me.BtnCancel.Name = "BtnCancel"
+        Me.BtnCancel.Size = New System.Drawing.Size(90, 32)
+        Me.BtnCancel.TabIndex = 24
+        Me.BtnCancel.Text = "Cancel"
+        Me.BtnCancel.UseVisualStyleBackColor = True
         '
         'LblInfo
         '
@@ -106,6 +117,7 @@ Partial Class FrmBatchConversion
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(604, 384)
+        Me.Controls.Add(Me.BtnCancel)
         Me.Controls.Add(Me.PBBatchProgress)
         Me.Controls.Add(Me.BtnSettings)
         Me.Controls.Add(Me.LblInfo)
@@ -128,4 +140,5 @@ Partial Class FrmBatchConversion
     Friend WithEvents LblInfo As System.Windows.Forms.Label
     Friend WithEvents BtnSettings As System.Windows.Forms.Button
     Friend WithEvents PBBatchProgress As System.Windows.Forms.ProgressBar
+    Friend WithEvents BtnCancel As System.Windows.Forms.Button
 End Class

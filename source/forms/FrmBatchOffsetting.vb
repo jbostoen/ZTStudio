@@ -1,15 +1,22 @@
 ﻿
 
+Imports System.Threading
+
 ''' <summary>
 ''' <para>
 '''     Form which allows to specify offsets which are applied to all views within the selected folder.
 ''' </para>
 ''' <para>
-'''     This is specifically meant for importing images from a different program, such as Blender; 
+'''     This is specifically meant for importing images from a different program, such as Blender;
 '''     where it is possible the animal's (Y) offset needs to be adjusted for each frame in every view.
 ''' </para>
 ''' </summary>
 Public Class FrmBatchOffsetFix
+
+    ''' <summary>
+    ''' Tracks cancellation of the batch offset fix currently running, if any.
+    ''' </summary>
+    Private ObjCancellationTokenSource As CancellationTokenSource
 
     ''' <summary>
     ''' Initializes window
@@ -33,10 +40,42 @@ Public Class FrmBatchOffsetFix
     ''' </summary>
     ''' <param name="sender">Object</param>
     ''' <param name="e">EventArgs</param>
-    Private Sub BtnBatchOffsetting_Click(sender As Object, e As EventArgs) Handles BtnBatchOffsettFix.Click
+    Private Async Sub BtnBatchOffsetting_Click(sender As Object, e As EventArgs) Handles BtnBatchOffsettFix.Click
 
-        ' Runs procedure
-        MdlTasks.BatchOffsetFixFolderZT1(TxtFolder.Text, New Point(numLeftRight.Value, numUpDown.Value), PBProgress)
+        ' Prevent double click, clicking too fast etc.
+        ' Re-enable this when the batch process has finished.
+        BtnBatchOffsettFix.Enabled = False
+        btnSelect.Enabled = False
+        BtnCancel.Enabled = True
+
+        ObjCancellationTokenSource = New CancellationTokenSource()
+
+        Try
+            ' Runs procedure
+            Await MdlTasks.BatchOffsetFixFolderZT1(TxtFolder.Text, New Point(numLeftRight.Value, numUpDown.Value), PBProgress, ObjCancellationTokenSource.Token)
+        Finally
+            ObjCancellationTokenSource.Dispose()
+            ObjCancellationTokenSource = Nothing
+        End Try
+
+        BtnBatchOffsettFix.Enabled = True
+        btnSelect.Enabled = True
+        BtnCancel.Enabled = False
+
+    End Sub
+
+    ''' <summary>
+    ''' On click, requests cancellation of the running batch offset fix.
+    ''' </summary>
+    ''' <param name="sender">Object</param>
+    ''' <param name="e">EventArgs</param>
+    Private Sub BtnCancel_Click(sender As Object, e As EventArgs) Handles BtnCancel.Click
+
+        If IsNothing(ObjCancellationTokenSource) = False Then
+            ObjCancellationTokenSource.Cancel()
+        End If
+
+        BtnCancel.Enabled = False
 
     End Sub
 
@@ -59,6 +98,20 @@ Public Class FrmBatchOffsetFix
             TxtFolder.Text = .SelectedPath
 
         End With
+
+    End Sub
+
+    ''' <summary>
+    ''' Handles form closing. Requests cancellation of a batch offset fix that may still be running in the
+    ''' background, so it does not keep trying to marshal progress updates onto controls that are about to be disposed.
+    ''' </summary>
+    ''' <param name="sender">Object</param>
+    ''' <param name="e">FormClosingEventArgs</param>
+    Private Sub FrmBatchOffsetFix_FormClosing(sender As Object, e As FormClosingEventArgs) Handles Me.FormClosing
+
+        If IsNothing(ObjCancellationTokenSource) = False Then
+            ObjCancellationTokenSource.Cancel()
+        End If
 
     End Sub
 End Class

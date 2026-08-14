@@ -21,6 +21,16 @@ Public Class ClsPalette
     End Sub
 
     ''' <summary>
+    ''' Forces the color index cache used by GetColorIndex() to rebuild on its next call.
+    ''' Needed after any change to Colors that does not change its Count (e.g. reordering
+    ''' or replacing an existing entry in place), since the cache is otherwise only
+    ''' invalidated by a Count mismatch.
+    ''' </summary>
+    Public Sub InvalidateColorIndexCache()
+        Pal_ColorIndexCacheCount = -1
+    End Sub
+
+    ''' <summary>
     ''' The parent of this graphic. A ClsGraphic or nothing.
     ''' </summary>
     ''' <returns>ClsGraphic or Nothing</returns>

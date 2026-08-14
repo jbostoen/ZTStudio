@@ -180,91 +180,104 @@ Module MdlZTStudioUI
         MdlZTStudio.Trace("MdlZTStudio", "UpdateExplorerPane", "Updating Explorer pane")
 
         Dim TVExplorer As TreeView = FrmMain.TVExplorer
-        Dim StackDirectories As New Stack(Of String)
 
-        StackDirectories.Push(Cfg_path_Root)
+        Try
 
-        Dim ObjImageList = New ImageList
-        Dim ObjNodeCollection As TreeNodeCollection = TVExplorer.Nodes
-        ObjImageList.Images.Add(My.Resources.icon_ZT1_Graphic)
-        ObjImageList.Images.Add(My.Resources.icon_folder)
-        ObjImageList.Images.Add(My.Resources.icon_file)
-        ObjImageList.Images.Add(My.Resources.icon_ZT1_palette)
-        TVExplorer.ImageList = ObjImageList
+            Dim StackDirectories As New Stack(Of String)
 
+            StackDirectories.Push(Cfg_path_Root)
 
-        TVExplorer.BeginUpdate()
-        TVExplorer.Nodes.Clear()
+            Dim ObjImageList = New ImageList
+            Dim ObjNodeCollection As TreeNodeCollection = TVExplorer.Nodes
+            ObjImageList.Images.Add(My.Resources.icon_ZT1_Graphic)
+            ObjImageList.Images.Add(My.Resources.icon_folder)
+            ObjImageList.Images.Add(My.Resources.icon_file)
+            ObjImageList.Images.Add(My.Resources.icon_ZT1_palette)
+            TVExplorer.ImageList = ObjImageList
 
+            ' BeginUpdate/EndUpdate are paired via Try/Finally below, so a failure partway through the
+            ' folder walk cannot leave the TreeView permanently suspended (which would otherwise stop
+            ' it from ever repainting again).
+            TVExplorer.BeginUpdate()
+            Try
 
-        ' Continue processing for each stacked directory
-        Do While (StackDirectories.Count > 0)
+                TVExplorer.Nodes.Clear()
 
-            ' Get top directory string
-            Dim ObjNode As New TreeNode
-            Dim StrDirectoryName As String = StackDirectories.Pop()
+                ' Continue processing for each stacked directory
+                Do While (StackDirectories.Count > 0)
 
-
-            Debug.Print(StrDirectoryName)
-
-
-            If StrDirectoryName <> Cfg_path_Root Then
-
-                ObjNode.Name = Regex.Replace(StrDirectoryName, "^" & Regex.Escape(Cfg_path_Root) & "\\", "")
-                ObjNode.Text = Regex.Match(ObjNode.Name, "(?=[^\\]*$).*$").Value
-                ObjNode.ImageIndex = 1
-                ObjNode.SelectedImageIndex = 1
-
-                ' Parent node?
-                Dim StrParentDirectory = Regex.Replace(ObjNode.Name, "\\(?=[^\\]*$).*$", "")
-                Dim ObjParentNode() As TreeNode = ObjNodeCollection.Find(StrParentDirectory, True)
-
-                If ObjParentNode.Count = 1 Then
-                    ObjParentNode(0).Nodes.Add(ObjNode)
-                Else
-                    ObjNodeCollection.Add(ObjNode)
-                End If
-
-            End If
-
-            ' Loop through all subdirectories and add them to the stack.
-            Dim StrSubDirectoryName As String
-            For Each StrSubDirectoryName In Directory.GetDirectories(StrDirectoryName).Reverse()
-
-                ' Subdirectories will be processed later. But as for current dir...
-                StackDirectories.Push(StrSubDirectoryName)
-            Next
-
-            ' Loop through all files and add them to the node
-            Dim StrSubFileName As String
-            For Each StrSubFileName In Directory.GetFiles(StrDirectoryName)
-                Dim ObjFileNode As New TreeNode
-                ObjFileNode.Name = Regex.Replace(StrSubFileName, "^" & Regex.Escape(Cfg_path_Root) & "\\", "")
-                ObjFileNode.Text = Regex.Match(ObjFileNode.Name, "(?=[^\\]*$).*$").Value
-
-                ' Guess if it's a graphic or not
-                If Regex.IsMatch(ObjFileNode.Text, "^[0-9A-z]{1,}$", RegexOptions.Singleline) Then
-                    ObjFileNode.ImageIndex = 0
-                    ObjFileNode.SelectedImageIndex = 0
-                ElseIf Regex.IsMatch(ObjFileNode.Text, "^.*\.pal$", RegexOptions.Singleline) Then
-                    ObjFileNode.ImageIndex = 3
-                    ObjFileNode.SelectedImageIndex = 3
-                Else
-                    ObjFileNode.ImageIndex = 2
-                    ObjFileNode.SelectedImageIndex = 2
-                End If
-
-                ObjNode.Nodes.Add(ObjFileNode)
-            Next
+                    ' Get top directory string
+                    Dim ObjNode As New TreeNode
+                    Dim StrDirectoryName As String = StackDirectories.Pop()
 
 
-            ' Make sure everything is finished. Needed?
-            Application.DoEvents()
-
-        Loop
+                    Debug.Print(StrDirectoryName)
 
 
-        TVExplorer.EndUpdate()
+                    If StrDirectoryName <> Cfg_path_Root Then
+
+                        ObjNode.Name = Regex.Replace(StrDirectoryName, "^" & Regex.Escape(Cfg_path_Root) & "\\", "")
+                        ObjNode.Text = Regex.Match(ObjNode.Name, "(?=[^\\]*$).*$").Value
+                        ObjNode.ImageIndex = 1
+                        ObjNode.SelectedImageIndex = 1
+
+                        ' Parent node?
+                        Dim StrParentDirectory = Regex.Replace(ObjNode.Name, "\\(?=[^\\]*$).*$", "")
+                        Dim ObjParentNode() As TreeNode = ObjNodeCollection.Find(StrParentDirectory, True)
+
+                        If ObjParentNode.Count = 1 Then
+                            ObjParentNode(0).Nodes.Add(ObjNode)
+                        Else
+                            ObjNodeCollection.Add(ObjNode)
+                        End If
+
+                    End If
+
+                    ' Loop through all subdirectories and add them to the stack.
+                    Dim StrSubDirectoryName As String
+                    For Each StrSubDirectoryName In Directory.GetDirectories(StrDirectoryName).Reverse()
+
+                        ' Subdirectories will be processed later. But as for current dir...
+                        StackDirectories.Push(StrSubDirectoryName)
+                    Next
+
+                    ' Loop through all files and add them to the node
+                    Dim StrSubFileName As String
+                    For Each StrSubFileName In Directory.GetFiles(StrDirectoryName)
+                        Dim ObjFileNode As New TreeNode
+                        ObjFileNode.Name = Regex.Replace(StrSubFileName, "^" & Regex.Escape(Cfg_path_Root) & "\\", "")
+                        ObjFileNode.Text = Regex.Match(ObjFileNode.Name, "(?=[^\\]*$).*$").Value
+
+                        ' Guess if it's a graphic or not
+                        If Regex.IsMatch(ObjFileNode.Text, "^[0-9A-z]{1,}$", RegexOptions.Singleline) Then
+                            ObjFileNode.ImageIndex = 0
+                            ObjFileNode.SelectedImageIndex = 0
+                        ElseIf Regex.IsMatch(ObjFileNode.Text, "^.*\.pal$", RegexOptions.Singleline) Then
+                            ObjFileNode.ImageIndex = 3
+                            ObjFileNode.SelectedImageIndex = 3
+                        Else
+                            ObjFileNode.ImageIndex = 2
+                            ObjFileNode.SelectedImageIndex = 2
+                        End If
+
+                        ObjNode.Nodes.Add(ObjFileNode)
+                    Next
+
+                    ' Make sure everything is finished. Needed?
+                    ' Unlike the batch conversion loops (which now run off the UI thread), this method
+                    ' always runs on the UI thread, so pumping messages here still keeps the app responsive
+                    ' during a large folder tree.
+                    Application.DoEvents()
+
+                Loop
+
+            Finally
+                TVExplorer.EndUpdate()
+            End Try
+
+        Catch ex As Exception
+            MdlZTStudio.UnhandledError("MdlZTStudioUI", "UpdateExplorerPane", ex, True)
+        End Try
 
     End Sub
 

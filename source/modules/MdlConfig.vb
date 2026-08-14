@@ -129,48 +129,54 @@ Module MdlConfig
         ' This tasks writes all settings to the .ini-file.
         ' For an explanation of these parameters: check MdlSettings.vb
 
-        Dim StrSettingsFile As String = System.IO.Path.GetFullPath(Application.StartupPath) & "\settings.cfg"
+        Try
 
-        ' Preview
-        IniWrite(StrSettingsFile, "preview", "bgColor", Cfg_Grid_BackGroundColor.ToArgb())
-        IniWrite(StrSettingsFile, "preview", "fgColor", Cfg_Grid_ForeGroundColor.ToArgb())
-        IniWrite(StrSettingsFile, "preview", "numPixels", Cfg_Grid_NumPixels.ToString())
-        IniWrite(StrSettingsFile, "preview", "zoom", Cfg_Grid_zoom.ToString())
-        IniWrite(StrSettingsFile, "preview", "footPrintX", Cfg_grid_footPrintX.ToString())
-        IniWrite(StrSettingsFile, "preview", "footPrintY", Cfg_grid_footPrintY.ToString())
+            Dim StrSettingsFile As String = System.IO.Path.GetFullPath(Application.StartupPath) & "\settings.cfg"
 
-
-        ' Reads from ini and configures all.
-        IniWrite(StrSettingsFile, "paths", "root", Cfg_Path_Root)
-        IniWrite(StrSettingsFile, "paths", "recentPNG", Cfg_Path_RecentPNG)
-        IniWrite(StrSettingsFile, "paths", "recentZT1", Cfg_Path_RecentZT1)
+            ' Preview
+            IniWrite(StrSettingsFile, "preview", "bgColor", Cfg_Grid_BackGroundColor.ToArgb())
+            IniWrite(StrSettingsFile, "preview", "fgColor", Cfg_Grid_ForeGroundColor.ToArgb())
+            IniWrite(StrSettingsFile, "preview", "numPixels", Cfg_Grid_NumPixels.ToString())
+            IniWrite(StrSettingsFile, "preview", "zoom", Cfg_Grid_zoom.ToString())
+            IniWrite(StrSettingsFile, "preview", "footPrintX", Cfg_grid_footPrintX.ToString())
+            IniWrite(StrSettingsFile, "preview", "footPrintY", Cfg_grid_footPrintY.ToString())
 
 
-        ' Export PNG (frames)
-        IniWrite(StrSettingsFile, "exportOptions", "pngCrop", Cfg_Export_PNG_CanvasSize.ToString())
-        IniWrite(StrSettingsFile, "exportOptions", "pngRenderExtraFrame", Cfg_Export_PNG_RenderBGFrame.ToString())
-        IniWrite(StrSettingsFile, "exportOptions", "pngRenderExtraGraphic", Cfg_Export_PNG_RenderBGZT1.ToString())
-        IniWrite(StrSettingsFile, "exportOptions", "pngRenderTransparentBG", Cfg_Export_PNG_TransparentBG.ToString())
-
-        ' Export ZT1 (entire graphic)
-        IniWrite(StrSettingsFile, "exportOptions", "zt1Ani", Cfg_Export_ZT1_Ani.ToString())
-        IniWrite(StrSettingsFile, "exportOptions", "zt1AlwaysAddZTAFBytes", Cfg_Export_ZT1_AlwaysAddZTAFBytes.ToString())
-
-        ' Convert options ( ZT1 <=> PNG )
-        IniWrite(StrSettingsFile, "conversionOptions", "pngFilesIndex", Cfg_Convert_StartIndex.ToString())
-        IniWrite(StrSettingsFile, "conversionOptions", "deleteOriginal", Cfg_Convert_DeleteOriginal.ToString())
-        IniWrite(StrSettingsFile, "conversionOptions", "overwrite", Cfg_Convert_Overwrite.ToString())
-        IniWrite(StrSettingsFile, "conversionOptions", "sharedPalette", Cfg_Convert_SharedPalette.ToString())
-        IniWrite(StrSettingsFile, "conversionOptions", "fileNameDelimiter", Cfg_Convert_FileNameDelimiter)
-
-        ' Frame editing
-        IniWrite(StrSettingsFile, "editing", "individualRotationFix", Cfg_Editor_RotFix_IndividualFrame.ToString())
-        IniWrite(StrSettingsFile, "editing", "animationSpeed", Cfg_Frame_DefaultAnimSpeed.ToString())
-
-        ' Palette
-        IniWrite(StrSettingsFile, "palette", "importPNGForceAddColors", Cfg_Palette_Import_PNG_Force_Add_Colors.ToString())
+            ' Reads from ini and configures all.
+            IniWrite(StrSettingsFile, "paths", "root", Cfg_Path_Root)
+            IniWrite(StrSettingsFile, "paths", "recentPNG", Cfg_Path_RecentPNG)
+            IniWrite(StrSettingsFile, "paths", "recentZT1", Cfg_Path_RecentZT1)
 
 
+            ' Export PNG (frames)
+            IniWrite(StrSettingsFile, "exportOptions", "pngCrop", Cfg_Export_PNG_CanvasSize.ToString())
+            IniWrite(StrSettingsFile, "exportOptions", "pngRenderExtraFrame", Cfg_Export_PNG_RenderBGFrame.ToString())
+            IniWrite(StrSettingsFile, "exportOptions", "pngRenderExtraGraphic", Cfg_Export_PNG_RenderBGZT1.ToString())
+            IniWrite(StrSettingsFile, "exportOptions", "pngRenderTransparentBG", Cfg_Export_PNG_TransparentBG.ToString())
+
+            ' Export ZT1 (entire graphic)
+            IniWrite(StrSettingsFile, "exportOptions", "zt1Ani", Cfg_Export_ZT1_Ani.ToString())
+            IniWrite(StrSettingsFile, "exportOptions", "zt1AlwaysAddZTAFBytes", Cfg_Export_ZT1_AlwaysAddZTAFBytes.ToString())
+
+            ' Convert options ( ZT1 <=> PNG )
+            IniWrite(StrSettingsFile, "conversionOptions", "pngFilesIndex", Cfg_Convert_StartIndex.ToString())
+            IniWrite(StrSettingsFile, "conversionOptions", "deleteOriginal", Cfg_Convert_DeleteOriginal.ToString())
+            IniWrite(StrSettingsFile, "conversionOptions", "overwrite", Cfg_Convert_Overwrite.ToString())
+            IniWrite(StrSettingsFile, "conversionOptions", "sharedPalette", Cfg_Convert_SharedPalette.ToString())
+            IniWrite(StrSettingsFile, "conversionOptions", "fileNameDelimiter", Cfg_Convert_FileNameDelimiter)
+
+            ' Frame editing
+            IniWrite(StrSettingsFile, "editing", "individualRotationFix", Cfg_Editor_RotFix_IndividualFrame.ToString())
+            IniWrite(StrSettingsFile, "editing", "animationSpeed", Cfg_Frame_DefaultAnimSpeed.ToString())
+
+            ' Palette
+            IniWrite(StrSettingsFile, "palette", "importPNGForceAddColors", Cfg_Palette_Import_PNG_Force_Add_Colors.ToString())
+
+        Catch ex As Exception
+            ' Load() (above) already guards against a failure while reading settings; Write() lacked the
+            ' same protection, so e.g. a locked or read-only settings.cfg would previously crash uncaught.
+            MdlZTStudio.HandledError("MdlConfig", "Write", "Error while writing ZT Studio Settings", False, ex)
+        End Try
 
     End Sub
 

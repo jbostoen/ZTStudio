@@ -521,7 +521,9 @@ Public Class ClsPalette
         MdlZTStudio.Trace(Me.GetType().FullName, "ImportFromPNG", "Finished importing color palette from .PNG")
 
         Catch ex As Exception
-            MdlZTStudio.UnhandledError(Me.GetType().FullName, "ImportFromGPL", ex, True)
+            ' Was previously mislabeled as "ImportFromGPL" here (copy-paste artifact), which made
+            ' log entries for a failed .PNG palette import misleading.
+            MdlZTStudio.UnhandledError(Me.GetType().FullName, "ImportFromPNG", ex, True)
         End Try
 
     End Sub
@@ -548,38 +550,42 @@ Public Class ClsPalette
         ' <line for each color>
         ' 254 255 252	#254
 
-        Dim ObjReader As New System.IO.StreamReader(StrFileName)
         Dim StrTextLine As String = ""
         Dim IntLine As Integer = 1 ' Keep in mind, started line numbering, so starting from 1 !
 
         ' Clear current palette (please prevent redraws at this point)
         Me.Colors.Clear(False)
 
-        ' Read file.
-        Do While ObjReader.Peek() <> -1
+        ' Read file. Wrapped in a Using block so the file handle is always released,
+        ' even if a malformed line throws partway through.
+        Using ObjReader As New System.IO.StreamReader(StrFileName)
 
-            StrTextLine = ObjReader.ReadLine()
+            Do While ObjReader.Peek() <> -1
 
-            ' Remove double white spaces etc
-            StrTextLine = Strings.Trim(System.Text.RegularExpressions.Regex.Replace(StrTextLine, "\s+", " "))
+                StrTextLine = ObjReader.ReadLine()
 
-            ' Ignore the first few lines of the GPL file (5 in that GIMP version) AND the transparent color
-            If IntLine = 5 And StrTextLine <> "" Then
-                ' The GetColorIndex() method would add a transparent color if called.
-                ' Transparent color must be added manually, without looking up.
-                Me.Colors.Add(System.Drawing.Color.FromArgb(Split(StrTextLine, " ")(0), Split(StrTextLine, " ")(1), Split(StrTextLine, " ")(2)))
+                ' Remove double white spaces etc
+                StrTextLine = Strings.Trim(System.Text.RegularExpressions.Regex.Replace(StrTextLine, "\s+", " "))
 
-            ElseIf IntLine > 5 And StrTextLine <> "" Then
+                ' Ignore the first few lines of the GPL file (5 in that GIMP version) AND the transparent color
+                If IntLine = 5 And StrTextLine <> "" Then
+                    ' The GetColorIndex() method would add a transparent color if called.
+                    ' Transparent color must be added manually, without looking up.
+                    Me.Colors.Add(System.Drawing.Color.FromArgb(Split(StrTextLine, " ")(0), Split(StrTextLine, " ")(1), Split(StrTextLine, " ")(2)))
 
-                ' Add to this color palette. Using GetColorIndex(color, True), it will prevent duplicates.
-                Me.GetColorIndex(System.Drawing.Color.FromArgb(Split(StrTextLine, " ")(0), Split(StrTextLine, " ")(1), Split(StrTextLine, " ")(2)), True)
+                ElseIf IntLine > 5 And StrTextLine <> "" Then
 
-            End If
+                    ' Add to this color palette. Using GetColorIndex(color, True), it will prevent duplicates.
+                    Me.GetColorIndex(System.Drawing.Color.FromArgb(Split(StrTextLine, " ")(0), Split(StrTextLine, " ")(1), Split(StrTextLine, " ")(2)), True)
 
-            ' Next
-            IntLine += 1
+                End If
 
-        Loop
+                ' Next
+                IntLine += 1
+
+            Loop
+
+        End Using
 
         ' There's actually two possibilities here.
         ' Either regenerate the list of hex values for each frame in the parent graphic, since colors might have switched places.
@@ -591,10 +597,12 @@ Public Class ClsPalette
             Next
         End If
 
-        MdlZTStudio.Trace(Me.GetType().FullName, "ImportFromPNG", "Finished importing color palette from .GPL")
+        MdlZTStudio.Trace(Me.GetType().FullName, "ImportFromGIMPPalette", "Finished importing color palette from .GPL")
 
         Catch ex As Exception
-            MdlZTStudio.UnhandledError(Me.GetType().FullName, "ImportFromGPL", ex, True)
+            ' Was previously mislabeled as "ImportFromGPL" here (copy-paste artifact from ImportFromPNG's
+            ' catch block), which made log entries for a failed .GPL import misleading.
+            MdlZTStudio.UnhandledError(Me.GetType().FullName, "ImportFromGIMPPalette", ex, True)
         End Try
 
     End Sub

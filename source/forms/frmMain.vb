@@ -15,57 +15,66 @@ Public Class FrmMain
     ''' <param name="e">MouseEventArgs</param>
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
-        ' Done to increase performance of adding colors to this palette.
-        DgvPaletteMain.GetType.InvokeMember("DoubleBuffered", Reflection.BindingFlags.NonPublic Or Reflection.BindingFlags.Instance Or System.Reflection.BindingFlags.SetProperty, Nothing, DgvPaletteMain, New Object() {True})
+        Try
 
-        ' Always start with a new ZT1 Graphic with one frame
-        EditorFrame = New ClsFrame(EditorGraphic)
-        EditorGraphic.Frames.Add(EditorFrame)
+            ' Done to increase performance of adding colors to this palette.
+            DgvPaletteMain.GetType.InvokeMember("DoubleBuffered", Reflection.BindingFlags.NonPublic Or Reflection.BindingFlags.Instance Or System.Reflection.BindingFlags.SetProperty, Nothing, DgvPaletteMain, New Object() {True})
 
-        ' Starting with an empty canvas
-        MdlSettings.BMEmpty = New ClsDirectBitmap(Cfg_Grid_NumPixels * 2, Cfg_Grid_NumPixels * 2)
-        With PicBox
-            .Width = Cfg_grid_numPixels * 2
-            .Height = Cfg_grid_numPixels * 2
-        End With
+            ' Always start with a new ZT1 Graphic with one frame
+            EditorFrame = New ClsFrame(EditorGraphic)
+            EditorGraphic.Frames.Add(EditorFrame)
 
-        ' Background color derived from settings (based on previously configured settings)
-        PicBox.BackColor = Cfg_grid_BackGroundColor
+            ' Starting with an empty canvas
+            MdlSettings.BMEmpty = New ClsDirectBitmap(Cfg_Grid_NumPixels * 2, Cfg_Grid_NumPixels * 2)
+            With PicBox
+                .Width = Cfg_grid_numPixels * 2
+                .Height = Cfg_grid_numPixels * 2
+            End With
 
-        ' Set grid size (based on previously configured settings)
-        TsbFrame_fpX.Text = CStr(Cfg_grid_footPrintX)
-        TsbFrame_fpY.Text = CStr(Cfg_grid_footPrintY)
-        TsbFrame_OffsetAll.Checked = (Cfg_editor_rotFix_individualFrame * -1)
+            ' Background color derived from settings (based on previously configured settings)
+            PicBox.BackColor = Cfg_grid_BackGroundColor
 
-        ' ZT1 Default color palettes
-        ' strPathBuildingColorPals
+            ' Set grid size (based on previously configured settings)
+            TsbFrame_fpX.Text = CStr(Cfg_grid_footPrintX)
+            TsbFrame_fpY.Text = CStr(Cfg_grid_footPrintY)
+            TsbFrame_OffsetAll.Checked = (Cfg_editor_rotFix_individualFrame * -1)
 
-        Dim LstColorpalettes As IO.FileInfo()
-        LstColorpalettes = New IO.DirectoryInfo(Cfg_path_ColorPals8).GetFiles()
-        Dim ObjFileInfo As IO.FileInfo
+            ' ZT1 Default color palettes
+            ' strPathBuildingColorPals
 
-        ' List all files found in the directory with 8-color palettes
-        For Each ObjFileInfo In LstColorpalettes
-            TsbOpenPalBldg8.DropDownItems.Add(ObjFileInfo.Name)
-        Next
+            Dim LstColorpalettes As IO.FileInfo()
+            LstColorpalettes = New IO.DirectoryInfo(Cfg_path_ColorPals8).GetFiles()
+            Dim ObjFileInfo As IO.FileInfo
 
-        LstColorpalettes = New IO.DirectoryInfo(Cfg_path_ColorPals16).GetFiles()
+            ' List all files found in the directory with 8-color palettes
+            For Each ObjFileInfo In LstColorpalettes
+                TsbOpenPalBldg8.DropDownItems.Add(ObjFileInfo.Name)
+            Next
 
-        ' List all files found in the directory with 16-color palettes
-        For Each ObjFileInfo In LstColorpalettes
-            TsbOpenPalBldg16.DropDownItems.Add(ObjFileInfo.Name)
-        Next
+            LstColorpalettes = New IO.DirectoryInfo(Cfg_path_ColorPals16).GetFiles()
 
-        ' Update Explorer Panel to show folder structure of root folder
-        MdlZTStudioUI.UpdateExplorerPane()
+            ' List all files found in the directory with 16-color palettes
+            For Each ObjFileInfo In LstColorpalettes
+                TsbOpenPalBldg16.DropDownItems.Add(ObjFileInfo.Name)
+            Next
 
-        ' If exists, load ZT1 Graphic. Won't decrease performance a lot and might be helpful while working on a project
-        If File.Exists(Cfg_path_recentZT1) = True Then
-            MdlZTStudioUI.LoadGraphic(Cfg_path_recentZT1)
-        End If
+            ' Update Explorer Panel to show folder structure of root folder
+            MdlZTStudioUI.UpdateExplorerPane()
 
-        ' Make sure everything is finished. Needed?
-        Application.DoEvents()
+            ' If exists, load ZT1 Graphic. Won't decrease performance a lot and might be helpful while working on a project
+            If File.Exists(Cfg_path_recentZT1) = True Then
+                MdlZTStudioUI.LoadGraphic(Cfg_path_recentZT1)
+            End If
+
+            ' Make sure everything is finished. Needed?
+            Application.DoEvents()
+
+        Catch ex As Exception
+            ' The main form failed to initialize (e.g. a configured color palette folder is missing).
+            ' Without this, the exception would only be caught by the application-wide safety net in
+            ' ApplicationEvents.vb, which cannot attribute it to this specific method.
+            MdlZTStudio.UnhandledError(Me.GetType().FullName, "Form1_Load", ex, True)
+        End Try
 
     End Sub
 

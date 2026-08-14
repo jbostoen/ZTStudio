@@ -12,40 +12,71 @@ Module MdlTests
     ''' <param name="StrDestinationFileName">Destination file name</param>
     Sub GetHashesOfFilesInFolder(StrPath As String, StrDestinationFileName As String)
 
-        ' First create a recursive list.
+        Try
 
-        ' This list stores the results.
-        Dim result As New List(Of String)
+            ' First create a recursive list.
 
-        ' This stack stores the directories to process.
-        Dim StackDirectories As New Stack(Of String)
+            ' This list stores the results.
+            Dim result As New List(Of String)
 
-        ' Add the initial directory
-        StackDirectories.Push(StrPath)
+            ' This stack stores the directories to process.
+            Dim StackDirectories As New Stack(Of String)
 
-        ' Continue processing for each stacked directory
-        Do While (StackDirectories.Count > 0)
-            ' Get top directory string
+            ' Add the initial directory
+            StackDirectories.Push(StrPath)
 
-            Dim StrCurrentDirectory As String = StackDirectories.Pop
+            ' Track how many files succeeded/failed, to report a summary at the end.
+            ' A single unreadable file (e.g. locked, permission denied) should not abort hashing
+            ' the rest of the tree; same reasoning as issue #44 for the main batch operations.
+            Dim IntSucceeded As Integer = 0
+            Dim LstFailed As New List(Of String)
 
-            For Each StrCurrentFile As String In Directory.GetFiles(StrCurrentDirectory, "*")
+            BlnBatchOperationRunning = True
+            Try
 
-                Dim ObjHash As String = MdlTests.GenerateHash("sha256", StrCurrentFile)
-                IniWrite(StrDestinationFileName, "Hashes", StrCurrentFile.Replace(StrPath & "\", ""), ObjHash)
-                'ObjHash.dispose()
+                ' Continue processing for each stacked directory
+                Do While (StackDirectories.Count > 0)
+                    ' Get top directory string
 
-            Next
+                    Dim StrCurrentDirectory As String = StackDirectories.Pop
 
-            ' Loop through all subdirectories and add them to the stack.
-            Dim StrSubDirectoryName As String
-            For Each StrSubDirectoryName In Directory.GetDirectories(StrCurrentDirectory)
-                StackDirectories.Push(StrSubDirectoryName)
-            Next
+                    For Each StrCurrentFile As String In Directory.GetFiles(StrCurrentDirectory, "*")
 
-        Loop
+                        Try
+                            Dim ObjHash As String = MdlTests.GenerateHash("sha256", StrCurrentFile)
+                            IniWrite(StrDestinationFileName, "Hashes", StrCurrentFile.Replace(StrPath & "\", ""), ObjHash)
+                            IntSucceeded += 1
 
+                        Catch exFile As Exception
+                            MdlZTStudio.LogError("MdlTests", "GetHashesOfFilesInFolder", "Failed to hash file: " & StrCurrentFile, exFile)
+                            LstFailed.Add(StrCurrentFile)
+                        End Try
 
+                    Next
+
+                    ' Loop through all subdirectories and add them to the stack.
+                    Dim StrSubDirectoryName As String
+                    For Each StrSubDirectoryName In Directory.GetDirectories(StrCurrentDirectory)
+                        StackDirectories.Push(StrSubDirectoryName)
+                    Next
+
+                Loop
+
+            Finally
+                BlnBatchOperationRunning = False
+            End Try
+
+            ' Report a summary of the batch run, rather than silently succeeding or hard-crashing.
+            Dim StrSummary As String = IntSucceeded & " file(s) hashed successfully."
+            If LstFailed.Count > 0 Then
+                StrSummary = StrSummary & vbCrLf & LstFailed.Count & " file(s) failed:" & vbCrLf & String.Join(vbCrLf, LstFailed)
+            End If
+            MdlZTStudio.InfoBox("MdlTests", "GetHashesOfFilesInFolder", StrSummary)
+
+        Catch ex As Exception
+            ' Genuinely fatal: e.g. the target folder itself could not be scanned at all.
+            MdlZTStudio.HandledError("MdlTests", "GetHashesOfFilesInFolder", "Unexpected error occurred.", True, ex)
+        End Try
 
     End Sub
 
@@ -79,18 +110,20 @@ Module MdlTests
         ' Declaring a variable to be an array of bytes
         Dim HashValue() As Byte
 
-        ' Creating e a FileStream for the file passed as a parameter
-        Dim FileStream As FileStream = File.OpenRead(StrFileName)
+        ' Creating a FileStream for the file passed as a parameter.
+        ' Wrapped in a Using block so the file handle is always released, even if ComputeHash throws
+        ' (e.g. the file gets deleted/locked by another process mid-read during a folder-wide scan).
+        Using FileStream As FileStream = File.OpenRead(StrFileName)
 
-        ' Positioning the cursor at the beginning of stream
-        FileStream.Position = 0
-        ' Calculating the hash of the file
-        HashValue = HashGenerator.ComputeHash(FileStream)
+            ' Positioning the cursor at the beginning of stream
+            FileStream.Position = 0
+            ' Calculating the hash of the file
+            HashValue = HashGenerator.ComputeHash(FileStream)
+
+        End Using
+
         ' The array of bytes is converted into hexadecimal before it can be read easily
         Dim ObjHash = PrintByteArray(HashValue)
-
-        ' Closing the open file
-        FileStream.Close()
 
         ' The hash is returned
         Return ObjHash

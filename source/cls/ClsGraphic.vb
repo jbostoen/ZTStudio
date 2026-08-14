@@ -240,8 +240,17 @@ Public Class ClsGraphic
             Me.LastUpdated = Now.ToString("yyyyMMddHHmmss")
 
         Catch ex As Exception
-            ' Unexpected error
-            MdlZTStudio.UnhandledError(Me.GetType().FullName, "Read", ex, True)
+            ' A malformed/corrupt/truncated ZT1 Graphic file is an expected possible failure of Read()
+            ' (bad user input), not a genuine programming bug - so this uses HandledError rather than
+            ' UnhandledError. That matters: UnhandledError's non-batch path always ends the whole
+            ' application once the user dismisses its dialog, which previously meant opening a single
+            ' malformed file interactively (e.g. via the "Open" dialog/explorer tree) closed all of
+            ' ZT Studio. HandledError's default (BlnFatal:=False) just shows the message and returns
+            ' control to the caller - Me.Frames is left empty in that case, so callers must check for
+            ' that instead of assuming at least one frame was read (see MdlZTStudioUI.LoadGraphic).
+            ' Batch operations are unaffected: HandledError still raises while BlnBatchOperationRunning
+            ' is True, so the per-file Try/Catch in each batch loop logs it and moves on, exactly as before.
+            MdlZTStudio.HandledError(Me.GetType().FullName, "Read", "Could not read ZT1 Graphic '" & Me.FileName & "': " & ex.Message, False, ex, ZTStudioErrorCategory.FileFormat)
         End Try
 
     End Sub
@@ -276,7 +285,7 @@ Public Class ClsGraphic
                 "Error: could Not create ZT1 Graphic." & vbCrLf &
                 "There is already a file at this location:  " & vbCrLf &
                 "'" & StrFileName & "'"
-            MdlZTStudio.HandledError(Me.GetType().FullName, "Write", StrerrorMessage, False, Nothing)
+            MdlZTStudio.HandledError(Me.GetType().FullName, "Write", StrerrorMessage, False, Nothing, ZTStudioErrorCategory.FileFormat)
             Exit Sub
 
         End If
@@ -384,7 +393,7 @@ Public Class ClsGraphic
         MdlZTStudio.Trace(Me.GetType().FullName, "Write", "Output complete")
 
         Catch ex As Exception
-            MdlZTStudio.UnhandledError(Me.GetType().FullName, "Write", ex, True)
+            MdlZTStudio.UnhandledError(Me.GetType().FullName, "Write", ex, True, ZTStudioErrorCategory.FileFormat)
         End Try
 
     End Sub

@@ -83,7 +83,7 @@ Public Class ClsPalette
         ' File does not exist.
         If File.Exists(Me.FileName) = False Then
             ' Fatal error if used for a graphic. Any further processing of graphics could lead to issues.
-            MdlZTStudio.HandledError(Me.GetType().FullName, "ReadPal", "Could not find '" & Pal_FileName & "'", (IsNothing(Me.Parent) = False))
+            MdlZTStudio.HandledError(Me.GetType().FullName, "ReadPal", "Could not find '" & Pal_FileName & "'", (IsNothing(Me.Parent) = False), ObjCategory:=ZTStudioErrorCategory.FileFormat)
         End If
 
         ' Read full file.
@@ -102,7 +102,7 @@ Public Class ClsPalette
         ' Validate the file actually contains as many 4-byte color blocks as declared.
         ' A truncated/corrupt .pal file would otherwise silently be read with fewer colors than expected.
         If ArrHex.Length <> Pal_NumberOfColors * 4 Then
-            MdlZTStudio.HandledError(Me.GetType().FullName, "ReadPal", "Color palette '" & Me.FileName & "' declares " & Pal_NumberOfColors & " colors, but contains " & (ArrHex.Length \ 4) & " (file may be truncated or corrupt).", (IsNothing(Me.Parent) = False))
+            MdlZTStudio.HandledError(Me.GetType().FullName, "ReadPal", "Color palette '" & Me.FileName & "' declares " & Pal_NumberOfColors & " colors, but contains " & (ArrHex.Length \ 4) & " (file may be truncated or corrupt).", (IsNothing(Me.Parent) = False), ObjCategory:=ZTStudioErrorCategory.FileFormat)
         End If
 
         ' Read number of colors. Only 3 bytes per color are relevant. So starting from byte 8, then 12, 16, 20...
@@ -320,7 +320,7 @@ Public Class ClsPalette
 
         ' This check is redundant as of now (24th of August 2019), but could be re-implemented in the future.
         If File.Exists(StrFileName) = True And BlnOverwrite = False Then
-            MdlZTStudio.HandledError(Me.GetType().FullName, "WritePal", "Can not overwrite the color palette file '" & StrFileName & "'.", True)
+            MdlZTStudio.HandledError(Me.GetType().FullName, "WritePal", "Can not overwrite the color palette file '" & StrFileName & "'.", True, ObjCategory:=ZTStudioErrorCategory.FileFormat)
 
         End If
 
@@ -369,7 +369,7 @@ Public Class ClsPalette
         MdlZTStudio.Trace(Me.GetType().FullName, "WritePal", "Finished writing .pal file")
 
         Catch ex As Exception
-            MdlZTStudio.UnhandledError(Me.GetType().FullName, "WritePal", ex, True)
+            MdlZTStudio.UnhandledError(Me.GetType().FullName, "WritePal", ex, True, ZTStudioErrorCategory.FileFormat)
         End Try
 
     End Sub
@@ -523,7 +523,7 @@ Public Class ClsPalette
         Catch ex As Exception
             ' Was previously mislabeled as "ImportFromGPL" here (copy-paste artifact), which made
             ' log entries for a failed .PNG palette import misleading.
-            MdlZTStudio.UnhandledError(Me.GetType().FullName, "ImportFromPNG", ex, True)
+            MdlZTStudio.UnhandledError(Me.GetType().FullName, "ImportFromPNG", ex, True, ZTStudioErrorCategory.FileFormat)
         End Try
 
     End Sub
@@ -602,7 +602,7 @@ Public Class ClsPalette
         Catch ex As Exception
             ' Was previously mislabeled as "ImportFromGPL" here (copy-paste artifact from ImportFromPNG's
             ' catch block), which made log entries for a failed .GPL import misleading.
-            MdlZTStudio.UnhandledError(Me.GetType().FullName, "ImportFromGIMPPalette", ex, True)
+            MdlZTStudio.UnhandledError(Me.GetType().FullName, "ImportFromGIMPPalette", ex, True, ZTStudioErrorCategory.FileFormat)
         End Try
 
     End Sub

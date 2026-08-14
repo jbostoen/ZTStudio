@@ -27,7 +27,7 @@ Module MdlConfig
                 "Get the file at:" & vbCrLf &
                 Cfg_GitHub_URL
 
-            MdlZTStudio.HandledError("MdlConfig", "Load", StrErrorMessage, True, Nothing)
+            MdlZTStudio.HandledError("MdlConfig", "Load", StrErrorMessage, True, Nothing, ZTStudioErrorCategory.Config)
 
 
         End If
@@ -116,7 +116,7 @@ Module MdlConfig
         End If
 
         Catch ex As Exception
-            MdlZTStudio.HandledError("MdlConfig", "Load", "Error while processing ZT Studio Settings", True, ex)
+            MdlZTStudio.HandledError("MdlConfig", "Load", "Error while processing ZT Studio Settings", True, ex, ZTStudioErrorCategory.Config)
         End Try
 
     End Sub
@@ -175,7 +175,7 @@ Module MdlConfig
         Catch ex As Exception
             ' Load() (above) already guards against a failure while reading settings; Write() lacked the
             ' same protection, so e.g. a locked or read-only settings.cfg would previously crash uncaught.
-            MdlZTStudio.HandledError("MdlConfig", "Write", "Error while writing ZT Studio Settings", False, ex)
+            MdlZTStudio.HandledError("MdlConfig", "Write", "Error while writing ZT Studio Settings", False, ex, ZTStudioErrorCategory.Config)
         End Try
 
     End Sub

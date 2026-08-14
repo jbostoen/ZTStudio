@@ -126,9 +126,17 @@ Module MdlTasks
             MdlZTStudioUI.UpdateExplorerPane()
         End If
 
+        Return LstResult.Count
+
         Catch ex As Exception
+            ' Previously this Function had no Return on any path (neither here nor on the success
+            ' path above), silently always yielding 0. Now returns the number of files actually
+            ' deleted on success, and -1 here so a caller can tell "cleaned up 0 files" apart from
+            ' "clean-up failed". HandledError below re-throws while a batch is running (see
+            ' BlnBatchOperationRunning), so this Return is only reached outside a batch.
             Dim StrMessage As String = "An error occured while trying to clean up ZT1 Graphic files in this folder: " & vbCrLf & StrPath
             MdlZTStudio.HandledError("MdlTasks", "CleanUpFiles", StrMessage, False, ex)
+            Return -1
         End Try
 
     End Function

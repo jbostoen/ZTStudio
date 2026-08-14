@@ -251,41 +251,50 @@ Public Class FrmMain
     ''' <param name="e">EventArgs</param>
     Private Sub TsbZT1Open_Click(sender As Object, e As EventArgs) Handles TsbZT1Open.Click
 
-        MdlZTStudio.Trace(Me.GetType().FullName, "TsbZT1Open_Click", "Open ZT1 file dialog.")
-        MdlZTStudio.Trace(Me.GetType().FullName, "TsbZT1Open_Click", "Last used file: " & Cfg_Path_RecentZT1)
+        Try
 
-        ' Show dialog to open a ZT1 Graphic
-        With DlgOpen
-            .Title = "Pick a ZT1 Graphic"
-            .DefaultExt = ""
-            .Filter = "All files|*.*"
+            MdlZTStudio.Trace(Me.GetType().FullName, "TsbZT1Open_Click", "Open ZT1 file dialog.")
+            MdlZTStudio.Trace(Me.GetType().FullName, "TsbZT1Open_Click", "Last used file: " & Cfg_Path_RecentZT1)
 
-            ' Default to path of last used graphic
-            .InitialDirectory = New FileInfo(Cfg_Path_RecentZT1).Directory.FullName
+            ' Show dialog to open a ZT1 Graphic
+            With DlgOpen
+                .Title = "Pick a ZT1 Graphic"
+                .DefaultExt = ""
+                .Filter = "All files|*.*"
 
-            ' If that path doesn't exist: attempt fallback to default game locations on x86 and x64 systems
-            If DlgOpen.InitialDirectory = vbNullString Or System.IO.Directory.Exists(DlgOpen.InitialDirectory) = False Then
-                If System.IO.Directory.Exists(Cfg_Path_Root) Then
-                    MdlZTStudio.Trace(Me.GetType().FullName, "TsbZT1Open_Click", "Open ZT1 file dialog. Fallback to root: " & Cfg_Path_Root)
-                    .InitialDirectory = Cfg_Path_Root
-                ElseIf System.IO.Directory.Exists("C:\Program Files (x86)\Microsoft Games\Zoo Tycoon") Then
-                    MdlZTStudio.Trace(Me.GetType().FullName, "TsbZT1Open_Click", "Open ZT1 file dialog. Fallback to Program Files (x86)")
-                    .InitialDirectory = "C:\Program Files (x86)\Microsoft Games\Zoo Tycoon"
-                ElseIf System.IO.Directory.Exists("C:\Program Files\Microsoft Games\Zoo Tycoon") Then
-                    MdlZTStudio.Trace(Me.GetType().FullName, "TsbZT1Open_Click", "Open ZT1 file dialog. Fallback to Program Files")
-                    .InitialDirectory = "C:\Program Files\Microsoft Games\Zoo Tycoon"
+                ' Default to path of last used graphic. New FileInfo(...) throws ArgumentException if
+                ' Cfg_Path_RecentZT1 is empty or otherwise not a valid path (e.g. first run, nothing
+                ' opened yet) - caught below instead of crashing the whole click handler.
+                .InitialDirectory = New FileInfo(Cfg_Path_RecentZT1).Directory.FullName
+
+                ' If that path doesn't exist: attempt fallback to default game locations on x86 and x64 systems
+                If DlgOpen.InitialDirectory = vbNullString Or System.IO.Directory.Exists(DlgOpen.InitialDirectory) = False Then
+                    If System.IO.Directory.Exists(Cfg_Path_Root) Then
+                        MdlZTStudio.Trace(Me.GetType().FullName, "TsbZT1Open_Click", "Open ZT1 file dialog. Fallback to root: " & Cfg_Path_Root)
+                        .InitialDirectory = Cfg_Path_Root
+                    ElseIf System.IO.Directory.Exists("C:\Program Files (x86)\Microsoft Games\Zoo Tycoon") Then
+                        MdlZTStudio.Trace(Me.GetType().FullName, "TsbZT1Open_Click", "Open ZT1 file dialog. Fallback to Program Files (x86)")
+                        .InitialDirectory = "C:\Program Files (x86)\Microsoft Games\Zoo Tycoon"
+                    ElseIf System.IO.Directory.Exists("C:\Program Files\Microsoft Games\Zoo Tycoon") Then
+                        MdlZTStudio.Trace(Me.GetType().FullName, "TsbZT1Open_Click", "Open ZT1 file dialog. Fallback to Program Files")
+                        .InitialDirectory = "C:\Program Files\Microsoft Games\Zoo Tycoon"
+                    End If
                 End If
-            End If
 
-            ' User did NOT cancel
-            If .ShowDialog() <> Windows.Forms.DialogResult.Cancel Then
+                ' User did NOT cancel
+                If .ShowDialog() <> Windows.Forms.DialogResult.Cancel Then
 
-                ' Load ZT1 Graphic
-                MdlZTStudioUI.LoadGraphic(DlgOpen.FileName)
+                    ' Load ZT1 Graphic
+                    MdlZTStudioUI.LoadGraphic(DlgOpen.FileName)
 
-            End If
+                End If
 
-        End With
+            End With
+
+        Catch ex As Exception
+            MdlZTStudio.HandledError(Me.GetType().FullName, "TsbZT1Open_Click", "Could not open the ""Open ZT1 Graphic"" dialog: " & ex.Message, False, ex)
+        End Try
+
     End Sub
 
     ''' <summary>
@@ -458,6 +467,8 @@ Public Class FrmMain
     ''' <param name="e">EventArgs</param>
     Private Sub TsbPreview_BGGraphic_Click(sender As Object, e As EventArgs) Handles TsbPreview_BGGraphic.Click
 
+        Try
+
         ' Show dialog
         With DlgOpen
             .Title = "Pick a ZT1 Graphic"
@@ -519,6 +530,14 @@ Public Class FrmMain
 
 
         End With
+
+        Catch ex As Exception
+            ' New FileInfo(Cfg_Path_RecentZT1) above throws ArgumentException if Cfg_Path_RecentZT1
+            ' is empty/invalid (e.g. nothing opened yet this session) - caught here instead of
+            ' crashing the click handler.
+            MdlZTStudio.HandledError(Me.GetType().FullName, "TsbPreview_BGGraphic_Click", "Could not open the background graphic dialog: " & ex.Message, False, ex)
+        End Try
+
     End Sub
 
 

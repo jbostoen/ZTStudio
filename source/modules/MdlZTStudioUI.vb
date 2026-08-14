@@ -65,6 +65,13 @@ Module MdlZTStudioUI
                 ' OK
                 EditorGraphic.Read(StrFileName)
 
+                ' Read() reports a malformed/corrupt file via HandledError (a message box) rather than
+                ' throwing here, and leaves Frames empty in that case. Nothing more to do - the user
+                ' already saw why, and there is no frame to switch the editor to.
+                If EditorGraphic.Frames.Count = 0 Then
+                    Exit Sub
+                End If
+
                 ' Keep filename
                 FrmMain.ssFileName.Text = Now.ToString("yyyy-MM-dd HH:mm:ss") & ": opened " & StrFileName
 

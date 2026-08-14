@@ -174,7 +174,7 @@ Public Class ClsAniFile
             Return 0
 
         Catch ex As Exception
-            MdlZTStudio.UnhandledError(Me.GetType().FullName, "Write", ex, False)
+            MdlZTStudio.UnhandledError(Me.GetType().FullName, "Write", ex, False, ZTStudioErrorCategory.FileFormat)
         End Try
 
     End Function
@@ -205,7 +205,7 @@ Public Class ClsAniFile
         If Me.FileName = "" Then
 
             ' Is there any path which leads up to this error?
-            MdlZTStudio.HandledError(Me.GetType().FullName, "CreateAniConfig", "Unexpected error: filename for .ani file is empty?", True, Nothing)
+            MdlZTStudio.HandledError(Me.GetType().FullName, "CreateAniConfig", "Unexpected error: filename for .ani file is empty?", True, Nothing, ZTStudioErrorCategory.FileFormat)
 
         Else
 
@@ -350,7 +350,7 @@ Public Class ClsAniFile
         Me.Write()
 
         Catch ex As Exception
-            MdlZTStudio.UnhandledError(Me.GetType().FullName, "CreateAniConfig", ex, True)
+            MdlZTStudio.UnhandledError(Me.GetType().FullName, "CreateAniConfig", ex, True, ZTStudioErrorCategory.FileFormat)
         End Try
 
     End Sub

@@ -1,6 +1,17 @@
 ﻿Imports System.IO
 
 ''' <summary>
+''' Which kind of ZTStudioException subclass should be raised by HandledError/UnhandledError.
+''' Defaults to General everywhere existing call sites don't specify one, so adding this did not
+''' require touching every existing call site.
+''' </summary>
+Public Enum ZTStudioErrorCategory
+    General
+    FileFormat  ' Parsing/writing a ZT1 Graphic, .pal, .ani, or .gpl/.PNG palette import.
+    Config      ' Loading/writing ZT Studio's own settings.cfg.
+End Enum
+
+''' <summary>
 ''' Handles various tasks related to the program
 ''' </summary>
 Module MdlZTStudio
@@ -175,13 +186,32 @@ Module MdlZTStudio
 
 
     ''' <summary>
+    ''' Constructs the right ZTStudioException subclass for the given category, so callers of
+    ''' HandledError/UnhandledError can Catch a specific failure kind (e.g. ZTStudioFileFormatException)
+    ''' instead of having to string-match the generic base type's message.
+    ''' </summary>
+    Private Function CreateException(StrClass As String, StrMethod As String, ObjException As Exception, ObjCategory As ZTStudioErrorCategory) As ZTStudioException
+
+        Select Case ObjCategory
+            Case ZTStudioErrorCategory.FileFormat
+                Return New ZTStudioFileFormatException(StrClass, StrMethod, ObjException)
+            Case ZTStudioErrorCategory.Config
+                Return New ZTStudioConfigException(StrClass, StrMethod, ObjException)
+            Case Else
+                Return New ZTStudioException(StrClass, StrMethod, ObjException)
+        End Select
+
+    End Function
+
+    ''' <summary>
     ''' To make unexpected errors look more generic, most of them are now handled by this method.
     ''' </summary>
     ''' <param name="StrClass">Class </param>
     ''' <param name="StrMethod">Method</param>
     ''' <param name="ObjException">Exception that occurred</param>
     ''' <param name="BlnRaiseException">Boolean</param>
-    Sub UnhandledError(StrClass As String, StrMethod As String, ObjException As Exception, BlnRaiseException As Boolean)
+    ''' <param name="ObjCategory">Which ZTStudioException subclass to raise. Defaults to General.</param>
+    Sub UnhandledError(StrClass As String, StrMethod As String, ObjException As Exception, BlnRaiseException As Boolean, Optional ObjCategory As ZTStudioErrorCategory = ZTStudioErrorCategory.General)
 
         MdlZTStudio.Trace(StrClass, StrMethod, "Unexpected error occurred in " & StrClass & "::" & StrMethod & "()")
         MdlZTStudio.LogError(StrClass, StrMethod, "Unhandled error", ObjException)
@@ -191,7 +221,7 @@ Module MdlZTStudio
             ' with a dialog, and do not terminate the whole application over a single file.
             ' Raise instead, so the batch loop's per-file Try/Catch can log the failure (with
             ' the filename) and continue with the next file.
-            Throw New ZTStudioException(StrClass, StrMethod, ObjException)
+            Throw CreateException(StrClass, StrMethod, ObjException, ObjCategory)
         End If
 
         Dim StrMessage As String = "" &
@@ -208,7 +238,7 @@ Module MdlZTStudio
         End If
 
         If BlnRaiseException = True Then
-            Throw New ZTStudioException(StrClass, StrMethod, ObjException)
+            Throw CreateException(StrClass, StrMethod, ObjException, ObjCategory)
         End If
 
     End Sub
@@ -222,7 +252,8 @@ Module MdlZTStudio
     ''' <param name="StrMessage">Message</param>
     ''' <param name="BlnFatal">Fatal error. Defaults to false.</param>
     ''' <param name="ObjException">Exception that occurred, if any. Defaults to Nothing.</param>
-    Sub HandledError(StrClass As String, StrMethod As String, StrMessage As String, Optional BlnFatal As Boolean = False, Optional ObjException As Exception = Nothing)
+    ''' <param name="ObjCategory">Which ZTStudioException subclass to raise. Defaults to General.</param>
+    Sub HandledError(StrClass As String, StrMethod As String, StrMessage As String, Optional BlnFatal As Boolean = False, Optional ObjException As Exception = Nothing, Optional ObjCategory As ZTStudioErrorCategory = ZTStudioErrorCategory.General)
 
         ' Tracing info was provided
         If IsNothing(ObjException) = False Then
@@ -236,7 +267,7 @@ Module MdlZTStudio
             ' already logged above. Skip the blocking dialog (it would stall an unattended batch)
             ' and skip the fatal End (it would abort the whole batch over a single file). Raise
             ' instead, so the batch loop's per-file Try/Catch can record the failure and continue.
-            Throw New ZTStudioException(StrClass, StrMethod, If(ObjException, New Exception(StrMessage)))
+            Throw CreateException(StrClass, StrMethod, If(ObjException, New Exception(StrMessage)), ObjCategory)
         End If
 
         Dim StrDisplayMessage As String = StrMessage
@@ -263,6 +294,13 @@ Module MdlZTStudio
         End Get
     End Property
 
+    ''' <summary>
+    ''' Guards writes to the error log file. Batch operations run on a background thread (Task.Run),
+    ''' so it is possible for a batch's per-file failures and a foreground error to call LogError at
+    ''' the same time; without this, two concurrent File.AppendAllText calls could interleave and
+    ''' produce a garbled log entry.
+    ''' </summary>
+    Private ReadOnly ObjLogFileLock As New Object()
 
     ''' <summary>
     ''' Appends a structured entry to the error log file. Failures while logging are swallowed;
@@ -289,7 +327,12 @@ Module MdlZTStudio
                     "StackTrace: " & ObjException.StackTrace & vbCrLf
             End If
 
-            File.AppendAllText(MdlZTStudio.StrLogFilePath, StrEntry)
+            ' Serialize log writes: LogError can be called concurrently from a background batch
+            ' thread and the UI thread at the same time, and File.AppendAllText alone does not
+            ' guarantee two concurrent callers won't interleave their writes.
+            SyncLock ObjLogFileLock
+                File.AppendAllText(MdlZTStudio.StrLogFilePath, StrEntry)
+            End SyncLock
 
         Catch
             ' Logging itself must never crash the application; failures here are intentionally ignored.

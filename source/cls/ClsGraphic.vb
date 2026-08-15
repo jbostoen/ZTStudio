@@ -114,161 +114,144 @@ Public Class ClsGraphic
     ''' <param name="StrFileName">Source file name</param>
     Public Sub Read(Optional StrFileName As String = vbNullString)
 
-        'On Error GoTo dBg
+        Try
 
-1:
-        ' 20190815 Before this just set the filename; but not the (assumed) .pal file
-        If StrFileName <> vbNullString Then
-            Me.FileName = StrFileName
-        End If
+            ' 20190815 Before this just set the filename; but not the (assumed) .pal file
+            If StrFileName <> vbNullString Then
+                Me.FileName = StrFileName
+            End If
 
-        Dim IntX As Integer = 0
-        Dim IntCurByte As Integer = 0
-        Dim IntTemplength As Integer = 0
+            Dim IntX As Integer = 0
+            Dim IntCurByte As Integer = 0
+            Dim IntTemplength As Integer = 0
 
-        Dim IntNumberOfFrames As Integer = 0 ' Number of frames for this animation (at least 1)
+            Dim IntNumberOfFrames As Integer = 0 ' Number of frames for this animation (at least 1)
 
-        Dim StrOriginalColorPaletteFileName As String = Me.ColorPalette.FileName
-        Dim StrNewColorPaletteFileName As String = Cfg_Path_Root & "/"
+            Dim StrOriginalColorPaletteFileName As String = Me.ColorPalette.FileName
+            Dim StrNewColorPaletteFileName As String = Cfg_Path_Root & "/"
 
-        MdlZTStudio.Trace(Me.gettype().FullName, "Read", "Reading graphic " & Me.FileName & " ...")
+            MdlZTStudio.Trace(Me.gettype().FullName, "Read", "Reading graphic " & Me.FileName & " ...")
 
+            ' Read full file.
+            Dim Bytes As Byte() = IO.File.ReadAllBytes(ClsGraphic_FileName)
+            Dim LstBytesToHex As String() = Array.ConvertAll(Bytes, Function(b) b.ToString("X2"))
+            Dim LstHexValues As New List(Of String)
+            LstHexValues.AddRange(LstBytesToHex)
 
-5:
-        ' Read full file.
-        Dim Bytes As Byte() = IO.File.ReadAllBytes(ClsGraphic_FileName)
-        Dim LstBytesToHex As String() = Array.ConvertAll(Bytes, Function(b) b.ToString("X2"))
-        Dim LstHexValues As New List(Of String)
-        LstHexValues.AddRange(LstBytesToHex)
+            ' Here at least 3 variants of ZT1 Graphic format, which can be identified by the first 9 bytes of the file.
+            If LstHexValues(0) = "46" And LstHexValues(1) = "41" And LstHexValues(2) = "54" And LstHexValues(3) = "5A" Then
+                MdlZTStudio.Trace(Me.GetType().FullName, "Read", "FATZ-file (ZT Animation File)")
+                ' 46 41 54 5A 00 | 00 00 00 01
+                MdlZTStudio.Trace(Me.GetType().FullName, "Read", "Background frame: " & LstHexValues(8))
+                Me.HasBackgroundFrame = LstHexValues(8)
+                LstHexValues.RemoveFirst(9)
+            Else
+                MdlZTStudio.Trace(Me.GetType().FullName, "Read", "Basic graphic format")
+            End If
 
-10:
-        ' Here at least 3 variants of ZT1 Graphic format, which can be identified by the first 9 bytes of the file.
-        If LstHexValues(0) = "46" And LstHexValues(1) = "41" And LstHexValues(2) = "54" And LstHexValues(3) = "5A" Then
-            MdlZTStudio.Trace(Me.GetType().FullName, "Read", "FATZ-file (ZT Animation File)")
-            ' 46 41 54 5A 00 | 00 00 00 01
-            MdlZTStudio.Trace(Me.GetType().FullName, "Read", "Background frame: " & LstHexValues(8))
-            Me.HasBackgroundFrame = LstHexValues(8)
-            LstHexValues.RemoveFirst(9)
-        Else
-            MdlZTStudio.Trace(Me.GetType().FullName, "Read", "Basic graphic format")
-        End If
+            ' === ANIMATION SPEED ===
+            Me.AnimationSpeed = CInt("&H" & LstHexValues(3) & LstHexValues(2) & LstHexValues(1) & LstHexValues(0))
+            MdlZTStudio.Trace(Me.GetType().FullName, "Read", "Animation speed: " & Me.AnimationSpeed)
 
-15:
-        ' === ANIMATION SPEED ===
-        Me.AnimationSpeed = CInt("&H" & LstHexValues(3) & LstHexValues(2) & LstHexValues(1) & LstHexValues(0))
-        MdlZTStudio.Trace(Me.GetType().FullName, "Read", "Animation speed: " & Me.AnimationSpeed)
+            ' === FILENAME ===
+            ' The next bytes contain the length of the filename of the color palette
+            IntTemplength = CInt("&H" & LstHexValues(7) & LstHexValues(6) & LstHexValues(5) & LstHexValues(4)) - 1
 
-20:
-        ' === FILENAME ===
-        ' The next bytes contain the length of the filename of the color palette
-        IntTemplength = CInt("&H" & LstHexValues(7) & LstHexValues(6) & LstHexValues(5) & LstHexValues(4)) - 1
+            IntX = 0
+            While IntX < IntTemplength
+                StrNewColorPaletteFileName &= Chr(CInt("&H" & LstHexValues(8 + IntX)))
+                IntX += 1
+            End While
 
-30:
+            MdlZTStudio.Trace(Me.GetType().FullName, "Read", "Color palette filename '" & Me.ColorPalette.FileName & "' (length: " & IntTemplength & ")")
 
+            ' Remove all processed bytes
+            LstHexValues.RemoveFirst(8 + IntTemplength + 1)
 
-        IntX = 0
-        While IntX < IntTemplength
-            StrNewColorPaletteFileName &= Chr(CInt("&H" & LstHexValues(8 + IntX)))
-            IntX += 1
-        End While
+            ' === READ COLOR PALETTE ===
 
+            ' Read the color palette
+            ' In case of failure, such as missing palette file, ZTStudio will throw a fatal error.
+            ' Only necessary if different name! (optimize performance)
+            If StrNewColorPaletteFileName <> StrOriginalColorPaletteFileName Then
 
+                MdlZTStudio.Trace(Me.GetType().FullName, "Read", "Reading color palette...")
 
-        MdlZTStudio.Trace(Me.GetType().FullName, "Read", "Color palette filename '" & Me.ColorPalette.FileName & "' (length: " & IntTemplength & ")")
+                ' Read palette
+                Me.ColorPalette.Colors.Clear()
+                Me.ColorPalette.ReadPal(StrNewColorPaletteFileName)
 
-35:
-        ' Remove all processed bytes
-        LstHexValues.RemoveFirst(8 + IntTemplength + 1)
+            Else
 
+                ' Graphic uses same palette; no need to reload
+                MdlZTStudio.Trace(Me.GetType().FullName, "Read", "Color palette already loaded for previous graphic...")
 
-40:
-        ' === READ COLOR PALETTE ===
+            End If
 
-        ' Read the color palette
-        ' In case of failure, such as missing palette file, ZTStudio will throw a fatal error.
-        ' Only necessary if different name! (optimize performance)
-        If StrNewColorPaletteFileName <> StrOriginalColorPaletteFileName Then
+            ' === NUMBER OF FRAMES ===
+            ' This is actually not used anymore, although it could be considered as a check at the very end to see if the expected amount of frames has been processed
+            IntNumberOfFrames = CInt("&H" & LstHexValues(IntCurByte + 3) & LstHexValues(IntCurByte + 2) & LstHexValues(IntCurByte + 1) & LstHexValues(IntCurByte))
+            MdlZTStudio.Trace(Me.GetType().FullName, "Read", "Number of frames: " & IntNumberOfFrames)
 
-            MdlZTStudio.Trace(Me.GetType().FullName, "Read", "Reading color palette...")
-
-            ' Read palette
-            Me.ColorPalette.Colors.Clear()
-            Me.ColorPalette.ReadPal(StrNewColorPaletteFileName)
-
-        Else
-
-            ' Graphic uses same palette; no need to reload
-            MdlZTStudio.Trace(Me.GetType().FullName, "Read", "Color palette already loaded for previous graphic...")
-
-        End If
-
-50:
-        ' === NUMBER OF FRAMES ===
-        ' This is actually not used anymore, although it could be considered as a check at the very end to see if the expected amount of frames has been processed
-        IntNumberOfFrames = CInt("&H" & LstHexValues(IntCurByte + 3) & LstHexValues(IntCurByte + 2) & LstHexValues(IntCurByte + 1) & LstHexValues(IntCurByte))
-        MdlZTStudio.Trace(Me.GetType().FullName, "Read", "Number of frames: " & IntNumberOfFrames)
-
-        ' Remove all processed bytes
-        LstHexValues.RemoveFirst(4)
-
-
-100:
-        ' ==================================== FOR EACH FRAME... ===================================
-        Dim IntCurrentFrame As Integer = 0
-        Dim IntFrameBytes As Integer = 0
-        Dim IntFrameBytesCurrent As Integer = 0
-
-        Me.Frames = New List(Of ClsFrame) ' List of hex values will be stored here, for each frame
-
-        While LstHexValues.Count > 0
-
-101:
-            '  The next 4 bytes determine the length of bytes to follow for one of the frames in this graphic
-            IntFrameBytes = CInt("&H" & LstHexValues(IntCurByte + 3) & LstHexValues(IntCurByte + 2) & LstHexValues(IntCurByte + 1) & LstHexValues(IntCurByte))
-
-            ' Remove all processed bytes.
+            ' Remove all processed bytes
             LstHexValues.RemoveFirst(4)
 
-            MdlZTStudio.Trace(Me.GetType().FullName, "Read", "Number of bytes for frame " & Me.Frames.Count & ":  " & IntFrameBytes)
-102:
+            ' ==================================== FOR EACH FRAME... ===================================
+            Dim IntCurrentFrame As Integer = 0
+            Dim IntFrameBytes As Integer = 0
+            Dim IntFrameBytesCurrent As Integer = 0
 
-            Dim ObjFrame As New ClsFrame(Me)
-            Dim LstHexForOneFrame As New List(Of String)
+            Me.Frames = New List(Of ClsFrame) ' List of hex values will be stored here, for each frame
 
-            ' Build  hex string first.
-            For IntFrameBytesCurrent = 0 To (IntFrameBytes - 1)
-                LstHexForOneFrame.Add(LstHexValues(IntFrameBytesCurrent))
-            Next
+            While LstHexValues.Count > 0
 
-103:
-            ' Set the hex values of this frame object
-            ObjFrame.CoreImageHex = LstHexForOneFrame
+                '  The next 4 bytes determine the length of bytes to follow for one of the frames in this graphic
+                IntFrameBytes = CInt("&H" & LstHexValues(IntCurByte + 3) & LstHexValues(IntCurByte + 2) & LstHexValues(IntCurByte + 1) & LstHexValues(IntCurByte))
 
-104:
-            ' Render the bitmap. This also sets offsets etc.
-            ObjFrame.RenderCoreImageFromHex()
+                ' Remove all processed bytes.
+                LstHexValues.RemoveFirst(4)
 
-105:
-            ' Add to the frame collection
-            Me.Frames.Add(ObjFrame, False)
+                MdlZTStudio.Trace(Me.GetType().FullName, "Read", "Number of bytes for frame " & Me.Frames.Count & ":  " & IntFrameBytes)
 
-110:
-            ' Remove all processed bytes.
-            LstHexValues.RemoveFirst(IntFrameBytes)
+                Dim ObjFrame As New ClsFrame(Me)
+                Dim LstHexForOneFrame As New List(Of String)
 
-155:
-            IntCurrentFrame += 1
+                ' Build  hex string first.
+                For IntFrameBytesCurrent = 0 To (IntFrameBytes - 1)
+                    LstHexForOneFrame.Add(LstHexValues(IntFrameBytesCurrent))
+                Next
 
-        End While
+                ' Set the hex values of this frame object
+                ObjFrame.CoreImageHex = LstHexForOneFrame
 
-205:
-        Me.LastUpdated = Now.ToString("yyyyMMddHHmmss")
+                ' Render the bitmap. This also sets offsets etc.
+                ObjFrame.RenderCoreImageFromHex()
 
-        Exit Sub
+                ' Add to the frame collection
+                Me.Frames.Add(ObjFrame, False)
 
-dBg:
-        ' Unexpected error
-        MdlZTStudio.UnhandledError(Me.GetType().FullName, "Read", Information.Err, True)
+                ' Remove all processed bytes.
+                LstHexValues.RemoveFirst(IntFrameBytes)
+
+                IntCurrentFrame += 1
+
+            End While
+
+            Me.LastUpdated = Now.ToString("yyyyMMddHHmmss")
+
+        Catch ex As Exception
+            ' A malformed/corrupt/truncated ZT1 Graphic file is an expected possible failure of Read()
+            ' (bad user input), not a genuine programming bug - so this uses HandledError rather than
+            ' UnhandledError. That matters: UnhandledError's non-batch path always ends the whole
+            ' application once the user dismisses its dialog, which previously meant opening a single
+            ' malformed file interactively (e.g. via the "Open" dialog/explorer tree) closed all of
+            ' ZT Studio. HandledError's default (BlnFatal:=False) just shows the message and returns
+            ' control to the caller - Me.Frames is left empty in that case, so callers must check for
+            ' that instead of assuming at least one frame was read (see MdlZTStudioUI.LoadGraphic).
+            ' Batch operations are unaffected: HandledError still raises while BlnBatchOperationRunning
+            ' is True, so the per-file Try/Catch in each batch loop logs it and moves on, exactly as before.
+            MdlZTStudio.HandledError(Me.GetType().FullName, "Read", "Could not read ZT1 Graphic '" & Me.FileName & "': " & ex.Message, False, ex, ZTStudioErrorCategory.FileFormat)
+        End Try
 
     End Sub
 
@@ -280,37 +263,33 @@ dBg:
     ''' <param name="BlnOverwrite">Overwrite without warning</param>
     Public Sub Write(Optional StrFileName As String = vbNullString, Optional BlnOverwrite As Boolean = True)
 
-        On Error GoTo dBug
+        Try
 
         Dim LstHexGraphic As New List(Of String)
 
-1:
         If StrFileName <> vbNullString Then
             Me.FileName = StrFileName
         End If
 
         MdlZTStudio.Trace(Me.GetType().FullName, "Write", "Outputting to " & Me.FileName)
 
-2:
         ' 20190815: Set default .pal filename, even if it doesn't exist (for when 'write' occurs)
         If Me.ColorPalette.FileName = vbNullString Then
             MdlZTStudio.Trace(Me.GetType().FullName, "Write", "No filename for color palette specified. Defaulting to " & Me.FileName & ".pal")
             Me.ColorPalette.FileName = Me.FileName & ".pal"
         End If
 
-5:
         If File.Exists(StrFileName) = True And BlnOverwrite = False Then
 
             Dim StrErrorMessage As String =
                 "Error: could Not create ZT1 Graphic." & vbCrLf &
                 "There is already a file at this location:  " & vbCrLf &
                 "'" & StrFileName & "'"
-            MdlZTStudio.HandledError(Me.GetType().FullName, "Write", StrerrorMessage, False, Nothing)
+            MdlZTStudio.HandledError(Me.GetType().FullName, "Write", StrerrorMessage, False, Nothing, ZTStudioErrorCategory.FileFormat)
             Exit Sub
 
         End If
 
-10:
         ' === Currently only output of basic files is supported. ===
         ' Simply output frames as hex etc
         ' set path to use '/' instead of '\'
@@ -385,46 +364,37 @@ dBg:
 
             Next
 
-800:
             .AddRange(LstHexSub, False)
 
         End With
 
         MdlZTStudio.Trace(Me.GetType().FullName, "Write", "Processed all hex values, ready To write file")
 
-1000:
         ' Working around a possible bug?
         ' 20190823 - which bug? Warning? Or nothing at all?
         File.Delete(Me.FileName)
 
         Dim ObjFileStream As New FileStream(Me.FileName, FileMode.CreateNew, FileAccess.Write)
 
-1001:
         For Each StrHexValue As String In LstHexGraphic
-1002:
             ObjFileStream.WriteByte(CByte("&H" & StrHexValue))
         Next
 
-1003:
         ObjFileStream.Close()
         ObjFileStream.Dispose()
 
         ' Do not forget: color palette must also be created!
         ' This is only done if it has the same name (to avoid messing up shared palettes)
-1100:
         If Me.ColorPalette.FileName = Me.FileName & ".pal" Then
             MdlZTStudio.Trace(Me.GetType().FullName, "Write", "Graphic uses its own color palette. Write.")
             Me.ColorPalette.WritePal(Me.ColorPalette.FileName, True)
         End If
 
-
-1200:
         MdlZTStudio.Trace(Me.GetType().FullName, "Write", "Output complete")
 
-        Exit Sub
-
-dBug:
-        MdlZTStudio.UnhandledError(Me.GetType().FullName, "Write", Information.Err, True)
+        Catch ex As Exception
+            MdlZTStudio.UnhandledError(Me.GetType().FullName, "Write", ex, True, ZTStudioErrorCategory.FileFormat)
+        End Try
 
     End Sub
 

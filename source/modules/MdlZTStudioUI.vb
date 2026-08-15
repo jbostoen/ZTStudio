@@ -65,6 +65,13 @@ Module MdlZTStudioUI
                 ' OK
                 EditorGraphic.Read(StrFileName)
 
+                ' Read() reports a malformed/corrupt file via HandledError (a message box) rather than
+                ' throwing here, and leaves Frames empty in that case. Nothing more to do - the user
+                ' already saw why, and there is no frame to switch the editor to.
+                If EditorGraphic.Frames.Count = 0 Then
+                    Exit Sub
+                End If
+
                 ' Keep filename
                 FrmMain.ssFileName.Text = Now.ToString("yyyy-MM-dd HH:mm:ss") & ": opened " & StrFileName
 
@@ -156,14 +163,10 @@ Module MdlZTStudioUI
 
         End With
 
-
-105:
-
         ' Add time indication
         FrmMain.LblAnimTime.Text = ((EditorGraphic.Frames.Count - EditorGraphic.HasBackgroundFrame) * EditorGraphic.AnimationSpeed) & " ms "
         FrmMain.LblFrames.Text = (EditorGraphic.Frames.Count - EditorGraphic.HasBackgroundFrame) & " frames. "
 
-205:
         If EditorGraphic.FileName <> vbNullString Then
 
             ' Get path
@@ -184,91 +187,104 @@ Module MdlZTStudioUI
         MdlZTStudio.Trace("MdlZTStudio", "UpdateExplorerPane", "Updating Explorer pane")
 
         Dim TVExplorer As TreeView = FrmMain.TVExplorer
-        Dim StackDirectories As New Stack(Of String)
 
-        StackDirectories.Push(Cfg_path_Root)
+        Try
 
-        Dim ObjImageList = New ImageList
-        Dim ObjNodeCollection As TreeNodeCollection = TVExplorer.Nodes
-        ObjImageList.Images.Add(My.Resources.icon_ZT1_Graphic)
-        ObjImageList.Images.Add(My.Resources.icon_folder)
-        ObjImageList.Images.Add(My.Resources.icon_file)
-        ObjImageList.Images.Add(My.Resources.icon_ZT1_palette)
-        TVExplorer.ImageList = ObjImageList
+            Dim StackDirectories As New Stack(Of String)
 
+            StackDirectories.Push(Cfg_path_Root)
 
-        TVExplorer.BeginUpdate()
-        TVExplorer.Nodes.Clear()
+            Dim ObjImageList = New ImageList
+            Dim ObjNodeCollection As TreeNodeCollection = TVExplorer.Nodes
+            ObjImageList.Images.Add(My.Resources.icon_ZT1_Graphic)
+            ObjImageList.Images.Add(My.Resources.icon_folder)
+            ObjImageList.Images.Add(My.Resources.icon_file)
+            ObjImageList.Images.Add(My.Resources.icon_ZT1_palette)
+            TVExplorer.ImageList = ObjImageList
 
+            ' BeginUpdate/EndUpdate are paired via Try/Finally below, so a failure partway through the
+            ' folder walk cannot leave the TreeView permanently suspended (which would otherwise stop
+            ' it from ever repainting again).
+            TVExplorer.BeginUpdate()
+            Try
 
-        ' Continue processing for each stacked directory
-        Do While (StackDirectories.Count > 0)
+                TVExplorer.Nodes.Clear()
 
-            ' Get top directory string
-            Dim ObjNode As New TreeNode
-            Dim StrDirectoryName As String = StackDirectories.Pop()
+                ' Continue processing for each stacked directory
+                Do While (StackDirectories.Count > 0)
 
-
-            Debug.Print(StrDirectoryName)
-
-
-            If StrDirectoryName <> Cfg_path_Root Then
-
-                ObjNode.Name = Regex.Replace(StrDirectoryName, "^" & Regex.Escape(Cfg_path_Root) & "\\", "")
-                ObjNode.Text = Regex.Match(ObjNode.Name, "(?=[^\\]*$).*$").Value
-                ObjNode.ImageIndex = 1
-                ObjNode.SelectedImageIndex = 1
-
-                ' Parent node?
-                Dim StrParentDirectory = Regex.Replace(ObjNode.Name, "\\(?=[^\\]*$).*$", "")
-                Dim ObjParentNode() As TreeNode = ObjNodeCollection.Find(StrParentDirectory, True)
-
-                If ObjParentNode.Count = 1 Then
-                    ObjParentNode(0).Nodes.Add(ObjNode)
-                Else
-                    ObjNodeCollection.Add(ObjNode)
-                End If
-
-            End If
-
-            ' Loop through all subdirectories and add them to the stack.
-            Dim StrSubDirectoryName As String
-            For Each StrSubDirectoryName In Directory.GetDirectories(StrDirectoryName).Reverse()
-
-                ' Subdirectories will be processed later. But as for current dir...
-                StackDirectories.Push(StrSubDirectoryName)
-            Next
-
-            ' Loop through all files and add them to the node
-            Dim StrSubFileName As String
-            For Each StrSubFileName In Directory.GetFiles(StrDirectoryName)
-                Dim ObjFileNode As New TreeNode
-                ObjFileNode.Name = Regex.Replace(StrSubFileName, "^" & Regex.Escape(Cfg_path_Root) & "\\", "")
-                ObjFileNode.Text = Regex.Match(ObjFileNode.Name, "(?=[^\\]*$).*$").Value
-
-                ' Guess if it's a graphic or not
-                If Regex.IsMatch(ObjFileNode.Text, "^[0-9A-z]{1,}$", RegexOptions.Singleline) Then
-                    ObjFileNode.ImageIndex = 0
-                    ObjFileNode.SelectedImageIndex = 0
-                ElseIf Regex.IsMatch(ObjFileNode.Text, "^.*\.pal$", RegexOptions.Singleline) Then
-                    ObjFileNode.ImageIndex = 3
-                    ObjFileNode.SelectedImageIndex = 3
-                Else
-                    ObjFileNode.ImageIndex = 2
-                    ObjFileNode.SelectedImageIndex = 2
-                End If
-
-                ObjNode.Nodes.Add(ObjFileNode)
-            Next
+                    ' Get top directory string
+                    Dim ObjNode As New TreeNode
+                    Dim StrDirectoryName As String = StackDirectories.Pop()
 
 
-            ' Make sure everything is finished. Needed?
-            Application.DoEvents()
-
-        Loop
+                    Debug.Print(StrDirectoryName)
 
 
-        TVExplorer.EndUpdate()
+                    If StrDirectoryName <> Cfg_path_Root Then
+
+                        ObjNode.Name = Regex.Replace(StrDirectoryName, "^" & Regex.Escape(Cfg_path_Root) & "\\", "")
+                        ObjNode.Text = Regex.Match(ObjNode.Name, "(?=[^\\]*$).*$").Value
+                        ObjNode.ImageIndex = 1
+                        ObjNode.SelectedImageIndex = 1
+
+                        ' Parent node?
+                        Dim StrParentDirectory = Regex.Replace(ObjNode.Name, "\\(?=[^\\]*$).*$", "")
+                        Dim ObjParentNode() As TreeNode = ObjNodeCollection.Find(StrParentDirectory, True)
+
+                        If ObjParentNode.Count = 1 Then
+                            ObjParentNode(0).Nodes.Add(ObjNode)
+                        Else
+                            ObjNodeCollection.Add(ObjNode)
+                        End If
+
+                    End If
+
+                    ' Loop through all subdirectories and add them to the stack.
+                    Dim StrSubDirectoryName As String
+                    For Each StrSubDirectoryName In Directory.GetDirectories(StrDirectoryName).Reverse()
+
+                        ' Subdirectories will be processed later. But as for current dir...
+                        StackDirectories.Push(StrSubDirectoryName)
+                    Next
+
+                    ' Loop through all files and add them to the node
+                    Dim StrSubFileName As String
+                    For Each StrSubFileName In Directory.GetFiles(StrDirectoryName)
+                        Dim ObjFileNode As New TreeNode
+                        ObjFileNode.Name = Regex.Replace(StrSubFileName, "^" & Regex.Escape(Cfg_path_Root) & "\\", "")
+                        ObjFileNode.Text = Regex.Match(ObjFileNode.Name, "(?=[^\\]*$).*$").Value
+
+                        ' Guess if it's a graphic or not
+                        If Regex.IsMatch(ObjFileNode.Text, "^[0-9A-z]{1,}$", RegexOptions.Singleline) Then
+                            ObjFileNode.ImageIndex = 0
+                            ObjFileNode.SelectedImageIndex = 0
+                        ElseIf Regex.IsMatch(ObjFileNode.Text, "^.*\.pal$", RegexOptions.Singleline) Then
+                            ObjFileNode.ImageIndex = 3
+                            ObjFileNode.SelectedImageIndex = 3
+                        Else
+                            ObjFileNode.ImageIndex = 2
+                            ObjFileNode.SelectedImageIndex = 2
+                        End If
+
+                        ObjNode.Nodes.Add(ObjFileNode)
+                    Next
+
+                    ' Make sure everything is finished. Needed?
+                    ' Unlike the batch conversion loops (which now run off the UI thread), this method
+                    ' always runs on the UI thread, so pumping messages here still keeps the app responsive
+                    ' during a large folder tree.
+                    Application.DoEvents()
+
+                Loop
+
+            Finally
+                TVExplorer.EndUpdate()
+            End Try
+
+        Catch ex As Exception
+            MdlZTStudio.UnhandledError("MdlZTStudioUI", "UpdateExplorerPane", ex, True)
+        End Try
 
     End Sub
 
@@ -324,9 +340,6 @@ Module MdlZTStudioUI
     ''' <param name="IntIndexFrameNumber">Optional frame index number. Defaults to value of slider in main window.</param>
     Public Sub UpdatePreview(BlnUpdateFrameInfo As Boolean, BlnUpdateUI As Boolean, Optional IntIndexFrameNumber As Integer = -1)
 
-
-
-10:
         ' Can't update if there are no frames.
         If EditorGraphic.Frames.Count = 0 Then
             ' Add time indication
@@ -335,14 +348,11 @@ Module MdlZTStudioUI
             Exit Sub
         End If
 
-20:
         ' Shortcut. If no index number for the frame was specified, assume the currently visible frame needs to be updated.
         If IntIndexFrameNumber = -1 Then
             IntIndexFrameNumber = FrmMain.TbFrames.Value - 1
         End If
 
-
-125:
         ' 20190816: some aspects weren't managed properly, for instance when toggling extra frame or adding/removing frames.
         ' Previous/next frame; current And max value of progress bar, ...
         ' Update preview is called from lots of places, so this may be a bit of an overkill, but better safe.
@@ -350,26 +360,20 @@ Module MdlZTStudioUI
             MdlZTStudioUI.UpdateFrameInfo("MdlZTStudioUI_UpdatePreview()")
         End If
 
-126:
         If BlnUpdateUI = True Then
             MdlZTStudioUI.UpdateGUI("MdlZTStudioUI_UpdatePreview()")
         End If
 
-
-130:
         EditorFrame = EditorGraphic.Frames(IntIndexFrameNumber)
 
-300:
         ' The sub gets triggered when a new frame has been added, but no .PNG has been loaded yet, so frame contains no data.
         ' However, the picbox may need to be cleared (previous frame would still be shown otherwise)
         If EditorGraphic.Frames(IntIndexFrameNumber).CoreImageHex.Count = 0 Then
 
-310:
             FrmMain.PicBox.Image = MdlBitMap.DrawGridFootPrintXY(Cfg_grid_footPrintX, Cfg_grid_footPrintY).Bitmap
 
         Else
 
-320:
             FrmMain.PicBox.Image = EditorGraphic.Frames(IntIndexFrameNumber).GetImage(True).Bitmap
 
         End If

@@ -22,6 +22,7 @@ Module MdlSettings
     Public EditorBgGraphic As ClsGraphic           ' The background graphic, e.g. toy
     Public EditorFrame As ClsFrame                 ' The ClsFrame we are currently viewing/editing
     Public BlnTaskRunning As Boolean = False          ' Prevents certain UI updates if a task is running
+    Public BlnBatchOperationRunning As Boolean = False ' Set around the per-file loop of a batch operation (folder conversion/offset fix). While true, HandledError/UnhandledError skip the blocking dialog and the fatal End, and instead raise so the batch loop can log the failure and continue with the next file.
 
     Public Cfg_Grid_BackGroundColor As Color = Color.White ' The default background color?
     Public Cfg_Grid_ForeGroundColor As Color = Color.Black ' The default foreground color for the grid lines?

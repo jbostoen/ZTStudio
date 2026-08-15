@@ -75,10 +75,8 @@ Module MdlTasks
     ''' <returns></returns>
     Public Function CleanUpFiles(StrPath As String, StrExtension As String) As Integer
 
-        On Error GoTo dBug
+        Try
 
-0:
-5:
         ' Creating a recursive list.
 
         ' This list stores the results.
@@ -91,15 +89,12 @@ Module MdlTasks
         ' Add the initial directory
         Stack.Push(StrPath)
 
-10:
         ' Continue processing for each stacked directory
         Do While (Stack.Count > 0)
 
-15:
             ' Get top directory name
             Dim StrDirectoryName As String = Stack.Pop
 
-20:
             ' Get all files and check if they match the extension (.pal, .png) or have no extension (ZT1 graphic)
             ' In this 'for' construction the wildcard '*' is used; which may also match other files WITH extension.
             For Each f As String In Directory.GetFiles(StrDirectoryName, "*")
@@ -109,7 +104,6 @@ Module MdlTasks
                 End If
             Next
 
-25:
             ' Loop through all subdirectories and add them to the stack, so they're processed as well.
             Dim StrSubDirectoryName As String
             For Each StrSubDirectoryName In Directory.GetDirectories(StrDirectoryName)
@@ -118,14 +112,12 @@ Module MdlTasks
 
         Loop
 
-1000:
         ' For each file that matched the specified extension/pattern
         For Each StrFileName As String In LstResult
             MdlZTStudio.Trace("MdlTasks", "CleanUpFiles", "Delete file: " & StrFileName)
             System.IO.File.Delete(StrFileName)
         Next
 
-1010:
         ' UpdateExplorerPane touches the TVExplorer control, so this needs to be marshaled to the UI thread
         ' when this method is called from a background thread (e.g. from a folder batch task).
         If FrmMain.IsHandleCreated = True AndAlso FrmMain.InvokeRequired = True Then
@@ -134,12 +126,18 @@ Module MdlTasks
             MdlZTStudioUI.UpdateExplorerPane()
         End If
 
-        Exit Function
+        Return LstResult.Count
 
-dBug:
-        Dim StrMessage As String = "An error occured while trying to clean up ZT1 Graphic files in this folder: " & vbCrLf & StrPath
-        MdlZTStudio.HandledError("MdlTasks", "CleanUpFiles", StrMessage, False, Information.Err)
-
+        Catch ex As Exception
+            ' Previously this Function had no Return on any path (neither here nor on the success
+            ' path above), silently always yielding 0. Now returns the number of files actually
+            ' deleted on success, and -1 here so a caller can tell "cleaned up 0 files" apart from
+            ' "clean-up failed". HandledError below re-throws while a batch is running (see
+            ' BlnBatchOperationRunning), so this Return is only reached outside a batch.
+            Dim StrMessage As String = "An error occured while trying to clean up ZT1 Graphic files in this folder: " & vbCrLf & StrPath
+            MdlZTStudio.HandledError("MdlTasks", "CleanUpFiles", StrMessage, False, ex)
+            Return -1
+        End Try
 
     End Function
 
@@ -155,76 +153,69 @@ dBug:
         ' Warning: do NOT implement a clean up of files here (ZT1 Graphic/ZT1 Color Palette).
         ' Reason: The color palette could be shared with other images, which would cause issues during a batch conversion!
 
-        On Error GoTo dBg
-        MdlZTStudio.Trace("MdlTasks", "ConvertFileZT1ToPNG", "Convert ZT1 to PNG: " & StrSourceFileName)
+        Try
 
-5:
-        ' Create a new instance of a ZT1 Graphic object.
-        Dim ObjGraphic As New ClsGraphic(Nothing)
+            MdlZTStudio.Trace("MdlTasks", "ConvertFileZT1ToPNG", "Convert ZT1 to PNG: " & StrSourceFileName)
 
-        ' Read the ZT1 Graphic
-        ObjGraphic.Read(StrSourceFileName)
+            ' Create a new instance of a ZT1 Graphic object.
+            Dim ObjGraphic As New ClsGraphic(Nothing)
 
-        ' Render the set of frames within this ZT1 Graphic.
-        ' There are some options when exporting.
-        ' - canvas size options
-        ' - render background frame or export it separately
+            ' Read the ZT1 Graphic
+            ObjGraphic.Read(StrSourceFileName)
 
-10:
-        ' Loop over each frame of the ZT1 Graphic
-        For Each ObjFrame As ClsFrame In ObjGraphic.Frames
+            ' Render the set of frames within this ZT1 Graphic.
+            ' There are some options when exporting.
+            ' - canvas size options
+            ' - render background frame or export it separately
 
-11:
+            ' Loop over each frame of the ZT1 Graphic
+            For Each ObjFrame As ClsFrame In ObjGraphic.Frames
 
-            ' The bitmap's save function does not overwrite, nor warn that the file already exists.
-            ' So it is safer to delete any existing files.
-            System.IO.File.Delete(StrSourceFileName & Cfg_Convert_FileNameDelimiter & (ObjGraphic.Frames.IndexOf(ObjFrame) + Cfg_Convert_StartIndex).ToString("0000") & ".png")
+                ' The bitmap's save function does not overwrite, nor warn that the file already exists.
+                ' So it is safer to delete any existing files.
+                System.IO.File.Delete(StrSourceFileName & Cfg_Convert_FileNameDelimiter & (ObjGraphic.Frames.IndexOf(ObjFrame) + Cfg_Convert_StartIndex).ToString("0000") & ".png")
 
-            ' Save frames as PNG, just autonumber the frames.
-            ' Exception: if there is an extra frame which should be rendered separately rather than as background. 
-            ' In that case, output a .PNG-file named <graphicname>_extra.png
-            ' Since this is a batch process, (currently) not offering the option to render a background ZT1 Graphic.
-            ' This might however make a nice addition :)
+                ' Save frames as PNG, just autonumber the frames.
+                ' Exception: if there is an extra frame which should be rendered separately rather than as background.
+                ' In that case, output a .PNG-file named <graphicname>_extra.png
+                ' Since this is a batch process, (currently) not offering the option to render a background ZT1 Graphic.
+                ' This might however make a nice addition :)
 
-            ' RenderBGFrame: this is read as: 'render this as BG for every frame'
-            If Cfg_Export_PNG_RenderBGFrame = 0 And ObjGraphic.HasBackgroundFrame = 1 Then
-                If ObjGraphic.Frames.IndexOf(ObjFrame) = (ObjGraphic.Frames.Count - 1) Then
-                    ObjFrame.SavePNG(StrSourceFileName & Cfg_Convert_FileNameDelimiter & "extra.png")
+                ' RenderBGFrame: this is read as: 'render this as BG for every frame'
+                If Cfg_Export_PNG_RenderBGFrame = 0 And ObjGraphic.HasBackgroundFrame = 1 Then
+                    If ObjGraphic.Frames.IndexOf(ObjFrame) = (ObjGraphic.Frames.Count - 1) Then
+                        ObjFrame.SavePNG(StrSourceFileName & Cfg_Convert_FileNameDelimiter & "extra.png")
+                    Else
+                        ObjFrame.SavePNG(StrSourceFileName & Cfg_Convert_FileNameDelimiter & (ObjGraphic.Frames.IndexOf(ObjFrame) + Cfg_Convert_StartIndex).ToString("0000") & ".png")
+                    End If
                 Else
                     ObjFrame.SavePNG(StrSourceFileName & Cfg_Convert_FileNameDelimiter & (ObjGraphic.Frames.IndexOf(ObjFrame) + Cfg_Convert_StartIndex).ToString("0000") & ".png")
+
                 End If
-            Else
-                ObjFrame.SavePNG(StrSourceFileName & Cfg_Convert_FileNameDelimiter & (ObjGraphic.Frames.IndexOf(ObjFrame) + Cfg_Convert_StartIndex).ToString("0000") & ".png")
 
-            End If
+                ' Experimental. Export info such as offsets, height, width, mystery bytes...
+                If Cfg_Convert_Write_Graphic_Data_To_Text_File = 1 Then
+                    MdlZTStudio.Trace("MdlTasks", "ConvertFileZT1ToPNG", "Export graphic details to text file...")
+                    ObjFrame.WriteDetailsToTextFile()
+                End If
 
-            ' Experimental. Export info such as offsets, height, width, mystery bytes...
-            If Cfg_Convert_Write_Graphic_Data_To_Text_File = 1 Then
-                MdlZTStudio.Trace("MdlTasks", "ConvertFileZT1ToPNG", "Export graphic details to text file...")
-                ObjFrame.WriteDetailsToTextFile()
-            End If
+            Next
 
-        Next
+            MdlZTStudio.Trace("MdlTasks", "ConvertFileZT1ToPNG", "Conversion finished.")
 
-13:
-        MdlZTStudio.Trace("MdlTasks", "ConvertFileZT1ToPNG", "Conversion finished.")
+            ' Paint job
+            Application.DoEvents()
 
-        BlnTaskRunning = False
+        Catch ex As Exception
+            Dim StrErrorMessage As String =
+                "An error occurred while converting a ZT1 Graphics file to PNG files:" & vbCrLf &
+                StrSourceFileName
 
-        ' Paint job
-        Application.DoEvents()
+            MdlZTStudio.HandledError("MdlTasks", "ConvertFileZT1ToPNG", StrErrorMessage, False, ex)
 
-
-        Exit Sub
-
-dBg:
-        Dim StrErrorMessage As String =
-            "An error occurred while converting a ZT1 Graphics file to PNG files:" & vbCrLf &
-            StrSourceFileName
-
-        MdlZTStudio.HandledError("MdlTasks", "ConvertFileZT1ToPNG", StrErrorMessage, False, Information.Err)
-
-        BlnTaskRunning = False
+        Finally
+            BlnTaskRunning = False
+        End Try
 
     End Sub
 
@@ -235,15 +226,14 @@ dBg:
     ''' <param name="BlnSingleConversion"></param>
     Public Sub ConvertFilePNGToZT1(StrDestinationFileName As String, Optional BlnSingleConversion As Boolean = True)
 
-        On Error GoTo dBg
-
         BlnTaskRunning = True
 
         ' Get the name(s) of the PNG file(s) that will be combined into the ZT1 Graphic.
         ' Find out what the final name of the ZT1 Graphic will be.
         ' Note: Cleanup of .PNG files only happens automatically in batch conversions (if enabled in Settings)
 
-0:
+        Try
+
         ' Convert to lower (force similar filenames everywhere)
         StrDestinationFileName = Strings.LCase(StrDestinationFileName)
 
@@ -257,7 +247,6 @@ dBg:
         Dim StrErrorMessage As String ' For error details
         Dim StrPngName As String
 
-10:
         MdlZTStudio.Trace("MdlTasks", "ConvertFilePNGToZT1", "Path: " & StrFrameGraphicPath)
         MdlZTStudio.Trace("MdlTasks", "ConvertFilePNGToZT1", "Graphic name: " & StrGraphicName)
 
@@ -265,7 +254,6 @@ dBg:
         ' Any filename not matching this pattern is irrelevant to process.
         LstPNGFiles = System.IO.Directory.GetFiles(StrFrameGraphicPath, StrGraphicName & Cfg_Convert_FileNameDelimiter & "????.png")
 
-11:
         ' Check if files match the expected pattern, so far
         Dim IntIndex As Integer = 0
         For Each StrPNGFile As String In LstPNGFiles
@@ -281,16 +269,12 @@ dBg:
             IntIndex += 1
         Next
 
-20:
-
         ' Now if there is a background frame (ends in extra.png), add this as well.
         If File.Exists(StrFrameGraphicPath & StrGraphicName & Cfg_Convert_FileNameDelimiter & "extra.png") = True Then
             LstPNGFiles.Append(StrFrameGraphicPath & StrGraphicName & Cfg_Convert_FileNameDelimiter & "extra.png")
             ObjGraphic.HasBackgroundFrame = 1
         End If
 
-
-21:
         ' There should be at least two frames if a background frame is specified
         If ObjGraphic.HasBackgroundFrame = 1 Then
 
@@ -301,11 +285,8 @@ dBg:
 
         End If
 
-100:
-
         For Each StrPNGFile As String In LstPNGFiles
 
-105:
             ' Extract the index of the frame (or _extra) from the filename
             If Strings.Right(System.IO.Path.GetFileName(StrPNGFile).ToLower(), 9) = "extra.png" Then
                 StrPngName = "extra"
@@ -313,33 +294,27 @@ dBg:
                 StrPngName = Strings.Right(System.IO.Path.GetFileNameWithoutExtension(StrPNGFile), 4)
             End If
 
-120:
-
             If StrPngName = "extra" Then
                 ' There's an extra background frame.
                 ObjGraphic.HasBackgroundFrame = 1
 
             End If
 
-200:
             ObjFrame = New ClsFrame(ObjGraphic)
 
-201:
             ' In case of a batch conversion, it's possible a shared color palette (.pal) is enforced.
             ' usually, this would be something like this:
             ' objects/restrant/restrant.pal
-            ' animals/ibex/ibex.pal 
+            ' animals/ibex/ibex.pal
 
-            ' To make it a bit more simple for the users of ZT Studio and to allow for easier recoloring 
-            ' (for example: lighter graphics of Red Panda will be used for the female), 
+            ' To make it a bit more simple for the users of ZT Studio and to allow for easier recoloring
+            ' (for example: lighter graphics of Red Panda will be used for the female),
             ' it would be better if the palette is not under animals/redpanda/redpanda.pal but animals/redpanda/m/redpanda.pal
             ' This should work for fences etc as well.
 
-202:
-
             If Cfg_Convert_SharedPalette = 1 And BlnSingleConversion = False Then
 
-                ' 20170513: changed behavior for even more flexibility. 
+                ' 20170513: changed behavior for even more flexibility.
                 ' ZT Studio tries to detect a color palette:
                 ' - in the same folder as the graphic (animals/redpanda/m/walk - walk.pal) - in case this animation uses colors not used anywhere else.
                 ' - in the folder one level up (animals/redpanda/m - m.pal) - in case a palette is shared for the gender (male, female, young)
@@ -435,30 +410,25 @@ dBg:
 
             End If
 
-
-245:
-            ' Add this frame to the graphic's frame collection 
+            ' Add this frame to the graphic's frame collection
             ObjGraphic.Frames.Add(ObjFrame)
 
-250:
             ' Create a frame from the .PNG-file
             ObjFrame.LoadPNG(StrPNGFile)
 
         Next StrPNGFile
 
-1530:
         MdlZTStudio.Trace("MdlTasks", "ConvertFilePNGToZT1", "Write graphic...")
 
-        ' Create the ZT1 Graphic. 
+        ' Create the ZT1 Graphic.
         ObjGraphic.Write(StrDestinationFileName)
 
-1555:
         If Cfg_Export_ZT1_Ani = 1 And BlnSingleConversion = True Then
 
             MdlZTStudio.Trace("MdlTasks", "ConvertFilePNGToZT1", "Generate .ani file")
 
             ' Only 1 graphic file is being generated (example: icon)
-            ' A .ani-file can be generated automatically.       
+            ' A .ani-file can be generated automatically.
             ' [folder path] + \ + [folder name] + .ani
             Dim ObjAniFile As New ClsAniFile(StrPathDir & "\" & Path.GetFileName(StrPathDir) & ".ani")
             ObjAniFile.CreateAniConfig()
@@ -467,17 +437,15 @@ dBg:
 
         MdlZTStudio.Trace("MdlTasks", "ConvertFilePNGToZT1", "Converted PNG-set to ZT1 Graphic")
 
-9999:
         ' Clear everything.
         ObjGraphic = Nothing
 
-        BlnTaskRunning = False
+        Catch ex As Exception
+            MdlZTStudio.UnhandledError("MdlTasks", "ConvertFolderPNGToZT1", ex, True)
 
-        Exit Sub
-
-dBg:
-        MdlZTStudio.UnhandledError("MdlTasks", "ConvertFolderPNGToZT1", Information.Err, True)
-
+        Finally
+            BlnTaskRunning = False
+        End Try
 
     End Sub
 
@@ -490,8 +458,8 @@ dBg:
     Public Function ConvertFolderZT1ToPNG(StrPath As String, Optional ObjProgressBar As ProgressBar = Nothing, Optional ObjCancellationToken As CancellationToken = Nothing) As Task
 
         ' The actual folder walk and per-file conversion run on a background thread, so the UI thread is not blocked.
-        ' The unstructured error handling below (On Error Goto) is not valid inside a lambda expression,
-        ' so the actual work is delegated to a private Sub instead of being written inline here.
+        ' The work is delegated to a private Sub rather than being written inline in the Task.Run lambda,
+        ' so it stays readable and independently callable/testable.
         Return Task.Run(Sub() ConvertFolderZT1ToPNGCore(StrPath, ObjProgressBar, ObjCancellationToken), ObjCancellationToken)
 
     End Function
@@ -505,81 +473,103 @@ dBg:
     ''' <param name="ObjCancellationToken">Token which allows cancelling the batch between files</param>
     Private Sub ConvertFolderZT1ToPNGCore(StrPath As String, ObjProgressBar As ProgressBar, ObjCancellationToken As CancellationToken)
 
-        On Error GoTo dBug
+        Try
 
-0:
-        ' Create a recursive list of files
+            ' Create a recursive list of files
 
-        ' This list stores the results.
-        Dim LstResult As New List(Of String)
+            ' This list stores the results.
+            Dim LstResult As New List(Of String)
 
-        ' This stack stores the directories to process.
-        Dim Stack As New Stack(Of String)
+            ' This stack stores the directories to process.
+            Dim Stack As New Stack(Of String)
 
-        ' Add the initial directory
-        Stack.Push(StrPath)
+            ' Add the initial directory
+            Stack.Push(StrPath)
 
-10:
-        ' Continue processing for each stacked directory
-        Do While (Stack.Count > 0)
-            ' Get top directory string
+            ' Continue processing for each stacked directory
+            Do While (Stack.Count > 0)
+                ' Get top directory string
 
-15:
-            Dim StrDirectoryName As String = Stack.Pop
+                Dim StrDirectoryName As String = Stack.Pop
 
-20:
-            For Each StrFileName As String In Directory.GetFiles(StrDirectoryName, "*")
-                ' Only ZT1 files
-                If Path.GetExtension(StrFileName) = vbNullString Then
-                    LstResult.Add(StrFileName)
+                For Each StrFileName As String In Directory.GetFiles(StrDirectoryName, "*")
+                    ' Only ZT1 files
+                    If Path.GetExtension(StrFileName) = vbNullString Then
+                        LstResult.Add(StrFileName)
+                    End If
+                Next
+
+                ' Loop through all subdirectories and add them to the stack.
+                Dim StrSubDirectoryName As String
+                For Each StrSubDirectoryName In Directory.GetDirectories(StrDirectoryName)
+                    Stack.Push(StrSubDirectoryName)
+                Next
+
+            Loop
+
+            ' Set the initial configuration for a (optional) progress bar.
+            ' Max value should be the number of ZT1 Graphics found.
+            ResetProgressBar(ObjProgressBar, LstResult.Count)
+
+            ' Track how many files succeeded/failed, to report a summary at the end.
+            ' A single bad file should not abort the whole batch (see issue #44).
+            Dim IntSucceeded As Integer = 0
+            Dim LstFailed As New List(Of String)
+            Dim BlnCancelled As Boolean = False
+
+            BlnBatchOperationRunning = True
+            Try
+
+                ' For each file that is a ZT1 Graphic:
+                For Each StrZT1GraphicFileName As String In LstResult
+
+                    ' Allow the batch to be cancelled cleanly between files.
+                    If ObjCancellationToken.IsCancellationRequested = True Then
+                        BlnCancelled = True
+                        Exit For
+                    End If
+
+                    Try
+                        MdlTasks.ConvertFileZT1ToPNG(StrZT1GraphicFileName)
+                        IntSucceeded += 1
+
+                    Catch exFile As Exception
+                        MdlZTStudio.LogError("MdlTasks", "ConvertFolderZT1ToPNG", "Failed to convert file: " & StrZT1GraphicFileName, exFile)
+                        LstFailed.Add(StrZT1GraphicFileName)
+                    End Try
+
+                    StepProgressBar(ObjProgressBar)
+                Next
+
+            Finally
+                BlnBatchOperationRunning = False
+            End Try
+
+            ' Skip clean up and the summary if the batch was cancelled: some files were never
+            ' processed, so deleting originals or reporting a "final" summary would be misleading.
+            If BlnCancelled = False Then
+
+                ' Clean up original ZT1 Graphic files? (includes palette, does not include .ani file for now!)
+                If Cfg_Convert_DeleteOriginal = 1 Then
+                    ' Currently clean up of ZT1 Graphics and ZT1 Color palettes is called seperately.
+                    ' It might be possible to merge them at some point and you could even gain a small performance boost.
+                    MdlTasks.CleanUpFiles(StrPath, "")
+                    MdlTasks.CleanUpFiles(StrPath, ".pal")
                 End If
-            Next
 
-25:
-            ' Loop through all subdirectories and add them to the stack.
-            Dim StrSubDirectoryName As String
-            For Each StrSubDirectoryName In Directory.GetDirectories(StrDirectoryName)
-                Stack.Push(StrSubDirectoryName)
-            Next
+                ' Report a summary of the batch run, rather than silently succeeding or hard-crashing.
+                Dim StrSummary As String = IntSucceeded & " file(s) converted successfully."
+                If LstFailed.Count > 0 Then
+                    StrSummary = StrSummary & vbCrLf & LstFailed.Count & " file(s) failed:" & vbCrLf & String.Join(vbCrLf, LstFailed)
+                End If
+                MdlZTStudio.InfoBox("MdlTasks", "ConvertFolderZT1ToPNG", StrSummary)
 
-        Loop
-
-        ' Set the initial configuration for a (optional) progress bar.
-        ' Max value should be the number of ZT1 Graphics found.
-        ResetProgressBar(ObjProgressBar, LstResult.Count)
-
-1000:
-        ' For each file that is a ZT1 Graphic:
-        Dim BlnCancelled As Boolean = False
-        For Each StrZT1GraphicFileName As String In LstResult
-
-            ' Allow the batch to be cancelled cleanly between files.
-            If ObjCancellationToken.IsCancellationRequested = True Then
-                BlnCancelled = True
-                Exit For
             End If
 
-            MdlTasks.ConvertFileZT1ToPNG(StrZT1GraphicFileName)
-            StepProgressBar(ObjProgressBar)
-        Next
-
-
-1050:
-        ' Clean up original ZT1 Graphic files? (includes palette, does not include .ani file for now!)
-        ' Skipped if the batch was cancelled, to avoid deleting source files that were never actually converted.
-        If BlnCancelled = False And Cfg_Convert_DeleteOriginal = 1 Then
-            ' Currently clean up of ZT1 Graphics and ZT1 Color palettes is called seperately.
-            ' It might be possible to merge them at some point and you could even gain a small performance boost.
-            MdlTasks.CleanUpFiles(StrPath, "")
-            MdlTasks.CleanUpFiles(StrPath, ".pal")
-        End If
-
-        Exit Sub
-
-dBug:
-
-        MdlZTStudio.HandledError("MdlTasks", "ConvertFolderZT1ToPNG", "Unexpected error occurred.", True, Information.Err)
-
+        Catch ex As Exception
+            ' Genuinely fatal: e.g. the target folder itself could not be scanned at all.
+            MdlZTStudio.HandledError("MdlTasks", "ConvertFolderZT1ToPNG", "Unexpected error occurred.", True, ex)
+        End Try
 
     End Sub
 
@@ -592,8 +582,8 @@ dBug:
     Public Function ConvertFolderPNGToZT1(StrSourcePath As String, Optional ObjProgressBar As ProgressBar = Nothing, Optional ObjCancellationToken As CancellationToken = Nothing) As Task
 
         ' The actual folder walk and per-file conversion run on a background thread, so the UI thread is not blocked.
-        ' The unstructured error handling below (On Error Goto) is not valid inside a lambda expression,
-        ' so the actual work is delegated to a private Sub instead of being written inline here.
+        ' The work is delegated to a private Sub rather than being written inline in the Task.Run lambda,
+        ' so it stays readable and independently callable/testable.
         Return Task.Run(Sub() ConvertFolderPNGToZT1Core(StrSourcePath, ObjProgressBar, ObjCancellationToken), ObjCancellationToken)
 
     End Function
@@ -607,120 +597,134 @@ dBug:
     ''' <param name="ObjCancellationToken">Token which allows cancelling the batch between files</param>
     Private Sub ConvertFolderPNGToZT1Core(StrSourcePath As String, ObjProgressBar As ProgressBar, ObjCancellationToken As CancellationToken)
 
-        On Error GoTo dBug
+        Try
 
-0:
-5:
-        ' Create a recursive list.
+            ' Create a recursive list.
 
-        ' This list stores the results.
-        Dim LstFiles As New List(Of String)
+            ' This list stores the results.
+            Dim LstFiles As New List(Of String)
 
-        ' This stack stores the directories to process.
-        Dim StackDirectories As New Stack(Of String)
+            ' This stack stores the directories to process.
+            Dim StackDirectories As New Stack(Of String)
 
-        ' Longer error messages
-        Dim StrErrorMessage As String
+            ' Longer error messages
+            Dim StrErrorMessage As String
 
-        ' Add the initial directory
-        StackDirectories.Push(StrSourcePath)
+            ' Add the initial directory
+            StackDirectories.Push(StrSourcePath)
 
-10:
+            ' Continue processing for each stacked directory
+            Do While (StackDirectories.Count > 0)
+                ' Get top directory string
 
-        ' Continue processing for each stacked directory
-        Do While (StackDirectories.Count > 0)
-            ' Get top directory string
+                Dim StrDirectory As String = StackDirectories.Pop
+                Dim StrGraphicName As String
 
-15:
-            Dim StrDirectory As String = StackDirectories.Pop
-            Dim StrGraphicName As String
+                ' Add all immediate file paths
 
-            ' Add all immediate file paths 
+                For Each StrFileName In Directory.GetFiles(StrDirectory, "*.png")
 
-20:
-            For Each StrFileName In Directory.GetFiles(StrDirectory, "*.png")
+                    ' Add future graphic name ("full" path, eg animals/redpanda/m/walk/NE)
+                    If Strings.Right(Path.GetFileNameWithoutExtension(StrFileName).ToLower, 5 + Strings.Len(Cfg_Convert_FileNameDelimiter)) = Cfg_Convert_FileNameDelimiter & "extra" Then
+                        ' 5 (extra) + 4 (.png) + x (delimiter) = 9 + x characters.
+                        ' eg objects/yourobj/NE_extra.png
+                        StrGraphicName = Strings.Left(StrFileName, Len(StrFileName) - 9 - Strings.Len(Cfg_Convert_FileNameDelimiter))
+                    Else
+                        ' 4 (0000) + 4 (.png) = 8 chars.
+                        ' eg objects/yourobj/NE_0001.png
+                        StrGraphicName = Strings.Left(StrFileName, Strings.Len(StrFileName) - 8 - Strings.Len(Cfg_Convert_FileNameDelimiter))
+                    End If
 
-                ' Add future graphic name ("full" path, eg animals/redpanda/m/walk/NE)
-                If Strings.Right(Path.GetFileNameWithoutExtension(StrFileName).ToLower, 5 + Strings.Len(Cfg_Convert_FileNameDelimiter)) = Cfg_Convert_FileNameDelimiter & "extra" Then
-                    ' 5 (extra) + 4 (.png) + x (delimiter) = 9 + x characters.
-                    ' eg objects/yourobj/NE_extra.png 
-                    StrGraphicName = Strings.Left(StrFileName, Len(StrFileName) - 9 - Strings.Len(Cfg_Convert_FileNameDelimiter))
-                Else
-                    ' 4 (0000) + 4 (.png) = 8 chars. 
-                    ' eg objects/yourobj/NE_0001.png 
-                    StrGraphicName = Strings.Left(StrFileName, Strings.Len(StrFileName) - 8 - Strings.Len(Cfg_Convert_FileNameDelimiter))
+                    If LstFiles.Contains(StrGraphicName) = False Then
+                        LstFiles.Add(StrGraphicName)
+                    End If
+
+                Next
+
+                ' Loop through all subdirectories and add them to the stack.
+                Dim StrDirectoryName As String
+                For Each StrDirectoryName In Directory.GetDirectories(StrDirectory)
+
+                    ' Just a warning, so users don't accidentally have "sitscratch" as animation name.
+                    ' Actually '-' is supported as well.
+                    If Path.GetFileName(StrDirectoryName).Length > 8 Or System.Text.RegularExpressions.Regex.IsMatch(Strings.Replace(Path.GetFileName(StrDirectoryName), "-", ""), "^[a-zA-Z0-9_-]+$") = False Then
+
+                        StrErrorMessage =
+                            "Directory name '" & Path.GetFileName(StrDirectoryName) & "' is invalid." & vbCrLf &
+                            "The limit of a folder name is a maximum of 8 alphanumeric characters." & vbCrLf &
+                            "You will need to rename the folder manually and then retry."
+
+                        MdlZTStudio.HandledError("MdlTasks", "ConvertFolderPNGToZT1", StrErrorMessage, True, Nothing)
+
+                    End If
+
+                    StackDirectories.Push(StrDirectoryName)
+                Next
+
+            Loop
+
+            ResetProgressBar(ObjProgressBar, LstFiles.Count)
+
+            ' Track how many files succeeded/failed, to report a summary at the end.
+            ' A single bad file should not abort the whole batch (see issue #44).
+            Dim IntSucceeded As Integer = 0
+            Dim LstFailed As New List(Of String)
+            Dim BlnCancelled As Boolean = False
+
+            BlnBatchOperationRunning = True
+            Try
+
+                ' For each file that is a ZT1 Graphic:
+                For Each StrDestinationGraphicName As String In LstFiles
+
+                    ' Allow the batch to be cancelled cleanly between files.
+                    If ObjCancellationToken.IsCancellationRequested = True Then
+                        BlnCancelled = True
+                        Exit For
+                    End If
+
+                    Try
+                        MdlTasks.ConvertFilePNGToZT1(StrDestinationGraphicName, False)
+                        IntSucceeded += 1
+
+                    Catch exFile As Exception
+                        MdlZTStudio.LogError("MdlTasks", "ConvertFolderPNGToZT1", "Failed to convert file: " & StrDestinationGraphicName, exFile)
+                        LstFailed.Add(StrDestinationGraphicName)
+                    End Try
+
+                    StepProgressBar(ObjProgressBar)
+                Next
+
+            Finally
+                BlnBatchOperationRunning = False
+            End Try
+
+            ' Skip clean up and the summary if the batch was cancelled: some files were never
+            ' processed, so deleting originals or reporting a "final" summary would be misleading.
+            If BlnCancelled = False Then
+
+                ' Generate a .ani-file in each directory.
+                ' Add the initial directory
+                MdlBatch.WriteAniFile(StrSourcePath)
+
+                ' Do a clean up of .PNG files if conversion was successful and setting is enabled
+                If Cfg_Convert_DeleteOriginal = 1 Then
+                    MdlTasks.CleanUpFiles(StrSourcePath, ".png")
                 End If
 
-                If LstFiles.Contains(StrGraphicName) = False Then
-                    LstFiles.Add(StrGraphicName)
+                ' Report a summary of the batch run, rather than silently succeeding or hard-crashing.
+                Dim StrSummary As String = IntSucceeded & " file(s) converted successfully."
+                If LstFailed.Count > 0 Then
+                    StrSummary = StrSummary & vbCrLf & LstFailed.Count & " file(s) failed:" & vbCrLf & String.Join(vbCrLf, LstFailed)
                 End If
+                MdlZTStudio.InfoBox("MdlTasks", "ConvertFolderPNGToZT1", StrSummary)
 
-            Next
-
-25:
-            ' Loop through all subdirectories and add them to the stack.
-            Dim StrDirectoryName As String
-            For Each StrDirectoryName In Directory.GetDirectories(StrDirectory)
-
-                ' Just a warning, so users don't accidentally have "sitscratch" as animation name.
-                ' Actually '-' is supported as well.
-                If Path.GetFileName(StrDirectoryName).Length > 8 Or System.Text.RegularExpressions.Regex.IsMatch(Strings.Replace(Path.GetFileName(StrDirectoryName), "-", ""), "^[a-zA-Z0-9_-]+$") = False Then
-
-                    StrErrorMessage =
-                        "Directory name '" & Path.GetFileName(StrDirectoryName) & "' is invalid." & vbCrLf &
-                        "The limit of a folder name is a maximum of 8 alphanumeric characters." & vbCrLf &
-                        "You will need to rename the folder manually and then retry."
-
-                    MdlZTStudio.HandledError("MdlTasks", "ConvertFolderPNGToZT1", StrErrorMessage, True, Information.Err)
-
-                End If
-
-                StackDirectories.Push(StrDirectoryName)
-            Next
-
-        Loop
-
-
-101:
-        ResetProgressBar(ObjProgressBar, LstFiles.Count)
-
-1000:
-        ' For each file that is a ZT1 Graphic:
-        Dim BlnCancelled As Boolean = False
-        For Each StrDestinationGraphicName As String In LstFiles
-
-            ' Allow the batch to be cancelled cleanly between files.
-            If ObjCancellationToken.IsCancellationRequested = True Then
-                BlnCancelled = True
-                Exit For
             End If
 
-            MdlTasks.ConvertFilePNGToZT1(StrDestinationGraphicName, False)
-            StepProgressBar(ObjProgressBar)
-
-        Next
-
-
-1100:
-        ' Generate a .ani-file in each directory, unless the batch was cancelled (partial results only).
-        ' Add the initial directory
-        If BlnCancelled = False Then
-            MdlBatch.WriteAniFile(StrSourcePath)
-        End If
-
-
-1150:
-        ' Do a clean up of .PNG files if conversion was successful and setting is enabled.
-        ' Skipped if the batch was cancelled, to avoid deleting source files that were never actually converted.
-        If BlnCancelled = False And Cfg_Convert_DeleteOriginal = 1 Then
-            MdlTasks.CleanUpFiles(StrSourcePath, ".png")
-        End If
-
-        Exit Sub
-
-dBug:
-        MdlZTStudio.UnhandledError("MdlTasks", "ConvertFolderPNGToZT1", Information.Err, True)
-
+        Catch ex As Exception
+            ' Genuinely fatal: e.g. the source folder itself could not be scanned, or contains an invalid directory name.
+            MdlZTStudio.UnhandledError("MdlTasks", "ConvertFolderPNGToZT1", ex, True)
+        End Try
 
     End Sub
 
@@ -741,7 +745,6 @@ dBug:
             .Write(StrFileName, True)
         End With
 
-50:
         If Cfg_Export_ZT1_Ani = 1 Then
             MdlZTStudio.Trace("MdlTasks", "SaveGraphic", "Try .ani")
             ' Get the folder + name of the folder + .ani
@@ -749,7 +752,6 @@ dBug:
             CAni.CreateAniConfig()
         End If
 
-60:
         FrmMain.ssFileName.Text = Now.ToString("yyyy-MM-dd HH:mm:ss") & ": saved " & StrFileName
 
 
@@ -770,8 +772,8 @@ dBug:
     Public Function BatchOffsetFixFolderZT1(StrPath As String, PntOffset As Point, Optional ObjProgressBar As ProgressBar = Nothing, Optional ObjCancellationToken As CancellationToken = Nothing) As Task
 
         ' The actual folder walk and per-file processing run on a background thread, so the UI thread is not blocked.
-        ' The unstructured error handling below (On Error Goto) is not valid inside a lambda expression,
-        ' so the actual work is delegated to a private Sub instead of being written inline here.
+        ' The work is delegated to a private Sub rather than being written inline in the Task.Run lambda,
+        ' so it stays readable and independently callable/testable.
         Return Task.Run(Sub() BatchOffsetFixFolderZT1Core(StrPath, PntOffset, ObjProgressBar, ObjCancellationToken), ObjCancellationToken)
 
     End Function
@@ -788,97 +790,110 @@ dBug:
 
         ' Todo: check needed to see if strPath is subfolder of Cfg_Path_Root ?
 
+        Try
 
-        On Error GoTo dBug
+            ' Creating a recursive file list.
 
-0:
+            ' This list stores the results.
+            Dim LstFiles As New List(Of String)
 
-        ' Creating a recursive file list.
+            ' This stack stores the directories to process.
+            Dim StackDirectories As New Stack(Of String)
 
-        ' This list stores the results.
-        Dim LstFiles As New List(Of String)
+            ' Add the initial directory
+            StackDirectories.Push(StrPath)
 
-        ' This stack stores the directories to process.
-        Dim StackDirectories As New Stack(Of String)
+            ' Continue processing for each stacked directory
+            Do While (StackDirectories.Count > 0)
+                ' Get top directory string
 
-        ' Add the initial directory
-        StackDirectories.Push(StrPath)
+                Dim StrDirectory As String = StackDirectories.Pop
 
-10:
+                For Each strFile As String In Directory.GetFiles(StrDirectory, "*")
+                    ' Only ZT1 files
+                    If Path.GetExtension(strFile) = vbNullString Then
+                        LstFiles.Add(strFile)
+                    End If
+                Next
 
-        ' Continue processing for each stacked directory
-        Do While (StackDirectories.Count > 0)
-            ' Get top directory string
+                ' Loop through all subdirectories and add them to the stack.
+                Dim StrSubDirectoryName As String
+                For Each StrSubDirectoryName In Directory.GetDirectories(StrDirectory)
+                    StackDirectories.Push(StrSubDirectoryName)
+                Next
 
-15:
-            Dim StrDirectory As String = StackDirectories.Pop
+            Loop
 
-20:
-            For Each strFile As String In Directory.GetFiles(StrDirectory, "*")
-                ' Only ZT1 files
-                If Path.GetExtension(strFile) = vbNullString Then
-                    LstFiles.Add(strFile)
+            ' Set the initial configuration for a (optional) progress bar.
+            ' The max value should be the number of ZT1 Graphics
+            ResetProgressBar(ObjProgressBar, LstFiles.Count)
+
+            ' Track how many files succeeded/failed, to report a summary at the end.
+            ' A single bad file should not abort the whole batch (see issue #44).
+            Dim IntSucceeded As Integer = 0
+            Dim LstFailed As New List(Of String)
+            Dim BlnCancelled As Boolean = False
+
+            BlnBatchOperationRunning = True
+            Try
+
+                ' For each file that is a ZT1 Graphic:
+                For Each StrCurrentFile As String In LstFiles
+
+                    ' Allow the batch to be cancelled cleanly between files.
+                    If ObjCancellationToken.IsCancellationRequested = True Then
+                        BlnCancelled = True
+                        Exit For
+                    End If
+
+                    Try
+                        MdlZTStudio.Trace("MdlTasks", "BatchOffsetFixFolderZT1", "Processing file " & StrCurrentFile)
+
+                        ' Read graphic, update offsets of frames, save.
+                        Dim ObjGraphic As New ClsGraphic(Nothing)
+
+                        ObjGraphic.Read(StrCurrentFile)
+
+                        ObjGraphic.Frames(0).UpdateOffsets(PntOffset, True)
+
+                        ObjGraphic.Write(StrCurrentFile)
+
+                        IntSucceeded += 1
+
+                    Catch exFile As Exception
+                        MdlZTStudio.LogError("MdlTasks", "BatchOffsetFixFolderZT1", "Failed to fix offsets for file: " & StrCurrentFile, exFile)
+                        LstFailed.Add(StrCurrentFile)
+                    End Try
+
+                    StepProgressBar(ObjProgressBar)
+                Next
+
+            Finally
+                BlnBatchOperationRunning = False
+            End Try
+
+            ' Skip clean up and the summary if the batch was cancelled: some files were never
+            ' processed, so reporting a "final" summary would be misleading.
+            If BlnCancelled = False Then
+
+                ' Generate a .ani-file in each directory.
+                ' Add the initial directory
+                MdlBatch.WriteAniFile(StrPath)
+
+                ' Report a summary of the batch run, rather than silently succeeding or hard-crashing.
+                Dim StrSummary As String = "Finished batch rotation fixing." & vbCrLf &
+                    IntSucceeded & " file(s) fixed successfully."
+                If LstFailed.Count > 0 Then
+                    StrSummary = StrSummary & vbCrLf & LstFailed.Count & " file(s) failed:" & vbCrLf & String.Join(vbCrLf, LstFailed)
                 End If
-            Next
+                MdlZTStudio.InfoBox("MdlTasks", "BatchOffsetFixFolderZT1", StrSummary)
 
-25:
-            ' Loop through all subdirectories and add them to the stack.
-            Dim StrSubDirectoryName As String
-            For Each StrSubDirectoryName In Directory.GetDirectories(StrDirectory)
-                StackDirectories.Push(StrSubDirectoryName)
-            Next
-
-        Loop
-
-        ' Set the initial configuration for a (optional) progress bar.
-        ' The max value should be the number of ZT1 Graphics
-        ResetProgressBar(ObjProgressBar, LstFiles.Count)
-
-1000:
-        ' For each file that is a ZT1 Graphic:
-        Dim BlnCancelled As Boolean = False
-        For Each StrCurrentFile As String In LstFiles
-
-            ' Allow the batch to be cancelled cleanly between files.
-            If ObjCancellationToken.IsCancellationRequested = True Then
-                BlnCancelled = True
-                Exit For
             End If
 
-            MdlZTStudio.Trace("MdlTasks", "BatchOffsetFixFolderZT1", "Processing file " & StrCurrentFile)
-
-            ' Read graphic, update offsets of frames, save.
-            Dim ObjGraphic As New ClsGraphic(Nothing)
-
-1100:
-            ObjGraphic.Read(StrCurrentFile)
-
-1105:
-            ObjGraphic.Frames(0).UpdateOffsets(PntOffset, True)
-
-1110:
-            ObjGraphic.Write(StrCurrentFile)
-
-            StepProgressBar(ObjProgressBar)
-        Next
-
-1200:
-        ' Generate a .ani-file in each directory, unless the batch was cancelled (partial results only).
-        ' Add the initial directory
-        If BlnCancelled = False Then
-            MdlBatch.WriteAniFile(StrPath)
-        End If
-
-1950:
-        If BlnCancelled = False Then
-            MdlZTStudio.InfoBox("MdlTasks", "BatchOffsetFixFolderZT1", "Finished batch rotation fixing.")
-        End If
-
-        Exit Sub
-
-dBug:
-        MdlZTStudio.HandledError("MdlTasks", "BatchOffsetFixFolderZT1", "Unexpected error.", False, Nothing)
-
+        Catch ex As Exception
+            ' Genuinely fatal: e.g. the target folder itself could not be scanned at all.
+            MdlZTStudio.HandledError("MdlTasks", "BatchOffsetFixFolderZT1", "Unexpected error.", False, ex)
+        End Try
 
     End Sub
 

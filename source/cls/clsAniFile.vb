@@ -135,56 +135,47 @@ Public Class ClsAniFile
 
         ' This function will write out the .ani-file.
 
+        Try
 
-        On Error GoTo dBug
+            Dim StrAni As String = "[animation]" & vbCrLf
 
-        Dim StrAni As String = "[animation]" & vbCrLf
-
-1:
-        ' If there's a .ani-file present, delete it first.
-        If File.Exists(Me.FileName) = True Then
-            File.Delete(Me.FileName)
-        End If
-
-2:
-        ' Write out dirs
-        For Each s As String In Me.RelativeDirectories
-            StrAni = StrAni & "dir" & Me.RelativeDirectories.IndexOf(s) & " = " & s & vbCrLf
-        Next
-
-3:
-        ' Write out views
-        For Each s As String In Me.Views
-            StrAni = StrAni & "animation = " & s & vbCrLf
-        Next
-
-4:
-        ' Now, the coordinates
-        StrAni = StrAni &
-            "x0 = " & Me.X0 & vbCrLf &
-            "y0 = " & Me.Y0 & vbCrLf &
-            "x1 = " & Me.X1 & vbCrLf &
-            "y1 = " & Me.Y1 & vbCrLf
-
-10:
-        ' Write.
-        If Me.Views.Count > 0 And Me.RelativeDirectories.Count > 0 Then
+            ' If there's a .ani-file present, delete it first.
             If File.Exists(Me.FileName) = True Then
                 File.Delete(Me.FileName)
             End If
-            Using outfile As New StreamWriter(Me.FileName)
-                outfile.Write(StrAni.ToString())
-            End Using
-        End If
 
-        Return 0
+            ' Write out dirs
+            For Each s As String In Me.RelativeDirectories
+                StrAni = StrAni & "dir" & Me.RelativeDirectories.IndexOf(s) & " = " & s & vbCrLf
+            Next
 
+            ' Write out views
+            For Each s As String In Me.Views
+                StrAni = StrAni & "animation = " & s & vbCrLf
+            Next
 
-        Exit Function
+            ' Now, the coordinates
+            StrAni = StrAni &
+                "x0 = " & Me.X0 & vbCrLf &
+                "y0 = " & Me.Y0 & vbCrLf &
+                "x1 = " & Me.X1 & vbCrLf &
+                "y1 = " & Me.Y1 & vbCrLf
 
-dBug:
-        MdlZTStudio.UnhandledError(Me.GetType().FullName, "Write", Information.Err, False)
+            ' Write.
+            If Me.Views.Count > 0 And Me.RelativeDirectories.Count > 0 Then
+                If File.Exists(Me.FileName) = True Then
+                    File.Delete(Me.FileName)
+                End If
+                Using outfile As New StreamWriter(Me.FileName)
+                    outfile.Write(StrAni.ToString())
+                End Using
+            End If
 
+            Return 0
+
+        Catch ex As Exception
+            MdlZTStudio.UnhandledError(Me.GetType().FullName, "Write", ex, False, ZTStudioErrorCategory.FileFormat)
+        End Try
 
     End Function
 
@@ -209,16 +200,14 @@ dBug:
             Me.FileName = StrFileName.Replace("/", "\")
         End If
 
+        Try
 
-1:
         If Me.FileName = "" Then
 
             ' Is there any path which leads up to this error?
-            MdlZTStudio.HandledError(Me.GetType().FullName, "CreateAniConfig", "Unexpected error: filename for .ani file is empty?", True, Information.Err)
+            MdlZTStudio.HandledError(Me.GetType().FullName, "CreateAniConfig", "Unexpected error: filename for .ani file is empty?", True, Nothing, ZTStudioErrorCategory.FileFormat)
 
         Else
-
-2:
 
             ' This is the full path and the relative path of the .ani file
             Dim StrPath As String = Path.GetDirectoryName(Me.FileName)
@@ -234,11 +223,9 @@ dBug:
             Me.RelativeDirectories.Clear(False)
             Me.RelativeDirectories.AddRange(Strings.Split(StrPathRelative, "\"), False)
 
-10:
             ' Set views.
             Me.Views.Clear(False)
 
-11:
             If File.Exists(StrPath & "\N") = True And
                 File.Exists(StrPath & "\NE") = True And
                 File.Exists(StrPath & "\E") = True And
@@ -257,7 +244,6 @@ dBug:
 
                 MdlZTStudio.Trace(Me.GetType().FullName, "CreateAniConfig", "Determination: 'animals', 'guests', 'staff', ...")
 
-12:
             ElseIf File.Exists(StrPath & "\NE") = True And
                 File.Exists(StrPath & "\SE") = True And
                 File.Exists(StrPath & "\SW") = True And
@@ -273,9 +259,6 @@ dBug:
 
                 MdlZTStudio.Trace(Me.GetType().FullName, "CreateAniConfig", "Determination: 'object'")
 
-
-13:
-
             ElseIf File.Exists(StrPath & "\N") = True Then
 
                 ' This is typical for icons
@@ -284,9 +267,6 @@ dBug:
                 End With
 
                 MdlZTStudio.Trace(Me.GetType().FullName, "CreateAniConfig", "Determination: 'icon'")
-
-
-14:
 
             ElseIf File.Exists(StrPath & "\1") = True And
                 File.Exists(StrPath & "\2") = True And
@@ -320,9 +300,6 @@ dBug:
 
                 MdlZTStudio.Trace(Me.GetType().FullName, "CreateAniConfig", "Determination: 'path'")
 
-
-15:
-
             ElseIf File.Exists(StrPath & "\N") = True And
                 File.Exists(StrPath & "\H") = True And
                 File.Exists(StrPath & "\S") = True And
@@ -338,14 +315,12 @@ dBug:
 
                 MdlZTStudio.Trace(Me.GetType().FullName, "CreateAniConfig", "Determination: 'ui button'")
 
-99:
             Else
 
                 MdlZTStudio.Trace(Me.GetType().FullName, "CreateAniConfig", "Determination: unable to determine type of graphic in " & Path.GetDirectoryName(Me.FileName))
 
             End If
 
-100:
             ' Will only do something if views were detected, in a similar fashion to what's known.
             ' For instance, if one graphic (SE) is used for 4 sides, ZTStudio will NOT recognize it and do nothing.
             If Me.Views.Count > 0 Then
@@ -372,16 +347,11 @@ dBug:
 
         End If
 
-
-50:
-
         Me.Write()
 
-
-        Exit Sub
-
-dBug:
-        MdlZTStudio.UnhandledError(Me.GetType().FullName, "CreateAniConfig", Information.Err, True)
+        Catch ex As Exception
+            MdlZTStudio.UnhandledError(Me.GetType().FullName, "CreateAniConfig", ex, True, ZTStudioErrorCategory.FileFormat)
+        End Try
 
     End Sub
 

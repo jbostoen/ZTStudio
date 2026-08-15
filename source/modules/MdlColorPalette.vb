@@ -108,30 +108,38 @@ Module MdlColorPalette
     ''' <param name="StrFileName">Source filename of the ZT1 color palette (.pal)</param>
     Sub LoadPalette(StrFileName As String)
 
-        If File.Exists(StrFileName) Then
+        Try
 
-            If Path.GetExtension(StrFileName) <> ".pal" Then
-                MdlZTStudio.HandledError("MdlColorPalette", "LoadPalette", "You did not select a ZT1 Color Palette (.pal file).")
+            If File.Exists(StrFileName) Then
+
+                If Path.GetExtension(StrFileName) <> ".pal" Then
+                    MdlZTStudio.HandledError("MdlColorPalette", "LoadPalette", "You did not select a ZT1 Color Palette (.pal file).")
+
+                Else
+
+                    ' Show a dedicated window
+                    Dim CpPallete As New ClsPalette(Nothing)
+                    Dim FrmColPal As New FrmPal
+
+                    ' Read the .pal file. ReadPal() has no Try/Catch of its own (unlike ClsGraphic.Read()),
+                    ' so a malformed/truncated file that trips something other than its explicit length
+                    ' check would otherwise propagate straight out of this button click.
+                    CpPallete.ReadPal(StrFileName)
+                    CpPallete.FillPaletteGrid(FrmColPal.DgvPal)
+
+                    FrmColPal.SsFileName.Text = Path.GetFileName(StrFileName)
+
+                    FrmColPal.Show()
+
+                End If
 
             Else
-
-                ' Show a dedicated window
-                Dim CpPallete As New ClsPalette(Nothing)
-                Dim FrmColPal As New FrmPal
-
-                ' Read the .pal file
-                CpPallete.ReadPal(StrFileName)
-                CpPallete.FillPaletteGrid(FrmColPal.DgvPal)
-
-                FrmColPal.SsFileName.Text = Path.GetFileName(StrFileName)
-
-                FrmColPal.Show()
-
+                MdlZTStudio.HandledError("MdlColorPalette", "LoadPalette", "Could not find '" & StrFileName & "'")
             End If
 
-        Else
-            MdlZTStudio.HandledError("MdlColorPalette", "LoadPalette", "Could not find '" & StrFileName & "'")
-        End If
+        Catch ex As Exception
+            MdlZTStudio.HandledError("MdlColorPalette", "LoadPalette", "Could not open color palette '" & StrFileName & "': " & ex.Message, False, ex, ZTStudioErrorCategory.FileFormat)
+        End Try
 
     End Sub
 End Module

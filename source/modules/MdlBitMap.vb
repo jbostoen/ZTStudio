@@ -12,43 +12,33 @@ Module MdlBitMap
     ''' <returns>ClsDirectBitmap</returns>
     Public Function CombineImages(ByVal BitMapBack As ClsDirectBitmap, ByVal BitMapFront As ClsDirectBitmap) As ClsDirectBitmap
 
-        On Error GoTo dBg
-
-1:
+        Try
 
         Dim ImgBack As Image = BitMapBack.Bitmap
         Dim ImgFront As Image = BitMapFront.Bitmap
-
 
         Dim IntMaxWidth As Integer = Math.Max(ImgBack.Width, ImgFront.Width)
         Dim IntMaxHeight As Integer = Math.Max(ImgBack.Height, ImgFront.Height)
 
         MdlZTStudio.Trace("MdlBitMap", "CombineImages", "Background w1 = " & ImgBack.Width & ", h1 = " & ImgBack.Height & " | Front w2 = " & ImgFront.Width & ", " & ImgFront.Height)
 
-
-2:
         Dim BmpOutput As New ClsDirectBitmap(IntMaxWidth, IntMaxHeight)
 
-3:
         Dim ObjGraphic As Graphics = Graphics.FromImage(BmpOutput.Bitmap)
 
-11:
         ObjGraphic.InterpolationMode = Drawing2D.InterpolationMode.NearestNeighbor ' Prevent softening
 
-21:
         ObjGraphic.DrawImage(ImgBack, CInt((IntMaxWidth - ImgBack.Width) / 2), CInt((IntMaxHeight - ImgBack.Height) / 2), ImgBack.Width, ImgBack.Height)
 
-31:
         ObjGraphic.DrawImage(ImgFront, CInt((IntMaxWidth - ImgFront.Width) / 2), CInt((IntMaxHeight - ImgFront.Height) / 2), ImgFront.Width, ImgFront.Height)
 
-41:
         ObjGraphic.Dispose()
-
 
         Return BmpOutput
 
-dBg:
-        MdlZTStudio.UnhandledError("MdlBitMap", "CombineImages", Information.Err, True)
+        Catch ex As Exception
+            MdlZTStudio.UnhandledError("MdlBitMap", "CombineImages", ex, True)
+        End Try
 
     End Function
 
@@ -201,13 +191,12 @@ dBg:
     ''' <returns>Rectangle - dimensions of relevant part</returns>
     Function GetDefiningRectangle(BmInput As ClsDirectBitmap) As Rectangle
 
-        On Error GoTo dBug
+        Try
 
-        ' This new method using LockBits is much faster than a previous version where GetPixel() was used. 
+        ' This new method using LockBits is much faster than a previous version where GetPixel() was used.
         ' This is a big performance boost when loading 512x512 (canvas size) images.
         ' For now, the old function still exists to make sure regressions can be detected.
 
-101:
         ' Find most top/left
         ' Find most bottom/right
 
@@ -218,8 +207,6 @@ dBg:
         Dim IntX As Integer = 0
         Dim IntY As Integer = 0
 
-
-251:
         For IntY = 0 To (BmInput.Height - 1)
 
             For IntX = 0 To (BmInput.Width - 1)
@@ -247,15 +234,11 @@ dBg:
 
         Next IntY
 
-
-
-901:
         ' The width/height are +1.
         ObjCoordBottomRight.X += 1
         ObjCoordBottomRight.Y += 1
 
-999:
-        ' 20170512 
+        ' 20170512
         ' HENDRIX found out that completely transparent frames can cause issues.
         ' This is a simple fix: it seems that a 1x1 frame is valid in ZT1, even if it's transparent.
         If ObjCoordTopLeft.X = BmInput.Width And ObjCoordTopLeft.Y = BmInput.Height Then
@@ -265,10 +248,9 @@ dBg:
 
         Return New Rectangle(ObjCoordTopLeft.X, ObjCoordTopLeft.Y, ObjCoordBottomRight.X - ObjCoordTopLeft.X, ObjCoordBottomRight.Y - ObjCoordTopLeft.Y)
 
-        Exit Function
-
-dBug:
-        MdlZTStudio.UnhandledError("MdlBitMap", "GetDefiningRectangle", Information.Err, True)
+        Catch ex As Exception
+            MdlZTStudio.UnhandledError("MdlBitMap", "GetDefiningRectangle", ex, True)
+        End Try
 
     End Function
 

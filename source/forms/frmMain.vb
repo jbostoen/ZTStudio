@@ -15,57 +15,66 @@ Public Class FrmMain
     ''' <param name="e">MouseEventArgs</param>
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
-        ' Done to increase performance of adding colors to this palette.
-        DgvPaletteMain.GetType.InvokeMember("DoubleBuffered", Reflection.BindingFlags.NonPublic Or Reflection.BindingFlags.Instance Or System.Reflection.BindingFlags.SetProperty, Nothing, DgvPaletteMain, New Object() {True})
+        Try
 
-        ' Always start with a new ZT1 Graphic with one frame
-        EditorFrame = New ClsFrame(EditorGraphic)
-        EditorGraphic.Frames.Add(EditorFrame)
+            ' Done to increase performance of adding colors to this palette.
+            DgvPaletteMain.GetType.InvokeMember("DoubleBuffered", Reflection.BindingFlags.NonPublic Or Reflection.BindingFlags.Instance Or System.Reflection.BindingFlags.SetProperty, Nothing, DgvPaletteMain, New Object() {True})
 
-        ' Starting with an empty canvas
-        MdlSettings.BMEmpty = New ClsDirectBitmap(Cfg_Grid_NumPixels * 2, Cfg_Grid_NumPixels * 2)
-        With PicBox
-            .Width = Cfg_grid_numPixels * 2
-            .Height = Cfg_grid_numPixels * 2
-        End With
+            ' Always start with a new ZT1 Graphic with one frame
+            EditorFrame = New ClsFrame(EditorGraphic)
+            EditorGraphic.Frames.Add(EditorFrame)
 
-        ' Background color derived from settings (based on previously configured settings)
-        PicBox.BackColor = Cfg_grid_BackGroundColor
+            ' Starting with an empty canvas
+            MdlSettings.BMEmpty = New ClsDirectBitmap(Cfg_Grid_NumPixels * 2, Cfg_Grid_NumPixels * 2)
+            With PicBox
+                .Width = Cfg_grid_numPixels * 2
+                .Height = Cfg_grid_numPixels * 2
+            End With
 
-        ' Set grid size (based on previously configured settings)
-        TsbFrame_fpX.Text = CStr(Cfg_grid_footPrintX)
-        TsbFrame_fpY.Text = CStr(Cfg_grid_footPrintY)
-        TsbFrame_OffsetAll.Checked = (Cfg_editor_rotFix_individualFrame * -1)
+            ' Background color derived from settings (based on previously configured settings)
+            PicBox.BackColor = Cfg_grid_BackGroundColor
 
-        ' ZT1 Default color palettes
-        ' strPathBuildingColorPals
+            ' Set grid size (based on previously configured settings)
+            TsbFrame_fpX.Text = CStr(Cfg_grid_footPrintX)
+            TsbFrame_fpY.Text = CStr(Cfg_grid_footPrintY)
+            TsbFrame_OffsetAll.Checked = (Cfg_editor_rotFix_individualFrame * -1)
 
-        Dim LstColorpalettes As IO.FileInfo()
-        LstColorpalettes = New IO.DirectoryInfo(Cfg_path_ColorPals8).GetFiles()
-        Dim ObjFileInfo As IO.FileInfo
+            ' ZT1 Default color palettes
+            ' strPathBuildingColorPals
 
-        ' List all files found in the directory with 8-color palettes
-        For Each ObjFileInfo In LstColorpalettes
-            TsbOpenPalBldg8.DropDownItems.Add(ObjFileInfo.Name)
-        Next
+            Dim LstColorpalettes As IO.FileInfo()
+            LstColorpalettes = New IO.DirectoryInfo(Cfg_path_ColorPals8).GetFiles()
+            Dim ObjFileInfo As IO.FileInfo
 
-        LstColorpalettes = New IO.DirectoryInfo(Cfg_path_ColorPals16).GetFiles()
+            ' List all files found in the directory with 8-color palettes
+            For Each ObjFileInfo In LstColorpalettes
+                TsbOpenPalBldg8.DropDownItems.Add(ObjFileInfo.Name)
+            Next
 
-        ' List all files found in the directory with 16-color palettes
-        For Each ObjFileInfo In LstColorpalettes
-            TsbOpenPalBldg16.DropDownItems.Add(ObjFileInfo.Name)
-        Next
+            LstColorpalettes = New IO.DirectoryInfo(Cfg_path_ColorPals16).GetFiles()
 
-        ' Update Explorer Panel to show folder structure of root folder
-        MdlZTStudioUI.UpdateExplorerPane()
+            ' List all files found in the directory with 16-color palettes
+            For Each ObjFileInfo In LstColorpalettes
+                TsbOpenPalBldg16.DropDownItems.Add(ObjFileInfo.Name)
+            Next
 
-        ' If exists, load ZT1 Graphic. Won't decrease performance a lot and might be helpful while working on a project
-        If File.Exists(Cfg_path_recentZT1) = True Then
-            MdlZTStudioUI.LoadGraphic(Cfg_path_recentZT1)
-        End If
+            ' Update Explorer Panel to show folder structure of root folder
+            MdlZTStudioUI.UpdateExplorerPane()
 
-        ' Make sure everything is finished. Needed?
-        Application.DoEvents()
+            ' If exists, load ZT1 Graphic. Won't decrease performance a lot and might be helpful while working on a project
+            If File.Exists(Cfg_path_recentZT1) = True Then
+                MdlZTStudioUI.LoadGraphic(Cfg_path_recentZT1)
+            End If
+
+            ' Make sure everything is finished. Needed?
+            Application.DoEvents()
+
+        Catch ex As Exception
+            ' The main form failed to initialize (e.g. a configured color palette folder is missing).
+            ' Without this, the exception would only be caught by the application-wide safety net in
+            ' ApplicationEvents.vb, which cannot attribute it to this specific method.
+            MdlZTStudio.UnhandledError(Me.GetType().FullName, "Form1_Load", ex, True)
+        End Try
 
     End Sub
 
@@ -76,83 +85,72 @@ Public Class FrmMain
     ''' <param name="e">MouseEventArgs</param>
     Private Sub PicBox_MouseMove(sender As Object, e As MouseEventArgs) Handles PicBox.MouseMove
 
-        On Error GoTo dBug
+        Try
 
-1:
-        ' Canvas is still entirely empty
-        If IsNothing(PicBox.Image) = True Then
-            MdlZTStudio.Trace(Me.GetType().FullName, "MouseMove", "Picture box empty")
-            Exit Sub
-        End If
+            ' Canvas is still entirely empty
+            If IsNothing(PicBox.Image) = True Then
+                MdlZTStudio.Trace(Me.GetType().FullName, "MouseMove", "Picture box empty")
+                Exit Sub
+            End If
 
-2:
-        ' Frame might have been just initiated
-        If IsNothing(EditorFrame.CoreImageBitmap) And IsNothing(EditorFrame.CoreImageHex) Then
-            MdlZTStudio.Trace(Me.GetType().FullName, "MouseMove", "EditorFrame has no CoreImageBitmap or CoreImageHex")
-            Exit Sub
-        End If
-3:
-        ' This is a bit of a dilemma. 
-        ' If using PicBox.image, it also shows the grid color on hovering. Ignoring the grid color is a bad idea since the color may be present in the image too.
-        ' If just using editorFrame.GetImage(), it won't show colors of any background graphic (toy for Orang Utan).
-        ' Todo: combining them makes more sense but is more intensive. Should be cached somewhere.
-        ' Images_Combine(editorFrame.GetImage(), editorBgGraphic.getimage())
-        Dim BmTmp As Bitmap
-        BmTmp = PicBox.Image ' Used to be EditorFrame.GetImage()
+            ' Frame might have been just initiated
+            If IsNothing(EditorFrame.CoreImageBitmap) And IsNothing(EditorFrame.CoreImageHex) Then
+                MdlZTStudio.Trace(Me.GetType().FullName, "MouseMove", "EditorFrame has no CoreImageBitmap or CoreImageHex")
+                Exit Sub
+            End If
 
+            ' This is a bit of a dilemma.
+            ' If using PicBox.image, it also shows the grid color on hovering. Ignoring the grid color is a bad idea since the color may be present in the image too.
+            ' If just using editorFrame.GetImage(), it won't show colors of any background graphic (toy for Orang Utan).
+            ' Todo: combining them makes more sense but is more intensive. Should be cached somewhere.
+            ' Images_Combine(editorFrame.GetImage(), editorBgGraphic.getimage())
+            Dim BmTmp As Bitmap
+            BmTmp = PicBox.Image ' Used to be EditorFrame.GetImage()
 
-20:
-        ' Find out which pixel area matters within the PicBox
-        ' Offset compared to PicBox Left/Top
-        ' Keep in mind: BmTmp is NOT necessarily the entire PicBox (adjusts to window)
-        Dim IntOffsetX As Integer = (PicBox.Width - BmTmp.Width) / 2 ' Left = positive; right = negative
-        Dim IntOffsetY As Integer = (PicBox.Height - BmTmp.Height) / 2 ' Top = positive; bottom = negative
+            ' Find out which pixel area matters within the PicBox
+            ' Offset compared to PicBox Left/Top
+            ' Keep in mind: BmTmp is NOT necessarily the entire PicBox (adjusts to window)
+            Dim IntOffsetX As Integer = (PicBox.Width - BmTmp.Width) / 2 ' Left = positive; right = negative
+            Dim IntOffsetY As Integer = (PicBox.Height - BmTmp.Height) / 2 ' Top = positive; bottom = negative
 
-100:
+            MdlZTStudio.Trace(Me.GetType().FullName, "MouseMove", "e.X = " & e.X & ", Y = " & e.Y)
+            MdlZTStudio.Trace(Me.GetType().FullName, "MouseMove", "Offset X = " & IntOffsetX & ", Y = " & IntOffsetY)
+            MdlZTStudio.Trace(Me.GetType().FullName, "MouseMove", "Bmp width = " & BmTmp.Width & ", Height = " & BmTmp.Height)
 
-        MdlZTStudio.Trace(Me.GetType().FullName, "MouseMove", "e.X = " & e.X & ", Y = " & e.Y)
-        MdlZTStudio.Trace(Me.GetType().FullName, "MouseMove", "Offset X = " & IntOffsetX & ", Y = " & IntOffsetY)
-        MdlZTStudio.Trace(Me.GetType().FullName, "MouseMove", "Bmp width = " & BmTmp.Width & ", Height = " & BmTmp.Height)
+            If e.X > IntOffsetX And e.X < (BmTmp.Width + IntOffsetX) And e.Y > IntOffsetY And e.Y < (BmTmp.Height + IntOffsetY) Then
 
-        If e.X > IntOffsetX And e.X < (BmTmp.Width + IntOffsetX) And e.Y > IntOffsetY And e.Y < (BmTmp.Height + IntOffsetY) Then
+                ' Image might be smaller, while PicBox appears larger due to background color.
+                Dim ObjColor As System.Drawing.Color = BmTmp.GetPixel(e.X - IntOffsetX, e.Y - IntOffsetY)
 
-101:
-            ' Image might be smaller, while PicBox appears larger due to background color.
-            Dim ObjColor As System.Drawing.Color = BmTmp.GetPixel(e.X - IntOffsetX, e.Y - IntOffsetY)
+                ' Alpha channel is not set to 0 (transparent). This check is still from when using BmpTmp = EditorFrame.GetImage()
+                ' Display color info
+                If ObjColor.A <> 0 Then
 
-            ' Alpha channel is not set to 0 (transparent). This check is still from when using BmpTmp = EditorFrame.GetImage()
-            ' Display color info
-            If ObjColor.A <> 0 Then
+                    LblColor.BackColor = ObjColor
+                    LblColorDetails.Text = "" &
+                        "Coordinates: x: " & e.X - IntOffsetX & " , y: " & e.Y - IntOffsetY & vbCrLf &
+                        "RGB: " & ObjColor.R & "," & ObjColor.G & "," & ObjColor.B & vbCrLf &
+                        "Index in .pal file: # " & EditorGraphic.ColorPalette.Colors.IndexOf(ObjColor) & vbCrLf &
+                        "VB.Net: " & ObjColor.ToArgb()
 
-102:
-                LblColor.BackColor = ObjColor
-                LblColorDetails.Text = "" &
-                    "Coordinates: x: " & e.X - IntOffsetX & " , y: " & e.Y - IntOffsetY & vbCrLf &
-                    "RGB: " & ObjColor.R & "," & ObjColor.G & "," & ObjColor.B & vbCrLf &
-                    "Index in .pal file: # " & EditorGraphic.ColorPalette.Colors.IndexOf(ObjColor) & vbCrLf &
-                    "VB.Net: " & ObjColor.ToArgb()
+                Else
+
+                    ' Definitely just the background color.
+                    LblColor.BackColor = PicBox.BackColor
+                    LblColorDetails.Text = vbNullString
+
+                End If
 
             Else
 
-112:
-                ' Definitely just the background color.
                 LblColor.BackColor = PicBox.BackColor
                 LblColorDetails.Text = vbNullString
 
             End If
 
-        Else
-
-122:
-            LblColor.BackColor = PicBox.BackColor
-            LblColorDetails.Text = vbNullString
-
-        End If
-
-        Exit Sub
-
-dBug:
-        MdlZTStudio.UnhandledError(Me.GetType().FullName, "PicBox_MouseMove", Information.Err, True)
+        Catch ex As Exception
+            MdlZTStudio.UnhandledError(Me.GetType().FullName, "PicBox_MouseMove", ex, True)
+        End Try
 
     End Sub
 
@@ -253,41 +251,50 @@ dBug:
     ''' <param name="e">EventArgs</param>
     Private Sub TsbZT1Open_Click(sender As Object, e As EventArgs) Handles TsbZT1Open.Click
 
-        MdlZTStudio.Trace(Me.GetType().FullName, "TsbZT1Open_Click", "Open ZT1 file dialog.")
-        MdlZTStudio.Trace(Me.GetType().FullName, "TsbZT1Open_Click", "Last used file: " & Cfg_Path_RecentZT1)
+        Try
 
-        ' Show dialog to open a ZT1 Graphic
-        With DlgOpen
-            .Title = "Pick a ZT1 Graphic"
-            .DefaultExt = ""
-            .Filter = "All files|*.*"
+            MdlZTStudio.Trace(Me.GetType().FullName, "TsbZT1Open_Click", "Open ZT1 file dialog.")
+            MdlZTStudio.Trace(Me.GetType().FullName, "TsbZT1Open_Click", "Last used file: " & Cfg_Path_RecentZT1)
 
-            ' Default to path of last used graphic
-            .InitialDirectory = New FileInfo(Cfg_Path_RecentZT1).Directory.FullName
+            ' Show dialog to open a ZT1 Graphic
+            With DlgOpen
+                .Title = "Pick a ZT1 Graphic"
+                .DefaultExt = ""
+                .Filter = "All files|*.*"
 
-            ' If that path doesn't exist: attempt fallback to default game locations on x86 and x64 systems
-            If DlgOpen.InitialDirectory = vbNullString Or System.IO.Directory.Exists(DlgOpen.InitialDirectory) = False Then
-                If System.IO.Directory.Exists(Cfg_Path_Root) Then
-                    MdlZTStudio.Trace(Me.GetType().FullName, "TsbZT1Open_Click", "Open ZT1 file dialog. Fallback to root: " & Cfg_Path_Root)
-                    .InitialDirectory = Cfg_Path_Root
-                ElseIf System.IO.Directory.Exists("C:\Program Files (x86)\Microsoft Games\Zoo Tycoon") Then
-                    MdlZTStudio.Trace(Me.GetType().FullName, "TsbZT1Open_Click", "Open ZT1 file dialog. Fallback to Program Files (x86)")
-                    .InitialDirectory = "C:\Program Files (x86)\Microsoft Games\Zoo Tycoon"
-                ElseIf System.IO.Directory.Exists("C:\Program Files\Microsoft Games\Zoo Tycoon") Then
-                    MdlZTStudio.Trace(Me.GetType().FullName, "TsbZT1Open_Click", "Open ZT1 file dialog. Fallback to Program Files")
-                    .InitialDirectory = "C:\Program Files\Microsoft Games\Zoo Tycoon"
+                ' Default to path of last used graphic. New FileInfo(...) throws ArgumentException if
+                ' Cfg_Path_RecentZT1 is empty or otherwise not a valid path (e.g. first run, nothing
+                ' opened yet) - caught below instead of crashing the whole click handler.
+                .InitialDirectory = New FileInfo(Cfg_Path_RecentZT1).Directory.FullName
+
+                ' If that path doesn't exist: attempt fallback to default game locations on x86 and x64 systems
+                If DlgOpen.InitialDirectory = vbNullString Or System.IO.Directory.Exists(DlgOpen.InitialDirectory) = False Then
+                    If System.IO.Directory.Exists(Cfg_Path_Root) Then
+                        MdlZTStudio.Trace(Me.GetType().FullName, "TsbZT1Open_Click", "Open ZT1 file dialog. Fallback to root: " & Cfg_Path_Root)
+                        .InitialDirectory = Cfg_Path_Root
+                    ElseIf System.IO.Directory.Exists("C:\Program Files (x86)\Microsoft Games\Zoo Tycoon") Then
+                        MdlZTStudio.Trace(Me.GetType().FullName, "TsbZT1Open_Click", "Open ZT1 file dialog. Fallback to Program Files (x86)")
+                        .InitialDirectory = "C:\Program Files (x86)\Microsoft Games\Zoo Tycoon"
+                    ElseIf System.IO.Directory.Exists("C:\Program Files\Microsoft Games\Zoo Tycoon") Then
+                        MdlZTStudio.Trace(Me.GetType().FullName, "TsbZT1Open_Click", "Open ZT1 file dialog. Fallback to Program Files")
+                        .InitialDirectory = "C:\Program Files\Microsoft Games\Zoo Tycoon"
+                    End If
                 End If
-            End If
 
-            ' User did NOT cancel
-            If .ShowDialog() <> Windows.Forms.DialogResult.Cancel Then
+                ' User did NOT cancel
+                If .ShowDialog() <> Windows.Forms.DialogResult.Cancel Then
 
-                ' Load ZT1 Graphic
-                MdlZTStudioUI.LoadGraphic(DlgOpen.FileName)
+                    ' Load ZT1 Graphic
+                    MdlZTStudioUI.LoadGraphic(DlgOpen.FileName)
 
-            End If
+                End If
 
-        End With
+            End With
+
+        Catch ex As Exception
+            MdlZTStudio.HandledError(Me.GetType().FullName, "TsbZT1Open_Click", "Could not open the ""Open ZT1 Graphic"" dialog: " & ex.Message, False, ex)
+        End Try
+
     End Sub
 
     ''' <summary>
@@ -460,6 +467,8 @@ dBug:
     ''' <param name="e">EventArgs</param>
     Private Sub TsbPreview_BGGraphic_Click(sender As Object, e As EventArgs) Handles TsbPreview_BGGraphic.Click
 
+        Try
+
         ' Show dialog
         With DlgOpen
             .Title = "Pick a ZT1 Graphic"
@@ -521,6 +530,14 @@ dBug:
 
 
         End With
+
+        Catch ex As Exception
+            ' New FileInfo(Cfg_Path_RecentZT1) above throws ArgumentException if Cfg_Path_RecentZT1
+            ' is empty/invalid (e.g. nothing opened yet this session) - caught here instead of
+            ' crashing the click handler.
+            MdlZTStudio.HandledError(Me.GetType().FullName, "TsbPreview_BGGraphic_Click", "Could not open the background graphic dialog: " & ex.Message, False, ex)
+        End Try
+
     End Sub
 
 
@@ -531,27 +548,20 @@ dBug:
     ''' <param name="e">EventArgs</param>
     Private Sub TsbFrame_Add_Click(sender As Object, e As EventArgs) Handles TsbFrame_Add.Click
 
-        On Error GoTo dBug
+        Try
 
-0:
-        ' New ClsFrame
-        Dim ObjFrame As New ClsFrame(EditorGraphic)
-2:
+            ' New ClsFrame
+            Dim ObjFrame As New ClsFrame(EditorGraphic)
 
-10:
-        ' Add it to the list of frames (after the currently displayed one)
-        EditorGraphic.Frames.Insert(TbFrames.Value, ObjFrame)
+            ' Add it to the list of frames (after the currently displayed one)
+            EditorGraphic.Frames.Insert(TbFrames.Value, ObjFrame)
 
+            ' Update preview. Update frame info and other GUI elements (button states, offsets, ...)
+            MdlZTStudioUI.UpdatePreview(True, True, TbFrames.Value)
 
-        ' Update preview. Update frame info and other GUI elements (button states, offsets, ...)
-        MdlZTStudioUI.UpdatePreview(True, True, TbFrames.Value)
-
-        Exit Sub
-
-dBug:
-        MdlZTStudio.UnhandledError(Me.GetType().FullName, "TsbFrame_Add_Click", Information.Err, True)
-
-
+        Catch ex As Exception
+            MdlZTStudio.UnhandledError(Me.GetType().FullName, "TsbFrame_Add_Click", ex, True)
+        End Try
 
     End Sub
 
@@ -878,28 +888,20 @@ dBug:
 
         If (e.Button = Windows.Forms.MouseButtons.Right) Then
             ' Add frame
-0:
             Dim ObjFrame As New ClsFrame(EditorGraphic)
 
-10:
             ' Add the frame after the existing one(s)
             EditorGraphic.Frames.Insert(TbFrames.Value, ObjFrame)
 
-15:
             ' not sure if this is right if an extra frame is applied?
             TbFrames.Maximum = EditorGraphic.Frames.Count - EditorGraphic.HasBackgroundFrame
 
-16:
             TbFrames.Value += 1
 
             ' Update current preview. Update frame info (offsets), GUI (button states, counts etc)
             MdlZTStudioUI.UpdatePreview(True, True, TbFrames.Value - 1)
 
         End If
-
-
-
-100:
 
         With DlgOpen
             .Title = "Pick a .PNG file"
@@ -1178,10 +1180,8 @@ dBug:
 
                 End If
 
-51:
                 MdlTasks.SaveGraphic(DlgSave.FileName)
 
-60:
                 ' Remember
                 Cfg_Path_RecentZT1 = DlgSave.FileName
                 MdlConfig.Write()
@@ -1189,7 +1189,6 @@ dBug:
                 ' What has been opened, might need to be saved.
                 DlgOpen.FileName = DlgSave.FileName
 
-65:
                 ' Might be a new file, so update root folder and select this.
                 MdlZTStudioUI.UpdateExplorerPane()
 

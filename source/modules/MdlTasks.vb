@@ -65,6 +65,64 @@ Module MdlTasks
     End Sub
 
     ''' <summary>
+    ''' Runs ObjAction once per item in LstItems, in order, with per-item error isolation (a failure
+    ''' is logged and counted, but does not stop the batch), cooperative cancellation between items,
+    ''' and progress-bar stepping. Used by the three folder-batch methods below to avoid duplicating
+    ''' the same loop/cancellation/error-isolation/progress-bar skeleton three times (see issue #52).
+    ''' </summary>
+    ''' <typeparam name="T">Item type, e.g. a file path.</typeparam>
+    ''' <param name="LstItems">Items to process, e.g. file paths.</param>
+    ''' <param name="ObjProgressBar">Progress bar to reset up-front and step once per item. May be Nothing.</param>
+    ''' <param name="ObjCancellationToken">Checked between items; on cancellation, stops early.</param>
+    ''' <param name="ObjAction">The per-item work to run. May throw; failures are caught, logged, and counted.</param>
+    ''' <param name="StrLogContext">Class/method name to attribute logged per-item failures to.</param>
+    ''' <param name="ObjItemLabel">Turns an item into a short label (e.g. its filename) for logging/the failure list.</param>
+    ''' <returns>Succeeded count, the labels of items that failed, and whether cancellation stopped the batch early.</returns>
+    ''' <remarks>
+    ''' Does NOT set/reset BlnBatchOperationRunning - that needs to be active for the whole duration of
+    ''' the call (so HandledError/UnhandledError raise instead of showing a blocking dialog for anything
+    ''' ObjAction does), so each caller wraps its own call to this helper in a Try/Finally around that flag.
+    ''' </remarks>
+    Private Function RunFileBatch(Of T)(
+        LstItems As List(Of T),
+        ObjProgressBar As ProgressBar,
+        ObjCancellationToken As CancellationToken,
+        ObjAction As Action(Of T),
+        StrLogContext As String,
+        ObjItemLabel As Func(Of T, String)
+    ) As (Succeeded As Integer, Failed As List(Of String), Cancelled As Boolean)
+
+        ResetProgressBar(ObjProgressBar, LstItems.Count)
+
+        Dim IntSucceeded As Integer = 0
+        Dim LstFailed As New List(Of String)
+        Dim BlnCancelled As Boolean = False
+
+        For Each ObjItem As T In LstItems
+
+            ' Allow the batch to be cancelled cleanly between items.
+            If ObjCancellationToken.IsCancellationRequested = True Then
+                BlnCancelled = True
+                Exit For
+            End If
+
+            Try
+                ObjAction(ObjItem)
+                IntSucceeded += 1
+
+            Catch exItem As Exception
+                MdlZTStudio.LogError(StrLogContext, "RunFileBatch", "Failed to process: " & ObjItemLabel(ObjItem), exItem)
+                LstFailed.Add(ObjItemLabel(ObjItem))
+            End Try
+
+            StepProgressBar(ObjProgressBar)
+        Next
+
+        Return (IntSucceeded, LstFailed, BlnCancelled)
+
+    End Function
+
+    ''' <summary>
     ''' Cleans up files in a path, based on extension.
     ''' </summary>
     ''' <remarks>
@@ -507,47 +565,29 @@ Module MdlTasks
 
             Loop
 
-            ' Set the initial configuration for a (optional) progress bar.
-            ' Max value should be the number of ZT1 Graphics found.
-            ResetProgressBar(ObjProgressBar, LstResult.Count)
-
-            ' Track how many files succeeded/failed, to report a summary at the end.
-            ' A single bad file should not abort the whole batch (see issue #44).
-            Dim IntSucceeded As Integer = 0
-            Dim LstFailed As New List(Of String)
-            Dim BlnCancelled As Boolean = False
-
+            ' Process the discovered files with per-file error isolation, cancellation, and progress
+            ' reporting (see issue #52 - shared by all three folder-batch methods in this module).
+            ' BlnBatchOperationRunning must stay active for the whole call: HandledError/UnhandledError
+            ' inside ConvertFileZT1ToPNG rely on it being True to raise (so RunFileBatch's per-item
+            ' Try/Catch can log and continue) instead of showing a blocking dialog.
+            Dim ObjResult As (Succeeded As Integer, Failed As List(Of String), Cancelled As Boolean)
             BlnBatchOperationRunning = True
             Try
-
-                ' For each file that is a ZT1 Graphic:
-                For Each StrZT1GraphicFileName As String In LstResult
-
-                    ' Allow the batch to be cancelled cleanly between files.
-                    If ObjCancellationToken.IsCancellationRequested = True Then
-                        BlnCancelled = True
-                        Exit For
-                    End If
-
-                    Try
-                        MdlTasks.ConvertFileZT1ToPNG(StrZT1GraphicFileName)
-                        IntSucceeded += 1
-
-                    Catch exFile As Exception
-                        MdlZTStudio.LogError("MdlTasks", "ConvertFolderZT1ToPNG", "Failed to convert file: " & StrZT1GraphicFileName, exFile)
-                        LstFailed.Add(StrZT1GraphicFileName)
-                    End Try
-
-                    StepProgressBar(ObjProgressBar)
-                Next
-
+                ObjResult = RunFileBatch(
+                    LstResult,
+                    ObjProgressBar,
+                    ObjCancellationToken,
+                    Sub(StrZT1GraphicFileName) MdlTasks.ConvertFileZT1ToPNG(StrZT1GraphicFileName),
+                    "MdlTasks.ConvertFolderZT1ToPNG",
+                    Function(StrZT1GraphicFileName) StrZT1GraphicFileName
+                )
             Finally
                 BlnBatchOperationRunning = False
             End Try
 
             ' Skip clean up and the summary if the batch was cancelled: some files were never
             ' processed, so deleting originals or reporting a "final" summary would be misleading.
-            If BlnCancelled = False Then
+            If ObjResult.Cancelled = False Then
 
                 ' Clean up original ZT1 Graphic files? (includes palette, does not include .ani file for now!)
                 If Cfg_Convert_DeleteOriginal = 1 Then
@@ -558,9 +598,9 @@ Module MdlTasks
                 End If
 
                 ' Report a summary of the batch run, rather than silently succeeding or hard-crashing.
-                Dim StrSummary As String = IntSucceeded & " file(s) converted successfully."
-                If LstFailed.Count > 0 Then
-                    StrSummary = StrSummary & vbCrLf & LstFailed.Count & " file(s) failed:" & vbCrLf & String.Join(vbCrLf, LstFailed)
+                Dim StrSummary As String = ObjResult.Succeeded & " file(s) converted successfully."
+                If ObjResult.Failed.Count > 0 Then
+                    StrSummary = StrSummary & vbCrLf & ObjResult.Failed.Count & " file(s) failed:" & vbCrLf & String.Join(vbCrLf, ObjResult.Failed)
                 End If
                 MdlZTStudio.InfoBox("MdlTasks", "ConvertFolderZT1ToPNG", StrSummary)
 
@@ -663,45 +703,29 @@ Module MdlTasks
 
             Loop
 
-            ResetProgressBar(ObjProgressBar, LstFiles.Count)
-
-            ' Track how many files succeeded/failed, to report a summary at the end.
-            ' A single bad file should not abort the whole batch (see issue #44).
-            Dim IntSucceeded As Integer = 0
-            Dim LstFailed As New List(Of String)
-            Dim BlnCancelled As Boolean = False
-
+            ' Process the discovered graphic names with per-item error isolation, cancellation, and
+            ' progress reporting (see issue #52 - shared by all three folder-batch methods in this
+            ' module). BlnBatchOperationRunning must stay active for the whole call: HandledError/
+            ' UnhandledError inside ConvertFilePNGToZT1 rely on it being True to raise (so
+            ' RunFileBatch's per-item Try/Catch can log and continue) instead of showing a blocking dialog.
+            Dim ObjResult As (Succeeded As Integer, Failed As List(Of String), Cancelled As Boolean)
             BlnBatchOperationRunning = True
             Try
-
-                ' For each file that is a ZT1 Graphic:
-                For Each StrDestinationGraphicName As String In LstFiles
-
-                    ' Allow the batch to be cancelled cleanly between files.
-                    If ObjCancellationToken.IsCancellationRequested = True Then
-                        BlnCancelled = True
-                        Exit For
-                    End If
-
-                    Try
-                        MdlTasks.ConvertFilePNGToZT1(StrDestinationGraphicName, False)
-                        IntSucceeded += 1
-
-                    Catch exFile As Exception
-                        MdlZTStudio.LogError("MdlTasks", "ConvertFolderPNGToZT1", "Failed to convert file: " & StrDestinationGraphicName, exFile)
-                        LstFailed.Add(StrDestinationGraphicName)
-                    End Try
-
-                    StepProgressBar(ObjProgressBar)
-                Next
-
+                ObjResult = RunFileBatch(
+                    LstFiles,
+                    ObjProgressBar,
+                    ObjCancellationToken,
+                    Sub(StrDestinationGraphicName) MdlTasks.ConvertFilePNGToZT1(StrDestinationGraphicName, False),
+                    "MdlTasks.ConvertFolderPNGToZT1",
+                    Function(StrDestinationGraphicName) StrDestinationGraphicName
+                )
             Finally
                 BlnBatchOperationRunning = False
             End Try
 
             ' Skip clean up and the summary if the batch was cancelled: some files were never
             ' processed, so deleting originals or reporting a "final" summary would be misleading.
-            If BlnCancelled = False Then
+            If ObjResult.Cancelled = False Then
 
                 ' Generate a .ani-file in each directory.
                 ' Add the initial directory
@@ -713,9 +737,9 @@ Module MdlTasks
                 End If
 
                 ' Report a summary of the batch run, rather than silently succeeding or hard-crashing.
-                Dim StrSummary As String = IntSucceeded & " file(s) converted successfully."
-                If LstFailed.Count > 0 Then
-                    StrSummary = StrSummary & vbCrLf & LstFailed.Count & " file(s) failed:" & vbCrLf & String.Join(vbCrLf, LstFailed)
+                Dim StrSummary As String = ObjResult.Succeeded & " file(s) converted successfully."
+                If ObjResult.Failed.Count > 0 Then
+                    StrSummary = StrSummary & vbCrLf & ObjResult.Failed.Count & " file(s) failed:" & vbCrLf & String.Join(vbCrLf, ObjResult.Failed)
                 End If
                 MdlZTStudio.InfoBox("MdlTasks", "ConvertFolderPNGToZT1", StrSummary)
 
@@ -824,29 +848,19 @@ Module MdlTasks
 
             Loop
 
-            ' Set the initial configuration for a (optional) progress bar.
-            ' The max value should be the number of ZT1 Graphics
-            ResetProgressBar(ObjProgressBar, LstFiles.Count)
-
-            ' Track how many files succeeded/failed, to report a summary at the end.
-            ' A single bad file should not abort the whole batch (see issue #44).
-            Dim IntSucceeded As Integer = 0
-            Dim LstFailed As New List(Of String)
-            Dim BlnCancelled As Boolean = False
-
+            ' Process the discovered files with per-file error isolation, cancellation, and progress
+            ' reporting (see issue #52 - shared by all three folder-batch methods in this module).
+            ' BlnBatchOperationRunning must stay active for the whole call: HandledError/UnhandledError
+            ' inside the per-file action rely on it being True to raise (so RunFileBatch's per-item
+            ' Try/Catch can log and continue) instead of showing a blocking dialog.
+            Dim ObjResult As (Succeeded As Integer, Failed As List(Of String), Cancelled As Boolean)
             BlnBatchOperationRunning = True
             Try
-
-                ' For each file that is a ZT1 Graphic:
-                For Each StrCurrentFile As String In LstFiles
-
-                    ' Allow the batch to be cancelled cleanly between files.
-                    If ObjCancellationToken.IsCancellationRequested = True Then
-                        BlnCancelled = True
-                        Exit For
-                    End If
-
-                    Try
+                ObjResult = RunFileBatch(
+                    LstFiles,
+                    ObjProgressBar,
+                    ObjCancellationToken,
+                    Sub(StrCurrentFile)
                         MdlZTStudio.Trace("MdlTasks", "BatchOffsetFixFolderZT1", "Processing file " & StrCurrentFile)
 
                         ' Read graphic, update offsets of frames, save.
@@ -857,24 +871,17 @@ Module MdlTasks
                         ObjGraphic.Frames(0).UpdateOffsets(PntOffset, True)
 
                         ObjGraphic.Write(StrCurrentFile)
-
-                        IntSucceeded += 1
-
-                    Catch exFile As Exception
-                        MdlZTStudio.LogError("MdlTasks", "BatchOffsetFixFolderZT1", "Failed to fix offsets for file: " & StrCurrentFile, exFile)
-                        LstFailed.Add(StrCurrentFile)
-                    End Try
-
-                    StepProgressBar(ObjProgressBar)
-                Next
-
+                    End Sub,
+                    "MdlTasks.BatchOffsetFixFolderZT1",
+                    Function(StrCurrentFile) StrCurrentFile
+                )
             Finally
                 BlnBatchOperationRunning = False
             End Try
 
             ' Skip clean up and the summary if the batch was cancelled: some files were never
             ' processed, so reporting a "final" summary would be misleading.
-            If BlnCancelled = False Then
+            If ObjResult.Cancelled = False Then
 
                 ' Generate a .ani-file in each directory.
                 ' Add the initial directory
@@ -882,9 +889,9 @@ Module MdlTasks
 
                 ' Report a summary of the batch run, rather than silently succeeding or hard-crashing.
                 Dim StrSummary As String = "Finished batch rotation fixing." & vbCrLf &
-                    IntSucceeded & " file(s) fixed successfully."
-                If LstFailed.Count > 0 Then
-                    StrSummary = StrSummary & vbCrLf & LstFailed.Count & " file(s) failed:" & vbCrLf & String.Join(vbCrLf, LstFailed)
+                    ObjResult.Succeeded & " file(s) fixed successfully."
+                If ObjResult.Failed.Count > 0 Then
+                    StrSummary = StrSummary & vbCrLf & ObjResult.Failed.Count & " file(s) failed:" & vbCrLf & String.Join(vbCrLf, ObjResult.Failed)
                 End If
                 MdlZTStudio.InfoBox("MdlTasks", "BatchOffsetFixFolderZT1", StrSummary)
 

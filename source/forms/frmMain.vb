@@ -37,7 +37,7 @@ Public Class FrmMain
             ' Set grid size (based on previously configured settings)
             TsbFrame_fpX.Text = CStr(Cfg_grid_footPrintX)
             TsbFrame_fpY.Text = CStr(Cfg_grid_footPrintY)
-            TsbFrame_OffsetAll.Checked = (Cfg_editor_rotFix_individualFrame * -1)
+            TsbFrame_OffsetAll.Checked = (Cfg_editor_rotFix_individualFrame = 1)
 
             ' ZT1 Default color palettes
             ' strPathBuildingColorPals
@@ -634,16 +634,28 @@ Public Class FrmMain
     ''' </summary>
     ''' <param name="sender">Object</param>
     ''' <param name="e">MouseEventArgs</param>
-    Private Sub TsbFrame_OffsetUp_MouseDown(sender As Object, e As MouseEventArgs) Handles TsbFrame_OffsetUp.MouseDown
+    ''' <summary>
+    ''' Shared by the four TsbFrame_Offset{Up,Down,Left,Right}_MouseDown handlers below, which
+    ''' previously each repeated the same "right-click = fast nudge, otherwise a single pixel"
+    ''' logic, differing only in which Point they passed to UpdateOffsets().
+    ''' </summary>
+    ''' <param name="e">MouseEventArgs from the triggering MouseDown event.</param>
+    ''' <param name="PntNormal">Offset to apply on a normal (left) click.</param>
+    ''' <param name="PntFast">Offset to apply on a right click.</param>
+    Private Sub NudgeFrameOffset(e As MouseEventArgs, PntNormal As Point, PntFast As Point)
 
         If (e.Button = Windows.Forms.MouseButtons.Right) Then
-            EditorFrame.UpdateOffsets(New Point(0, 16))
+            EditorFrame.UpdateOffsets(PntFast)
         Else
-            EditorFrame.UpdateOffsets(New Point(0, 1))
+            EditorFrame.UpdateOffsets(PntNormal)
         End If
 
         MdlZTStudioUI.UpdatePreview(True, False)
 
+    End Sub
+
+    Private Sub TsbFrame_OffsetUp_MouseDown(sender As Object, e As MouseEventArgs) Handles TsbFrame_OffsetUp.MouseDown
+        NudgeFrameOffset(e, New Point(0, 1), New Point(0, 16))
     End Sub
 
     ''' <summary>
@@ -652,16 +664,7 @@ Public Class FrmMain
     ''' <param name="sender">Object</param>
     ''' <param name="e">MouseEventArgs</param>
     Private Sub TsbFrame_OffsetDown_MouseDown(sender As Object, e As MouseEventArgs) Handles TsbFrame_OffsetDown.MouseDown
-
-
-        If (e.Button = Windows.Forms.MouseButtons.Right) Then
-            EditorFrame.UpdateOffsets(New Point(0, -16))
-        Else
-            EditorFrame.UpdateOffsets(New Point(0, -1))
-        End If
-
-        MdlZTStudioUI.UpdatePreview(True, False)
-
+        NudgeFrameOffset(e, New Point(0, -1), New Point(0, -16))
     End Sub
 
     ''' <summary>
@@ -670,17 +673,7 @@ Public Class FrmMain
     ''' <param name="sender">Object</param>
     ''' <param name="e">MouseEventArgs</param>
     Private Sub TsbFrame_OffsetLeft_MouseDown(sender As Object, e As MouseEventArgs) Handles TsbFrame_OffsetLeft.MouseDown
-
-
-
-        If (e.Button = Windows.Forms.MouseButtons.Right) Then
-            EditorFrame.UpdateOffsets(New Point(16, 0))
-        Else
-            EditorFrame.UpdateOffsets(New Point(1, 0))
-        End If
-
-        MdlZTStudioUI.UpdatePreview(True, False)
-
+        NudgeFrameOffset(e, New Point(1, 0), New Point(16, 0))
     End Sub
 
     ''' <summary>
@@ -689,18 +682,7 @@ Public Class FrmMain
     ''' <param name="sender">Object</param>
     ''' <param name="e">MouseEventArgs</param>
     Private Sub TsbFrame_OffsetRight_MouseDown(sender As Object, e As MouseEventArgs) Handles TsbFrame_OffsetRight.MouseDown
-
-
-        If (e.Button = Windows.Forms.MouseButtons.Right) Then
-            EditorFrame.UpdateOffsets(New Point(-16, 0))
-        Else
-            EditorFrame.UpdateOffsets(New Point(-1, 0))
-        End If
-
-        MdlZTStudioUI.UpdatePreview(True, False)
-
-
-
+        NudgeFrameOffset(e, New Point(-1, 0), New Point(-16, 0))
     End Sub
 
     ''' <summary>
@@ -710,7 +692,8 @@ Public Class FrmMain
     ''' <param name="e">EventArgs</param>
     Private Sub TsbGraphic_ExtraFrame_Click(sender As Object, e As EventArgs) Handles TsbGraphic_ExtraFrame.Click
 
-        EditorGraphic.HasBackgroundFrame = Math.Abs(EditorGraphic.HasBackgroundFrame - 1)
+        ' Toggle between 0 and 1.
+        EditorGraphic.HasBackgroundFrame = CByte(1 - EditorGraphic.HasBackgroundFrame)
 
         ' Quick fix: on change, revert to frame 1.
         Dim IntFrameNumber As Integer = EditorGraphic.Frames.IndexOf(EditorFrame)

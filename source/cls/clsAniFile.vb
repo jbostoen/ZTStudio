@@ -143,11 +143,6 @@ Public Class ClsAniFile
             Dim SbAni As New Text.StringBuilder()
             SbAni.AppendLine("[animation]")
 
-            ' If there's a .ani-file present, delete it first.
-            If File.Exists(Me.FileName) = True Then
-                File.Delete(Me.FileName)
-            End If
-
             ' Write out dirs
             For IntDirIndex As Integer = 0 To Me.RelativeDirectories.Count - 1
                 SbAni.AppendLine("dir" & IntDirIndex & " = " & Me.RelativeDirectories(IntDirIndex))
@@ -166,11 +161,9 @@ Public Class ClsAniFile
 
             Dim StrAni As String = SbAni.ToString()
 
-            ' Write.
+            ' Write. StreamWriter(path) overwrites an existing file by default (equivalent to
+            ' append:=False), so there's no need to delete it first.
             If Me.Views.Count > 0 And Me.RelativeDirectories.Count > 0 Then
-                If File.Exists(Me.FileName) = True Then
-                    File.Delete(Me.FileName)
-                End If
                 Using outfile As New StreamWriter(Me.FileName)
                     outfile.Write(StrAni.ToString())
                 End Using
@@ -231,12 +224,7 @@ Public Class ClsAniFile
             ' Set views.
             Me.Views.Clear(False)
 
-            If File.Exists(StrPath & "\N") = True And
-                File.Exists(StrPath & "\NE") = True And
-                File.Exists(StrPath & "\E") = True And
-                File.Exists(StrPath & "\SE") = True And
-                File.Exists(StrPath & "\S") = True Then
-
+            If AllViewsExist(StrPath, "N", "NE", "E", "SE", "S") Then
 
                 ' This is typical for animals, guests, staff...
                 With Me.Views
@@ -249,10 +237,7 @@ Public Class ClsAniFile
 
                 MdlZTStudio.Trace(Me.GetType().FullName, "CreateAniConfig", "Determination: 'animals', 'guests', 'staff', ...")
 
-            ElseIf File.Exists(StrPath & "\NE") = True And
-                File.Exists(StrPath & "\SE") = True And
-                File.Exists(StrPath & "\SW") = True And
-                File.Exists(StrPath & "\NW") = True Then
+            ElseIf AllViewsExist(StrPath, "NE", "SE", "SW", "NW") Then
 
                 ' This is typical for objects
                 With Me.Views
@@ -264,7 +249,7 @@ Public Class ClsAniFile
 
                 MdlZTStudio.Trace(Me.GetType().FullName, "CreateAniConfig", "Determination: 'object'")
 
-            ElseIf File.Exists(StrPath & "\N") = True Then
+            ElseIf AllViewsExist(StrPath, "N") Then
 
                 ' This is typical for icons
                 With Me.Views
@@ -273,26 +258,7 @@ Public Class ClsAniFile
 
                 MdlZTStudio.Trace(Me.GetType().FullName, "CreateAniConfig", "Determination: 'icon'")
 
-            ElseIf File.Exists(StrPath & "\1") = True And
-                File.Exists(StrPath & "\2") = True And
-                File.Exists(StrPath & "\3") = True And
-                File.Exists(StrPath & "\4") = True And
-                File.Exists(StrPath & "\5") = True And
-                File.Exists(StrPath & "\6") = True And
-                File.Exists(StrPath & "\7") = True And
-                File.Exists(StrPath & "\8") = True And
-                File.Exists(StrPath & "\9") = True And
-                File.Exists(StrPath & "\10") = True And
-                File.Exists(StrPath & "\11") = True And
-                File.Exists(StrPath & "\12") = True And
-                File.Exists(StrPath & "\13") = True And
-                File.Exists(StrPath & "\14") = True And
-                File.Exists(StrPath & "\15") = True And
-                File.Exists(StrPath & "\16") = True And
-                File.Exists(StrPath & "\17") = True And
-                File.Exists(StrPath & "\18") = True And
-                File.Exists(StrPath & "\19") = True And
-                File.Exists(StrPath & "\20") = True Then
+            ElseIf AllViewsExist(StrPath, Enumerable.Range(1, 20).Select(Function(i) i.ToString()).ToArray()) Then
 
                 ' This is typical for paths
                 With Me.Views
@@ -305,10 +271,7 @@ Public Class ClsAniFile
 
                 MdlZTStudio.Trace(Me.GetType().FullName, "CreateAniConfig", "Determination: 'path'")
 
-            ElseIf File.Exists(StrPath & "\N") = True And
-                File.Exists(StrPath & "\H") = True And
-                File.Exists(StrPath & "\S") = True And
-                File.Exists(StrPath & "\G") = True Then
+            ElseIf AllViewsExist(StrPath, "N", "H", "S", "G") Then
 
                 ' This is typical for objects
                 With Me.Views
@@ -359,6 +322,19 @@ Public Class ClsAniFile
         End Try
 
     End Sub
+
+    ''' <summary>
+    ''' Checks whether a file exists for every given view name directly under StrPath (e.g.
+    ''' StrPath\N, StrPath\NE, ...). Extracted to replace several near-identical chains of
+    ''' File.Exists(...) = True And File.Exists(...) = True And ... previously used in
+    ''' CreateAniConfig() to detect which "shape" of graphic (icon, object, animal, path, ui
+    ''' button) this .ani file is being generated for.
+    ''' </summary>
+    ''' <param name="StrPath">Directory to look for the views in.</param>
+    ''' <param name="Views">View names to check for, e.g. "N", "NE", "1", "20".</param>
+    Private Function AllViewsExist(StrPath As String, ParamArray Views() As String) As Boolean
+        Return Views.All(Function(v) File.Exists(StrPath & "\" & v))
+    End Function
 
 
     Public Sub New(myFileName As String)

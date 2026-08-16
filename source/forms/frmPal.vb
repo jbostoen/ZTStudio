@@ -43,7 +43,7 @@ Public Class FrmPal
             MdlZTStudio.HandledError(Me.GetType().FullName, "BtnUseInMainPal_Click", "You need to specify a positive number, at least 1 and maximum " & IntMaxColorIndex & ".")
             Exit Sub
 
-        ElseIf Int(strInput) > IntMaxColorIndex Then
+        ElseIf CInt(strInput) > IntMaxColorIndex Then
 
             MdlZTStudio.HandledError(Me.GetType().FullName, "BtnUseInMainPal_Click", "You need to specify a positive number, at least 1 and maximum " & IntMaxColorIndex & ".")
             Exit Sub
@@ -61,8 +61,9 @@ Public Class FrmPal
                     ' Color index does not exist.
                     EditorGraphic.ColorPalette.Colors.Add(ObjDataRow.DefaultCellStyle.BackColor)
                 Else
-                    ' Color index already existed. Overwrite.
-                    EditorGraphic.ColorPalette.Colors(CInt(strInput) + ObjDataRow.Index - 1) = ObjDataRow.DefaultCellStyle.BackColor
+                    ' Color index already existed. Overwrite via ReplaceColorAt() rather than
+                    ' Colors(index) = ... directly, so the color index cache stays correct (issue #61).
+                    EditorGraphic.ColorPalette.ReplaceColorAt(CInt(strInput) + ObjDataRow.Index - 1, ObjDataRow.DefaultCellStyle.BackColor)
                 End If
 
             End If

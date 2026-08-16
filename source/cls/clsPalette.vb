@@ -417,10 +417,13 @@ Public Class ClsPalette
         Dim LstOutputHexValues As New List(Of String) ' output hex
         Dim IntX As Integer ' used to loop through the colors
 
-        ' Start with the number of colors to process
+        ' Start with the number of colors to process.
+        ' Uses ReverseHex() for consistency with how every other multi-byte value is byte-swapped
+        ' elsewhere in the codebase (e.g. ClsFrame's offsets), instead of legacy Strings.Left/Right.
         With LstOutputHexValues
-            .Add(Strings.Right(Me.Colors.Count.ToString("X4"), 2), False)
-            .Add(Strings.Left(Me.Colors.Count.ToString("X4"), 2), False)
+            Dim ArrColorCountHex As String() = Strings.Split(Me.Colors.Count.ToString("X4").ReverseHex(), " ")
+            .Add(ArrColorCountHex(0), False)
+            .Add(ArrColorCountHex(1), False)
             .Add("00", False)
             .Add("00", False)
 

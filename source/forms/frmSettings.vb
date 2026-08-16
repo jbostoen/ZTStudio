@@ -6,18 +6,27 @@
 Public Class FrmSettings
 
     ''' <summary>
+    ''' Converts a Boolean to a Byte (1 for True, 0 for False), for the Cfg_* settings that are
+    ''' stored as Byte rather than Boolean. Replaces the "Checked * -1" idiom (relying on VB's
+    ''' legacy True = -1 numeric representation, used inconsistently across this form's checkbox
+    ''' handlers - some wrapped it in CInt() first, some didn't).
+    ''' </summary>
+    Private Function BoolToByte(Bln As Boolean) As Byte
+        Return If(Bln, CByte(1), CByte(0))
+    End Function
+
+    ''' <summary>
     ''' On unload form, save config.
     ''' </summary>
     ''' <param name="sender">ObjectObjectObjectObjectObject</param>
     ''' <param name="e">FormClosingEventArgs</param>
     Private Sub FrmSettings_FormClosing(sender As Object, e As FormClosingEventArgs) Handles Me.FormClosing
 
-        ' Just re-load the settings here to apply them.
+        ' Save the live-updated Cfg_* values (each control's own CheckedChanged/ValueChanged handler
+        ' already applies its change immediately) to disk. Previously followed by MdlConfig.load(),
+        ' which re-read the file that was just written - a redundant disk read the original comment
+        ' here already flagged as likely unnecessary.
         MdlConfig.write()
-
-        ' 20191005 Not recalling why reloading is necessary? Likely redundant.
-        MdlConfig.load()
-
 
     End Sub
 
@@ -177,7 +186,7 @@ Public Class FrmSettings
             Exit Sub
         End If
 
-        Cfg_Export_PNG_RenderBGZT1 = CByte(ChkRenderFrame_BGGraphic.Checked * -1)
+        Cfg_Export_PNG_RenderBGZT1 = BoolToByte(ChkRenderFrame_BGGraphic.Checked)
 
         ' Update preview in main window instantly
         MdlZTStudioUI.UpdatePreview(False, True)
@@ -213,7 +222,7 @@ Public Class FrmSettings
         If ChkExportZT1_AddZTAFBytes.IsHandleCreated = False Then
             Exit Sub
         End If
-        Cfg_Export_ZT1_AlwaysAddZTAFBytes = CByte(ChkExportZT1_AddZTAFBytes.Checked * -1)
+        Cfg_Export_ZT1_AlwaysAddZTAFBytes = BoolToByte(ChkExportZT1_AddZTAFBytes.Checked)
 
     End Sub
 
@@ -227,7 +236,7 @@ Public Class FrmSettings
         If ChkConvert_DeleteOriginal.IsHandleCreated = False Then
             Exit Sub
         End If
-        Cfg_Convert_DeleteOriginal = CByte(ChkConvert_DeleteOriginal.Checked * -1)
+        Cfg_Convert_DeleteOriginal = BoolToByte(ChkConvert_DeleteOriginal.Checked)
 
 
     End Sub
@@ -242,7 +251,7 @@ Public Class FrmSettings
         If ChkConvert_Overwrite.IsHandleCreated = False Then
             Exit Sub
         End If
-        Cfg_Convert_Overwrite = CByte(ChkConvert_Overwrite.Checked * -1)
+        Cfg_Convert_Overwrite = BoolToByte(ChkConvert_Overwrite.Checked)
 
     End Sub
 
@@ -257,7 +266,7 @@ Public Class FrmSettings
         If ChkExportZT1_Ani.IsHandleCreated = False Then
             Exit Sub
         End If
-        Cfg_Export_ZT1_Ani = CByte(ChkExportZT1_Ani.Checked * -1)
+        Cfg_Export_ZT1_Ani = BoolToByte(ChkExportZT1_Ani.Checked)
 
     End Sub
 
@@ -272,7 +281,7 @@ Public Class FrmSettings
         If ChkConvert_SharedColorPalette.IsHandleCreated = False Then
             Exit Sub
         End If
-        Cfg_Convert_SharedPalette = CByte(CInt(ChkConvert_SharedColorPalette.Checked) * -1)
+        Cfg_Convert_SharedPalette = BoolToByte(ChkConvert_SharedColorPalette.Checked)
 
     End Sub
 
@@ -296,7 +305,7 @@ Public Class FrmSettings
         If ChkPNGTransparentBG.IsHandleCreated = False Then
             Exit Sub
         End If
-        Cfg_Export_PNG_TransparentBG = CByte(CInt(ChkPNGTransparentBG.Checked) * -1)
+        Cfg_Export_PNG_TransparentBG = BoolToByte(ChkPNGTransparentBG.Checked)
     End Sub
 
     ''' <summary>
@@ -309,7 +318,7 @@ Public Class FrmSettings
         If ChkPNGRenderBGFrame.IsHandleCreated = False Then
             Exit Sub
         End If
-        Cfg_Export_PNG_RenderBGFrame = CByte(CInt(ChkPNGRenderBGFrame.Checked) * -1)
+        Cfg_Export_PNG_RenderBGFrame = BoolToByte(ChkPNGRenderBGFrame.Checked)
 
         ' Update preview in main window instantly
         MdlZTStudioUI.UpdatePreview(True, True)
@@ -343,7 +352,7 @@ Public Class FrmSettings
         If ChkPalImportPNGForceAddAll.IsHandleCreated = False Then
             Exit Sub
         End If
-        Cfg_Palette_Import_PNG_Force_Add_Colors = CByte(CInt(ChkPalImportPNGForceAddAll.Checked) * -1)
+        Cfg_Palette_Import_PNG_Force_Add_Colors = BoolToByte(ChkPalImportPNGForceAddAll.Checked)
 
     End Sub
 

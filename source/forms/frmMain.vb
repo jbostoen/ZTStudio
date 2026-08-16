@@ -452,6 +452,15 @@ Public Class FrmMain
     ''' <param name="e">EventArgs</param>
     Private Sub TsbSettings_Click(sender As Object, e As EventArgs) Handles TsbSettings.Click
 
+        ' Belt-and-suspenders guard (issue #67): this button is already unreachable while a batch
+        ' operation is running, since the batch dialogs are modal (ShowDialog) and block FrmMain for
+        ' their whole duration - but that safety currently depends on that UI structure staying as-is
+        ' (see the comment on BlnBatchOperationRunning in MdlSettings.vb). This makes the same
+        ' guarantee explicit here too, in case that ever changes.
+        If BlnBatchOperationRunning = True Or BlnTaskRunning = True Then
+            Exit Sub
+        End If
+
         ' Show Settings window
         FrmSettings.ShowDialog()
 

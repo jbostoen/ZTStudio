@@ -24,6 +24,17 @@ Module MdlSettings
     Public BlnTaskRunning As Boolean = False          ' Prevents certain UI updates if a task is running
     Public BlnBatchOperationRunning As Boolean = False ' Set around the per-file loop of a batch operation (folder conversion/offset fix). While true, HandledError/UnhandledError skip the blocking dialog and the fatal End, and instead raise so the batch loop can log the failure and continue with the next file.
 
+    ' BlnBatchOperationRunning/BlnTaskRunning/Cfg_Path_Root (see issue #67): batch operations run on
+    ' a background thread (Task.Run, issue #48), so these are read there while also being read/written
+    ' on the UI thread elsewhere. This is safe today WITHOUT extra locking only because of how batches
+    ' are launched: FrmBatchConversion/FrmBatchOffsetFix are always shown via ShowDialog(Me), which
+    ' blocks all other interaction with FrmMain (including reaching Settings, which is where
+    ' Cfg_Path_Root can be changed) for the whole time a batch can be running, and both dialogs also
+    ' disable their own controls (including FrmBatchConversion's own Settings button) while running.
+    ' If a batch is ever made launchable in a non-modal way, or a batch dialog stops disabling its
+    ' controls while running, this invariant breaks and these would need real synchronization
+    ' (SyncLock/Interlocked), similar to the guard already around MdlZTStudio.LogError's file writes.
+
     Public Cfg_Grid_BackGroundColor As Color = Color.White ' The default background color?
     Public Cfg_Grid_ForeGroundColor As Color = Color.Black ' The default foreground color for the grid lines?
 

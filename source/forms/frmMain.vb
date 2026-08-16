@@ -113,9 +113,14 @@ Public Class FrmMain
             Dim IntOffsetX As Integer = (PicBox.Width - BmTmp.Width) / 2 ' Left = positive; right = negative
             Dim IntOffsetY As Integer = (PicBox.Height - BmTmp.Height) / 2 ' Top = positive; bottom = negative
 
-            MdlZTStudio.Trace(Me.GetType().FullName, "MouseMove", "e.X = " & e.X & ", Y = " & e.Y)
-            MdlZTStudio.Trace(Me.GetType().FullName, "MouseMove", "Offset X = " & IntOffsetX & ", Y = " & IntOffsetY)
-            MdlZTStudio.Trace(Me.GetType().FullName, "MouseMove", "Bmp width = " & BmTmp.Width & ", Height = " & BmTmp.Height)
+            ' Guarded: this handler fires on every mouse move, and the string concatenation below
+            ' would otherwise run on every single call even when tracing is disabled (Trace() itself
+            ' only checks cfg_trace after its String arguments have already been built).
+            If cfg_trace = 1 Then
+                MdlZTStudio.Trace(Me.GetType().FullName, "MouseMove", "e.X = " & e.X & ", Y = " & e.Y)
+                MdlZTStudio.Trace(Me.GetType().FullName, "MouseMove", "Offset X = " & IntOffsetX & ", Y = " & IntOffsetY)
+                MdlZTStudio.Trace(Me.GetType().FullName, "MouseMove", "Bmp width = " & BmTmp.Width & ", Height = " & BmTmp.Height)
+            End If
 
             If e.X > IntOffsetX And e.X < (BmTmp.Width + IntOffsetX) And e.Y > IntOffsetY And e.Y < (BmTmp.Height + IntOffsetY) Then
 
@@ -127,10 +132,18 @@ Public Class FrmMain
                 If ObjColor.A <> 0 Then
 
                     LblColor.BackColor = ObjColor
+
+                    ' TryGetColorIndex() uses ClsPalette's O(1) cache instead of a linear List.IndexOf()
+                    ' scan - this handler fires on every mouse move, so avoiding a per-event O(n) scan
+                    ' over the palette matters. -1 (not found) is a legitimate result here (e.g. hovering
+                    ' a background/grid color not in the palette), shown as-is like IndexOf's -1 was.
+                    Dim IntColorIndexUnderCursor As Integer
+                    EditorGraphic.ColorPalette.TryGetColorIndex(ObjColor, IntColorIndexUnderCursor)
+
                     LblColorDetails.Text = "" &
                         "Coordinates: x: " & e.X - IntOffsetX & " , y: " & e.Y - IntOffsetY & vbCrLf &
                         "RGB: " & ObjColor.R & "," & ObjColor.G & "," & ObjColor.B & vbCrLf &
-                        "Index in .pal file: # " & EditorGraphic.ColorPalette.Colors.IndexOf(ObjColor) & vbCrLf &
+                        "Index in .pal file: # " & IntColorIndexUnderCursor & vbCrLf &
                         "VB.Net: " & ObjColor.ToArgb()
 
                 Else

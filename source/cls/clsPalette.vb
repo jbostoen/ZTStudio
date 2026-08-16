@@ -173,16 +173,14 @@ Public Class ClsPalette
     End Sub
 
     ''' <summary>
-    ''' Returns the index of a color within this palette.
+    ''' Rebuilds the color index cache if the palette's color count has changed since it was last
+    ''' built. Colors are iterated from index 0 forward, so a later duplicate overwrites an earlier
+    ''' one in the cache, matching the "last matching index wins" behavior of LastIndexOf (relied
+    ''' upon by e.g. restrant.pal, which lists one color twice). Shared by GetColorIndex() and
+    ''' TryGetColorIndex() so both use the same up-to-date cache.
     ''' </summary>
-    ''' <param name="ObjColor">The color of which the index in this palette should be returned</param>
-    ''' <param name="BlnAddToPalette">Add the color to the palette if it's not present</param>
-    ''' <returns></returns>
-    Public Function GetColorIndex(ObjColor As System.Drawing.Color, Optional BlnAddToPalette As Boolean = True) As Integer
+    Private Sub EnsureColorIndexCache()
 
-        ' Rebuild the color index cache if the palette's color count has changed since it was last built.
-        ' Colors are iterated from index 0 forward, so a later duplicate overwrites an earlier one in the cache,
-        ' matching the "last matching index wins" behavior of LastIndexOf (relied upon by e.g. restrant.pal, which lists one color twice).
         If Pal_ColorIndexCacheCount <> Me.Colors.Count Then
             Pal_ColorIndexCache.Clear()
             For IntIndex As Integer = 0 To Me.Colors.Count - 1
@@ -190,6 +188,40 @@ Public Class ClsPalette
             Next
             Pal_ColorIndexCacheCount = Me.Colors.Count
         End If
+
+    End Sub
+
+    ''' <summary>
+    ''' Looks up a color's index in this palette with no side effects: unlike GetColorIndex(), it
+    ''' never adds the color if missing and never shows a dialog/raises an error. Returns False if
+    ''' the color isn't in the palette. Uses the same O(1) cache as GetColorIndex(), so this is safe
+    ''' to call from a hot path (e.g. inspecting a color under the mouse cursor).
+    ''' </summary>
+    ''' <param name="ObjColor">Color to look up.</param>
+    ''' <param name="IntIndex">Set to the color's index if found, or -1 if not found.</param>
+    ''' <returns>True if the color was found in the palette.</returns>
+    Public Function TryGetColorIndex(ObjColor As System.Drawing.Color, ByRef IntIndex As Integer) As Boolean
+
+        EnsureColorIndexCache()
+
+        If Pal_ColorIndexCache.TryGetValue(ObjColor, IntIndex) = False Then
+            IntIndex = -1
+            Return False
+        End If
+
+        Return True
+
+    End Function
+
+    ''' <summary>
+    ''' Returns the index of a color within this palette.
+    ''' </summary>
+    ''' <param name="ObjColor">The color of which the index in this palette should be returned</param>
+    ''' <param name="BlnAddToPalette">Add the color to the palette if it's not present</param>
+    ''' <returns></returns>
+    Public Function GetColorIndex(ObjColor As System.Drawing.Color, Optional BlnAddToPalette As Boolean = True) As Integer
+
+        EnsureColorIndexCache()
 
         If Me.Colors.Count = 0 Then
             ' This is a new color palette with no colors defined yet.

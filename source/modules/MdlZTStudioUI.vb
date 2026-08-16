@@ -196,6 +196,14 @@ Module MdlZTStudioUI
 
             Dim ObjImageList = New ImageList
             Dim ObjNodeCollection As TreeNodeCollection = TVExplorer.Nodes
+
+            ' Maps a directory's relative path (ObjNode.Name) to its TreeNode, populated as each
+            ' directory node is created below. Looking up a parent node here is O(1); the previous
+            ' approach (ObjNodeCollection.Find(..., searchAllChildren:=True)) re-searched the whole
+            ' tree built so far for every single directory, which is O(n^2) over a large ZT1 asset
+            ' tree (hundreds to thousands of directories).
+            Dim DictNodesByPath As New Dictionary(Of String, TreeNode)
+
             ObjImageList.Images.Add(My.Resources.icon_ZT1_Graphic)
             ObjImageList.Images.Add(My.Resources.icon_folder)
             ObjImageList.Images.Add(My.Resources.icon_file)
@@ -230,13 +238,15 @@ Module MdlZTStudioUI
 
                         ' Parent node?
                         Dim StrParentDirectory = Regex.Replace(ObjNode.Name, "\\(?=[^\\]*$).*$", "")
-                        Dim ObjParentNode() As TreeNode = ObjNodeCollection.Find(StrParentDirectory, True)
+                        Dim ObjParentNode As TreeNode = Nothing
 
-                        If ObjParentNode.Count = 1 Then
-                            ObjParentNode(0).Nodes.Add(ObjNode)
+                        If DictNodesByPath.TryGetValue(StrParentDirectory, ObjParentNode) = True Then
+                            ObjParentNode.Nodes.Add(ObjNode)
                         Else
                             ObjNodeCollection.Add(ObjNode)
                         End If
+
+                        DictNodesByPath(ObjNode.Name) = ObjNode
 
                     End If
 

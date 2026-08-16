@@ -447,13 +447,17 @@ Public Class ClsPalette
 
         Next
 
-        Dim ObjFileStream As New FileStream(StrFileName, FileMode.OpenOrCreate, FileAccess.Write)
-        For Each StrHexValue As String In LstOutputHexValues
-            ObjFileStream.WriteByte(CByte("&H" & StrHexValue))
-        Next
-
-        ObjFileStream.Close()
-        ObjFileStream.Dispose()
+        ' FileMode.Create (not OpenOrCreate): OpenOrCreate preserves an existing file's original
+        ' length, so writing a palette with fewer colors than whatever was previously saved at this
+        ' path would have left trailing garbage bytes after the new content - which ReadPal()'s
+        ' declared-count-vs-actual-length check (see issue #42) would then flag as a truncated/
+        ' corrupt file on the next read. Create always overwrites the file at its new length. The
+        ' file handle is also now reliably closed via Using even if WriteByte() throws partway through.
+        Using ObjFileStream As New FileStream(StrFileName, FileMode.Create, FileAccess.Write)
+            For Each StrHexValue As String In LstOutputHexValues
+                ObjFileStream.WriteByte(CByte("&H" & StrHexValue))
+            Next
+        End Using
 
         MdlZTStudio.Trace(Me.GetType().FullName, "WritePal", "Finished writing .pal file")
 
@@ -510,44 +514,52 @@ Public Class ClsPalette
     ''' <param name="StrExportFileName">Destination file name</param>
     Sub ExportToPNG(StrExportFileName As String)
 
-        Dim Bmp As New Bitmap(16, 16)
+        Try
 
-        ' Perform Drawing here
-        Dim IntX As Integer = 0 ' Will be used to process a bitmap from left to right
-        Dim IntY As Integer = 0 ' Will be used to process a bitmap from top to bottom
-        Dim IntColor As Integer
+        ' Using instead of a manual Bmp.Dispose() at the end, so Bmp is reliably disposed even if
+        ' Bmp.Save() throws (e.g. StrExportFileName's directory doesn't exist).
+        Using Bmp As New Bitmap(16, 16)
 
-        MdlZTStudio.Trace(Me.GetType().FullName, "ExportToPNG", "Exporting color palette as .PNG to " & StrExportFileName)
+            ' Perform Drawing here
+            Dim IntX As Integer = 0 ' Will be used to process a bitmap from left to right
+            Dim IntY As Integer = 0 ' Will be used to process a bitmap from top to bottom
+            Dim IntColor As Integer
 
-        ' Todo: optimize SetPixel()
-        ' For each row
-        While IntY < 16
+            MdlZTStudio.Trace(Me.GetType().FullName, "ExportToPNG", "Exporting color palette as .PNG to " & StrExportFileName)
 
-            ' for each col
-            While IntX < 16 And IntColor < Me.Colors.Count
+            ' Todo: optimize SetPixel()
+            ' For each row
+            While IntY < 16
 
-                Bmp.SetPixel(IntX, IntY, Me.Colors(IntColor))
-                IntColor += 1
-                IntX += 1
+                ' for each col
+                While IntX < 16 And IntColor < Me.Colors.Count
+
+                    Bmp.SetPixel(IntX, IntY, Me.Colors(IntColor))
+                    IntColor += 1
+                    IntX += 1
+                End While
+
+                ' reset, next line
+                IntX = 0
+                IntY += 1
+
             End While
 
-            ' reset, next line
-            IntX = 0
-            IntY += 1
 
-        End While
+            If File.Exists(StrExportFileName) = True Then
+                MdlZTStudio.Trace(Me.GetType().FullName, "ExportToPNG", "Overwriting existing file!")
+                File.Delete(StrExportFileName)
+            End If
 
+            Bmp.Save(StrExportFileName, System.Drawing.Imaging.ImageFormat.Png)
 
-        If File.Exists(StrExportFileName) = True Then
-            MdlZTStudio.Trace(Me.GetType().FullName, "ExportToPNG", "Overwriting existing file!")
-            File.Delete(StrExportFileName)
-        End If
-
-        Bmp.Save(StrExportFileName, System.Drawing.Imaging.ImageFormat.Png)
-
-        Bmp.Dispose()
+        End Using
 
         MdlZTStudio.Trace(Me.GetType().FullName, "ExportToPNG", "Finished exporting color palette as .PNG")
+
+        Catch ex As Exception
+            MdlZTStudio.UnhandledError(Me.GetType().FullName, "ExportToPNG", ex, True, ZTStudioErrorCategory.FileFormat)
+        End Try
 
     End Sub
 

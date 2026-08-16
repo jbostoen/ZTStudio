@@ -105,26 +105,35 @@ Module MdlTests
 
         End Select
 
-        ' Declaring a variable to be an array of bytes
-        Dim HashValue() As Byte
+        ' HashGenerator (a HashAlgorithm) is IDisposable; Finally guarantees it's disposed whether
+        ' this returns normally or an exception propagates out of it, without changing whether/how
+        ' that exception propagates.
+        Try
 
-        ' Creating a FileStream for the file passed as a parameter.
-        ' Wrapped in a Using block so the file handle is always released, even if ComputeHash throws
-        ' (e.g. the file gets deleted/locked by another process mid-read during a folder-wide scan).
-        Using FileStream As FileStream = File.OpenRead(StrFileName)
+            ' Declaring a variable to be an array of bytes
+            Dim HashValue() As Byte
 
-            ' Positioning the cursor at the beginning of stream
-            FileStream.Position = 0
-            ' Calculating the hash of the file
-            HashValue = HashGenerator.ComputeHash(FileStream)
+            ' Creating a FileStream for the file passed as a parameter.
+            ' Wrapped in a Using block so the file handle is always released, even if ComputeHash throws
+            ' (e.g. the file gets deleted/locked by another process mid-read during a folder-wide scan).
+            Using FileStream As FileStream = File.OpenRead(StrFileName)
 
-        End Using
+                ' Positioning the cursor at the beginning of stream
+                FileStream.Position = 0
+                ' Calculating the hash of the file
+                HashValue = HashGenerator.ComputeHash(FileStream)
 
-        ' The array of bytes is converted into hexadecimal before it can be read easily
-        Dim ObjHash = PrintByteArray(HashValue)
+            End Using
 
-        ' The hash is returned
-        Return ObjHash
+            ' The array of bytes is converted into hexadecimal before it can be read easily
+            Dim ObjHash = PrintByteArray(HashValue)
+
+            ' The hash is returned
+            Return ObjHash
+
+        Finally
+            HashGenerator.Dispose()
+        End Try
 
     End Function
 

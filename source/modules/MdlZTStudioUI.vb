@@ -190,6 +190,11 @@ Module MdlZTStudioUI
 
         Try
 
+            ' This method can run more than once per session (e.g. after changing the root path in
+            ' Settings) - remember whatever ImageList TVExplorer already has, so it can be disposed
+            ' below once replaced, instead of leaking it (and its embedded Image handles).
+            Dim ObjOldImageList As ImageList = TVExplorer.ImageList
+
             Dim ObjImageList = New ImageList
             Dim ObjNodeCollection As TreeNodeCollection = TVExplorer.Nodes
 
@@ -205,6 +210,10 @@ Module MdlZTStudioUI
             ObjImageList.Images.Add(My.Resources.icon_file)
             ObjImageList.Images.Add(My.Resources.icon_ZT1_palette)
             TVExplorer.ImageList = ObjImageList
+
+            If IsNothing(ObjOldImageList) = False Then
+                ObjOldImageList.Dispose()
+            End If
 
             ' BeginUpdate/EndUpdate are paired via Try/Finally below, so a failure partway through the
             ' folder walk cannot leave the TreeView permanently suspended (which would otherwise stop

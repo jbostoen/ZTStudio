@@ -12,6 +12,11 @@ Module MdlBitMap
     ''' <returns>ClsDirectBitmap</returns>
     Public Function CombineImages(ByVal BitMapBack As ClsDirectBitmap, ByVal BitMapFront As ClsDirectBitmap) As ClsDirectBitmap
 
+        ' Declared here (not inside Try) so the Catch block can dispose it if it was constructed
+        ' before a later failure - ClsDirectBitmap pins a GCHandle with no finalizer, so a leaked
+        ' instance holds pinned memory for the life of the process.
+        Dim BmpOutput As ClsDirectBitmap = Nothing
+
         Try
 
         Dim ImgBack As Image = BitMapBack.Bitmap
@@ -22,21 +27,26 @@ Module MdlBitMap
 
         MdlZTStudio.Trace("MdlBitMap", "CombineImages", "Background w1 = " & ImgBack.Width & ", h1 = " & ImgBack.Height & " | Front w2 = " & ImgFront.Width & ", " & ImgFront.Height)
 
-        Dim BmpOutput As New ClsDirectBitmap(IntMaxWidth, IntMaxHeight)
+        BmpOutput = New ClsDirectBitmap(IntMaxWidth, IntMaxHeight)
 
-        Dim ObjGraphic As Graphics = Graphics.FromImage(BmpOutput.Bitmap)
+        Using ObjGraphic As Graphics = Graphics.FromImage(BmpOutput.Bitmap)
 
-        ObjGraphic.InterpolationMode = Drawing2D.InterpolationMode.NearestNeighbor ' Prevent softening
+            ObjGraphic.InterpolationMode = Drawing2D.InterpolationMode.NearestNeighbor ' Prevent softening
 
-        ObjGraphic.DrawImage(ImgBack, CInt((IntMaxWidth - ImgBack.Width) / 2), CInt((IntMaxHeight - ImgBack.Height) / 2), ImgBack.Width, ImgBack.Height)
+            ObjGraphic.DrawImage(ImgBack, CInt((IntMaxWidth - ImgBack.Width) / 2), CInt((IntMaxHeight - ImgBack.Height) / 2), ImgBack.Width, ImgBack.Height)
 
-        ObjGraphic.DrawImage(ImgFront, CInt((IntMaxWidth - ImgFront.Width) / 2), CInt((IntMaxHeight - ImgFront.Height) / 2), ImgFront.Width, ImgFront.Height)
+            ObjGraphic.DrawImage(ImgFront, CInt((IntMaxWidth - ImgFront.Width) / 2), CInt((IntMaxHeight - ImgFront.Height) / 2), ImgFront.Width, ImgFront.Height)
 
-        ObjGraphic.Dispose()
+        End Using
 
         Return BmpOutput
 
         Catch ex As Exception
+            ' BmpOutput may have been constructed above before the failure; dispose it rather than
+            ' leaking it (see the comment on its declaration).
+            If IsNothing(BmpOutput) = False Then
+                BmpOutput.Dispose()
+            End If
             MdlZTStudio.UnhandledError("MdlBitMap", "CombineImages", ex, True)
         End Try
 

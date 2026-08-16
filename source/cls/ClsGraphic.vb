@@ -371,18 +371,14 @@ Public Class ClsGraphic
 
         MdlZTStudio.Trace(Me.GetType().FullName, "Write", "Processed all hex values, ready To write file")
 
-        ' Working around a possible bug?
-        ' 20190823 - which bug? Warning? Or nothing at all?
-        File.Delete(Me.FileName)
-
-        Dim ObjFileStream As New FileStream(Me.FileName, FileMode.CreateNew, FileAccess.Write)
-
-        For Each StrHexValue As String In LstHexGraphic
-            ObjFileStream.WriteByte(CByte("&H" & StrHexValue))
-        Next
-
-        ObjFileStream.Close()
-        ObjFileStream.Dispose()
+        ' FileMode.Create creates the file if it doesn't exist, or overwrites it if it does - no
+        ' need for a separate File.Delete() first (which used to precede this; the file handle is
+        ' now also reliably closed via Using even if WriteByte() throws partway through, e.g. disk full).
+        Using ObjFileStream As New FileStream(Me.FileName, FileMode.Create, FileAccess.Write)
+            For Each StrHexValue As String In LstHexGraphic
+                ObjFileStream.WriteByte(CByte("&H" & StrHexValue))
+            Next
+        End Using
 
         ' Do not forget: color palette must also be created!
         ' This is only done if it has the same name (to avoid messing up shared palettes)

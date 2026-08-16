@@ -31,6 +31,13 @@ Module MdlTests
             Dim IntSucceeded As Integer = 0
             Dim LstFailed As New List(Of String)
 
+            ' Accumulate "key=value" lines and write StrDestinationFileName once at the end, instead
+            ' of calling IniWrite (-> the native WritePrivateProfileString) once per file. That native
+            ' call rewrites the whole destination file on every invocation, which turns hashing a large
+            ' folder (thousands of files, realistic for a full ZT1 asset scan) into thousands of
+            ' separate full-file rewrites of the same output file.
+            Dim LstHashLines As New List(Of String)
+
             BlnBatchOperationRunning = True
             Try
 
@@ -44,7 +51,7 @@ Module MdlTests
 
                         Try
                             Dim ObjHash As String = MdlTests.GenerateHash("sha256", StrCurrentFile)
-                            IniWrite(StrDestinationFileName, "Hashes", StrCurrentFile.Replace(StrPath & "\", ""), ObjHash)
+                            LstHashLines.Add(StrCurrentFile.Replace(StrPath & "\", "") & "=" & ObjHash)
                             IntSucceeded += 1
 
                         Catch exFile As Exception
@@ -65,6 +72,16 @@ Module MdlTests
             Finally
                 BlnBatchOperationRunning = False
             End Try
+
+            ' Write the whole [Hashes] section in one go. StrDestinationFileName is a dedicated
+            ' output file for this action (e.g. hashes.cfg), not shared with settings.cfg, so there
+            ' is no other content in it to preserve.
+            Dim StrOutput As New Text.StringBuilder()
+            StrOutput.AppendLine("[Hashes]")
+            For Each StrHashLine As String In LstHashLines
+                StrOutput.AppendLine(StrHashLine)
+            Next
+            File.WriteAllText(StrDestinationFileName, StrOutput.ToString())
 
             ' Report a summary of the batch run, rather than silently succeeding or hard-crashing.
             Dim StrSummary As String = IntSucceeded & " file(s) hashed successfully."

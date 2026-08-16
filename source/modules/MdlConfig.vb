@@ -33,14 +33,21 @@ Module MdlConfig
         End If
 
         ' Preview
-        Cfg_Grid_BackGroundColor = System.Drawing.Color.FromArgb(CInt(IniRead(StrSettingsFile, "preview", "bgColor", "")))
-        Cfg_Grid_ForeGroundColor = System.Drawing.Color.FromArgb(CInt(IniRead(StrSettingsFile, "preview", "fgColor", "")))
-        Cfg_Grid_NumPixels = CInt(IniRead(StrSettingsFile, "preview", "numPixels", ""))
-        Cfg_Grid_zoom = CInt(IniRead(StrSettingsFile, "preview", "zoom", ""))
-        Cfg_grid_footPrintX = CByte(IniRead(StrSettingsFile, "preview", "footPrintX", ""))
-        Cfg_grid_footPrintY = CByte(IniRead(StrSettingsFile, "preview", "footPrintY", ""))
+        ' Note: the string passed as the last argument to IniRead is the default used when the key
+        ' is missing from settings.cfg (e.g. an older settings.cfg predating a newer setting). It
+        ' must be a valid numeric string matching the corresponding Cfg_* default in MdlSettings.vb -
+        ' CInt("")/CByte("") both throw, which previously aborted Load() partway through and left
+        ' EditorGraphic/EditorBgGraphic (only constructed at the very end of this method) as Nothing.
+        Cfg_Grid_BackGroundColor = System.Drawing.Color.FromArgb(CInt(IniRead(StrSettingsFile, "preview", "bgColor", Color.White.ToArgb().ToString())))
+        Cfg_Grid_ForeGroundColor = System.Drawing.Color.FromArgb(CInt(IniRead(StrSettingsFile, "preview", "fgColor", Color.Black.ToArgb().ToString())))
+        Cfg_Grid_NumPixels = CInt(IniRead(StrSettingsFile, "preview", "numPixels", "256"))
+        Cfg_Grid_zoom = CInt(IniRead(StrSettingsFile, "preview", "zoom", "1"))
+        Cfg_grid_footPrintX = CByte(IniRead(StrSettingsFile, "preview", "footPrintX", "2"))
+        Cfg_grid_footPrintY = CByte(IniRead(StrSettingsFile, "preview", "footPrintY", "2"))
 
         ' Reads from ini and configures all.
+        ' These are String settings: an empty default doesn't throw, and an empty/missing path is
+        ' already handled gracefully further below (falls back to Cfg_Path_Root, or Application.StartupPath).
         Cfg_Path_Root = IniRead(StrSettingsFile, "paths", "root", "")
         Cfg_Path_RecentPNG = IniRead(StrSettingsFile, "paths", "recentPNG", "")
         Cfg_Path_RecentZT1 = IniRead(StrSettingsFile, "paths", "recentZT1", "")
@@ -48,28 +55,28 @@ Module MdlConfig
         Cfg_Path_ColorPals16 = System.IO.Path.GetFullPath(Application.StartupPath) & "\pal16"
 
         ' Export (PNG)
-        Cfg_Export_PNG_CanvasSize = CInt(IniRead(StrSettingsFile, "exportOptions", "pngCrop", ""))
-        Cfg_Export_PNG_RenderBGZT1 = CByte(IniRead(StrSettingsFile, "exportOptions", "pngRenderExtraGraphic", ""))
-        Cfg_Export_PNG_RenderBGFrame = CByte(IniRead(StrSettingsFile, "exportOptions", "pngRenderExtraFrame", ""))
-        Cfg_Export_PNG_TransparentBG = CByte(IniRead(StrSettingsFile, "exportOptions", "pngRenderTransparentBG", ""))
+        Cfg_Export_PNG_CanvasSize = CInt(IniRead(StrSettingsFile, "exportOptions", "pngCrop", "0"))
+        Cfg_Export_PNG_RenderBGZT1 = CByte(IniRead(StrSettingsFile, "exportOptions", "pngRenderExtraGraphic", "0"))
+        Cfg_Export_PNG_RenderBGFrame = CByte(IniRead(StrSettingsFile, "exportOptions", "pngRenderExtraFrame", "1"))
+        Cfg_Export_PNG_TransparentBG = CByte(IniRead(StrSettingsFile, "exportOptions", "pngRenderTransparentBG", "0"))
 
         ' Export (ZT1)
         Cfg_Export_ZT1_Ani = CByte(IniRead(StrSettingsFile, "exportOptions", "zt1Ani", "1"))
-        Cfg_Export_ZT1_AlwaysAddZTAFBytes = CByte(IniRead(StrSettingsFile, "exportOptions", "zt1AlwaysAddZTAFBytes", ""))
+        Cfg_Export_ZT1_AlwaysAddZTAFBytes = CByte(IniRead(StrSettingsFile, "exportOptions", "zt1AlwaysAddZTAFBytes", "0"))
 
         ' Convert ( ZT1 <=> PNG, other way around )
-        Cfg_Convert_StartIndex = CInt(IniRead(StrSettingsFile, "conversionOptions", "pngFilesIndex", ""))
-        Cfg_Convert_DeleteOriginal = CByte(IniRead(StrSettingsFile, "conversionOptions", "deleteOriginal", ""))
-        Cfg_Convert_Overwrite = CByte(IniRead(StrSettingsFile, "conversionOptions", "overwrite", ""))
-        Cfg_Convert_SharedPalette = CByte(IniRead(StrSettingsFile, "conversionOptions", "sharedPalette", ""))
-        Cfg_Convert_FileNameDelimiter = CStr(IniRead(StrSettingsFile, "conversionOptions", "fileNameDelimiter", ""))
+        Cfg_Convert_StartIndex = CInt(IniRead(StrSettingsFile, "conversionOptions", "pngFilesIndex", "0"))
+        Cfg_Convert_DeleteOriginal = CByte(IniRead(StrSettingsFile, "conversionOptions", "deleteOriginal", "1"))
+        Cfg_Convert_Overwrite = CByte(IniRead(StrSettingsFile, "conversionOptions", "overwrite", "1"))
+        Cfg_Convert_SharedPalette = CByte(IniRead(StrSettingsFile, "conversionOptions", "sharedPalette", "1"))
+        Cfg_Convert_FileNameDelimiter = CStr(IniRead(StrSettingsFile, "conversionOptions", "fileNameDelimiter", "_"))
 
         ' Frame editing
-        Cfg_Editor_RotFix_IndividualFrame = CByte(IniRead(StrSettingsFile, "editing", "individualRotationFix", ""))
-        Cfg_Frame_DefaultAnimSpeed = CInt(IniRead(StrSettingsFile, "editing", "animationSpeed", ""))
+        Cfg_Editor_RotFix_IndividualFrame = CByte(IniRead(StrSettingsFile, "editing", "individualRotationFix", "0"))
+        Cfg_Frame_DefaultAnimSpeed = CInt(IniRead(StrSettingsFile, "editing", "animationSpeed", "125"))
 
         ' Palette
-        Cfg_Palette_Import_PNG_Force_Add_Colors = CByte(IniRead(StrSettingsFile, "palette", "importPNGForceAddColors", ""))
+        Cfg_Palette_Import_PNG_Force_Add_Colors = CByte(IniRead(StrSettingsFile, "palette", "importPNGForceAddColors", "0"))
 
         ' Now, if our path is no longer valid, pop up 'Settings'-window automatically
         If System.IO.Directory.Exists(Cfg_Path_Root) = False Then

@@ -14,17 +14,6 @@ Module MdlTests
 
         Try
 
-            ' First create a recursive list.
-
-            ' This list stores the results.
-            Dim result As New List(Of String)
-
-            ' This stack stores the directories to process.
-            Dim StackDirectories As New Stack(Of String)
-
-            ' Add the initial directory
-            StackDirectories.Push(StrPath)
-
             ' Track how many files succeeded/failed, to report a summary at the end.
             ' A single unreadable file (e.g. locked, permission denied) should not abort hashing
             ' the rest of the tree; same reasoning as issue #44 for the main batch operations.
@@ -41,11 +30,7 @@ Module MdlTests
             BlnBatchOperationRunning = True
             Try
 
-                ' Continue processing for each stacked directory
-                Do While (StackDirectories.Count > 0)
-                    ' Get top directory string
-
-                    Dim StrCurrentDirectory As String = StackDirectories.Pop
+                For Each StrCurrentDirectory As String In MdlBatch.EnumerateDirectoriesRecursive(StrPath)
 
                     For Each StrCurrentFile As String In Directory.GetFiles(StrCurrentDirectory, "*")
 
@@ -61,13 +46,7 @@ Module MdlTests
 
                     Next
 
-                    ' Loop through all subdirectories and add them to the stack.
-                    Dim StrSubDirectoryName As String
-                    For Each StrSubDirectoryName In Directory.GetDirectories(StrCurrentDirectory)
-                        StackDirectories.Push(StrSubDirectoryName)
-                    Next
-
-                Loop
+                Next
 
             Finally
                 BlnBatchOperationRunning = False

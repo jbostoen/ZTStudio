@@ -190,10 +190,6 @@ Module MdlZTStudioUI
 
         Try
 
-            Dim StackDirectories As New Stack(Of String)
-
-            StackDirectories.Push(Cfg_path_Root)
-
             Dim ObjImageList = New ImageList
             Dim ObjNodeCollection As TreeNodeCollection = TVExplorer.Nodes
 
@@ -218,13 +214,12 @@ Module MdlZTStudioUI
 
                 TVExplorer.Nodes.Clear()
 
-                ' Continue processing for each stacked directory
-                Do While (StackDirectories.Count > 0)
+                ' BlnPreserveOrder:=True, since subdirectories need to appear in the TreeView in the
+                ' same order Directory.GetDirectories() returns them (typically alphabetical) - see
+                ' MdlBatch.EnumerateDirectoriesRecursive (issue #63).
+                For Each StrDirectoryName As String In MdlBatch.EnumerateDirectoriesRecursive(Cfg_path_Root, BlnPreserveOrder:=True)
 
-                    ' Get top directory string
                     Dim ObjNode As New TreeNode
-                    Dim StrDirectoryName As String = StackDirectories.Pop()
-
 
                     Debug.Print(StrDirectoryName)
 
@@ -249,14 +244,6 @@ Module MdlZTStudioUI
                         DictNodesByPath(ObjNode.Name) = ObjNode
 
                     End If
-
-                    ' Loop through all subdirectories and add them to the stack.
-                    Dim StrSubDirectoryName As String
-                    For Each StrSubDirectoryName In Directory.GetDirectories(StrDirectoryName).Reverse()
-
-                        ' Subdirectories will be processed later. But as for current dir...
-                        StackDirectories.Push(StrSubDirectoryName)
-                    Next
 
                     ' Loop through all files and add them to the node
                     Dim StrSubFileName As String
@@ -286,7 +273,7 @@ Module MdlZTStudioUI
                     ' during a large folder tree.
                     Application.DoEvents()
 
-                Loop
+                Next
 
             Finally
                 TVExplorer.EndUpdate()

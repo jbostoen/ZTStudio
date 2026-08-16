@@ -122,6 +122,11 @@ Public Class ClsGraphic
             End If
 
             Dim IntX As Integer = 0
+            ' Read cursor into LstHexValues. Previously the code called LstHexValues.RemoveFirst(n)
+            ' after processing each field, which shifts every remaining element down - O(remaining
+            ' count) per call, making the overall read effectively quadratic in file size across many
+            ' fields/frames. Advancing a cursor instead (and always indexing relative to it) keeps
+            ' LstHexValues itself untouched, turning this into a single O(N) pass.
             Dim IntCurByte As Integer = 0
             Dim IntTemplength As Integer = 0
 
@@ -144,29 +149,29 @@ Public Class ClsGraphic
                 ' 46 41 54 5A 00 | 00 00 00 01
                 MdlZTStudio.Trace(Me.GetType().FullName, "Read", "Background frame: " & LstHexValues(8))
                 Me.HasBackgroundFrame = LstHexValues(8)
-                LstHexValues.RemoveFirst(9)
+                IntCurByte += 9
             Else
                 MdlZTStudio.Trace(Me.GetType().FullName, "Read", "Basic graphic format")
             End If
 
             ' === ANIMATION SPEED ===
-            Me.AnimationSpeed = CInt("&H" & LstHexValues(3) & LstHexValues(2) & LstHexValues(1) & LstHexValues(0))
+            Me.AnimationSpeed = CInt("&H" & LstHexValues(IntCurByte + 3) & LstHexValues(IntCurByte + 2) & LstHexValues(IntCurByte + 1) & LstHexValues(IntCurByte))
             MdlZTStudio.Trace(Me.GetType().FullName, "Read", "Animation speed: " & Me.AnimationSpeed)
 
             ' === FILENAME ===
             ' The next bytes contain the length of the filename of the color palette
-            IntTemplength = CInt("&H" & LstHexValues(7) & LstHexValues(6) & LstHexValues(5) & LstHexValues(4)) - 1
+            IntTemplength = CInt("&H" & LstHexValues(IntCurByte + 7) & LstHexValues(IntCurByte + 6) & LstHexValues(IntCurByte + 5) & LstHexValues(IntCurByte + 4)) - 1
 
             IntX = 0
             While IntX < IntTemplength
-                StrNewColorPaletteFileName &= Chr(CInt("&H" & LstHexValues(8 + IntX)))
+                StrNewColorPaletteFileName &= Chr(CInt("&H" & LstHexValues(IntCurByte + 8 + IntX)))
                 IntX += 1
             End While
 
             MdlZTStudio.Trace(Me.GetType().FullName, "Read", "Color palette filename '" & Me.ColorPalette.FileName & "' (length: " & IntTemplength & ")")
 
-            ' Remove all processed bytes
-            LstHexValues.RemoveFirst(8 + IntTemplength + 1)
+            ' All bytes up to here have been processed.
+            IntCurByte += 8 + IntTemplength + 1
 
             ' === READ COLOR PALETTE ===
 
@@ -193,23 +198,19 @@ Public Class ClsGraphic
             IntNumberOfFrames = CInt("&H" & LstHexValues(IntCurByte + 3) & LstHexValues(IntCurByte + 2) & LstHexValues(IntCurByte + 1) & LstHexValues(IntCurByte))
             MdlZTStudio.Trace(Me.GetType().FullName, "Read", "Number of frames: " & IntNumberOfFrames)
 
-            ' Remove all processed bytes
-            LstHexValues.RemoveFirst(4)
+            IntCurByte += 4
 
             ' ==================================== FOR EACH FRAME... ===================================
-            Dim IntCurrentFrame As Integer = 0
             Dim IntFrameBytes As Integer = 0
             Dim IntFrameBytesCurrent As Integer = 0
 
             Me.Frames = New List(Of ClsFrame) ' List of hex values will be stored here, for each frame
 
-            While LstHexValues.Count > 0
+            While IntCurByte < LstHexValues.Count
 
                 '  The next 4 bytes determine the length of bytes to follow for one of the frames in this graphic
                 IntFrameBytes = CInt("&H" & LstHexValues(IntCurByte + 3) & LstHexValues(IntCurByte + 2) & LstHexValues(IntCurByte + 1) & LstHexValues(IntCurByte))
-
-                ' Remove all processed bytes.
-                LstHexValues.RemoveFirst(4)
+                IntCurByte += 4
 
                 MdlZTStudio.Trace(Me.GetType().FullName, "Read", "Number of bytes for frame " & Me.Frames.Count & ":  " & IntFrameBytes)
 
@@ -218,7 +219,7 @@ Public Class ClsGraphic
 
                 ' Build  hex string first.
                 For IntFrameBytesCurrent = 0 To (IntFrameBytes - 1)
-                    LstHexForOneFrame.Add(LstHexValues(IntFrameBytesCurrent))
+                    LstHexForOneFrame.Add(LstHexValues(IntCurByte + IntFrameBytesCurrent))
                 Next
 
                 ' Set the hex values of this frame object
@@ -230,10 +231,7 @@ Public Class ClsGraphic
                 ' Add to the frame collection
                 Me.Frames.Add(ObjFrame, False)
 
-                ' Remove all processed bytes.
-                LstHexValues.RemoveFirst(IntFrameBytes)
-
-                IntCurrentFrame += 1
+                IntCurByte += IntFrameBytes
 
             End While
 

@@ -1358,6 +1358,7 @@ Public Class FrmMain
 
         If e.KeyCode <> 13 Then
             ' Not confirming by pressing [Enter]
+            Exit Sub
         End If
 
 

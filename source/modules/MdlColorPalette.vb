@@ -23,11 +23,7 @@ Module MdlColorPalette
 
         End With
 
-        EditorGraphic.ColorPalette.Colors(IntIndex) = FrmMain.DlgColor.Color
-
-        ' Colors was mutated in place; its Count didn't change, so the color index cache
-        ' would not otherwise notice this color changed. Force a rebuild.
-        EditorGraphic.ColorPalette.InvalidateColorIndexCache()
+        EditorGraphic.ColorPalette.ReplaceColorAt(IntIndex, FrmMain.DlgColor.Color)
 
         'Update entire palette (easy)
         EditorGraphic.ColorPalette.FillPaletteGrid(FrmMain.DgvPaletteMain)
@@ -42,27 +38,12 @@ Module MdlColorPalette
     ''' <param name="IntIndexDest">Wanted index</param>
     Sub MoveColor(IntIndexNow As Integer, IntIndexDest As Integer)
 
-        ' Get color
-        Dim ObjColorToMove As System.Drawing.Color = EditorGraphic.ColorPalette.Colors(IntIndexNow)
-
-        ' Delete the original.
-        EditorGraphic.ColorPalette.Colors.RemoveAt(IntIndexNow)
-
-        ' We had the color. Insert it at the position we want.
-        EditorGraphic.ColorPalette.Colors.Insert(IntIndexDest, ObjColorToMove)
-
-        ' The remove/insert pair leaves Count unchanged, so the color index cache
-        ' would not otherwise notice the colors shifted position. Force a rebuild.
-        EditorGraphic.ColorPalette.InvalidateColorIndexCache()
+        ' MoveColorTo() handles the cache invalidation and the per-frame CoreImageHex regeneration
+        ' (color indexes have changed) internally - see issue #61.
+        EditorGraphic.ColorPalette.MoveColorTo(IntIndexNow, IntIndexDest)
 
         ' Refresh
         EditorGraphic.ColorPalette.FillPaletteGrid(FrmMain.DgvPaletteMain)
-
-        ' Update coreImageHex for each frame. Color indexes have changed.
-        For Each ztFrame As ClsFrame In EditorGraphic.Frames
-            ztFrame.CoreImageHex = Nothing
-            ztFrame.BitMapToHex() ' 20170519 - is it necessary to update this already? It could be generated when called.
-        Next
 
     End Sub
 
@@ -93,7 +74,7 @@ Module MdlColorPalette
         ObjColor = FrmMain.DlgColor.Color
 
         ' Insert it at the position we want.
-        EditorGraphic.ColorPalette.Colors.Insert(IntIndexNow + 1, ObjColor)
+        EditorGraphic.ColorPalette.AddColorAt(IntIndexNow + 1, ObjColor)
 
         ' Refresh
         EditorGraphic.ColorPalette.FillPaletteGrid(FrmMain.DgvPaletteMain)

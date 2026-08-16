@@ -31,6 +31,60 @@ Public Class ClsPalette
     End Sub
 
     ''' <summary>
+    ''' Inserts a color at the given index. Prefer this over mutating Colors directly (e.g.
+    ''' Colors.Insert(...)): the color index cache is invalidated automatically here rather than
+    ''' relying on every caller to remember to do so (see issue #61 - a caller that mutates Colors
+    ''' directly and forgets to invalidate the cache would silently get stale lookups afterward).
+    ''' </summary>
+    ''' <param name="IntIndex">Index to insert at.</param>
+    ''' <param name="ObjColor">Color to insert.</param>
+    Public Sub AddColorAt(IntIndex As Integer, ObjColor As System.Drawing.Color)
+        Me.Colors.Insert(IntIndex, ObjColor)
+        ' Count changes here, so the existing count-based check in EnsureColorIndexCache() already
+        ' catches this on the next lookup - no explicit invalidation needed, but harmless to be sure.
+        Me.InvalidateColorIndexCache()
+    End Sub
+
+    ''' <summary>
+    ''' Replaces the color at the given index in place. Prefer this over Colors(IntIndex) = ...
+    ''' directly - Count doesn't change on an in-place replace, so the color index cache would
+    ''' otherwise silently go stale for the replaced color (see issue #61).
+    ''' </summary>
+    ''' <param name="IntIndex">Index of the color to replace.</param>
+    ''' <param name="ObjColor">New color.</param>
+    Public Sub ReplaceColorAt(IntIndex As Integer, ObjColor As System.Drawing.Color)
+        Me.Colors(IntIndex) = ObjColor
+        Me.InvalidateColorIndexCache()
+    End Sub
+
+    ''' <summary>
+    ''' Moves the color at IntIndexNow to IntIndexDest, and regenerates the CoreImageHex of every
+    ''' frame in the parent graphic (if any) to reflect the new color indexes - mirroring the
+    ''' existing pattern in ImportFromPNG()/ImportFromGIMPPalette(). Prefer this over manually
+    ''' removing/re-inserting into Colors - that remove/insert pair leaves Count unchanged, so the
+    ''' color index cache would otherwise silently go stale for every color between the old and new
+    ''' position (see issue #61).
+    ''' </summary>
+    ''' <param name="IntIndexNow">Current index of the color to move.</param>
+    ''' <param name="IntIndexDest">Index to move it to.</param>
+    Public Sub MoveColorTo(IntIndexNow As Integer, IntIndexDest As Integer)
+
+        Dim ObjColorToMove As System.Drawing.Color = Me.Colors(IntIndexNow)
+        Me.Colors.RemoveAt(IntIndexNow)
+        Me.Colors.Insert(IntIndexDest, ObjColorToMove)
+
+        Me.InvalidateColorIndexCache()
+
+        If IsNothing(Me.Parent) = False Then
+            For Each ObjFrame As ClsFrame In Me.Parent.Frames
+                ObjFrame.CoreImageHex = Nothing
+                ObjFrame.BitMapToHex()
+            Next
+        End If
+
+    End Sub
+
+    ''' <summary>
     ''' The parent of this graphic. A ClsGraphic or nothing.
     ''' </summary>
     ''' <returns>ClsGraphic or Nothing</returns>

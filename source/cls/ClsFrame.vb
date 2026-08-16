@@ -23,7 +23,10 @@ Public Class ClsFrame
     Private fr_OffsetX As Integer = -9999
     Private fr_OffsetY As Integer = -9999
 
-    Private fr_Parent As New ClsGraphic(Nothing)
+    ' Not defaulted to New ClsGraphic(Nothing): the constructor below always overwrites this via
+    ' Me.Parent = myParent, so a default-constructed value here was wasted on every single ClsFrame
+    ' construction (each New ClsGraphic() also constructs its own New ClsPalette internally).
+    Private fr_Parent As ClsGraphic = Nothing
 
     Private fr_MysteryHEX As New List(Of String)
 
@@ -1140,16 +1143,20 @@ Public Class ClsFrame
 
                 Me.CoreImageBitmap = Me.GetCoreImageBitmap()
 
-                IniWrite(Me.Parent.FileName & ".txt", "Frame" & Me.Parent.Frames.IndexOf(Me), "width", Me.CoreImageBitmap.Width)
-                IniWrite(Me.Parent.FileName & ".txt", "Frame" & Me.Parent.Frames.IndexOf(Me), "height", Me.CoreImageBitmap.Height)
-                IniWrite(Me.Parent.FileName & ".txt", "Frame" & Me.Parent.Frames.IndexOf(Me), "offsetX", Me.OffsetX)
-                IniWrite(Me.Parent.FileName & ".txt", "Frame" & Me.Parent.Frames.IndexOf(Me), "offsetY", Me.OffsetY)
-                IniWrite(Me.Parent.FileName & ".txt", "Frame" & Me.Parent.Frames.IndexOf(Me), "numberOfBytes", Me.CoreImageHex.Count)
-                IniWrite(Me.Parent.FileName & ".txt", "Frame" & Me.Parent.Frames.IndexOf(Me), "mysteryBytes", String.Join(" ", Me.MysteryHEX))
+                ' Computed once instead of calling Me.Parent.Frames.IndexOf(Me) (an O(n) scan) 8 times
+                ' in a row for the same frame.
+                Dim StrFrameSection As String = "Frame" & Me.Parent.Frames.IndexOf(Me)
 
-                IniWrite(Me.Parent.FileName & ".txt", "Frame" & Me.Parent.Frames.IndexOf(Me), "mysteryByte0_Integer", CInt("&H" & Me.MysteryHEX(0)).ToString())
-                IniWrite(Me.Parent.FileName & ".txt", "Frame" & Me.Parent.Frames.IndexOf(Me), "mysteryByte1_Integer", CInt("&H" & Me.MysteryHEX(1)).ToString())
-                IniWrite(Me.Parent.FileName & ".txt", "Frame" & Me.Parent.Frames.IndexOf(Me), "mysteryBytes_Integer", CInt("&H" & Me.MysteryHEX(1) & Me.MysteryHEX(0)).ToString())
+                IniWrite(Me.Parent.FileName & ".txt", StrFrameSection, "width", Me.CoreImageBitmap.Width)
+                IniWrite(Me.Parent.FileName & ".txt", StrFrameSection, "height", Me.CoreImageBitmap.Height)
+                IniWrite(Me.Parent.FileName & ".txt", StrFrameSection, "offsetX", Me.OffsetX)
+                IniWrite(Me.Parent.FileName & ".txt", StrFrameSection, "offsetY", Me.OffsetY)
+                IniWrite(Me.Parent.FileName & ".txt", StrFrameSection, "numberOfBytes", Me.CoreImageHex.Count)
+                IniWrite(Me.Parent.FileName & ".txt", StrFrameSection, "mysteryBytes", String.Join(" ", Me.MysteryHEX))
+
+                IniWrite(Me.Parent.FileName & ".txt", StrFrameSection, "mysteryByte0_Integer", CInt("&H" & Me.MysteryHEX(0)).ToString())
+                IniWrite(Me.Parent.FileName & ".txt", StrFrameSection, "mysteryByte1_Integer", CInt("&H" & Me.MysteryHEX(1)).ToString())
+                IniWrite(Me.Parent.FileName & ".txt", StrFrameSection, "mysteryBytes_Integer", CInt("&H" & Me.MysteryHEX(1) & Me.MysteryHEX(0)).ToString())
 
             Else
 

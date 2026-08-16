@@ -11,16 +11,21 @@ Module StringExtensions
     <Extension()>
     Public Function ReverseHex(ByVal StrInput As String) As String
 
-        Dim StrReturn As String
+        ' Builds the reversed, space-separated byte-pair string directly instead of via
+        ' Enumerable.Range(...).Select(...).ToList() + Reverse() + Join - this is called very
+        ' frequently throughout multi-byte value encoding/decoding, and the LINQ chain allocated
+        ' an intermediate List(Of String) and a delegate on every call for what is just "walk the
+        ' string backwards two characters at a time".
+        Dim SbResult As New Text.StringBuilder()
 
-        Dim LstStrings As New List(Of String)
-        LstStrings.AddRange(Enumerable.Range(0, StrInput.Length / 2).Select(Function(x) StrInput.Substring(x * 2, 2)).ToList())
-        LstStrings.Reverse()
+        For IntIndex As Integer = StrInput.Length - 2 To 0 Step -2
+            If SbResult.Length > 0 Then
+                SbResult.Append(" "c)
+            End If
+            SbResult.Append(StrInput, IntIndex, 2)
+        Next
 
-        StrReturn = Strings.Join(LstStrings.ToArray(), " ")
-
-        ' return reverse, with spaces
-        Return Strings.Trim(StrReturn)
+        Return SbResult.ToString()
 
     End Function
 

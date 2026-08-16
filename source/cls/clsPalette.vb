@@ -503,31 +503,43 @@ Public Class ClsPalette
 
         Try
 
-        Dim BmpSource As Bitmap = Image.FromFile(StrFileName)
+        Dim BmpSource As ClsDirectBitmap
+        Using BmpSourceTemp As Bitmap = Bitmap.FromFile(StrFileName)
+            BmpSource = New ClsDirectBitmap(BmpSourceTemp)
+        End Using
+
         MdlZTStudio.Trace(Me.GetType().FullName, "ImportFromPNG", "Importing color palette from .PNG: " & StrFileName)
         MdlZTStudio.Trace(Me.GetType().FullName, "ImportFromPNG", "Forcefully add colors: " & Cfg_Palette_Import_PNG_Force_Add_Colors)
 
         Dim IntX As Integer = 0 ' Used to process bitmap from left to right
         Dim IntY As Integer = 0 ' Used to process bitmap from top to bottom
 
-        ' Todo: implement better method than GetPixel(), although performance boost will be minimal here.
-
         ' Clear current palette (please prevent redraws at this point)
         Me.Colors.Clear(False)
 
-        ' Row by row
+        ' Tracks colors already added during this import, so "is this a duplicate" is an O(1) lookup
+        ' instead of an O(n) Me.Colors.IndexOf() scan repeated for every pixel.
+        Dim SetSeenColors As New HashSet(Of System.Drawing.Color)
+
+        ' Row by row. ClsDirectBitmap.GetPixel() (used above, instead of the source Bitmap's own
+        ' GetPixel()) is a fast array-index read rather than GDI+'s per-call lock/unlock, and is only
+        ' read once per pixel here instead of twice (previously called once for the duplicate check
+        ' and again to add it).
         While IntY < BmpSource.Height
 
             While IntX < BmpSource.Width
 
                 ' Do not add duplicate colors, e.g. transparent stuff etc; UNLESS it's forced (= a user setting)
-                ' Use case: After recoloring, some colors are suddenly identical (especially after they're made brighter or darker). 
+                ' Use case: After recoloring, some colors are suddenly identical (especially after they're made brighter or darker).
                 ' Keep in mind that the graphics still refer to the original indexes of their colors.
                 ' Adding duplicate colors in that case causes least problems.
 
+                Dim ObjColor As System.Drawing.Color = BmpSource.GetPixel(IntX, IntY)
+
                 ' Color is unknown or it's forcefully added
-                If Me.Colors.IndexOf(BmpSource.GetPixel(IntX, IntY)) < 0 Or Cfg_Palette_Import_PNG_Force_Add_Colors = 1 Then
-                    Me.Colors.Add(BmpSource.GetPixel(IntX, IntY), False)
+                If SetSeenColors.Contains(ObjColor) = False Or Cfg_Palette_Import_PNG_Force_Add_Colors = 1 Then
+                    Me.Colors.Add(ObjColor, False)
+                    SetSeenColors.Add(ObjColor)
                 End If
 
                 IntX += 1

@@ -105,8 +105,10 @@ Module MdlTests
     ''' <returns></returns>
     Function GenerateHash(ByVal StrHashType As String, ByVal StrFileName As String)
 
-        ' Declaring the variable : hash
-        Dim HashGenerator As Object
+        ' Typed as HashAlgorithm (the actual common base of MD5/SHA1/SHA256) rather than Object, so
+        ' ComputeHash() below is a normal virtual call instead of a late-bound (reflection) dispatch -
+        ' this runs once per file during a folder-wide hash scan.
+        Dim HashGenerator As HashAlgorithm
         Select Case StrHashType
             Case "md5"
                 HashGenerator = MD5.Create()

@@ -137,7 +137,11 @@ Public Class ClsAniFile
 
         Try
 
-            Dim StrAni As String = "[animation]" & vbCrLf
+            ' StringBuilder instead of repeated String & concatenation, and an indexed loop instead
+            ' of RelativeDirectories.IndexOf(s) (an O(n) scan per directory, while already iterating
+            ' that same list).
+            Dim SbAni As New Text.StringBuilder()
+            SbAni.AppendLine("[animation]")
 
             ' If there's a .ani-file present, delete it first.
             If File.Exists(Me.FileName) = True Then
@@ -145,21 +149,22 @@ Public Class ClsAniFile
             End If
 
             ' Write out dirs
-            For Each s As String In Me.RelativeDirectories
-                StrAni = StrAni & "dir" & Me.RelativeDirectories.IndexOf(s) & " = " & s & vbCrLf
+            For IntDirIndex As Integer = 0 To Me.RelativeDirectories.Count - 1
+                SbAni.AppendLine("dir" & IntDirIndex & " = " & Me.RelativeDirectories(IntDirIndex))
             Next
 
             ' Write out views
             For Each s As String In Me.Views
-                StrAni = StrAni & "animation = " & s & vbCrLf
+                SbAni.AppendLine("animation = " & s)
             Next
 
             ' Now, the coordinates
-            StrAni = StrAni &
-                "x0 = " & Me.X0 & vbCrLf &
-                "y0 = " & Me.Y0 & vbCrLf &
-                "x1 = " & Me.X1 & vbCrLf &
-                "y1 = " & Me.Y1 & vbCrLf
+            SbAni.AppendLine("x0 = " & Me.X0)
+            SbAni.AppendLine("y0 = " & Me.Y0)
+            SbAni.AppendLine("x1 = " & Me.X1)
+            SbAni.AppendLine("y1 = " & Me.Y1)
+
+            Dim StrAni As String = SbAni.ToString()
 
             ' Write.
             If Me.Views.Count > 0 And Me.RelativeDirectories.Count > 0 Then

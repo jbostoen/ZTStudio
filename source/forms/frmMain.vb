@@ -44,19 +44,16 @@ Public Class FrmMain
 
             Dim LstColorpalettes As IO.FileInfo()
             LstColorpalettes = New IO.DirectoryInfo(Cfg_path_ColorPals8).GetFiles()
-            Dim ObjFileInfo As IO.FileInfo
 
-            ' List all files found in the directory with 8-color palettes
-            For Each ObjFileInfo In LstColorpalettes
-                TsbOpenPalBldg8.DropDownItems.Add(ObjFileInfo.Name)
-            Next
+            ' List all files found in the directory with 8-color palettes.
+            ' Built as an array and added via AddRange() in one call, instead of one .Add() per
+            ' item (each of which can trigger its own layout pass on the dropdown).
+            TsbOpenPalBldg8.DropDownItems.AddRange(LstColorpalettes.Select(Function(f) New ToolStripMenuItem(f.Name)).ToArray())
 
             LstColorpalettes = New IO.DirectoryInfo(Cfg_path_ColorPals16).GetFiles()
 
             ' List all files found in the directory with 16-color palettes
-            For Each ObjFileInfo In LstColorpalettes
-                TsbOpenPalBldg16.DropDownItems.Add(ObjFileInfo.Name)
-            Next
+            TsbOpenPalBldg16.DropDownItems.AddRange(LstColorpalettes.Select(Function(f) New ToolStripMenuItem(f.Name)).ToArray())
 
             ' Update Explorer Panel to show folder structure of root folder
             MdlZTStudioUI.UpdateExplorerPane()

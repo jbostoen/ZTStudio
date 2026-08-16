@@ -226,12 +226,16 @@ Module MdlTasks
             ' - canvas size options
             ' - render background frame or export it separately
 
-            ' Loop over each frame of the ZT1 Graphic
-            For Each ObjFrame As ClsFrame In ObjGraphic.Frames
+            ' Loop over each frame of the ZT1 Graphic. Using the loop index directly instead of
+            ' repeatedly calling ObjGraphic.Frames.IndexOf(ObjFrame) (up to 4 times per frame below,
+            ' each an O(n) scan) - the index is already known from iterating the list.
+            For IntFrameIndex As Integer = 0 To ObjGraphic.Frames.Count - 1
+
+                Dim ObjFrame As ClsFrame = ObjGraphic.Frames(IntFrameIndex)
 
                 ' The bitmap's save function does not overwrite, nor warn that the file already exists.
                 ' So it is safer to delete any existing files.
-                System.IO.File.Delete(StrSourceFileName & Cfg_Convert_FileNameDelimiter & (ObjGraphic.Frames.IndexOf(ObjFrame) + Cfg_Convert_StartIndex).ToString("0000") & ".png")
+                System.IO.File.Delete(StrSourceFileName & Cfg_Convert_FileNameDelimiter & (IntFrameIndex + Cfg_Convert_StartIndex).ToString("0000") & ".png")
 
                 ' Save frames as PNG, just autonumber the frames.
                 ' Exception: if there is an extra frame which should be rendered separately rather than as background.
@@ -241,13 +245,13 @@ Module MdlTasks
 
                 ' RenderBGFrame: this is read as: 'render this as BG for every frame'
                 If Cfg_Export_PNG_RenderBGFrame = 0 And ObjGraphic.HasBackgroundFrame = 1 Then
-                    If ObjGraphic.Frames.IndexOf(ObjFrame) = (ObjGraphic.Frames.Count - 1) Then
+                    If IntFrameIndex = (ObjGraphic.Frames.Count - 1) Then
                         ObjFrame.SavePNG(StrSourceFileName & Cfg_Convert_FileNameDelimiter & "extra.png")
                     Else
-                        ObjFrame.SavePNG(StrSourceFileName & Cfg_Convert_FileNameDelimiter & (ObjGraphic.Frames.IndexOf(ObjFrame) + Cfg_Convert_StartIndex).ToString("0000") & ".png")
+                        ObjFrame.SavePNG(StrSourceFileName & Cfg_Convert_FileNameDelimiter & (IntFrameIndex + Cfg_Convert_StartIndex).ToString("0000") & ".png")
                     End If
                 Else
-                    ObjFrame.SavePNG(StrSourceFileName & Cfg_Convert_FileNameDelimiter & (ObjGraphic.Frames.IndexOf(ObjFrame) + Cfg_Convert_StartIndex).ToString("0000") & ".png")
+                    ObjFrame.SavePNG(StrSourceFileName & Cfg_Convert_FileNameDelimiter & (IntFrameIndex + Cfg_Convert_StartIndex).ToString("0000") & ".png")
 
                 End If
 

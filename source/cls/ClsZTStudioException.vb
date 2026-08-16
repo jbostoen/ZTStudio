@@ -31,9 +31,16 @@ Public Class ZTStudioException
         End Set
     End Property
 
+    ''' <summary>
+    ''' </summary>
+    ''' <remarks>
+    ''' ObjError is guarded against Nothing here (rather than relying on every caller to check first)
+    ''' since MdlZTStudio.HandledError already guards its own call site but UnhandledError doesn't -
+    ''' guarding centrally here covers both, and any future caller, in one place. See issue #68.
+    ''' </remarks>
     Public Sub New(ByVal StrClass As String, ByVal StrMethod As String, ByVal ObjError As Exception)
 
-        MyBase.New(StrClass & "::" & StrMethod & "() - " & ObjError.Message, ObjError)
+        MyBase.New(StrClass & "::" & StrMethod & "() - " & If(IsNothing(ObjError), "(no exception details available)", ObjError.Message), ObjError)
 
         Me.ClassName = StrClass
         Me.MethodName = StrMethod

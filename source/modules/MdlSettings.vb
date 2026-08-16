@@ -124,8 +124,21 @@ Module MdlSettings
 
 
     Public Function IniWrite(ByVal iniFileName As String, ByVal Section As String, ByVal ParamName As String, ByVal ParamVal As String) As Integer
+
         Dim Result As Integer = WritePrivateProfileString(Section, ParamName, ParamVal, iniFileName)
-        Return 0
+
+        ' WritePrivateProfileString returns 0 on failure (e.g. iniFileName is read-only/locked, or
+        ' its directory doesn't exist) - a Win32 API failure, not a .NET exception, so it was
+        ' previously silently ignored: a failed settings save had no error and no log entry, which
+        ' undercut the point of the structured logging added for issues #43/#44/#49. Logged rather
+        ' than shown as a dialog, since IniWrite is called from many places, including from a
+        ' background batch thread (e.g. ClsFrame.WriteDetailsToTextFile).
+        If Result = 0 Then
+            MdlZTStudio.LogError("MdlSettings", "IniWrite", "Failed to write '" & ParamName & "' to section '" & Section & "' in '" & iniFileName & "'.")
+        End If
+
+        Return Result
+
     End Function
 
     Public Function IniRead(ByVal IniFileName As String, ByVal Section As String, ByVal ParamName As String, ByVal ParamDefault As String) As String

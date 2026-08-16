@@ -182,7 +182,10 @@ Public Class ClsGraphic
 
                 MdlZTStudio.Trace(Me.GetType().FullName, "Read", "Reading color palette...")
 
-                ' Read palette
+                ' Read palette. Colors.Clear() relies on List(Of T).Clear()'s BlnForceUpdateInfo
+                ' parameter defaulting to False (issue #62) - Read() can run on a background batch
+                ' thread, and the default used to be True, which fired a UI-touching callback with
+                ' no cross-thread marshaling of its own straight from that thread.
                 Me.ColorPalette.Colors.Clear()
                 Me.ColorPalette.ReadPal(StrNewColorPaletteFileName)
 

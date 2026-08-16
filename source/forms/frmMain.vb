@@ -606,7 +606,8 @@ Public Class FrmMain
     ''' <param name="e">EventArgs</param>
     Private Sub TsbFrame_Delete_Click(sender As Object, e As EventArgs) Handles TsbFrame_Delete.Click
 
-        ' Remove the frame
+        ' Remove the frame. RemoveAt()'s optional UI-refresh callback now defaults to False (issue
+        ' #62) - not needed here anyway, since UpdatePreview() below already does the real refresh.
         EditorGraphic.Frames.RemoveAt(TbFrames.Value - 1)
 
         ' Update preview. Update frame info and other GUI elements (button states, offsets, ...)

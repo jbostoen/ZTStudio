@@ -53,7 +53,26 @@ Public Class List(Of T)
 
     End Sub
 
-    Public Overloads Sub Remove(item As T, Optional BlnForceUpdateInfo As Boolean = True)
+    ''' <summary>
+    ''' Implements a custom parameter, now defaulting to False (previously True).
+    ''' </summary>
+    ''' <remarks>
+    ''' This generic list type is reused for unrelated data across the codebase (directory/view
+    ''' lists, a color palette, drawing-instruction pixel colors, ...), not just the main editor's
+    ''' frame collection - defaulting to True meant any call to Remove/RemoveAt/Clear anywhere that
+    ''' didn't explicitly pass False silently reached into FrmMain's UI controls. Since batch
+    ''' operations run on a background thread (Task.Run, see issue #48), and MdlZTStudioUI.UpdateFrameInfo
+    ''' has no cross-thread marshaling of its own, this was a real, reachable bug: ClsGraphic.Read()
+    ''' calls Me.ColorPalette.Colors.Clear() (bare, relying on this default) whenever a graphic's
+    ''' color palette differs from the previously loaded one - during a batch ZT1-to-PNG conversion of
+    ''' a folder containing graphics with different palettes, this fired UpdateFrameInfo() from the
+    ''' background batch thread, which would throw InvalidOperationException ("cross-thread operation
+    ''' not valid") - silently caught and logged as a per-file failure by the batch loop rather than
+    ''' visibly crashing, which is likely why this had gone unnoticed. Defaulting to False (and
+    ''' requiring call sites that genuinely want the callback to opt in explicitly) closes this off
+    ''' for both the known call site and any future one. See issue #62.
+    ''' </remarks>
+    Public Overloads Sub Remove(item As T, Optional BlnForceUpdateInfo As Boolean = False)
 
         MyBase.Remove(item)
 
@@ -62,7 +81,7 @@ Public Class List(Of T)
         End If
 
     End Sub
-    Public Overloads Sub RemoveAt(index As Integer, Optional BlnForceUpdateInfo As Boolean = True)
+    Public Overloads Sub RemoveAt(index As Integer, Optional BlnForceUpdateInfo As Boolean = False)
 
         MyBase.RemoveAt(index)
 
@@ -71,7 +90,7 @@ Public Class List(Of T)
         End If
     End Sub
 
-    Public Overloads Sub Clear(Optional BlnForceUpdateInfo As Boolean = True)
+    Public Overloads Sub Clear(Optional BlnForceUpdateInfo As Boolean = False)
 
         MyBase.Clear()
 

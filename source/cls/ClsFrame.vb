@@ -15,6 +15,12 @@ Public Class ClsFrame
 
     Implements INotifyPropertyChanged
 
+    ' Valid range for a signed 16-bit offset (OffsetX/OffsetY are each stored in 2 bytes in the ZT1
+    ' Graphic format). Named so the same bound isn't repeated as a literal in multiple places (it
+    ' appears once per axis in UpdateOffsets).
+    Private Const IntOffsetMin As Integer = -32768
+    Private Const IntOffsetMax As Integer = 32767
+
     ' CoreImage means the actual frame's content. No background canvas, no grid, no 'extra frame'.
     ' The bitmap also implictly contains the width and height of this 'core' image. 
     Private fr_CoreImageBitmap As ClsDirectBitmap = Nothing
@@ -661,13 +667,13 @@ Public Class ClsFrame
                     ztFrame.OffsetX += PntCoordOffsetChanges.X
 
                     ' Valid offsets?
-                    Dim StrHintOffset As String = "Problem with a frame. Valid {0} offset should (theoretically, still untested) be between -32768 and 32767."
-                    If ztFrame.OffsetX < -32768 Or ztFrame.OffsetX > 32767 Then
+                    Dim StrHintOffset As String = "Problem with a frame. Valid {0} offset should (theoretically, still untested) be between " & IntOffsetMin & " and " & IntOffsetMax & "."
+                    If ztFrame.OffsetX < IntOffsetMin Or ztFrame.OffsetX > IntOffsetMax Then
                         MdlZTStudio.HandledError(Me.GetType().FullName, "UpdateOffsets", String.Format(StrHintOffset, "X"), True)
                         Exit Sub
                     End If
 
-                    If ztFrame.OffsetY < -32768 Or ztFrame.OffsetY > 32767 Then
+                    If ztFrame.OffsetY < IntOffsetMin Or ztFrame.OffsetY > IntOffsetMax Then
                         MdlZTStudio.HandledError(Me.GetType().FullName, "UpdateOffsets", String.Format(StrHintOffset, "Y"), True)
                         Exit Sub
                     End If

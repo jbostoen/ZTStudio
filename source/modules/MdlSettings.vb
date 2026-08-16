@@ -141,8 +141,13 @@ Module MdlSettings
 
     End Function
 
+    ' Buffer size for GetPrivateProfileString - any value read from settings.cfg longer than this is
+    ' silently truncated. Named so it's clear this is a deliberate (if generous) fixed limit, not an
+    ' arbitrary literal.
+    Private Const IntIniReadBufferSize As Integer = 1024
+
     Public Function IniRead(ByVal IniFileName As String, ByVal Section As String, ByVal ParamName As String, ByVal ParamDefault As String) As String
-        Dim ParamVal As String = Space$(1024)
+        Dim ParamVal As String = Space$(IntIniReadBufferSize)
         Dim LenParamVal As Integer = GetPrivateProfileString(Section, ParamName, ParamDefault, ParamVal, Len(ParamVal), IniFileName)
         IniRead = Left$(ParamVal, LenParamVal)
 

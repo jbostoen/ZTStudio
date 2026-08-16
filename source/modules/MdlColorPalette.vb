@@ -54,7 +54,7 @@ Module MdlColorPalette
     ''' <param name="IntIndexNow">Index</param>
     Sub AddColor(IntIndexNow As Integer)
 
-        If EditorGraphic.ColorPalette.Colors.Count = 256 Then
+        If EditorGraphic.ColorPalette.Colors.Count = ClsPalette.IntMaxPaletteColors Then
             MdlZTStudio.HandledError("MdlColorPalette", "AddColor", "You can't add any more colors to this palette." & vbCrLf & "The maximum of 255 (+1 transparent) colors has been reached.")
         End If
 

@@ -6,6 +6,11 @@
 ''' </summary>
 Public Class ClsAniFile
 
+    ' Number of numbered views ("1" through this value) that identify a "paths" graphic in
+    ' CreateAniConfig(). Named so this isn't a bare literal both in the detection check and the
+    ' loop that generates the view list.
+    Private Const IntPathViewCount As Integer = 20
+
     ' The .ani file is mostly used for icons in ZT1.
     ' Every graphic, with 1 or multiple views (N, NE, NW, SE, SW, S, E, ...) has one .ani-file.
     ' It contains a header, [Animation]
@@ -129,7 +134,7 @@ Public Class ClsAniFile
     Public Function Write(Optional strFileName As String = Nothing)
 
 
-        If IsNothing(strFileName) = False Then
+        If Not IsNothing(strFileName) Then
             Me.FileName = strFileName
         End If
 
@@ -194,7 +199,7 @@ Public Class ClsAniFile
         ' N/NE/E/SE/S       animals, guests, staff...
         ' 1-20              paths
 
-        If IsNothing(StrFileName) = False Then
+        If Not IsNothing(StrFileName) Then
             Me.FileName = StrFileName.Replace("/", "\")
         End If
 
@@ -258,12 +263,12 @@ Public Class ClsAniFile
 
                 MdlZTStudio.Trace(Me.GetType().FullName, "CreateAniConfig", "Determination: 'icon'")
 
-            ElseIf AllViewsExist(StrPath, Enumerable.Range(1, 20).Select(Function(i) i.ToString()).ToArray()) Then
+            ElseIf AllViewsExist(StrPath, Enumerable.Range(1, IntPathViewCount).Select(Function(i) i.ToString()).ToArray()) Then
 
                 ' This is typical for paths
                 With Me.Views
                     Dim IntX As Integer = 1
-                    While IntX <= 20
+                    While IntX <= IntPathViewCount
                         .Add(IntX.ToString("0"), False)
                         IntX += 1
                     End While

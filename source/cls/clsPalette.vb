@@ -5,6 +5,12 @@
 ''' </summary>
 Public Class ClsPalette
 
+    ''' <summary>
+    ''' Maximum number of colors a ZT1 Color Palette can hold, including the transparent color at
+    ''' index 0 - so up to 255 usable colors per graphic. Named so this limit isn't repeated as a
+    ''' bare literal at each of its call sites.
+    ''' </summary>
+    Public Const IntMaxPaletteColors As Integer = 256
 
     Dim Pal_FileName As String = vbNullString ' The filename
     Dim Pal_Colors As New List(Of System.Drawing.Color) ' The actual list of colors. Should be 256 maximum, with the first one signifying the color that will be considered 'transparent'.
@@ -317,13 +323,13 @@ Public Class ClsPalette
 
             ' The color was not found in this palette. Add it?
 
-            If Me.Colors.Count < 256 And BlnAddToPalette = True Then
+            If Me.Colors.Count < IntMaxPaletteColors And BlnAddToPalette = True Then
 
                 ' Add the color: the maximum number of colors has not been reached and it's been explicitly allowed to do so.
                 Me.Colors.Add(ObjColor, False)
                 Return Me.Colors.Count - 1  ' Return last item index
 
-            ElseIf Me.Colors.Count = 256 Then
+            ElseIf Me.Colors.Count = IntMaxPaletteColors Then
 
                 MdlZTStudio.Trace(Me.GetType().FullName, "GetColorIndex", "Reached maximum amount of colors.")
 

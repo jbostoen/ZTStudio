@@ -1280,7 +1280,7 @@ Public Class FrmMain
     Private Sub TstOffsetX_KeyDown(sender As Object, e As KeyEventArgs) Handles TstOffsetX.KeyDown
 
         ' On enter
-        If e.KeyCode <> 13 Then
+        If e.KeyCode <> Keys.Enter Then
             Exit Sub
         End If
 
@@ -1315,7 +1315,7 @@ Public Class FrmMain
     Private Sub TstOffsetY_KeyDown(sender As Object, e As KeyEventArgs) Handles TstOffsetY.KeyDown
 
         ' On enter
-        If e.KeyCode <> 13 Then
+        If e.KeyCode <> Keys.Enter Then
             Exit Sub
         End If
 
@@ -1376,7 +1376,7 @@ Public Class FrmMain
     ''' <param name="e">KeyEventArgs</param>
     Private Sub TstZT1_AnimSpeed_KeyDown(sender As Object, e As KeyEventArgs) Handles TstZT1_AnimSpeed.KeyDown
 
-        If e.KeyCode <> 13 Then
+        If e.KeyCode <> Keys.Enter Then
             ' Not confirming by pressing [Enter]
             Exit Sub
         End If

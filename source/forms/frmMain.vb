@@ -245,6 +245,29 @@ Public Class FrmMain
     End Sub
 
     ''' <summary>
+    ''' Safely determines the folder to default a file dialog's InitialDirectory to, based on a
+    ''' recently-used file path. New FileInfo(...) throws ArgumentException when StrRecentPath is
+    ''' empty or otherwise invalid (e.g. nothing opened yet this session) - this catches that and
+    ''' falls back to Cfg_Path_Root instead of letting the exception propagate out of a dialog's
+    ''' Click/MouseDown handler.
+    ''' </summary>
+    ''' <param name="StrRecentPath">A recently used file path, possibly empty/invalid.</param>
+    Private Function GetInitialDirectory(StrRecentPath As String) As String
+
+        Try
+            Dim StrDirectory As String = New FileInfo(StrRecentPath).Directory.FullName
+            If StrDirectory <> vbNullString AndAlso Directory.Exists(StrDirectory) = True Then
+                Return StrDirectory
+            End If
+        Catch ex As Exception
+            ' Fall through to Cfg_Path_Root below.
+        End Try
+
+        Return Cfg_Path_Root
+
+    End Function
+
+    ''' <summary>
     ''' Handles toolbar button click to open ZT1 Graphic
     ''' </summary>
     ''' <param name="sender">Object</param>
@@ -908,15 +931,9 @@ Public Class FrmMain
             .DefaultExt = ""
             .Filter = "PNG files|*.png"
 
-            ' Suggest directory of most recently opened PNG
-            .InitialDirectory = New System.IO.FileInfo(Cfg_Path_RecentPNG).Directory.FullName
-
-
-            ' If most recent directory does not exist anymore:
-            If DlgOpen.InitialDirectory = vbNullString Or System.IO.Directory.Exists(DlgOpen.InitialDirectory) = False Then
-                .InitialDirectory = Cfg_Path_Root
-
-            End If
+            ' Suggest directory of most recently opened PNG. GetInitialDirectory() already
+            ' falls back to Cfg_Path_Root if Cfg_Path_RecentPNG is empty/invalid/gone.
+            .InitialDirectory = GetInitialDirectory(Cfg_Path_RecentPNG)
 
             If .ShowDialog() <> Windows.Forms.DialogResult.Cancel Then
 
@@ -981,7 +998,7 @@ Public Class FrmMain
             .Filter = "PNG Color Palette files (*.png)|*.png|All files|*.*"
 
             ' By default same directory as most recently picked ZT1 Graphic
-            .InitialDirectory = New System.IO.FileInfo(Cfg_Path_RecentZT1).Directory.FullName
+            .InitialDirectory = GetInitialDirectory(Cfg_Path_RecentZT1)
 
             If .ShowDialog() <> Windows.Forms.DialogResult.Cancel Then
 
@@ -1012,7 +1029,7 @@ Public Class FrmMain
             .Filter = "PNG Color Palette files (*.png)|*.png|All files|*.*"
 
             ' By default, specify directory of last chosen PNG file
-            .InitialDirectory = New System.IO.FileInfo(Cfg_Path_RecentPNG).Directory.FullName
+            .InitialDirectory = GetInitialDirectory(Cfg_Path_RecentPNG)
 
 
             If .ShowDialog() <> Windows.Forms.DialogResult.Cancel Then
@@ -1047,7 +1064,7 @@ Public Class FrmMain
             .Title = "Save as a ZT1 Color Palette"
             .DefaultExt = ".pal"
             .Filter = "ZT1 Color Palette files (*.pal)|*.pal|All files|*.*"
-            .InitialDirectory = New System.IO.FileInfo(Cfg_Path_RecentZT1).Directory.FullName
+            .InitialDirectory = GetInitialDirectory(Cfg_Path_RecentZT1)
 
             ' If user didn't cancel, create ZT1 Color palette
             If .ShowDialog() <> Windows.Forms.DialogResult.Cancel Then
@@ -1075,7 +1092,7 @@ Public Class FrmMain
             .Filter = "GIMP Color Palette (*.gpl)|*.gpl|All files|*.*"
 
             ' Uses most recent ZT1 Graphic path
-            .InitialDirectory = New System.IO.FileInfo(Cfg_Path_RecentZT1).Directory.FullName
+            .InitialDirectory = GetInitialDirectory(Cfg_Path_RecentZT1)
 
             ' If user didn't cancel, import GIMP Palette
             If .ShowDialog() <> Windows.Forms.DialogResult.Cancel Then
@@ -1170,7 +1187,7 @@ Public Class FrmMain
             .FileName = Cfg_Path_RecentZT1
             .Filter = "ZT1 Graphics|*"
 
-            .InitialDirectory = New FileInfo(Cfg_Path_RecentZT1).Directory.FullName
+            .InitialDirectory = GetInitialDirectory(Cfg_Path_RecentZT1)
 
             If .ShowDialog() <> Windows.Forms.DialogResult.Cancel Then
 

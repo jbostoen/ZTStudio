@@ -6,6 +6,13 @@ ZT Studio
 </name>
 </assembly>
 <members>
+<member name="M:ZTStudio.My.MyApplication.MyApplication_UnhandledException(System.Object,Microsoft.VisualBasic.ApplicationServices.UnhandledExceptionEventArgs)">
+ <summary>
+ Last-resort safety net for exceptions that were not caught anywhere else in the application.
+ Logs the exception, shows the standard friendly error dialog, and lets the user decide
+ whether to try to continue working or close the application.
+ </summary>
+</member>
 <member name="T:ZTStudio.My.Resources.Resources">
 <summary>
   A strongly-typed resource class, for looking up localized strings, etc.
@@ -103,6 +110,17 @@ ZT Studio
  This is experimental, but it should work for the majority of graphics.
  </summary>
  <param name="StrFileName">Destination filename</param>
+</member>
+<member name="M:ZTStudio.ClsAniFile.AllViewsExist(System.String,System.String[])">
+ <summary>
+ Checks whether a file exists for every given view name directly under StrPath (e.g.
+ StrPath\N, StrPath\NE, ...). Extracted to replace several near-identical chains of
+ File.Exists(...) = True And File.Exists(...) = True And ... previously used in
+ CreateAniConfig() to detect which "shape" of graphic (icon, object, animal, path, ui
+ button) this .ani file is being generated for.
+ </summary>
+ <param name="StrPath">Directory to look for the views in.</param>
+ <param name="Views">View names to check for, e.g. "N", "NE", "1", "20".</param>
 </member>
 <member name="T:ZTStudio.ClsDirectBitmap">
  <summary>
@@ -484,11 +502,33 @@ ZT Studio
  <param name="Item"></param>
  <param name="BlnForceUpdateInfo"></param>
 </member>
-<member name="M:ZTStudio.List`1.Skip(System.Int32)">
+<member name="M:ZTStudio.List`1.Remove(`0,System.Boolean)">
+ <summary>
+ Implements a custom parameter, now defaulting to False (previously True).
+ </summary>
+ <remarks>
+ This generic list type is reused for unrelated data across the codebase (directory/view
+ lists, a color palette, drawing-instruction pixel colors, ...), not just the main editor's
+ frame collection - defaulting to True meant any call to Remove/RemoveAt/Clear anywhere that
+ didn't explicitly pass False silently reached into FrmMain's UI controls. Since batch
+ operations run on a background thread (Task.Run, see issue #48), and MdlZTStudioUI.UpdateFrameInfo
+ has no cross-thread marshaling of its own, this was a real, reachable bug: ClsGraphic.Read()
+ calls Me.ColorPalette.Colors.Clear() (bare, relying on this default) whenever a graphic's
+ color palette differs from the previously loaded one - during a batch ZT1-to-PNG conversion of
+ a folder containing graphics with different palettes, this fired UpdateFrameInfo() from the
+ background batch thread, which would throw InvalidOperationException ("cross-thread operation
+ not valid") - silently caught and logged as a per-file failure by the batch loop rather than
+ visibly crashing, which is likely why this had gone unnoticed. Defaulting to False (and
+ requiring call sites that genuinely want the callback to opt in explicitly) closes this off
+ for both the known call site and any future one. See issue #62.
+ </remarks>
+</member>
+<member name="M:ZTStudio.List`1.RemoveFirst(System.Int32)">
  <summary>
  Number of items to remove (from the start)
  </summary>
  <param name="IntItems">Number of items to remove (from the start)</param>
+ <remarks>Mutates the list in place by removing items; unlike LINQ's Skip(), it does not return a filtered sequence.</remarks>
 </member>
 <member name="M:ZTStudio.StringExtensions.ReverseHex(System.String)">
  <summary>
@@ -502,6 +542,23 @@ ZT Studio
  <summary>
  Groups batch operations
  </summary>
+</member>
+<member name="M:ZTStudio.MdlBatch.EnumerateDirectoriesRecursive(System.String,System.Boolean)">
+ <summary>
+ Recursively enumerates every directory under StrRoot (StrRoot itself included first), lazily,
+ depth-first. Extracted so the same Stack(Of String)-based walk isn't duplicated across
+ MdlBatch.WriteAniFile, MdlTests.GetHashesOfFilesInFolder, and MdlZTStudioUI.UpdateExplorerPane
+ (see issue #63 - the same kind of extraction already done for the per-file batch loop in
+ MdlTasks.RunFileBatch, issue #52).
+ </summary>
+ <param name="StrRoot">Root directory to start from.</param>
+ <param name="BlnPreserveOrder">
+ If True, each directory's subdirectories are visited in the order Directory.GetDirectories()
+ returns them (typically alphabetical) - needed by callers that display results to the user
+ (e.g. building a TreeView). If False (the default), visitation order isn't guaranteed to
+ match that; every directory is still visited exactly once, which is all that matters for
+ callers that don't care about order (e.g. hashing every file, or writing a .ani per folder).
+ </param>
 </member>
 <member name="M:ZTStudio.MdlBatch.WriteAniFile(System.String)">
  <summary>
@@ -605,6 +662,40 @@ ZT Studio
  Saves configuration to .INI file
  </summary>
 </member>
+<member name="M:ZTStudio.MdlTasks.ResetProgressBar(System.Windows.Forms.ProgressBar,System.Int32)">
+ <summary>
+ Resets a ProgressBar's range and value. Marshals to the UI thread if called from a background thread (e.g. a batch task).
+ </summary>
+ <param name="ObjProgressBar">Progress bar to reset. No action taken if Nothing.</param>
+ <param name="IntMaximum">Maximum value to configure on the progress bar.</param>
+</member>
+<member name="M:ZTStudio.MdlTasks.StepProgressBar(System.Windows.Forms.ProgressBar)">
+ <summary>
+ Advances a ProgressBar by one step. Marshals to the UI thread if called from a background thread (e.g. a batch task).
+ </summary>
+ <param name="ObjProgressBar">Progress bar to update. No action taken if Nothing.</param>
+</member>
+<member name="M:ZTStudio.MdlTasks.RunFileBatch``1(ZTStudio.List{``0},System.Windows.Forms.ProgressBar,System.Threading.CancellationToken,System.Action{``0},System.String,System.Func{``0,System.String})">
+ <summary>
+ Runs ObjAction once per item in LstItems, in order, with per-item error isolation (a failure
+ is logged and counted, but does not stop the batch), cooperative cancellation between items,
+ and progress-bar stepping. Used by the three folder-batch methods below to avoid duplicating
+ the same loop/cancellation/error-isolation/progress-bar skeleton three times (see issue #52).
+ </summary>
+ <typeparam name="T">Item type, e.g. a file path.</typeparam>
+ <param name="LstItems">Items to process, e.g. file paths.</param>
+ <param name="ObjProgressBar">Progress bar to reset up-front and step once per item. May be Nothing.</param>
+ <param name="ObjCancellationToken">Checked between items; on cancellation, stops early.</param>
+ <param name="ObjAction">The per-item work to run. May throw; failures are caught, logged, and counted.</param>
+ <param name="StrLogContext">Class/method name to attribute logged per-item failures to.</param>
+ <param name="ObjItemLabel">Turns an item into a short label (e.g. its filename) for logging/the failure list.</param>
+ <returns>Succeeded count, the labels of items that failed, and whether cancellation stopped the batch early.</returns>
+ <remarks>
+ Does NOT set/reset BlnBatchOperationRunning - that needs to be active for the whole duration of
+ the call (so HandledError/UnhandledError raise instead of showing a blocking dialog for anything
+ ObjAction does), so each caller wraps its own call to this helper in a Try/Finally around that flag.
+ </remarks>
+</member>
 <member name="M:ZTStudio.MdlTasks.CleanUpFiles(System.String,System.String)">
  <summary>
  Cleans up files in a path, based on extension.
@@ -629,19 +720,39 @@ ZT Studio
  <param name="StrDestinationFileName"></param>
  <param name="BlnSingleConversion"></param>
 </member>
-<member name="M:ZTStudio.MdlTasks.ConvertFolderZT1ToPNG(System.String,System.Windows.Forms.ProgressBar)">
+<member name="M:ZTStudio.MdlTasks.ConvertFolderZT1ToPNG(System.String,System.Windows.Forms.ProgressBar,System.Threading.CancellationToken)">
  <summary>
  Task to convert a whole set of folders containing ZT1 Graphics to PNG sets
  </summary>
  <param name="StrPath">Path to search recursively for ZT1 Graphics</param>
  <param name="ObjProgressBar">Progress bar to show progress in</param>
+ <param name="ObjCancellationToken">Token which allows cancelling the batch between files</param>
 </member>
-<member name="M:ZTStudio.MdlTasks.ConvertFolderPNGToZT1(System.String,System.Windows.Forms.ProgressBar)">
+<member name="M:ZTStudio.MdlTasks.ConvertFolderZT1ToPNGCore(System.String,System.Windows.Forms.ProgressBar,System.Threading.CancellationToken)">
+ <summary>
+ Contains the actual folder walk/conversion logic for <see cref="M:ZTStudio.MdlTasks.ConvertFolderZT1ToPNG(System.String,System.Windows.Forms.ProgressBar,System.Threading.CancellationToken)"/>.
+ Runs on whatever thread it is invoked from (a background thread, when called via ConvertFolderZT1ToPNG).
+ </summary>
+ <param name="StrPath">Path to search recursively for ZT1 Graphics</param>
+ <param name="ObjProgressBar">Progress bar to show progress in</param>
+ <param name="ObjCancellationToken">Token which allows cancelling the batch between files</param>
+</member>
+<member name="M:ZTStudio.MdlTasks.ConvertFolderPNGToZT1(System.String,System.Windows.Forms.ProgressBar,System.Threading.CancellationToken)">
  <summary>
  Task to convert files in a folder (recursively) from PNG sets to ZT1 Graphics
  </summary>
  <param name="StrSourcePath">Folder (recursive) containing PNG sets</param>
  <param name="ObjProgressBar">ProgressBar</param>
+ <param name="ObjCancellationToken">Token which allows cancelling the batch between files</param>
+</member>
+<member name="M:ZTStudio.MdlTasks.ConvertFolderPNGToZT1Core(System.String,System.Windows.Forms.ProgressBar,System.Threading.CancellationToken)">
+ <summary>
+ Contains the actual folder walk/conversion logic for <see cref="M:ZTStudio.MdlTasks.ConvertFolderPNGToZT1(System.String,System.Windows.Forms.ProgressBar,System.Threading.CancellationToken)"/>.
+ Runs on whatever thread it is invoked from (a background thread, when called via ConvertFolderPNGToZT1).
+ </summary>
+ <param name="StrSourcePath">Folder (recursive) containing PNG sets</param>
+ <param name="ObjProgressBar">ProgressBar</param>
+ <param name="ObjCancellationToken">Token which allows cancelling the batch between files</param>
 </member>
 <member name="M:ZTStudio.MdlTasks.SaveGraphic(System.String)">
  <summary>
@@ -650,7 +761,7 @@ ZT Studio
  </summary>
  <param name="StrFileName">Filename</param>
 </member>
-<member name="M:ZTStudio.MdlTasks.BatchOffsetFixFolderZT1(System.String,System.Drawing.Point,System.Windows.Forms.ProgressBar)">
+<member name="M:ZTStudio.MdlTasks.BatchOffsetFixFolderZT1(System.String,System.Drawing.Point,System.Windows.Forms.ProgressBar,System.Threading.CancellationToken)">
  <summary>
  Batch rotation fixes all animations in a selected folder.
  This sub will find all ZT1 Graphics in the folder and adjust the offsets of each frame.
@@ -660,10 +771,28 @@ ZT Studio
  <param name="StrPath">Path to folder</param>
  <param name="PntOffset">The offsets to apply</param>
  <param name="ObjProgressBar">The bar which will indicate progress</param>
+ <param name="ObjCancellationToken">Token which allows cancelling the batch between files</param>
+</member>
+<member name="M:ZTStudio.MdlTasks.BatchOffsetFixFolderZT1Core(System.String,System.Drawing.Point,System.Windows.Forms.ProgressBar,System.Threading.CancellationToken)">
+ <summary>
+ Contains the actual folder walk/offset-fix logic for <see cref="M:ZTStudio.MdlTasks.BatchOffsetFixFolderZT1(System.String,System.Drawing.Point,System.Windows.Forms.ProgressBar,System.Threading.CancellationToken)"/>.
+ Runs on whatever thread it is invoked from (a background thread, when called via BatchOffsetFixFolderZT1).
+ </summary>
+ <param name="StrPath">Path to folder</param>
+ <param name="PntOffset">The offsets to apply</param>
+ <param name="ObjProgressBar">The bar which will indicate progress</param>
+ <param name="ObjCancellationToken">Token which allows cancelling the batch between files</param>
 </member>
 <member name="T:ZTStudio.ClsPalette">
  <summary>
  ClsPalette is a class to process the ZT1 Color Palette (.pal file)
+ </summary>
+</member>
+<member name="F:ZTStudio.ClsPalette.IntMaxPaletteColors">
+ <summary>
+ Maximum number of colors a ZT1 Color Palette can hold, including the transparent color at
+ index 0 - so up to 255 usable colors per graphic. Named so this limit isn't repeated as a
+ bare literal at each of its call sites.
  </summary>
 </member>
 <member name="M:ZTStudio.ClsPalette.#ctor(ZTStudio.ClsGraphic)">
@@ -671,6 +800,45 @@ ZT Studio
  Creates a new instance of this class. Sets the parent graphic.
  </summary>
  <param name="ObjParent">ClsGraphic or Nothing. The parent of this color palette.</param>
+</member>
+<member name="M:ZTStudio.ClsPalette.InvalidateColorIndexCache">
+ <summary>
+ Forces the color index cache used by GetColorIndex() to rebuild on its next call.
+ Needed after any change to Colors that does not change its Count (e.g. reordering
+ or replacing an existing entry in place), since the cache is otherwise only
+ invalidated by a Count mismatch.
+ </summary>
+</member>
+<member name="M:ZTStudio.ClsPalette.AddColorAt(System.Int32,System.Drawing.Color)">
+ <summary>
+ Inserts a color at the given index. Prefer this over mutating Colors directly (e.g.
+ Colors.Insert(...)): the color index cache is invalidated automatically here rather than
+ relying on every caller to remember to do so (see issue #61 - a caller that mutates Colors
+ directly and forgets to invalidate the cache would silently get stale lookups afterward).
+ </summary>
+ <param name="IntIndex">Index to insert at.</param>
+ <param name="ObjColor">Color to insert.</param>
+</member>
+<member name="M:ZTStudio.ClsPalette.ReplaceColorAt(System.Int32,System.Drawing.Color)">
+ <summary>
+ Replaces the color at the given index in place. Prefer this over Colors(IntIndex) = ...
+ directly - Count doesn't change on an in-place replace, so the color index cache would
+ otherwise silently go stale for the replaced color (see issue #61).
+ </summary>
+ <param name="IntIndex">Index of the color to replace.</param>
+ <param name="ObjColor">New color.</param>
+</member>
+<member name="M:ZTStudio.ClsPalette.MoveColorTo(System.Int32,System.Int32)">
+ <summary>
+ Moves the color at IntIndexNow to IntIndexDest, and regenerates the CoreImageHex of every
+ frame in the parent graphic (if any) to reflect the new color indexes - mirroring the
+ existing pattern in ImportFromPNG()/ImportFromGIMPPalette(). Prefer this over manually
+ removing/re-inserting into Colors - that remove/insert pair leaves Count unchanged, so the
+ color index cache would otherwise silently go stale for every color between the old and new
+ position (see issue #61).
+ </summary>
+ <param name="IntIndexNow">Current index of the color to move.</param>
+ <param name="IntIndexDest">Index to move it to.</param>
 </member>
 <member name="P:ZTStudio.ClsPalette.Parent">
  <summary>
@@ -701,6 +869,26 @@ ZT Studio
  Fills a datagridview with all colors. Changes the row heading to match the color. Implements some performance-boosts.
  </summary>
  <param name="ObjDataGridView">The datagridview where colors should be shown in</param>
+</member>
+<member name="M:ZTStudio.ClsPalette.EnsureColorIndexCache">
+ <summary>
+ Rebuilds the color index cache if the palette's color count has changed since it was last
+ built. Colors are iterated from index 0 forward, so a later duplicate overwrites an earlier
+ one in the cache, matching the "last matching index wins" behavior of LastIndexOf (relied
+ upon by e.g. restrant.pal, which lists one color twice). Shared by GetColorIndex() and
+ TryGetColorIndex() so both use the same up-to-date cache.
+ </summary>
+</member>
+<member name="M:ZTStudio.ClsPalette.TryGetColorIndex(System.Drawing.Color,System.Int32@)">
+ <summary>
+ Looks up a color's index in this palette with no side effects: unlike GetColorIndex(), it
+ never adds the color if missing and never shows a dialog/raises an error. Returns False if
+ the color isn't in the palette. Uses the same O(1) cache as GetColorIndex(), so this is safe
+ to call from a hot path (e.g. inspecting a color under the mouse cursor).
+ </summary>
+ <param name="ObjColor">Color to look up.</param>
+ <param name="IntIndex">Set to the color's index if found, or -1 if not found.</param>
+ <returns>True if the color was found in the palette.</returns>
 </member>
 <member name="M:ZTStudio.ClsPalette.GetColorIndex(System.Drawing.Color,System.Boolean)">
  <summary>
@@ -760,6 +948,13 @@ ZT Studio
  </remarks>
  <param name="StrFileName">Source filename</param>
 </member>
+<member name="T:ZTStudio.ZTStudioErrorCategory">
+ <summary>
+ Which kind of ZTStudioException subclass should be raised by HandledError/UnhandledError.
+ Defaults to General everywhere existing call sites don't specify one, so adding this did not
+ require touching every existing call site.
+ </summary>
+</member>
 <member name="T:ZTStudio.MdlZTStudio">
  <summary>
  Handles various tasks related to the program
@@ -771,16 +966,24 @@ ZT Studio
  Processes command line parameters
  </summary>
 </member>
-<member name="M:ZTStudio.MdlZTStudio.UnhandledError(System.String,System.String,Microsoft.VisualBasic.ErrObject,System.Boolean)">
+<member name="M:ZTStudio.MdlZTStudio.CreateException(System.String,System.String,System.Exception,ZTStudio.ZTStudioErrorCategory)">
+ <summary>
+ Constructs the right ZTStudioException subclass for the given category, so callers of
+ HandledError/UnhandledError can Catch a specific failure kind (e.g. ZTStudioFileFormatException)
+ instead of having to string-match the generic base type's message.
+ </summary>
+</member>
+<member name="M:ZTStudio.MdlZTStudio.UnhandledError(System.String,System.String,System.Exception,System.Boolean,ZTStudio.ZTStudioErrorCategory)">
  <summary>
  To make unexpected errors look more generic, most of them are now handled by this method.
  </summary>
  <param name="StrClass">Class </param>
  <param name="StrMethod">Method</param>
- <param name="ObjError">Error object (contains number and message)</param>
+ <param name="ObjException">Exception that occurred</param>
  <param name="BlnRaiseException">Boolean</param>
+ <param name="ObjCategory">Which ZTStudioException subclass to raise. Defaults to General.</param>
 </member>
-<member name="M:ZTStudio.MdlZTStudio.HandledError(System.String,System.String,System.String,System.Boolean,Microsoft.VisualBasic.ErrObject)">
+<member name="M:ZTStudio.MdlZTStudio.HandledError(System.String,System.String,System.String,System.Boolean,System.Exception,ZTStudio.ZTStudioErrorCategory)">
  <summary>
  To make expected errors look more generic, most of them are now handled by this method. Some parameters are only meant for tracing details.
  </summary>
@@ -788,7 +991,31 @@ ZT Studio
  <param name="StrMethod">Method</param>
  <param name="StrMessage">Message</param>
  <param name="BlnFatal">Fatal error. Defaults to false.</param>
- <param name="ObjError">Error object (contains number and message). Defaults to Nothing.</param>
+ <param name="ObjException">Exception that occurred, if any. Defaults to Nothing.</param>
+ <param name="ObjCategory">Which ZTStudioException subclass to raise. Defaults to General.</param>
+</member>
+<member name="P:ZTStudio.MdlZTStudio.StrLogFilePath">
+ <summary>
+ Full path to the error log file, alongside the executable.
+ </summary>
+</member>
+<member name="F:ZTStudio.MdlZTStudio.ObjLogFileLock">
+ <summary>
+ Guards writes to the error log file. Batch operations run on a background thread (Task.Run),
+ so it is possible for a batch's per-file failures and a foreground error to call LogError at
+ the same time; without this, two concurrent File.AppendAllText calls could interleave and
+ produce a garbled log entry.
+ </summary>
+</member>
+<member name="M:ZTStudio.MdlZTStudio.LogError(System.String,System.String,System.String,System.Exception)">
+ <summary>
+ Appends a structured entry to the error log file. Failures while logging are swallowed;
+ logging must never be a source of crashes itself.
+ </summary>
+ <param name="StrClass">Class</param>
+ <param name="StrMethod">Method</param>
+ <param name="StrMessage">Contextual message, e.g. which file was being processed</param>
+ <param name="ObjException">Exception that occurred, if any. Defaults to Nothing.</param>
 </member>
 <member name="M:ZTStudio.MdlZTStudio.Trace(System.String,System.String,System.String)">
  <summary>
@@ -833,9 +1060,21 @@ ZT Studio
  Form which briefly explains to users how to prepare files and what to expect from a batch graphic conversion.
  </summary>
 </member>
+<member name="F:ZTStudio.FrmBatchConversion.ObjCancellationTokenSource">
+ <summary>
+ Tracks cancellation of the batch conversion currently running, if any.
+ </summary>
+</member>
 <member name="M:ZTStudio.FrmBatchConversion.BtnConvert_Click(System.Object,System.EventArgs)">
  <summary>
  Handles what happens when the user clicks the Convert button.
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmBatchConversion.BtnCancel_Click(System.Object,System.EventArgs)">
+ <summary>
+ Handles what happens when the user clicks the Cancel button, requesting cancellation of the running batch conversion.
  </summary>
  <param name="sender">Object</param>
  <param name="e">EventArgs</param>
@@ -860,9 +1099,14 @@ ZT Studio
      Form which allows to specify offsets which are applied to all views within the selected folder.
  </para>
  <para>
-     This is specifically meant for importing images from a different program, such as Blender; 
+     This is specifically meant for importing images from a different program, such as Blender;
      where it is possible the animal's (Y) offset needs to be adjusted for each frame in every view.
  </para>
+ </summary>
+</member>
+<member name="F:ZTStudio.FrmBatchOffsetFix.ObjCancellationTokenSource">
+ <summary>
+ Tracks cancellation of the batch offset fix currently running, if any.
  </summary>
 </member>
 <member name="M:ZTStudio.FrmBatchOffsetFix.FrmBatchRotationFix_Load(System.Object,System.EventArgs)">
@@ -879,12 +1123,27 @@ ZT Studio
  <param name="sender">Object</param>
  <param name="e">EventArgs</param>
 </member>
+<member name="M:ZTStudio.FrmBatchOffsetFix.BtnCancel_Click(System.Object,System.EventArgs)">
+ <summary>
+ On click, requests cancellation of the running batch offset fix.
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">EventArgs</param>
+</member>
 <member name="M:ZTStudio.FrmBatchOffsetFix.BtnSelect_Click(System.Object,System.EventArgs)">
  <summary>
  On click, show folder selection dialog
  </summary>
  <param name="sender">Object</param>
  <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmBatchOffsetFix.FrmBatchOffsetFix_FormClosing(System.Object,System.Windows.Forms.FormClosingEventArgs)">
+ <summary>
+ Handles form closing. Requests cancellation of a batch offset fix that may still be running in the
+ background, so it does not keep trying to marshal progress updates onto controls that are about to be disposed.
+ </summary>
+ <param name="sender">Object</param>
+ <param name="e">FormClosingEventArgs</param>
 </member>
 <member name="T:ZTStudio.FrmMain">
  <summary>
@@ -932,6 +1191,16 @@ ZT Studio
  </summary>
  <param name="sender">Object</param>
  <param name="e">EventArgs</param>
+</member>
+<member name="M:ZTStudio.FrmMain.GetInitialDirectory(System.String)">
+ <summary>
+ Safely determines the folder to default a file dialog's InitialDirectory to, based on a
+ recently-used file path. New FileInfo(...) throws ArgumentException when StrRecentPath is
+ empty or otherwise invalid (e.g. nothing opened yet this session) - this catches that and
+ falls back to Cfg_Path_Root instead of letting the exception propagate out of a dialog's
+ Click/MouseDown handler.
+ </summary>
+ <param name="StrRecentPath">A recently used file path, possibly empty/invalid.</param>
 </member>
 <member name="M:ZTStudio.FrmMain.TsbZT1Open_Click(System.Object,System.EventArgs)">
  <summary>
@@ -1024,12 +1293,20 @@ ZT Studio
  <param name="sender">Object</param>
  <param name="e">EventArgs</param>
 </member>
-<member name="M:ZTStudio.FrmMain.TsbFrame_OffsetUp_MouseDown(System.Object,System.Windows.Forms.MouseEventArgs)">
+<member name="M:ZTStudio.FrmMain.NudgeFrameOffset(System.Windows.Forms.MouseEventArgs,System.Drawing.Point,System.Drawing.Point)">
  <summary>
  Handles toolbar button click to move the frame contents up
  </summary>
  <param name="sender">Object</param>
  <param name="e">MouseEventArgs</param>
+ <summary>
+ Shared by the four TsbFrame_Offset{Up,Down,Left,Right}_MouseDown handlers below, which
+ previously each repeated the same "right-click = fast nudge, otherwise a single pixel"
+ logic, differing only in which Point they passed to UpdateOffsets().
+ </summary>
+ <param name="e">MouseEventArgs from the triggering MouseDown event.</param>
+ <param name="PntNormal">Offset to apply on a normal (left) click.</param>
+ <param name="PntFast">Offset to apply on a right click.</param>
 </member>
 <member name="M:ZTStudio.FrmMain.TsbFrame_OffsetDown_MouseDown(System.Object,System.Windows.Forms.MouseEventArgs)">
  <summary>
@@ -1301,6 +1578,14 @@ ZT Studio
  Form which allows the user to change some settings.
  </summary>
 </member>
+<member name="M:ZTStudio.FrmSettings.BoolToByte(System.Boolean)">
+ <summary>
+ Converts a Boolean to a Byte (1 for True, 0 for False), for the Cfg_* settings that are
+ stored as Byte rather than Boolean. Replaces the "Checked * -1" idiom (relying on VB's
+ legacy True = -1 numeric representation, used inconsistently across this form's checkbox
+ handlers - some wrapped it in CInt() first, some didn't).
+ </summary>
+</member>
 <member name="M:ZTStudio.FrmSettings.FrmSettings_FormClosing(System.Object,System.Windows.Forms.FormClosingEventArgs)">
  <summary>
  On unload form, save config.
@@ -1539,6 +1824,36 @@ ZT Studio
  </summary>
  <param name="sender">Object</param>
  <param name="e">EventArgs</param>
+</member>
+<member name="T:ZTStudio.ZTStudioException">
+ <summary>
+ Common base for every exception ZT Studio raises internally (via MdlZTStudio.HandledError/UnhandledError).
+ Callers that only care "did something go wrong somewhere in ZT Studio" can still catch this base type;
+ callers that need to react differently depending on what kind of failure it was (e.g. skip a malformed
+ file but treat a broken settings.cfg as fatal) can catch one of the more specific subclasses below instead.
+ </summary>
+</member>
+<member name="M:ZTStudio.ZTStudioException.#ctor(System.String,System.String,System.Exception)">
+ <summary>
+ </summary>
+ <remarks>
+ ObjError is guarded against Nothing here (rather than relying on every caller to check first)
+ since MdlZTStudio.HandledError already guards its own call site but UnhandledError doesn't -
+ guarding centrally here covers both, and any future caller, in one place. See issue #68.
+ </remarks>
+</member>
+<member name="T:ZTStudio.ZTStudioFileFormatException">
+ <summary>
+ Raised for failures parsing/writing a ZT1 file format: a ZT1 Graphic, a .pal color palette,
+ a .ani file, or a .gpl/.PNG palette import. Typically means the input file is malformed,
+ truncated, or simply not the format it was expected to be - not a ZT Studio bug.
+ </summary>
+</member>
+<member name="T:ZTStudio.ZTStudioConfigException">
+ <summary>
+ Raised for failures loading/writing ZT Studio's own configuration (settings.cfg) or other
+ application-level settings - as opposed to a ZT1 graphic/palette/animation file supplied by the user.
+ </summary>
 </member>
 <member name="T:ZTStudio.MdlZTStudioUI">
  <summary>

@@ -11,10 +11,10 @@ Donations are appreciated, both as a 'thank you!' or to encourage further develo
 * Download and unzip to your PC
 * Run "Start ZT Studio.bat"
 
-You do need [.NET Framework 4.7.2](https://dotnet.microsoft.com/download/visual-studio-sdks) .
-In Windows 10, this is usually installed by default if you're on the 1903 build. No action needed.
-In Windows 7 Service Pack 1 and 8, you'll most likely need to download and install this from Microsoft.
-Older Windows versions are not supported.
+You do need [.NET Framework 4.8](https://dotnet.microsoft.com/download/visual-studio-sdks) .
+In Windows 10 (post-2019 builds) and Windows 11, this is usually installed by default. No action needed.
+On older Windows 10 builds, you'll most likely need to download and install this from Microsoft.
+Windows 7, 8 and other older Windows versions are not supported.
 
 ## Sponsoring features
 If you're still interested in a feature/enhancement listed under "Issues" or a specific feature, you can also sponsor a feature. Contact me to discuss the details.
@@ -22,7 +22,7 @@ If you're still interested in a feature/enhancement listed under "Issues" or a s
 
 ## For developers
 
-* You currently need [.NET Framework 4.7.2 Developer Pack](https://dotnet.microsoft.com/download/visual-studio-sdks)
+* You currently need [.NET Framework 4.8 Developer Pack](https://dotnet.microsoft.com/download/visual-studio-sdks)
 
 Please credit in this order:
 * **MadScientist** for figuring out most of the common ZT1 graphic format

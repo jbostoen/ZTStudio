@@ -364,7 +364,7 @@ Public Class FrmMain
             "" &
             "Bugs? " & vbCrLf &
             Strings.StrDup(25, "-") & vbCrLf &
-            "- You can report them at GitHub or Zoo Tek Phoenix. " & vbCrLf &
+            "- You can report them at GitHub. " & vbCrLf &
             "- Support not guaranteed. " & vbCrLf &
             "- Include the graphic files which are causing the problem. " & vbCrLf & vbCrLf &
             "" &
